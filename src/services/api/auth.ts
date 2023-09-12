@@ -1,14 +1,14 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { LoginType, SignUpType, TokenGeneratorType } from "../../types/authTypes";
-import { handlePrismaError } from "../../utils/PrismaError";
+import { handlePrismaError } from "../../utils/prismaError";
 import { compareHash, hashInfo } from "../../utils/bCrypt";
 
-const prisma = new PrismaClient();
 import jwt from "jsonwebtoken";
+import prisma from "../../utils/prisma";
 
 export async function signUp(data: SignUpType) {
   try {
-    const user = await prisma.user.create({
+    await prisma.user.create({
       data: {
         name: data.name,
         email: data.email,
@@ -29,11 +29,10 @@ export async function login(data: LoginType) {
     });
     if (!user) return handlePrismaError("Usuário", user);
     if (!(await compareHash(data.password, user.password)))
-      throw `${isEmail ? "Email" : "Usuário"} ou senha incorretos.`;
+      throw { message: `${isEmail ? "Email" : "Usuário"} ou senha incorretos.`, status: 404 };
 
     return generateToken({ id: user.id });
   } catch (error) {
-    console.log(error);
     return handlePrismaError("usuário", error);
   }
 }
