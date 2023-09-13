@@ -14,6 +14,7 @@ export async function signUp(data: SignUpType) {
         name: data.name,
         email: normalize(data.email),
         password: await hashInfo(data.password),
+        role: "user",
       },
     });
     return { name: user.name, email: user.email };
@@ -38,11 +39,10 @@ export async function login(data: LoginType) {
   }
 }
 
-export async function verifyAuth(data: any) {
-  try {
-    const token = data;
-    return token;
-  } catch (error) {}
+export async function verifyUser(data: any) {
+  const user = await prisma.user.findFirst({ where: { id: data.id } });
+  if (user) return { user: user.name, role: user.role };
+  else throw { message: "Você não tem autorização para fazer isto.", status: 403 };
 }
 
 export function generateToken(data: TokenGeneratorType) {
