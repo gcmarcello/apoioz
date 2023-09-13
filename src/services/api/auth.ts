@@ -5,17 +5,18 @@ import { compareHash, hashInfo } from "../../utils/bCrypt";
 
 import jwt from "jsonwebtoken";
 import prisma from "../../utils/prisma";
+import { normalize } from "../../utils/normalize";
 
 export async function signUp(data: SignUpType) {
   try {
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         name: data.name,
-        email: data.email,
+        email: normalize(data.email),
         password: await hashInfo(data.password),
       },
     });
-    return { name: data.name, email: data.email };
+    return { name: user.name, email: user.email };
   } catch (error) {
     return handlePrismaError("usuário", error);
   }
@@ -35,6 +36,13 @@ export async function login(data: LoginType) {
   } catch (error) {
     return handlePrismaError("usuário", error);
   }
+}
+
+export async function verifyAuth(data: any) {
+  try {
+    const token = data;
+    return token;
+  } catch (error) {}
 }
 
 export function generateToken(data: TokenGeneratorType) {
