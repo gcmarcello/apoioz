@@ -1,6 +1,7 @@
-import "./globals.css";
+import "../globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import PanelSideBar from "../../common/components/panelSidebar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -11,8 +12,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html>
-      <body>{children}</body>
-    </html>
+    <main>
+      <PanelSideBar content={children} />
+    </main>
   );
 }

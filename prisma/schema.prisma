@@ -8,9 +8,44 @@ datasource db {
 }
 
 model User {
-  id    String     @id @default(uuid())
-  email String  @unique
-  name  String?
-  password String
-  role String
+  id        String      @id @default(uuid())
+  email     String      @unique
+  name      String?
+  password  String
+  role      String
+  info      UserInfo?
+  campaign  Campaign[]
+  supporter Supporter[] @relation(name: "UserToSupporter")
+  referral  Supporter[] @relation(name: "UserToReferral")
+}
+
+model UserInfo {
+  user    User    @relation(fields: [userId], references: [id])
+  userId  String  @id @unique @default(uuid())
+  phone   String?
+  state   String?
+  city    String?
+  zone    String?
+  section String?
+}
+
+model Campaign {
+  id         String      @id @default(uuid())
+  user       User        @relation(fields: [userId], references: [id])
+  userId     String      @unique
+  name       String
+  year       String
+  supporters Supporter[]
+}
+
+model Supporter {
+  id         String    @id @default(uuid())
+  campaign   Campaign? @relation(fields: [campaignId], references: [id])
+  user       User      @relation("UserToSupporter", fields: [userId], references: [id])
+  referral   User?     @relation("UserToReferral", fields: [referralId], references: [id])
+  userId     String
+  referralId String?
+  campaignId String?
+  level      Int
+  assignedAt DateTime  @default(now())
 }
