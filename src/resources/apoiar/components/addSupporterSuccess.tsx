@@ -46,7 +46,7 @@ export default function AddSupporterSuccess({ campaign }: { campaign: any }) {
             <p className="mt-8">Sua participação pode fazer a diferença. Juntos, vamos alcançar nosso objetivo!</p>
             <h2 className="mt-8 text-2xl font-bold tracking-tight text-gray-900">Se envolva!</h2>
             <p className="mt-6">
-              Fique atento ao seu e-mail e às nossas redes sociais para receber informações sobre eventos, reuniões e
+              Fique atento ao seu email e às nossas redes sociais para receber informações sobre eventos, reuniões e
               outras atividades de nossa campanha. Se você cadastrou uma senha, clique abaixo para acessar o painel.
             </p>
             <div className="flex justify-center my-3">
