@@ -1,14 +1,30 @@
+"use client";
 import { headers } from "next/headers";
-import { listSupporters } from "../../api/campaign";
+import { listSupporters } from "../../api/services/campaign";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { usePanel } from "../../../common/hooks/usePanel";
+import { useEffect, useState } from "react";
 
-export default async function LatestSupporters({ userId, campaign }: { userId: string; campaign: any }) {
-  const supporters = await listSupporters(userId, campaign.id, {
-    take: 4,
-    dateFrom: dayjs().subtract(1, "week").toISOString(),
-  });
+export default function LatestSupporters({
+  userId,
+  campaign,
+  supporters,
+}: {
+  userId: string;
+  campaign: any;
+  supporters: any[] | number | undefined;
+}) {
+  const { setUpdatingLatestSupporters, updatingLatestSupporters, fetchLatestSupporters } = usePanel();
+  const [latestSupporters, setLatestSupporters] = useState(supporters);
+
+  useEffect(() => {
+    if (updatingLatestSupporters) {
+      fetchLatestSupporters(userId, campaign.id).then((data: any) => setLatestSupporters(data));
+      setUpdatingLatestSupporters(false);
+    }
+  }, [updatingLatestSupporters]);
 
   const referralColor = (level: number) => {
     switch (level) {
@@ -32,7 +48,8 @@ export default async function LatestSupporters({ userId, campaign }: { userId: s
         <div className="sm:flex-auto">
           <h1 className="text-base font-semibold leading-6 text-gray-900">Novos Apoiadores</h1>
           <p className="mt-2 text-sm text-gray-700">
-            Uma lista dos apoiadores adicionados desde {dayjs().subtract(1, "week").format("DD/MM/YYYY")}
+            Uma lista dos apoiadores adicionados desde{" "}
+            {dayjs().subtract(1, "week").subtract(3, "hours").format("DD/MM/YYYY")}.
           </p>
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
@@ -69,8 +86,9 @@ export default async function LatestSupporters({ userId, campaign }: { userId: s
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                  {typeof supporters !== "number" &&
-                    supporters.map((supporter) => (
+                  {latestSupporters &&
+                    typeof latestSupporters !== "number" &&
+                    latestSupporters.map((supporter) => (
                       <tr key={supporter.id}>
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                           {supporter.user.name}
@@ -94,10 +112,10 @@ export default async function LatestSupporters({ userId, campaign }: { userId: s
                           </div>
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {supporter.user.info?.zone}
+                          {supporter.user.info?.Zone.number}
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {supporter.user.info?.section}
+                          {supporter.user.info?.Section.number}
                         </td>
                         <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                           <a href="#" className="text-indigo-600 hover:text-indigo-900">

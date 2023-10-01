@@ -7,7 +7,7 @@ import {
   MapIcon,
   ChartPieIcon,
   Cog6ToothIcon,
-  DocumentDuplicateIcon,
+  PlusCircleIcon,
   FolderIcon,
   HomeIcon,
   UsersIcon,
@@ -15,6 +15,12 @@ import {
 } from "@heroicons/react/24/outline";
 import { ChevronDownIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
+import SupporterSideBar from "./supporterSidebars";
+import { ZoneType } from "../types/locationTypes";
+import { deactivateCampaign } from "../../resources/panel/server/activateCampaign";
+import { redirect } from "next/navigation";
+import { getCampaignZones } from "../../resources/panel/server/fetchZones";
+import Toast from "./toast";
 
 const navigation = [
   { name: "Painel", href: "#", icon: HomeIcon, current: true },
@@ -28,13 +34,19 @@ const teams = [
   { id: 2, name: "Tailwind Labs", href: "#", initial: "T", current: false },
   { id: 3, name: "Workcation", href: "#", initial: "W", current: false },
 ];
-const userNavigation = [
-  { name: "Your profile", href: "#" },
-  { name: "Sign out", href: "#" },
-];
+const userNavigation = [{ name: "Your profile", href: "#" }];
 
-export default function PanelSideBar({ content }: { content: React.ReactNode }) {
+export default function PanelSideBar({
+  content,
+  campaign,
+  userId,
+}: {
+  content: React.ReactNode;
+  campaign: any;
+  userId: string;
+}) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [supporterSideBarOpen, setSupporterSideBarOpen] = useState(false);
 
   return (
     <>
@@ -262,15 +274,19 @@ export default function PanelSideBar({ content }: { content: React.ReactNode }) 
                 <input
                   id="search-field"
                   className="block h-full w-full border-0 py-0 pl-8 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
-                  placeholder="Search..."
+                  placeholder="Apoiadores, eventos..."
                   type="search"
                   name="search"
                 />
               </form>
               <div className="flex items-center gap-x-4 lg:gap-x-6">
-                <button type="button" className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">
+                <button
+                  type="button"
+                  className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500"
+                  onClick={async () => setSupporterSideBarOpen(true)}
+                >
                   <span className="sr-only">View notifications</span>
-                  <BellIcon className="h-6 w-6" aria-hidden="true" />
+                  <PlusCircleIcon className="h-8 w-8" aria-hidden="true" />
                 </button>
 
                 {/* Separator */}
@@ -317,6 +333,35 @@ export default function PanelSideBar({ content }: { content: React.ReactNode }) 
                           )}
                         </Menu.Item>
                       ))}
+                      <Menu.Item>
+                        {({ active }: { active: any }) => (
+                          <a
+                            href={"/login"}
+                            onClick={() => (document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;")}
+                            className={clsx(
+                              active ? "bg-gray-50" : "",
+                              "block px-3 py-1 text-sm leading-6 text-gray-900"
+                            )}
+                          >
+                            Logout
+                          </a>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }: { active: any }) => (
+                          <a
+                            onClick={async () => {
+                              deactivateCampaign();
+                            }}
+                            className={clsx(
+                              active ? "bg-gray-50" : "",
+                              "block px-3 py-1 text-sm leading-6 text-gray-900"
+                            )}
+                          >
+                            Alterar Campanha
+                          </a>
+                        )}
+                      </Menu.Item>
                     </Menu.Items>
                   </Transition>
                 </Menu>
@@ -329,6 +374,13 @@ export default function PanelSideBar({ content }: { content: React.ReactNode }) 
           </main>
         </div>
       </div>
+      <SupporterSideBar
+        open={supporterSideBarOpen}
+        setOpen={setSupporterSideBarOpen}
+        campaign={campaign}
+        userId={userId}
+      />
+      <Toast />
     </>
   );
 }

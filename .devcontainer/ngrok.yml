@@ -1,0 +1,11 @@
+version: "2"
+
+authtoken: 2ShyJYdN3LQGyaNgqPKA1rcVA1a_57q7kC8FR8tmH22q9xxF4
+tunnels:
+  web:
+    proto: http
+    addr: host.docker.internal:3000
+    domain: "equally-golden-quail.ngrok-free.app"
+  ssh:
+    proto: tcp
+    addr: 22

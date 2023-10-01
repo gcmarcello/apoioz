@@ -1,11 +1,11 @@
 import { normalize } from "path";
-import { UserType } from "../../common/types/userTypes";
-import { hashInfo } from "../../common/utils/bCrypt";
-import prisma from "../../common/utils/prisma";
-import { handlePrismaError } from "../../common/utils/prismaError";
+import { UserType } from "../../../common/types/userTypes";
+import { hashInfo } from "../../../common/utils/bCrypt";
+import prisma from "../../../common/utils/prisma";
+import { handlePrismaError } from "../../../common/utils/prismaError";
 
 export async function findUser(data: any) {
-  const user = await prisma.user.findFirst({ where: { id: data.id }, include: { info: true } });
+  const user = await prisma.user.findFirst({ where: { id: data.id || "0" }, include: { info: true } });
   if (user) return user;
 }
 
@@ -24,7 +24,7 @@ export async function createUser(data: UserType) {
     let userData = {
       name: data.name,
       email: normalize(data.email),
-      password: await hashInfo(data.password || crypto.randomUUID()),
+      password: data.password ? await hashInfo(data.password) : null,
       role: "user",
       info: {
         create: info,
@@ -48,7 +48,7 @@ export async function createUser(data: UserType) {
     return {
       name: user.name,
       email: user.email,
-      info: { phone: info.phone, state: info.state, city: info.city, zone: info.zone, section: info.section },
+      info: { phone: info.phone, state: info.stateId, city: info.cityId, zone: info.zoneId, section: info.sectionId },
     };
   } catch (error) {
     console.log(error);

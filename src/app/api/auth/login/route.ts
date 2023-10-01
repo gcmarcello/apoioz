@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { login } from "../../../../resources/api/auth";
+import { login } from "../../../../resources/api/services/auth";
 import { LoginType, SignUpType } from "../../../../common/types/authTypes";
 import { ServerExceptionType } from "../../../../common/types/serverExceptionTypes";
 

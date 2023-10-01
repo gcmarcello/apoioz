@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import jwt from "jsonwebtoken";
-import { findUser } from "../../../../resources/api/user";
+import { findUser } from "../../../../resources/api/services/user";
 
 export async function POST(request: any) {
   try {

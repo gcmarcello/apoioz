@@ -11,7 +11,7 @@ model User {
   id        String      @id @default(uuid())
   email     String      @unique
   name      String?
-  password  String
+  password  String?
   role      String
   info      UserInfo?
   campaign  Campaign[]
@@ -20,13 +20,19 @@ model User {
 }
 
 model UserInfo {
-  user    User    @relation(fields: [userId], references: [id])
-  userId  String  @id @unique @default(uuid())
-  phone   String?
-  state   String?
-  city    String?
-  zone    String?
-  section String?
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @id @unique @default(uuid())
+  phone     String?
+  stateId   String?
+  party     Party?   @relation(fields: [partyId], references: [id])
+  partyId   String?
+  State     State?   @relation(fields: [stateId], references: [id])
+  City      City?    @relation(fields: [cityId], references: [id])
+  cityId    String?
+  Zone      Zone?    @relation(fields: [zoneId], references: [id])
+  zoneId    String?
+  Section   Section? @relation(fields: [sectionId], references: [id])
+  sectionId String?
 }
 
 model Campaign {
@@ -36,6 +42,11 @@ model Campaign {
   name       String
   year       String
   supporters Supporter[]
+  city       City?       @relation(fields: [cityId], references: [id])
+  cityId     String?
+  state      State?      @relation(fields: [stateId], references: [id])
+  stateId    String?
+  type       String
 }
 
 model Supporter {
@@ -48,4 +59,59 @@ model Supporter {
   campaignId String?
   level      Int
   assignedAt DateTime  @default(now())
+}
+
+model State {
+  id       String     @id @default(uuid())
+  name     String
+  code     String
+  city     City[]
+  UserInfo UserInfo[]
+  Campaign Campaign[]
+}
+
+model City {
+  id       String     @id @default(uuid())
+  name     String
+  zone     Zone[]
+  State    State      @relation(fields: [stateId], references: [id])
+  stateId  String
+  UserInfo UserInfo[]
+  Campaign Campaign[]
+}
+
+model Zone {
+  id       String     @id @default(uuid())
+  number   Int
+  address  Address[]
+  City     City       @relation(fields: [cityId], references: [id])
+  cityId   String
+  UserInfo UserInfo[]
+}
+
+model Address {
+  id       String    @id @default(uuid())
+  address  String
+  location String
+  lat      String
+  lng      String
+  Zone     Zone?     @relation(fields: [zoneId], references: [id])
+  zoneId   String?
+  section  Section[]
+}
+
+model Section {
+  id        String     @id @default(uuid())
+  number    Int
+  Address   Address?   @relation(fields: [addressId], references: [id])
+  addressId String?
+  UserInfo  UserInfo[]
+}
+
+model Party {
+  id       String     @id @unique
+  number   Int        @unique
+  name     String
+  ideology String
+  UserInfo UserInfo[]
 }

@@ -14,7 +14,9 @@ export default function ErrorAlert({ errors }: { errors: string[] }) {
             <div className="mt-2 text-sm text-red-700">
               <ul role="list" className="list-disc space-y-1 pl-5">
                 {errors.map((error: string, index: number) => (
-                  <li key={index}>{error}</li>
+                  <li key={index}>
+                    <p dangerouslySetInnerHTML={{ __html: error }}></p>
+                  </li>
                 ))}
               </ul>
             </div>

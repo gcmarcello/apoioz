@@ -2,13 +2,24 @@ export interface UserType {
   email: string;
   password: string;
   name: string;
-  state?: string;
-  city?: string;
+  stateId?: string;
+  cityId?: string;
   phone?: string;
-  zone?: string;
-  section?: string;
+  zoneId?: string;
+  sectionId?: string;
   campaign?: {
     campaignId: string;
     referralId?: string;
   };
+}
+
+export interface SupporterType {
+  id?: string;
+  userId?: string;
+  user: UserType;
+  referralId: string;
+  referral?: any;
+  campaignId?: string;
+  level?: string;
+  campaigns: any[];
 }

@@ -1,24 +1,21 @@
-version: '3.8'
+version: "3.8"
 
 services:
   app:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile
 
     volumes:
       - ../..:/workspaces:cached
-      
-    # Overrides default command so things don't shut down after the process ends.
+
     command: sleep infinity
 
-    # Runs app on the same network as the database container, allows "forwardPorts" in devcontainer.json function.
-    # network_mode: service:db
-    extra_hosts: 
-      - host.docker.internal:host-gateway
+    ports:
+      - 3000:3000
 
-    # Use "forwardPorts" in **devcontainer.json** to forward an app port locally. 
-    # (Adding the "ports" property to this file will not forward from a Codespace.)
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   db:
     image: postgres:latest
@@ -29,8 +26,25 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres
-    extra_hosts: 
+    ports:
+      - 5432:5432
+    extra_hosts:
       - host.docker.internal:host-gateway
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    restart: unless-stopped
+    command:
+      - "start"
+      - "--all"
+      - "--config"
+      - "/etc/ngrok.yml"
+    volumes:
+      - ./ngrok.yml:/etc/ngrok.yml
+    ports:
+      - 4040:4040
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
     # Add "forwardPorts": ["5432"] to **devcontainer.json** to forward PostgreSQL locally.
     # (Adding the "ports" property to this file will not forward from a Codespace.)

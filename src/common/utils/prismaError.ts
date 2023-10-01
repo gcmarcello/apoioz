@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client";
+import toProperCase from "../functions/toProperCase";
 
 export function handlePrismaError(target: string, error: any) {
   if (!error) throw { message: `${target} não encontrado(a)`, status: 404 };
@@ -6,8 +7,12 @@ export function handlePrismaError(target: string, error: any) {
 
   switch (error.code) {
     case "P2002":
-      throw { message: `Erro ao criar ${target}. ${error.meta && error.meta.target + " já existente."}`, status: 409 };
+      const field: any = error.meta?.target;
+      throw {
+        message: `Erro ao criar ${target}. ${toProperCase(field[0] as string) + " já existente."}`,
+        status: 409,
+      };
     default:
-      throw { message: `Erro ao processar requisição. ${error?.meta?.cause}`, status: 400 };
+      throw { message: `Erro ao processar requisição. ${error.message}`, status: 400 };
   }
 }

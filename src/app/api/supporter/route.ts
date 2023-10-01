@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { UserType } from "../../../common/types/userTypes";
 import { ServerExceptionType } from "../../../common/types/serverExceptionTypes";
-import { createUser } from "../../../services/api/user";
+import { createUser } from "../../../resources/api/services/user";
 
 export async function POST(request: Request) {
   try {
