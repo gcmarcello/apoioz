@@ -3,7 +3,7 @@ import { ServerExceptionType } from "../types/serverExceptionTypes";
 
 export async function fetchAuth(roles: string[], request: NextRequest) {
   try {
-    const data = await fetch("http://localhost:3000/api/auth/verify", {
+    const data = await fetch(`${process.env.API_URL}/api/auth/verify`, {
       method: "POST",
       body: JSON.stringify(request.cookies.get("token")),
     });
