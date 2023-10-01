@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { ServerExceptionType } from "../../../../common/types/serverExceptionTypes";
-import { listUsers } from "../../../../services/api/user";
-import { verifyPermission } from "../../../../services/api/campaign";
+import { listUsers } from "../../../../resources/api/services/user";
+import { verifyPermission } from "../../../../resources/api/services/campaign";
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {

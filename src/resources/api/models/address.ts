@@ -12,11 +12,3 @@ export async function listAddresses({ addressIds }: { addressIds: string[] }) {
 export async function deleteAddress({ addressId }: { addressId: string }) {
   return await prisma.address.delete({ where: { id: addressId } });
 }
-
-export async function updateAddresses({ addressId, addressData }: { addressId: string; addressData: AddressType }) {
-  return await prisma.address.update({ where: { id: addressId }, data: addressData });
-}
-
-export async function createAddress({ addressData }: { addressData: AddressType }) {
-  return await prisma.address.create({ data: addressData });
-}

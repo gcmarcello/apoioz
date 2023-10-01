@@ -12,11 +12,3 @@ export async function listZones({ zoneIds }: { zoneIds: string[] }) {
 export async function deleteZone({ zoneId }: { zoneId: string }) {
   return await prisma.zone.delete({ where: { id: zoneId } });
 }
-
-export async function updateZones({ zoneId, zoneData }: { zoneId: string; zoneData: ZoneType }) {
-  return await prisma.zone.update({ where: { id: zoneId }, data: zoneData });
-}
-
-export async function createZone({ zoneData }: { zoneData: ZoneType }) {
-  return await prisma.zone.create({ data: zoneData });
-}

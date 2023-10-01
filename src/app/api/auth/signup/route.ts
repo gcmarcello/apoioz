@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { SignUpType } from "../../../../common/types/authTypes";
 import { ServerExceptionType } from "../../../../common/types/serverExceptionTypes";
-import { createUser } from "../../../../services/api/user";
+import { createUser } from "../../../../resources/api/services/user";
 
 export async function POST(request: Request, response: Response) {
   try {

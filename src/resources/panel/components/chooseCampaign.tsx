@@ -8,7 +8,7 @@ export default function ChooseCampaign({ campaigns }: { campaigns: any }) {
       <h2 className="text-4xl mb-4 font-medium text-gray-900">Bem Vindo, [User]</h2>
       <h2 className="text-sm font-medium text-gray-900">Campanhas Ativas</h2>
       <ul role="list" className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4">
-        {campaigns.map((campaign) => (
+        {campaigns.map((campaign: any) => (
           <li
             key={campaign.id}
             role="button"
