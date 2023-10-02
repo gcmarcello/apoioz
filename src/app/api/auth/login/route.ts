@@ -7,10 +7,14 @@ export async function POST(request: Request, response: Response) {
   try {
     const body: LoginType = await request.json();
     const userLogin = await login(body);
-    return NextResponse.json("Login", {
-      headers: { "Set-Cookie": `token=${userLogin}; path=/` },
-    });
+
+    if (userLogin) {
+      const response = NextResponse.redirect(`${process.env.API_URL}/panel`);
+      response.cookies.set("token", userLogin!);
+      return response;
+    }
   } catch (error) {
+    console.log(error);
     return NextResponse.json(error, { status: (error as ServerExceptionType).status || 400 });
   }
 }

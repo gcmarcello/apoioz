@@ -28,7 +28,7 @@ export async function fetchAuth(roles: string[], request: NextRequest) {
     if (request.nextUrl.pathname.startsWith("/api/")) {
       return NextResponse.json({ message: "Você não tem permissão para fazer isto.", status: 403 }, { status: 403 });
     }
-    console.log(`${process.env.API_URL}/api/auth/verify`);
+
     return NextResponse.redirect(new URL("/login", request.url));
   } catch (error) {
     return NextResponse.json(error, { status: (error as ServerExceptionType).status || 400 });
