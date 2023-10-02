@@ -22,7 +22,7 @@ export default function ChooseCampaign({ campaigns }: { campaigns: any }) {
   return (
     <div className="mt-6 px-4 sm:px-6 lg:px-8">
       <Toast />
-      <h2 className="text-4xl mb-4 font-medium text-gray-900">Bem Vindo, user</h2>
+      <h2 className="text-4xl mb-4 font-medium text-gray-900">Bem Vindo, {user.name}</h2>
       <h2 className="text-sm font-medium text-gray-900">Campanhas Ativas</h2>
       <ul role="list" className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4">
         {campaigns.map((campaign: any) => (

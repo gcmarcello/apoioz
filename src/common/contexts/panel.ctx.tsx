@@ -1,4 +1,5 @@
 import { Dispatch, createContext, useContext, useState } from "react";
+import { UserType } from "../types/userTypes";
 
 export class PanelContextProps {
   updatingLatestSupporters: boolean = false;
@@ -17,7 +18,12 @@ export class PanelContextProps {
   }> = () => {};
   fetchLatestSupporters: (userId: string, campaignId: string) => any = () => {};
   siteURL: string = "";
-  user: any = "";
+  user: UserType = {
+    email: "",
+    name: "",
+    id: "",
+    role: "",
+  };
   campaign: any = null;
   setCampaign: Dispatch<any> = () => {};
 }
