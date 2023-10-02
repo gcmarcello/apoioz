@@ -10,17 +10,17 @@ import { cookies } from "next/headers";
 export default function PanelProvider({
   children,
   userId,
-  activeCampaignId,
+  fetchedCampaign,
 }: {
   children: React.ReactNode;
   userId: string;
-  activeCampaignId: string | undefined;
+  fetchedCampaign: any;
 }) {
   const [updatingLatestSupporters, setUpdatingLatestSupporters] = useState(false);
   const [showToast, setShowToast] = useState({ show: false, title: "", message: "" });
   const [siteURL, setSiteURL] = useState("");
   const [user, setUser] = useState<any>("");
-  const [campaign, setCampaign] = useState<any>(null);
+  const [campaign, setCampaign] = useState<any>(fetchedCampaign);
 
   const fetchLatestSupporters = async (userId: string, campaignId: string) => {
     return await getLatestSupporters(userId, campaignId);
@@ -29,7 +29,7 @@ export default function PanelProvider({
   useEffect(() => {
     setSiteURL(document.location.origin);
     findUser({ id: userId }).then((data) => setUser(data));
-    getCampaign(userId).then((data) => setCampaign(data));
+    if (!campaign) getCampaign(userId).then((data) => setCampaign(data));
   }, []);
 
   return (

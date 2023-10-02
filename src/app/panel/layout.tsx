@@ -7,7 +7,7 @@ import { cookies, headers } from "next/headers";
 import PanelProvider from "../../common/providers/panelProvider";
 
 import ChooseCampaign from "../../resources/panel/components/chooseCampaign";
-import { listCampaigns } from "../../resources/api/services/campaign";
+import { getCampaign, listCampaigns } from "../../resources/api/services/campaign";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,12 +20,14 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const userId = headers().get("userId")!;
   const activeCampaignId = cookies().get("activeCampaign")?.value;
+  let campaign = null;
+  if (activeCampaignId) campaign = await getCampaign(userId);
   const userCampaigns = await listCampaigns(userId);
 
   return (
     <main>
-      <PanelProvider userId={userId} activeCampaignId={activeCampaignId}>
-        {!activeCampaignId && <ChooseCampaign campaigns={userCampaigns} />}
+      <PanelProvider userId={userId} fetchedCampaign={campaign}>
+        <ChooseCampaign campaigns={userCampaigns} />
         <PanelSideBar content={children} userId={userId} />
       </PanelProvider>
     </main>

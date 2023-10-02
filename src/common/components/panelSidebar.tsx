@@ -328,6 +328,7 @@ export default function PanelSideBar({ content, userId }: { content: React.React
                       <Menu.Item>
                         {({ active }: { active: any }) => (
                           <a
+                            href={"#"}
                             onClick={async () => {
                               setCampaign(null);
                               deactivateCampaign();

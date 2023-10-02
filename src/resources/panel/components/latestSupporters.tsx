@@ -49,7 +49,7 @@ export default function LatestSupporters({
           <h1 className="text-base font-semibold leading-6 text-gray-900">Novos Apoiadores</h1>
           <p className="mt-2 text-sm text-gray-700">
             Uma lista dos apoiadores adicionados desde{" "}
-            {dayjs().subtract(1, "week").subtract(3, "hours").format("DD/MM/YYYY")}.
+            {dayjs().subtract(1, "week").subtract(4, "hours").format("DD/MM/YYYY")}.
           </p>
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">

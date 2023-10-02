@@ -5,7 +5,7 @@ import { usePanel } from "../../../common/hooks/usePanel";
 import Toast from "../../../common/components/toast";
 
 export default function ChooseCampaign({ campaigns }: { campaigns: any }) {
-  const { user, campaign, setCampaign, showToast, setShowToast } = usePanel();
+  const { user, campaign, setCampaign, setShowToast } = usePanel();
 
   const handleCampaignSelection = async (campaignId: string) => {
     try {
