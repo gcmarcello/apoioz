@@ -16,9 +16,10 @@ export interface NewUserType {
 export interface UserType {
   id: string;
   email: string;
+  password?: string;
   name: string;
   role: string;
-  info?: InfoType;
+  info: any;
 }
 
 export interface InfoType {

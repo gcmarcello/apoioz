@@ -1,6 +1,6 @@
 "use server";
 import { normalize } from "path";
-import { UserType } from "../../../common/types/userTypes";
+import { NewUserType, UserType } from "../../../common/types/userTypes";
 import { hashInfo } from "../../../common/utils/bCrypt";
 import prisma from "../../../common/utils/prisma";
 import { handlePrismaError } from "../../../common/utils/prismaError";
@@ -19,7 +19,7 @@ export async function listUsers(campaignId: string, level: number) {
   return userList;
 }
 
-export async function createUser(data: UserType) {
+export async function createUser(data: NewUserType) {
   try {
     const { name, email, password, campaign, ...info } = data;
     let userData = {
@@ -57,9 +57,9 @@ export async function createUser(data: UserType) {
   }
 }
 
-export async function updateUser(data: UserType, id: string) {
+export async function updateUser(data: UserType) {
   try {
-    const { name, email, password, ...info } = data;
+    const { id, info } = data;
     const user = await prisma.user.update({
       where: { id: id },
       data: { info: { update: info } },

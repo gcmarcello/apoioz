@@ -23,6 +23,12 @@ export class PanelContextProps {
     name: "",
     id: "",
     role: "",
+    info: {
+      cityId: "",
+      phone: "",
+      sectionId: "",
+      zoneId: "",
+    },
   };
   campaign: any = null;
   setCampaign: Dispatch<any> = () => {};
