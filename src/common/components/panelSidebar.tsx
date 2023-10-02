@@ -3,7 +3,6 @@ import { Fragment, useState } from "react";
 import { Dialog, Menu, Transition } from "@headlessui/react";
 import {
   Bars3Icon,
-  BellIcon,
   MapIcon,
   ChartPieIcon,
   Cog6ToothIcon,
@@ -16,11 +15,10 @@ import {
 import { ChevronDownIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import SupporterSideBar from "./supporterSidebars";
-import { ZoneType } from "../types/locationTypes";
 import { deactivateCampaign } from "../../resources/panel/server/activateCampaign";
-import { redirect } from "next/navigation";
-import { getCampaignZones } from "../../resources/panel/server/fetchZones";
 import Toast from "./toast";
+import { usePanel } from "../hooks/usePanel";
+import ButtonSpinner from "./buttonSpinner";
 
 const navigation = [
   { name: "Painel", href: "#", icon: HomeIcon, current: true },
@@ -34,20 +32,13 @@ const teams = [
   { id: 2, name: "Tailwind Labs", href: "#", initial: "T", current: false },
   { id: 3, name: "Workcation", href: "#", initial: "W", current: false },
 ];
-const userNavigation = [{ name: "Your profile", href: "#" }];
+const userNavigation = [{ name: "Meu Perfil", href: "#" }];
 
-export default function PanelSideBar({
-  content,
-  campaign,
-  userId,
-}: {
-  content: React.ReactNode;
-  campaign: any;
-  userId: string;
-}) {
+export default function PanelSideBar({ content, userId }: { content: React.ReactNode; userId: string }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [supporterSideBarOpen, setSupporterSideBarOpen] = useState(false);
-
+  const { user, campaign, setCampaign } = usePanel();
+  if (!campaign) return;
   return (
     <>
       <div>
@@ -303,7 +294,7 @@ export default function PanelSideBar({
                     />
                     <span className="hidden lg:flex lg:items-center">
                       <span className="ml-4 text-sm font-semibold leading-6 text-gray-900" aria-hidden="true">
-                        Tom Cook
+                        {user?.name || <ButtonSpinner />}
                       </span>
                       <ChevronDownIcon className="ml-2 h-5 w-5 text-gray-400" aria-hidden="true" />
                     </span>
@@ -317,7 +308,7 @@ export default function PanelSideBar({
                     leaveFrom="transform opacity-100 scale-100"
                     leaveTo="transform opacity-0 scale-95"
                   >
-                    <Menu.Items className="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+                    <Menu.Items className="absolute right-0 z-10 mt-2.5 w-48 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
                       {userNavigation.map((item) => (
                         <Menu.Item key={item.name}>
                           {({ active }: { active: any }) => (
@@ -333,6 +324,24 @@ export default function PanelSideBar({
                           )}
                         </Menu.Item>
                       ))}
+
+                      <Menu.Item>
+                        {({ active }: { active: any }) => (
+                          <a
+                            onClick={async () => {
+                              setCampaign(null);
+                              deactivateCampaign();
+                            }}
+                            className={clsx(
+                              active ? "bg-gray-50" : "",
+                              "block px-3 py-1 text-sm leading-6 text-gray-900"
+                            )}
+                          >
+                            Alterar Campanha
+                          </a>
+                        )}
+                      </Menu.Item>
+                      <hr className="my-2" />
                       <Menu.Item>
                         {({ active }: { active: any }) => (
                           <a
@@ -344,21 +353,6 @@ export default function PanelSideBar({
                             )}
                           >
                             Logout
-                          </a>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }: { active: any }) => (
-                          <a
-                            onClick={async () => {
-                              deactivateCampaign();
-                            }}
-                            className={clsx(
-                              active ? "bg-gray-50" : "",
-                              "block px-3 py-1 text-sm leading-6 text-gray-900"
-                            )}
-                          >
-                            Alterar Campanha
                           </a>
                         )}
                       </Menu.Item>

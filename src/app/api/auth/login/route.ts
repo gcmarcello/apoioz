@@ -1,15 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { login } from "../../../../resources/api/services/auth";
 import { LoginType, SignUpType } from "../../../../common/types/authTypes";
 import { ServerExceptionType } from "../../../../common/types/serverExceptionTypes";
 
-export async function POST(request: Request, response: Response) {
+export async function POST(request: NextRequest, response: NextResponse) {
   try {
     const body: LoginType = await request.json();
     const userLogin = await login(body);
 
     if (userLogin) {
-      const response = NextResponse.redirect(`${process.env.API_URL}/panel`);
+      const response = NextResponse.redirect(`${request.nextUrl.origin}/panel`);
       response.cookies.set("token", userLogin!);
       return response;
     }

@@ -10,6 +10,9 @@ export const usePanel = () => {
     showToast,
     setShowToast,
     siteURL,
+    user,
+    campaign,
+    setCampaign,
   } = useContext(PanelContext);
 
   return {
@@ -19,5 +22,8 @@ export const usePanel = () => {
     showToast,
     setShowToast,
     siteURL,
+    user,
+    campaign,
+    setCampaign,
   };
 };

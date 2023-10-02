@@ -1,11 +1,28 @@
 "use client";
 import clsx from "clsx";
 import { activateCampaign } from "../server/activateCampaign";
+import { usePanel } from "../../../common/hooks/usePanel";
+import Toast from "../../../common/components/toast";
 
 export default function ChooseCampaign({ campaigns }: { campaigns: any }) {
+  const { user, campaign, setCampaign, showToast, setShowToast } = usePanel();
+
+  const handleCampaignSelection = async (campaignId: string) => {
+    try {
+      const campaign = await activateCampaign(campaignId, user.id);
+      setCampaign(campaign);
+    } catch (error) {
+      console.log(error);
+      setShowToast;
+    }
+  };
+
+  if (campaign) return;
+
   return (
     <div className="mt-6 px-4 sm:px-6 lg:px-8">
-      <h2 className="text-4xl mb-4 font-medium text-gray-900">Bem Vindo, [User]</h2>
+      <Toast />
+      <h2 className="text-4xl mb-4 font-medium text-gray-900">Bem Vindo, user</h2>
       <h2 className="text-sm font-medium text-gray-900">Campanhas Ativas</h2>
       <ul role="list" className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4">
         {campaigns.map((campaign: any) => (
@@ -13,7 +30,7 @@ export default function ChooseCampaign({ campaigns }: { campaigns: any }) {
             key={campaign.id}
             role="button"
             className="relative col-span-1 flex rounded-md shadow-sm"
-            onClick={async () => await activateCampaign(campaign.id)}
+            onClick={async () => handleCampaignSelection(campaign.id)}
           >
             <div
               className={clsx(

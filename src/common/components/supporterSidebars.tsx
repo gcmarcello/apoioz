@@ -8,7 +8,6 @@ import { Controller, useForm } from "react-hook-form";
 import axios from "axios";
 import ComboboxInput from "./combobox";
 import toProperCase from "../functions/toProperCase";
-import { usePathname } from "next/navigation";
 import ErrorAlert from "./errorAlert";
 import InputMask from "react-input-mask";
 import { normalizePhone } from "../utils/normalize";
@@ -18,7 +17,6 @@ import QRCode from "react-qr-code";
 export default function SupporterSideBar({
   open,
   setOpen,
-  campaign,
   userId,
 }: {
   open: boolean;
@@ -26,7 +24,7 @@ export default function SupporterSideBar({
   campaign: any;
   userId: string;
 }) {
-  const { setUpdatingLatestSupporters, setShowToast, siteURL } = usePanel();
+  const { setUpdatingLatestSupporters, setShowToast, siteURL, campaign } = usePanel();
   const [option, setOption] = useState<string | null>(null);
   const [sectionList, setSectionList] = useState<SectionType[]>([]);
   const [displayAddress, setDisplayAddress] = useState<AddressType | null>(null);
@@ -50,7 +48,7 @@ export default function SupporterSideBar({
       zoneId: "",
       campaign: {
         referralId: userId,
-        campaignId: campaign.id,
+        campaignId: campaign?.id,
       },
     },
   });

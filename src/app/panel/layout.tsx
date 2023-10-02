@@ -24,22 +24,14 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const userId = headers().get("userId")!;
-  const activeCampaign = cookies().get("activeCampaign")?.value;
+  const activeCampaignId = cookies().get("activeCampaign")?.value || undefined;
   const userCampaigns = await listCampaigns(userId);
-
-  if (!activeCampaign)
-    return (
-      <main>
-        <ChooseCampaign campaigns={userCampaigns} />
-      </main>
-    );
-
-  const campaign = await getCampaign(userId, activeCampaign);
 
   return (
     <main>
-      <PanelProvider>
-        <PanelSideBar content={children} campaign={campaign} userId={userId} />
+      <PanelProvider userId={userId} activeCampaignId={activeCampaignId}>
+        <ChooseCampaign campaigns={userCampaigns} />
+        <PanelSideBar content={children} userId={userId} />
       </PanelProvider>
     </main>
   );

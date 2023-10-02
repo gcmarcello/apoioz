@@ -1,7 +1,9 @@
+"use server";
 import dayjs from "dayjs";
 import prisma from "../../../common/utils/prisma";
 import { NextResponse } from "next/server";
 import { ZoneType } from "../../../common/types/locationTypes";
+import { cookies } from "next/headers";
 
 export async function verifyPermission(userId: string | null, campaignId: string): Promise<number> {
   try {
@@ -29,10 +31,11 @@ export async function listCampaigns(userId: string) {
   }
 }
 
-export async function getCampaign(userId: string, campaignId: string) {
+export async function getCampaign(userId: string) {
   try {
+    if (!cookies().get("activeCampaign")?.value) return;
     const campaign = await prisma.campaign.findUnique({
-      where: { id: campaignId, supporters: { some: { userId: userId } } },
+      where: { id: cookies().get("activeCampaign")?.value, supporters: { some: { userId: userId } } },
     });
     let zones: ZoneType[] = [];
 

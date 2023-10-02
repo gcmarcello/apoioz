@@ -11,8 +11,9 @@ export default async function MainStats({ campaign }: { campaign: any }) {
       stat: mainPageStats.totalSupporters,
       previousStat: mainPageStats.supportersLastWeek + " na semana passada",
       change:
-        (Math.round(mainPageStats.totalSupporters - mainPageStats.supportersLastWeek) /
-          mainPageStats.supportersLastWeek) *
+        Math.round(
+          (mainPageStats.totalSupporters - mainPageStats.supportersLastWeek) / mainPageStats.supportersLastWeek
+        ) *
           100 +
         "%",
       changeType: !!(mainPageStats.totalSupporters - mainPageStats.supportersLastWeek) ? "increase" : "decrease",

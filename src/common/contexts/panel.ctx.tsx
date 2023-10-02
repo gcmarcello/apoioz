@@ -17,6 +17,9 @@ export class PanelContextProps {
   }> = () => {};
   fetchLatestSupporters: (userId: string, campaignId: string) => any = () => {};
   siteURL: string = "";
+  user: any = "";
+  campaign: any = null;
+  setCampaign: Dispatch<any> = () => {};
 }
 
 export const PanelContext = createContext(new PanelContextProps());

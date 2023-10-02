@@ -1,3 +1,4 @@
+"use server";
 import { normalize } from "path";
 import { UserType } from "../../../common/types/userTypes";
 import { hashInfo } from "../../../common/utils/bCrypt";
