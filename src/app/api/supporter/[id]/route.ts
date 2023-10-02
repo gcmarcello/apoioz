@@ -7,7 +7,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   try {
     const { id } = params;
     const body: UserType = await request.json();
-    const updatedUser = await updateUser(body, id);
+    const updatedUser = await updateUser(body);
     return NextResponse.json({ name: updatedUser?.name, email: updatedUser?.email, info: updatedUser?.info });
   } catch (error) {
     return NextResponse.json(error, { status: (error as ServerExceptionType).status || 400 });
