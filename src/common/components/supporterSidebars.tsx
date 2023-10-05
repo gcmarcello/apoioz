@@ -245,7 +245,7 @@ export default function SupporterSideBar({
                                   Copiar Link
                                 </button>
                                 <Link
-                                  href={`https://wa.me/?text=${siteURL}/apoiar/${campaign.id}?referral=${userId}"`}
+                                  href={`https://wa.me/?text=${siteURL}/apoiar/${campaign.id}?referral=${userId}`}
                                   target="_blank"
                                 >
                                   <div className="flex my-4 rounded-md justify-center space-x-2 bg-green-500 hover:bg-green-400 px-3 py-2 text-sm font-semibold text-white">

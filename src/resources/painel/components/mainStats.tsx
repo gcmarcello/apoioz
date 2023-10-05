@@ -12,31 +12,41 @@ export default async function MainStats({ campaign }: { campaign: any }) {
       previousStat: mainPageStats.supportersLastWeek + " na semana passada",
       change:
         Math.round(
-          (mainPageStats.totalSupporters - mainPageStats.supportersLastWeek) / mainPageStats.supportersLastWeek
+          (mainPageStats.totalSupporters - mainPageStats.supportersLastWeek) /
+            mainPageStats.supportersLastWeek
         ) *
           100 +
         "%",
-      changeType: !!(mainPageStats.totalSupporters - mainPageStats.supportersLastWeek) ? "increase" : "decrease",
+      changeType: !!(
+        mainPageStats.totalSupporters - mainPageStats.supportersLastWeek
+      )
+        ? "increase"
+        : "decrease",
     },
     {
       name: "Seção Líder",
-      stat: "Macuco",
-      previousStat: "56.14% do total",
-      change: "2.02%",
+      stat: mainPageStats.leadingSection.section.number,
+      previousStat: `Zona ${mainPageStats.leadingSection.zone?.number} - ${mainPageStats.leadingSection.section?.Address.location}`,
+      change: `${mainPageStats.leadingSection.count}`,
       changeType: false,
     },
     {
       name: "Líder de indicações",
       stat: mainPageStats.referralLeader.user?.name,
       previousStat: `${mainPageStats.referralLeader.count} no total`,
-      change: `${Math.round((mainPageStats.referralLeader.count / mainPageStats.totalSupporters) * 100)}%`,
+      change: `${Math.round(
+        (mainPageStats.referralLeader.count / mainPageStats.totalSupporters) *
+          100
+      )}%`,
       changeType: false,
     },
   ];
 
   return (
     <div>
-      <h3 className="text-base font-semibold leading-6 text-gray-900">Estatísticas Gerais</h3>
+      <h3 className="text-base font-semibold leading-6 text-gray-900">
+        Estatísticas Gerais
+      </h3>
       <dl className="mt-5 grid grid-cols-1 divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow md:grid-cols-3 md:divide-x md:divide-y-0">
         {stats.map((item) => (
           <div key={item.name} className="px-4 py-5 sm:p-6">
@@ -44,10 +54,12 @@ export default async function MainStats({ campaign }: { campaign: any }) {
             <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
               <div className="flex items-baseline text-2xl font-semibold text-indigo-600">
                 {item.stat}
-                <span className="ml-2 text-sm font-medium text-gray-500">{item.previousStat}</span>
+                <span className="ml-2 text-clip text-sm font-medium text-gray-500">
+                  {item.previousStat}
+                </span>
               </div>
 
-              {Number(item.change.replace("%", "")) < Infinity && (
+              {
                 <div
                   className={clsx(
                     item.changeType === "increase"
@@ -72,10 +84,16 @@ export default async function MainStats({ campaign }: { campaign: any }) {
                     ""
                   )}
 
-                  <span className="sr-only"> {item.changeType === "increase" ? "Increased" : "Decreased"} by </span>
+                  <span className="sr-only">
+                    {" "}
+                    {item.changeType === "increase"
+                      ? "Increased"
+                      : "Decreased"}{" "}
+                    by{" "}
+                  </span>
                   {item.change}
                 </div>
-              )}
+              }
             </dd>
           </div>
         ))}

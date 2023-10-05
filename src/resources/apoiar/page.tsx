@@ -6,19 +6,35 @@ import InputMask from "react-input-mask";
 import { Controller, useForm } from "react-hook-form";
 import ComboboxInput from "../../common/components/combobox";
 import ErrorAlert from "../../common/components/errorAlert";
-import { AddressType, SectionType, ZoneType } from "../../common/types/locationTypes";
+import {
+  AddressType,
+  SectionType,
+  ZoneType,
+} from "../../common/types/locationTypes";
 import axios from "axios";
 import { normalizePhone } from "../../common/utils/normalize";
 import toProperCase from "../../common/functions/toProperCase";
 import { EyeIcon, EyeSlashIcon, UserIcon } from "@heroicons/react/24/outline";
-import { BarsArrowUpIcon, EnvelopeIcon, UsersIcon } from "@heroicons/react/24/solid";
+import {
+  BarsArrowUpIcon,
+  EnvelopeIcon,
+  UsersIcon,
+} from "@heroicons/react/24/solid";
 import { redirect } from "next/navigation";
 import AddSupporterSuccess from "./components/addSupporterSuccess";
 
-export default function SupporterSignUpPage({ referral, campaign }: { referral: any; campaign: any }) {
+export default function SupporterSignUpPage({
+  referral,
+  campaign,
+}: {
+  referral: any;
+  campaign: any;
+}) {
   const [willAddPassword, setWillAddPassword] = useState(false);
   const [sectionList, setSectionList] = useState<SectionType[]>([]);
-  const [displayAddress, setDisplayAddress] = useState<AddressType | null>(null);
+  const [displayAddress, setDisplayAddress] = useState<AddressType | null>(
+    null
+  );
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -83,7 +99,10 @@ export default function SupporterSignUpPage({ referral, campaign }: { referral: 
     try {
       setIsLoading(true);
       const { data } = await axios.get(
-        `/api/locations/address/${sectionList.find((section: SectionType) => section.id === value)?.addressId}`
+        `/api/locations/address/${
+          sectionList.find((section: SectionType) => section.id === value)
+            ?.addressId
+        }`
       );
       setDisplayAddress(data);
       onChange(value);
@@ -105,7 +124,7 @@ export default function SupporterSignUpPage({ referral, campaign }: { referral: 
   return (
     <div className="isolate bg-white px-6 py-8  lg:px-8">
       <div
-        className="absolute inset-x-0 top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl sm:top-[-20rem]"
+        className="absolute inset-x-0 lg:top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl top-[-4rem]"
         aria-hidden="true"
       >
         <div
@@ -117,13 +136,16 @@ export default function SupporterSignUpPage({ referral, campaign }: { referral: 
         />
       </div>
       <div className="mx-auto max-w-2xl ">
-        <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">{campaign.name}</h2>
+        <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+          {campaign.name}
+        </h2>
         <p className="mt-2 text-lg leading-8 text-gray-600">
           Preencha seus dados abaixo para fazer parte da nossa rede de apoio!
         </p>
         {referral && (
           <div className="my-4 inline-flex text-gray-500 hover:text-gray-600">
-            <UserIcon className="h-6 w-6 me-2" /> <p>Convidado por {referral.name}</p>
+            <UserIcon className="h-6 w-6 me-2" />{" "}
+            <p>Convidado por {referral.name}</p>
           </div>
         )}
         <form
@@ -137,7 +159,10 @@ export default function SupporterSignUpPage({ referral, campaign }: { referral: 
               </div>
             ) : null}
             <div>
-              <label htmlFor="project-name" className="block text-sm font-medium leading-6 text-gray-900">
+              <label
+                htmlFor="project-name"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
                 Nome do Apoiador
               </label>
               <div className="mt-2">
@@ -152,7 +177,10 @@ export default function SupporterSignUpPage({ referral, campaign }: { referral: 
               </div>
             </div>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
                 Email
               </label>
               <div className="mt-2">
@@ -167,7 +195,10 @@ export default function SupporterSignUpPage({ referral, campaign }: { referral: 
               </div>
             </div>
             <div>
-              <label htmlFor="project-name" className="block text-sm font-medium leading-6 text-gray-900">
+              <label
+                htmlFor="project-name"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
                 Celular
               </label>
               <div className="mt-2">
@@ -200,17 +231,24 @@ export default function SupporterSignUpPage({ referral, campaign }: { referral: 
                 />
               </div>
               <div className="ml-3 text-sm leading-6">
-                <label htmlFor="candidates" className="font-medium text-gray-900">
+                <label
+                  htmlFor="candidates"
+                  className="font-medium text-gray-900"
+                >
                   <span className="me-1">Configurar senha</span>
                   <span id="candidates-description" className="text-gray-500">
-                    <span className="sr-only">Configurar senha </span>para ter acesso ao painel de controle.
+                    <span className="sr-only">Configurar senha </span>para ter
+                    acesso ao painel de controle.
                   </span>
                 </label>{" "}
               </div>
             </div>
             {willAddPassword && (
               <div>
-                <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Senha
                 </label>
                 <div className="mt-2 flex rounded-md shadow-sm">
@@ -229,9 +267,15 @@ export default function SupporterSignUpPage({ referral, campaign }: { referral: 
                     className="relative -ml-px inline-flex items-center gap-x-1.5 border-none rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                   >
                     {showPassword ? (
-                      <EyeSlashIcon className="-ml-0.5 h-5 w-5 text-gray-400" aria-hidden="true" />
+                      <EyeSlashIcon
+                        className="-ml-0.5 h-5 w-5 text-gray-400"
+                        aria-hidden="true"
+                      />
                     ) : (
-                      <EyeIcon className="-ml-0.5 h-5 w-5 text-gray-400" aria-hidden="true" />
+                      <EyeIcon
+                        className="-ml-0.5 h-5 w-5 text-gray-400"
+                        aria-hidden="true"
+                      />
                     )}
                   </button>
                 </div>
@@ -239,12 +283,17 @@ export default function SupporterSignUpPage({ referral, campaign }: { referral: 
             )}
             <div className="grid gap-3 grid-cols-2">
               <div className="col-span-1">
-                <label htmlFor="location" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="location"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Zona
                 </label>
                 <select
                   id="zone"
-                  {...register("zoneId", { onChange: (e) => fetchSections(e.target.value) })}
+                  {...register("zoneId", {
+                    onChange: (e) => fetchSections(e.target.value),
+                  })}
                   className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   defaultValue={""}
                 >
@@ -259,7 +308,10 @@ export default function SupporterSignUpPage({ referral, campaign }: { referral: 
                 </select>
               </div>
               <div className="col-span-1">
-                <label htmlFor="project-name" className="block text-sm font-medium leading-6 text-gray-900">
+                <label
+                  htmlFor="project-name"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
                   Seção
                 </label>
                 <div className="mt-2">
@@ -272,7 +324,9 @@ export default function SupporterSignUpPage({ referral, campaign }: { referral: 
                       <ComboboxInput
                         data={sectionList}
                         disabled={!sectionList.length}
-                        onChange={(value: string) => handleComboBoxChange(onChange, value)}
+                        onChange={(value: string) =>
+                          handleComboBoxChange(onChange, value)
+                        }
                         value={value}
                       />
                     )}
@@ -285,15 +339,23 @@ export default function SupporterSignUpPage({ referral, campaign }: { referral: 
             <div ref={ref} className="mt-6 border-t border-gray-100 text-left">
               <dl className="divide-y divide-gray-100">
                 <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                  <dt className="text-sm font-medium leading-6 text-gray-900">Local de Votação</dt>
+                  <dt className="text-sm font-medium leading-6 text-gray-900">
+                    Local de Votação
+                  </dt>
                   <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                     {toProperCase(displayAddress.location)}
                   </dd>
                 </div>
                 <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                  <dt className="text-sm font-medium leading-6 text-gray-900">Endereço</dt>
+                  <dt className="text-sm font-medium leading-6 text-gray-900">
+                    Endereço
+                  </dt>
                   <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                    {toProperCase(displayAddress.address + ", " + displayAddress.Zone?.City?.name)}
+                    {toProperCase(
+                      displayAddress.address +
+                        ", " +
+                        displayAddress.Zone?.City?.name
+                    )}
                   </dd>
                 </div>
               </dl>
