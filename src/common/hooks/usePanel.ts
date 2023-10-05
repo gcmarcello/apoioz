@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { PanelContext } from "../contexts/panel.ctx";
-import { getLatestSupporters } from "../../resources/panel/server/mainStats";
+import { getLatestSupporters } from "../../resources/painel/server/mainStats";
 
 export const usePanel = () => {
   const {

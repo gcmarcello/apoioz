@@ -6,8 +6,12 @@ import { cookies, headers } from "next/headers";
 
 import PanelProvider from "../../common/providers/panelProvider";
 
-import ChooseCampaign from "../../resources/panel/components/chooseCampaign";
-import { getCampaign, listCampaigns } from "../../resources/api/services/campaign";
+import ChooseCampaign from "../../resources/painel/components/chooseCampaign";
+import {
+  getCampaign,
+  listCampaigns,
+} from "../../resources/api/services/campaign";
+import Toast from "../../common/components/toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,7 +21,11 @@ export const metadata: Metadata = {
   themeColor: "#FFFFFF",
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const userId = headers().get("userId")!;
   const activeCampaignId = cookies().get("activeCampaign")?.value;
   let campaign = null;

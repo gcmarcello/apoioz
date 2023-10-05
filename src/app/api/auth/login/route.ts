@@ -9,12 +9,16 @@ export async function POST(request: NextRequest, response: NextResponse) {
     const userLogin = await login(body);
 
     if (userLogin) {
-      const response = NextResponse.redirect(`${request.nextUrl.origin}/panel`);
+      const response = NextResponse.redirect(
+        `${request.nextUrl.origin}/painel`
+      );
       response.cookies.set("token", userLogin!);
       return response;
     }
   } catch (error) {
     console.log(error);
-    return NextResponse.json(error, { status: (error as ServerExceptionType).status || 400 });
+    return NextResponse.json(error, {
+      status: (error as ServerExceptionType).status || 400,
+    });
   }
 }

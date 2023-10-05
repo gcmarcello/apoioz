@@ -16,7 +16,7 @@ export async function fetchAuth(roles: string[], request: NextRequest) {
     }
 
     if (request.nextUrl.pathname.startsWith("/login") && isAuth) {
-      return NextResponse.redirect(new URL("/panel", request.url));
+      return NextResponse.redirect(new URL("/painel", request.url));
     }
 
     if (isAuth) {
@@ -26,11 +26,16 @@ export async function fetchAuth(roles: string[], request: NextRequest) {
     }
 
     if (request.nextUrl.pathname.startsWith("/api/")) {
-      return NextResponse.json({ message: "Você não tem permissão para fazer isto.", status: 403 }, { status: 403 });
+      return NextResponse.json(
+        { message: "Você não tem permissão para fazer isto.", status: 403 },
+        { status: 403 }
+      );
     }
 
     return NextResponse.redirect(new URL("/login", request.url));
   } catch (error) {
-    return NextResponse.json(error, { status: (error as ServerExceptionType).status || 400 });
+    return NextResponse.json(error, {
+      status: (error as ServerExceptionType).status || 400,
+    });
   }
 }

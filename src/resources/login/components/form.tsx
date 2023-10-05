@@ -20,7 +20,7 @@ export default function LoginForm() {
     try {
       setIsLoading(true);
       await axios.post("/api/auth/login", data);
-      router.push("/panel");
+      router.push("/painel");
     } catch (error: any) {
       setError("root.serverError", {
         type: "400",
@@ -33,9 +33,14 @@ export default function LoginForm() {
   return (
     <div className="sm:mx-auto sm:w-full sm:max-w-sm">
       <form className="space-y-6 mt-4" onSubmit={handleSubmit(handleLogin)}>
-        {errors.root?.serverError.message ? <ErrorAlert errors={[errors.root.serverError.message]} /> : null}
+        {errors.root?.serverError.message ? (
+          <ErrorAlert errors={[errors.root.serverError.message]} />
+        ) : null}
         <div>
-          <label htmlFor="email" className="block text-sm font-medium leading-6 text-white">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium leading-6 text-white"
+          >
             Endereço de Email
           </label>
           <div className="mt-2">
@@ -51,11 +56,17 @@ export default function LoginForm() {
 
         <div>
           <div className="flex items-center justify-between">
-            <label htmlFor="password" className="block text-sm font-medium leading-6 text-white">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium leading-6 text-white"
+            >
               Senha
             </label>
             <div className="text-sm">
-              <a href="#" className="font-semibold text-indigo-400 hover:text-indigo-300">
+              <a
+                href="#"
+                className="font-semibold text-indigo-400 hover:text-indigo-300"
+              >
                 Esqueceu a senha?
               </a>
             </div>

@@ -24,7 +24,7 @@ export default function LatestSupporters({
       fetchLatestSupporters(userId, campaign.id).then((data: any) => setLatestSupporters(data));
       setUpdatingLatestSupporters(false);
     }
-  }, [updatingLatestSupporters]);
+  }, [updatingLatestSupporters, campaign, fetchLatestSupporters, setUpdatingLatestSupporters, userId]);
 
   const referralColor = (level: number) => {
     switch (level) {
