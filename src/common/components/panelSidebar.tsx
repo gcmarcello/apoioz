@@ -7,7 +7,6 @@ import {
   ChartPieIcon,
   Cog6ToothIcon,
   PlusCircleIcon,
-  FolderIcon,
   HomeIcon,
   UsersIcon,
   XMarkIcon,
@@ -19,18 +18,11 @@ import {
 import clsx from "clsx";
 import SupporterSideBar from "./supporterSidebars";
 import { deactivateCampaign } from "../../resources/painel/server/activateCampaign";
-import Toast from "./toast";
 import { usePanel } from "../hooks/usePanel";
 import ButtonSpinner from "./buttonSpinner";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 
-const navigation = [
-  { name: "Painel", href: "#", icon: HomeIcon, current: true },
-  { name: "Time", href: "#", icon: UsersIcon, current: false },
-
-  { name: "Mapa", href: "#", icon: MapIcon, current: false },
-  { name: "Relatórios", href: "#", icon: ChartPieIcon, current: false },
-];
 const teams = [
   { id: 1, name: "Heroicons", href: "#", initial: "H", current: false },
   { id: 2, name: "Tailwind Labs", href: "#", initial: "T", current: false },
@@ -45,13 +37,43 @@ export default function PanelSideBar({
   content: React.ReactNode;
   userId: string;
 }) {
+  const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [supporterSideBarOpen, setSupporterSideBarOpen] = useState(false);
   const { user, campaign, setCampaign } = usePanel();
+
+  const navigation = [
+    {
+      name: "Painel",
+      href: `/painel/`,
+      icon: HomeIcon,
+      current: !pathname.includes("painel/"),
+    },
+    {
+      name: "Time",
+      href: `/painel/time`,
+      icon: UsersIcon,
+      current: pathname.includes("/time"),
+    },
+
+    {
+      name: "Mapa",
+      href: `/painel/mapa`,
+      icon: MapIcon,
+      current: pathname.includes("/mapa"),
+    },
+    {
+      name: "Relatórios",
+      href: `/painel/relatorios`,
+      icon: ChartPieIcon,
+      current: pathname.includes("/relatorios"),
+    },
+  ];
+
   if (!campaign) return;
   return (
     <>
-      <div>
+      <div className="overflow-clip">
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
             as="div"
@@ -191,7 +213,7 @@ export default function PanelSideBar({
         </Transition.Root>
 
         {/* Static sidebar for desktop */}
-        <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+        <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-64 lg:flex-col">
           {/* Sidebar component, swap this element with another sidebar if you like */}
           <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-indigo-600 px-6 pb-4">
             <div className="flex h-16 shrink-0 items-center">
@@ -274,8 +296,8 @@ export default function PanelSideBar({
           </div>
         </div>
 
-        <div className="lg:pl-72">
-          <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+        <div className="lg:pl-64">
+          <div className="sticky top-0 z-40 flex h-20 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
             <button
               type="button"
               className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
@@ -292,22 +314,14 @@ export default function PanelSideBar({
             />
 
             <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-              <form className="relative flex flex-1" action="#" method="GET">
-                <label htmlFor="search-field" className="sr-only">
-                  Search
-                </label>
-                <MagnifyingGlassIcon
-                  className="pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-400"
-                  aria-hidden="true"
-                />
-                <input
-                  id="search-field"
-                  className="block h-full w-full border-0 py-0 pl-8 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
-                  placeholder="Apoiadores, eventos..."
-                  type="search"
-                  name="search"
-                />
-              </form>
+              <div className="min-w-0 pt-[1.65rem] md:pt-5 flex flex-1">
+                <h2 className="text-2xl flex font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                  Campanha
+                  <span className="md:inline-block hidden ms-1">
+                    - {campaign.name}
+                  </span>
+                </h2>
+              </div>
               <div className="flex items-center gap-x-4 lg:gap-x-6">
                 <button
                   type="button"

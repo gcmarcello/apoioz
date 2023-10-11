@@ -6,6 +6,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { usePanel } from "../../../common/hooks/usePanel";
 import { useEffect, useState } from "react";
+import SupporterOverview from "./supporterOverview";
 
 export default function LatestSupporters({
   userId,
@@ -16,15 +17,29 @@ export default function LatestSupporters({
   campaign: any;
   supporters: any[] | number | undefined;
 }) {
-  const { setUpdatingLatestSupporters, updatingLatestSupporters, fetchLatestSupporters } = usePanel();
+  const {
+    setUpdatingLatestSupporters,
+    updatingLatestSupporters,
+    fetchLatestSupporters,
+  } = usePanel();
   const [latestSupporters, setLatestSupporters] = useState(supporters);
+
+  console.log(latestSupporters);
 
   useEffect(() => {
     if (updatingLatestSupporters) {
-      fetchLatestSupporters(userId, campaign.id).then((data: any) => setLatestSupporters(data));
+      fetchLatestSupporters(userId, campaign.id).then((data: any) =>
+        setLatestSupporters(data)
+      );
       setUpdatingLatestSupporters(false);
     }
-  }, [updatingLatestSupporters, campaign, fetchLatestSupporters, setUpdatingLatestSupporters, userId]);
+  }, [
+    updatingLatestSupporters,
+    campaign,
+    fetchLatestSupporters,
+    setUpdatingLatestSupporters,
+    userId,
+  ]);
 
   const referralColor = (level: number) => {
     switch (level) {
@@ -46,10 +61,16 @@ export default function LatestSupporters({
     <div className="mt-8">
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
-          <h1 className="text-base font-semibold leading-6 text-gray-900">Novos Apoiadores</h1>
+          <h1 className="text-base font-semibold leading-6 text-gray-900">
+            Novos Apoiadores
+          </h1>
           <p className="mt-2 text-sm text-gray-700">
             Uma lista dos apoiadores adicionados desde{" "}
-            {dayjs().subtract(1, "week").subtract(4, "hours").format("DD/MM/YYYY")}.
+            {dayjs()
+              .subtract(1, "week")
+              .subtract(4, "hours")
+              .format("DD/MM/YYYY")}
+            .
           </p>
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
@@ -57,30 +78,45 @@ export default function LatestSupporters({
             type="button"
             className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           >
-            Add user
+            Ver Todos
           </button>
         </div>
       </div>
       <div className="mt-4 flow-root">
-        <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+        <div className="-mx-4 -my-2 sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-            <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+            <div className="shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
               <table className="min-w-full divide-y divide-gray-300">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+                    <th
+                      scope="col"
+                      className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                    >
                       Nome
                     </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    <th
+                      scope="col"
+                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    >
                       Indicado por
                     </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    <th
+                      scope="col"
+                      className="px-3 hidden lg:table-cell py-3.5 text-left text-sm font-semibold text-gray-900"
+                    >
                       Zona
                     </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    <th
+                      scope="col"
+                      className="px-3 py-3.5 hidden lg:table-cell text-left text-sm font-semibold text-gray-900"
+                    >
                       Seção
                     </th>
-                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
+                    <th
+                      scope="col"
+                      className="relative py-3.5 pl-3 pr-4 sm:pr-6"
+                    >
                       <span className="sr-only">Edit</span>
                     </th>
                   </tr>
@@ -95,39 +131,39 @@ export default function LatestSupporters({
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                           <div className="mt-1 flex items-center gap-x-1.5">
-                            {supporter.referral?.name}
+                            {supporter.referral?.user.name}
                             <div
                               className={clsx(
                                 "flex-none rounded-full p-1",
-                                referralColor(supporter.referral?.supporter[0]?.level!!)?.shadow
+                                referralColor(supporter.referral?.level)?.shadow
                               )}
                             >
                               <div
                                 className={clsx(
                                   "h-1.5 w-1.5 rounded-full",
-                                  referralColor(supporter.referral?.supporter[0]?.level!!)?.circle
+                                  referralColor(supporter.referral?.level)
+                                    ?.circle
                                 )}
                               />
                             </div>
                           </div>
                         </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {supporter.user.info?.Zone.number}
+                        <td className="whitespace-nowrap hidden lg:table-cell px-3 py-4 text-sm text-gray-500">
+                          {supporter.user.info?.Zone?.number}
                         </td>
-                        <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                          {supporter.user.info?.Section.number}
+                        <td className="whitespace-nowrap hidden lg:table-cell px-3 py-4 text-sm text-gray-500">
+                          {supporter.user.info?.Section?.number}
                         </td>
                         <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                          <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                            Ver Mais<span className="sr-only">, {supporter.user.name}</span>
-                          </a>
+                          <SupporterOverview supporter={supporter} />
                         </td>
                       </tr>
                     ))}
                   {typeof supporters === "number" && (
                     <tr>
                       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm  text-gray-900 sm:pl-6">
-                        Mais {supporters} apoiadores se juntaram à campanha na última semana!
+                        Mais {supporters} apoiadores se juntaram à campanha na
+                        última semana!
                       </td>
                     </tr>
                   )}

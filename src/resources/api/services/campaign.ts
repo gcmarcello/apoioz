@@ -4,11 +4,12 @@ import prisma from "../../../common/utils/prisma";
 import { NextResponse } from "next/server";
 import { ZoneType } from "../../../common/types/locationTypes";
 import { cookies } from "next/headers";
+import { Supporter } from "@prisma/client";
 
 export async function verifyPermission(
   userId: string | null,
   campaignId: string
-): Promise<number> {
+): Promise<Supporter> {
   try {
     if (!userId)
       throw {
@@ -24,7 +25,7 @@ export async function verifyPermission(
         message: `Você não tem permissão para acessar os dados dessa campanha.`,
         status: 403,
       };
-    return validateCampaignSupporter.level;
+    return validateCampaignSupporter;
   } catch (error) {
     throw error;
   }
@@ -110,64 +111,85 @@ export async function getCampaignBasicInfo(campaignId: string) {
   }
 }
 
-export async function listSupporters(
-  userId: string,
-  campaignId: string,
-  pagination?: { take?: number; skip?: number; dateFrom?: string }
-) {
-  const level = await verifyPermission(userId, campaignId);
-  const allowedLevels = Array.from({ length: level - 1 }, (v, i) => i + 1);
+export async function listSupporters({
+  userId,
+  campaignId,
+  pagination = { pageSize: 10, pageIndex: 0 },
+}: {
+  userId: string;
+  campaignId: string;
+  pagination?: { pageSize: number; pageIndex: number };
+}) {
+  const supporterAccount = await verifyPermission(userId, campaignId);
 
-  const supporters = await prisma.supporter.findMany({
-    where: {
-      campaignId,
-      assignedAt: { gte: pagination?.dateFrom },
-      OR: [
-        { referralId: userId, level: { lt: level } },
-        {
-          referral: {
-            supporter: {
-              some: {
-                AND: [{ level: { in: allowedLevels } }, { referralId: userId }],
-              },
+  function generateReferredObject(level: any): any {
+    if (level === 1) {
+      return {
+        referral: { include: { user: { include: { info: true } } } },
+        user: { include: { info: { include: { Section: true, Zone: true } } } },
+      };
+    } else {
+      return {
+        referred: {
+          include: {
+            referral: { include: { user: { include: { info: true } } } },
+            user: {
+              include: { info: { include: { Section: true, Zone: true } } },
             },
+            ...generateReferredObject(level - 1),
           },
         },
-      ],
+      };
+    }
+  }
+
+  const includeReferred = generateReferredObject(supporterAccount.level - 1);
+
+  const supporters: any[] = await prisma.supporter.findMany({
+    where: {
+      campaignId,
+      referralId: supporterAccount.id,
     },
-    orderBy: { assignedAt: "desc" },
     include: {
-      user: {
-        select: {
-          name: true,
-          email: true,
-          info: { include: { Zone: true, Section: true } },
-        },
-      },
-      referral: {
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          role: true,
-          supporter: { where: { campaignId: campaignId } },
-        },
-      },
+      referral: { include: { user: { include: { info: true } } } },
+      user: { include: { info: { include: { Section: true, Zone: true } } } },
+      ...includeReferred,
     },
-    take: pagination?.take,
-    skip: pagination?.skip,
   });
-  if (!supporters.length)
-    return await prisma.supporter.count({
-      where: {
-        campaignId: campaignId,
-        assignedAt: { gte: pagination?.dateFrom },
-      },
+
+  function flattenSupporters(supporters: any[]): any[] {
+    const flatSupporters: any[] = [];
+    supporters.forEach((supporter) => {
+      if (supporter.referred) {
+        flatSupporters.push(supporter);
+        flatSupporters.push(...flattenSupporters(supporter.referred));
+      } else {
+        flatSupporters.push(supporter);
+      }
     });
-  return supporters;
+    return flatSupporters;
+  }
+
+  function paginationSlice(data: any[], pageIndex: number, pageSize: number) {
+    const startIndex = pageIndex * pageSize;
+    const endIndex = startIndex + pageSize;
+    const slicedList = data.slice(startIndex, endIndex);
+    return slicedList;
+  }
+
+  const flatSupporters = flattenSupporters(supporters);
+
+  return {
+    supporters: paginationSlice(
+      flatSupporters,
+      pagination.pageIndex,
+      pagination.pageSize
+    ),
+    count: flatSupporters.length,
+  };
 }
 
-export async function generateMainPageStats(campaignId: string) {
+/* export async function generateMainPageStats(campaignId: string) {
   const totalSupporters = await prisma.supporter.count({
     where: { campaignId: campaignId },
   });
@@ -243,4 +265,14 @@ export async function generateMainPageStats(campaignId: string) {
       count: mostFrequentReferral[0]._count.referralId,
     },
   };
+} */
+
+export async function fetchCampaignTeamMembers(campaignId: string) {
+  const teamMembers = await prisma.supporter.findMany({
+    where: { campaignId: campaignId, level: { gt: 1 } },
+    include: {
+      user: { include: { info: { include: { City: true, Zone: true } } } },
+    },
+  });
+  return teamMembers;
 }

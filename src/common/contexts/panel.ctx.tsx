@@ -4,7 +4,12 @@ import { UserType } from "../types/userTypes";
 export class PanelContextProps {
   updatingLatestSupporters: boolean = false;
   setUpdatingLatestSupporters: Dispatch<boolean> = () => {};
-  showToast: { show: boolean; variant?: "success" | "error" | "alert" | ""; title: string; message: string } = {
+  showToast: {
+    show: boolean;
+    variant?: "success" | "error" | "alert" | "";
+    title: string;
+    message: string;
+  } = {
     show: false,
     variant: "",
     title: "",

@@ -12,8 +12,8 @@ import {
   ZoneType,
 } from "../../common/types/locationTypes";
 import axios from "axios";
-import { normalizePhone } from "../../common/utils/normalize";
-import toProperCase from "../../common/functions/toProperCase";
+import { normalizePhone } from "../../common/utils/format";
+import { toProperCase } from "../../common/utils/format";
 import { EyeIcon, EyeSlashIcon, UserIcon } from "@heroicons/react/24/outline";
 import {
   BarsArrowUpIcon,

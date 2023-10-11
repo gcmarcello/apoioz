@@ -3,9 +3,9 @@ import clsx from "clsx";
 import { generateMainPageStats } from "../../api/services/campaign";
 
 export default async function MainStats({ campaign }: { campaign: any }) {
-  const mainPageStats = await generateMainPageStats(campaign.id);
+  /* const mainPageStats = await generateMainPageStats(campaign.id); */
 
-  const stats = [
+  /* const stats = [
     {
       name: "Total de Apoiadores",
       stat: mainPageStats.totalSupporters,
@@ -40,15 +40,15 @@ export default async function MainStats({ campaign }: { campaign: any }) {
       )}%`,
       changeType: false,
     },
-  ];
+  ]; */
 
   return (
     <div>
       <h3 className="text-base font-semibold leading-6 text-gray-900">
-        Estatísticas Gerais
+        Estatísticas Semanais
       </h3>
       <dl className="mt-5 grid grid-cols-1 divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow md:grid-cols-3 md:divide-x md:divide-y-0">
-        {stats.map((item) => (
+        {/* {stats.map((item) => (
           <div key={item.name} className="px-4 py-5 sm:p-6">
             <dt className="text-base font-normal text-gray-900">{item.name}</dt>
             <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
@@ -96,7 +96,7 @@ export default async function MainStats({ campaign }: { campaign: any }) {
               }
             </dd>
           </div>
-        ))}
+        ))} */}
       </dl>
     </div>
   );

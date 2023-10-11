@@ -3,7 +3,7 @@ import { fetchAuth } from "./common/utils/fetchAuth";
 import { headers } from "next/headers";
 
 export async function middleware(request: NextRequest) {
-  if (request.nextUrl.pathname.startsWith("/api/painel")) {
+  if (request.nextUrl.pathname.startsWith("/api/panel")) {
     return fetchAuth(["user"], request);
   }
   if (request.nextUrl.pathname.startsWith("/login")) {

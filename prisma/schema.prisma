@@ -16,7 +16,6 @@ model User {
   info      UserInfo?
   campaign  Campaign[]
   supporter Supporter[] @relation(name: "UserToSupporter")
-  referral  Supporter[] @relation(name: "UserToReferral")
 }
 
 model UserInfo {
@@ -50,15 +49,16 @@ model Campaign {
 }
 
 model Supporter {
-  id         String    @id @default(uuid())
-  campaign   Campaign? @relation(fields: [campaignId], references: [id])
-  user       User      @relation("UserToSupporter", fields: [userId], references: [id])
-  referral   User?     @relation("UserToReferral", fields: [referralId], references: [id])
+  id         String      @id @default(uuid())
+  campaign   Campaign?   @relation(fields: [campaignId], references: [id])
+  user       User        @relation("UserToSupporter", fields: [userId], references: [id])
+  referral   Supporter?  @relation("Referrals", fields: [referralId], references: [id])
   userId     String
   referralId String?
+  referred   Supporter[] @relation("Referrals")
   campaignId String?
   level      Int
-  assignedAt DateTime  @default(now())
+  assignedAt DateTime    @default(now())
 }
 
 model State {

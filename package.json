@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@floating-ui/react": "^0.26.0",
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.0.18",
     "@prisma/client": "5.3.1",
@@ -33,6 +34,7 @@
     "react-hook-form": "^7.46.1",
     "react-input-mask": "3.0.0-alpha.2",
     "react-qr-code": "^2.0.12",
+    "swr": "^2.2.4",
     "tailwindcss": "3.3.3",
     "typescript": "5.2.2"
   },

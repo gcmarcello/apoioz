@@ -1,3 +1,5 @@
+import { SectionType, ZoneType } from "./locationTypes";
+
 export interface NewUserType {
   email: string;
   password?: string;
@@ -16,26 +18,37 @@ export interface NewUserType {
 export interface UserType {
   id: string;
   email: string;
-  password?: string;
+  password?: string | null;
   name: string;
   role: string;
-  info: any;
+  info: InfoType;
 }
 
 export interface InfoType {
   phone: string;
+  Zone?: ZoneType;
+  City?: any;
+  Section?: SectionType;
   cityId: string;
   zoneId: string;
   sectionId: string;
 }
 
 export interface SupporterType {
-  id?: string;
-  userId?: string;
-  user: UserType;
+  id: string;
+  userId: string;
+  user?: UserType;
   referralId: string;
-  referral?: any;
-  campaignId?: string;
-  level?: string;
-  campaigns: any[];
+  referral?: ReferralType;
+  campaignId: string;
+  level: number;
+  campaigns?: any[];
+}
+
+export interface ReferralType {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  supporter: SupporterType;
 }
