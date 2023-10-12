@@ -22,6 +22,7 @@ export default function LoginForm() {
       await axios.post("/api/auth/login", data);
       router.push("/painel");
     } catch (error: any) {
+      console.log(error);
       setError("root.serverError", {
         type: "400",
         message: error.response.data?.message,
