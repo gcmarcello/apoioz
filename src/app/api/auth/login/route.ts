@@ -9,8 +9,9 @@ export async function POST(request: NextRequest, response: NextResponse) {
     const userLogin = await login(body);
 
     if (userLogin) {
+      const response = NextResponse.json(userLogin);
       response.cookies.set("token", userLogin!);
-      return NextResponse.json(userLogin);
+      return response;
     }
   } catch (error) {
     console.log(error);
