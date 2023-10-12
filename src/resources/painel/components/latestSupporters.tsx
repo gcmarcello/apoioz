@@ -25,7 +25,7 @@ export default function LatestSupporters({
     fetchLatestSupporters,
   } = usePanel();
   const [latestSupporters, setLatestSupporters] = useState(
-    supporters.supporters
+    supporters.supporters || []
   );
 
   useEffect(() => {

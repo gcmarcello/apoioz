@@ -1,11 +1,12 @@
 import { ArrowDownIcon, ArrowUpIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import { generateMainPageStats } from "../../api/services/campaign";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 
 export default async function MainStats({ campaign }: { campaign: any }) {
   const userId = headers().get("userId")!;
-  const mainPageStats = await generateMainPageStats(userId, campaign.id);
+  const campaignId = cookies().get("campaignId")?.value!;
+  const mainPageStats = await generateMainPageStats(userId, campaignId);
 
   const stats = [
     {

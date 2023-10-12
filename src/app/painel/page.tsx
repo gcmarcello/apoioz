@@ -16,6 +16,8 @@ export default async function Panel() {
     pagination: { pageIndex: 0, pageSize: 4 },
   });
 
+  if (!supporters) return;
+
   return (
     <>
       <MainStats campaign={campaign} />
