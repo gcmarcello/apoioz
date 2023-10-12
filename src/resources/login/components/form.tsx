@@ -24,7 +24,7 @@ export default function LoginForm() {
     } catch (error: any) {
       setError("root.serverError", {
         type: "400",
-        message: error.response.data?.message || "Erro inesperado",
+        message: error.response.data?.message,
       });
       setIsLoading(false);
     }
