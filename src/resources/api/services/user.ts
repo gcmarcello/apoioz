@@ -39,7 +39,7 @@ export async function createUser(data: NewUserType) {
     let userData = {
       name: data.name,
       email: normalize(data.email),
-      password: data.password ? await hashInfo(data.password) : null,
+      password: data.password && (await hashInfo(data.password)),
       role: "user",
       info: {
         create: {

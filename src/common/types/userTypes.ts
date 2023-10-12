@@ -19,7 +19,7 @@ export interface NewUserType {
 export interface UserType {
   id: string;
   email: string;
-  password?: string | null;
+  password?: string;
   name: string;
   role: string;
   info: InfoType;

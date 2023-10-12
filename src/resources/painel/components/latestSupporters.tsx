@@ -128,7 +128,7 @@ export default function LatestSupporters({
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {latestSupporters &&
                     typeof latestSupporters !== "number" &&
-                    latestSupporters.map((supporter) => (
+                    latestSupporters.map((supporter: any) => (
                       <tr key={supporter.id}>
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                           {supporter.user.name}

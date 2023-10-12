@@ -8,9 +8,8 @@ export async function getLatestSupporters(
   userId: string,
   campaignId: string
 ): Promise<any> {
-  const latestSupporters = await listSupporters(userId, campaignId, {
-    take: 4,
-    dateFrom: dayjs().subtract(1, "week").toISOString(),
+  const latestSupporters = await listSupporters({
+    pagination: { pageIndex: 0, pageSize: 5 },
   });
   return latestSupporters.supporters;
 }
