@@ -13,6 +13,7 @@ export default async function RelatoriosPage({}) {
     },
   });
 
+  if (!supporters) return;
   if (typeof supporters === "number") return;
 
   return (

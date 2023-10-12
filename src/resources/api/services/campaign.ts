@@ -119,7 +119,9 @@ export async function listSupporters({
   pagination?: { pageSize: number; pageIndex: number };
 }) {
   const userId = headers().get("userId");
-  const campaignId = cookies().get("activeCampaign")!.value;
+  const campaignId = cookies().get("activeCampaign")?.value;
+
+  if (!userId || !campaignId) return;
   const supporterAccount = await verifyPermission(userId, campaignId);
 
   function generateReferredObject(level: any): any {
@@ -274,7 +276,9 @@ export async function generateMainPageStats(
 
 export async function fetchCampaignTeamMembers() {
   const userId = headers().get("userId");
-  const campaignId = cookies().get("activeCampaign")!.value;
+  const campaignId = cookies().get("activeCampaign")?.value;
+
+  if (!userId || !campaignId) return;
   const teamMembers = await prisma.supporter.findMany({
     where: { campaignId: campaignId, level: { gt: 1 } },
     include: {

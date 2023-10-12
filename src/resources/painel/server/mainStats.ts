@@ -11,5 +11,6 @@ export async function getLatestSupporters(
   const latestSupporters = await listSupporters({
     pagination: { pageIndex: 0, pageSize: 5 },
   });
-  return latestSupporters.supporters;
+
+  if (latestSupporters) return latestSupporters.supporters;
 }

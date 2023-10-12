@@ -10,6 +10,7 @@ import Link from "next/link";
 
 export default async function TimePage() {
   const teamMembers = await fetchCampaignTeamMembers();
+  if (!teamMembers) return;
   const leader = teamMembers.find((member) => member.level === 4)!;
   const thirdLevel = teamMembers.filter((member) => member.level === 3);
   const secondLevel = teamMembers.filter((member) => member.level === 2);
