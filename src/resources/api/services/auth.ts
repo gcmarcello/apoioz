@@ -11,7 +11,7 @@ import { createUser } from "./user";
 import prisma from "../../../common/utils/prisma";
 import { handlePrismaError } from "../../../common/utils/prismaError";
 import { compareHash } from "../../../common/utils/bCrypt";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 
 export async function login(data: LoginType) {
   try {
@@ -35,7 +35,7 @@ export async function login(data: LoginType) {
         status: 401,
       };
 
-    return generateToken({ id: user.id });
+    return cookies().set("token", generateToken({ id: user.id }));
   } catch (error) {
     return handlePrismaError("usuário", error);
   }
