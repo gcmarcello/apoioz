@@ -9,11 +9,8 @@ export async function POST(request: NextRequest, response: NextResponse) {
     const userLogin = await login(body);
 
     if (userLogin) {
-      const response = NextResponse.redirect(
-        `${request.nextUrl.origin}/painel`
-      );
       response.cookies.set("token", userLogin!);
-      return response;
+      return NextResponse.json(userLogin);
     }
   } catch (error) {
     console.log(error);
