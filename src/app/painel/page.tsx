@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import {
+  getCampaign,
   listCampaigns,
   listSupporters,
 } from "../../resources/api/services/campaign";
@@ -10,13 +11,16 @@ import Footer from "../../common/components/footer";
 
 export default async function Panel() {
   const userId = headers().get("userId")!;
-  const campaigns = await listCampaigns(userId);
-  const supporters = await getLatestSupporters(userId, campaigns[0].id);
+  const campaign = await getCampaign(userId);
+  const supporters = await listSupporters({
+    pagination: { pageIndex: 0, pageSize: 4 },
+  });
+
   return (
     <>
-      <MainStats campaign={campaigns[0]} />
+      <MainStats campaign={campaign} />
       <LatestSupporters
-        campaign={campaigns[0]}
+        campaign={campaign}
         userId={userId}
         supporters={supporters}
       />

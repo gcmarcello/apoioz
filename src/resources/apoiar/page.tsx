@@ -1,7 +1,5 @@
 "use client";
-import { Switch } from "@headlessui/react";
 import { useRef, useState } from "react";
-import clsx from "clsx";
 import InputMask from "react-input-mask";
 import { Controller, useForm } from "react-hook-form";
 import ComboboxInput from "../../common/components/combobox";
@@ -15,12 +13,6 @@ import axios from "axios";
 import { normalizePhone } from "../../common/utils/format";
 import { toProperCase } from "../../common/utils/format";
 import { EyeIcon, EyeSlashIcon, UserIcon } from "@heroicons/react/24/outline";
-import {
-  BarsArrowUpIcon,
-  EnvelopeIcon,
-  UsersIcon,
-} from "@heroicons/react/24/solid";
-import { redirect } from "next/navigation";
 import AddSupporterSuccess from "./components/addSupporterSuccess";
 
 export default function SupporterSignUpPage({
@@ -56,8 +48,9 @@ export default function SupporterSignUpPage({
       sectionId: "",
       password: "",
       zoneId: "",
+      birthDate: "",
       campaign: {
-        referralId: referral?.id,
+        referralId: referral.supporter[0].id,
         campaignId: campaign.id,
       },
     },
@@ -70,6 +63,9 @@ export default function SupporterSignUpPage({
       supporterInfo.phone = normalizePhone(supporterInfo.phone);
       await axios.post(`/api/supporter/`, supporterInfo);
       setSuccess(true);
+      setTimeout(() => {
+        scrollTo({ top: 0, behavior: "smooth" });
+      }, 350);
     } catch (error: any) {
       setError("root.serverError", {
         type: "400",
@@ -119,7 +115,7 @@ export default function SupporterSignUpPage({
     }
   };
 
-  if (success) return <AddSupporterSuccess campaign={campaign} />;
+  if (!success) return <AddSupporterSuccess campaign={campaign} />;
 
   return (
     <div className="isolate bg-white px-6 py-8  lg:px-8">
@@ -214,6 +210,27 @@ export default function SupporterSignUpPage({
                   mask="(99) 99999-9999"
                 />
               </div>
+            </div>
+            <div>
+              <label
+                htmlFor="project-name"
+                className="block text-sm font-medium leading-6 text-gray-900"
+              >
+                Data de Nascimento
+              </label>
+              <InputMask
+                type="text"
+                inputMode="numeric"
+                autoComplete="date"
+                {...register("birthDate", {
+                  required: true,
+                  minLength: 10,
+                })}
+                name="birthDate"
+                id="birthDate"
+                className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                mask="99/99/9999"
+              />
             </div>
             <div className="relative flex items-start">
               <div className="flex h-6 items-center">

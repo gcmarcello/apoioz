@@ -3,8 +3,9 @@ import dayjs from "dayjs";
 import prisma from "../../../common/utils/prisma";
 import { NextResponse } from "next/server";
 import { ZoneType } from "../../../common/types/locationTypes";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { Supporter } from "@prisma/client";
+import { request } from "http";
 
 export async function verifyPermission(
   userId: string | null,
@@ -25,6 +26,7 @@ export async function verifyPermission(
         message: `Você não tem permissão para acessar os dados dessa campanha.`,
         status: 403,
       };
+
     return validateCampaignSupporter;
   } catch (error) {
     throw error;
@@ -112,14 +114,12 @@ export async function getCampaignBasicInfo(campaignId: string) {
 }
 
 export async function listSupporters({
-  userId,
-  campaignId,
   pagination = { pageSize: 10, pageIndex: 0 },
 }: {
-  userId: string;
-  campaignId: string;
   pagination?: { pageSize: number; pageIndex: number };
 }) {
+  const userId = headers().get("userId");
+  const campaignId = cookies().get("activeCampaign")!.value;
   const supporterAccount = await verifyPermission(userId, campaignId);
 
   function generateReferredObject(level: any): any {
@@ -185,11 +185,16 @@ export async function listSupporters({
       pagination.pageIndex,
       pagination.pageSize
     ),
+    meta: { pageIndex: pagination.pageIndex, pageSize: pagination.pageSize },
     count: flatSupporters.length,
   };
 }
 
-/* export async function generateMainPageStats(campaignId: string) {
+export async function generateMainPageStats(
+  userId: string,
+  campaignId: string
+) {
+  await verifyPermission(userId, campaignId);
   const totalSupporters = await prisma.supporter.count({
     where: { campaignId: campaignId },
   });
@@ -265,9 +270,11 @@ export async function listSupporters({
       count: mostFrequentReferral[0]._count.referralId,
     },
   };
-} */
+}
 
-export async function fetchCampaignTeamMembers(campaignId: string) {
+export async function fetchCampaignTeamMembers() {
+  const userId = headers().get("userId");
+  const campaignId = cookies().get("activeCampaign")!.value;
   const teamMembers = await prisma.supporter.findMany({
     where: { campaignId: campaignId, level: { gt: 1 } },
     include: {

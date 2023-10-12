@@ -51,6 +51,7 @@ export default function SupporterSideBar({
       phone: "",
       sectionId: "",
       zoneId: "",
+      birthDate: "",
       campaign: {
         referralId: userId,
         campaignId: campaign?.id,
@@ -329,6 +330,29 @@ export default function SupporterSideBar({
                                     id="phone"
                                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                     mask="(99) 99999-9999"
+                                  />
+                                </div>
+                              </div>
+                              <div>
+                                <label
+                                  htmlFor="project-name"
+                                  className="block text-sm font-medium leading-6 text-gray-900"
+                                >
+                                  Data de Nascimento
+                                </label>
+                                <div className="mt-2">
+                                  <InputMask
+                                    type="text"
+                                    inputMode="numeric"
+                                    autoComplete="date"
+                                    {...register("birthDate", {
+                                      required: true,
+                                      minLength: 10,
+                                    })}
+                                    name="birthDate"
+                                    id="birthDate"
+                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                    mask="99/99/9999"
                                   />
                                 </div>
                               </div>

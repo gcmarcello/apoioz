@@ -7,6 +7,7 @@ export interface NewUserType {
   stateId?: string;
   cityId?: string;
   phone?: string;
+  birthDate?: string;
   zoneId?: string;
   sectionId?: string;
   campaign?: {

@@ -3,11 +3,18 @@ import { ServerExceptionType } from "../../../../common/types/serverExceptionTyp
 import { listUsers } from "../../../../resources/api/services/user";
 import { verifyPermission } from "../../../../resources/api/services/campaign";
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
-    const permission: number = await verifyPermission(request.headers.get("userId"), params.id);
+    const permission: number = (
+      await verifyPermission(request.headers.get("userId"), params.id)
+    ).level;
     return NextResponse.json(await listUsers(params.id, permission));
   } catch (error) {
-    return NextResponse.json(error, { status: (error as ServerExceptionType).status || 400 });
+    return NextResponse.json(error, {
+      status: (error as ServerExceptionType).status || 400,
+    });
   }
 }

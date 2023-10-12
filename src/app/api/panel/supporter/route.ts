@@ -10,8 +10,6 @@ export async function GET(request: NextRequest) {
     const campaignId = cookies().get("activeCampaign")?.value;
     if (!userId || !campaignId) return;
     const supporters = await listSupporters({
-      userId,
-      campaignId,
       pagination: {
         pageSize: 10,
         pageIndex: 1,

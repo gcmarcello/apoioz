@@ -9,10 +9,7 @@ import { AtSymbolIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 
 export default async function TimePage() {
-  const campaignId = cookies().get("activeCampaign")?.value;
-  if (!campaignId) return;
-
-  const teamMembers = await fetchCampaignTeamMembers(campaignId);
+  const teamMembers = await fetchCampaignTeamMembers();
   const leader = teamMembers.find((member) => member.level === 4)!;
   const thirdLevel = teamMembers.filter((member) => member.level === 3);
   const secondLevel = teamMembers.filter((member) => member.level === 2);
@@ -106,9 +103,9 @@ export default async function TimePage() {
       <p className="text-lg font-medium text-gray-700 group-hover:text-gray-900">
         Nível 3
       </p>
-      <div className="mt-4 flex flex-col gap-3 lg:flex-row">
+      <div className="mt-4 flex flex-col lg:flex-row flex-wrap">
         {thirdLevel.map((member) => (
-          <div key={member.id} className="flex-grow">
+          <div key={member.id} className="lg:w-1/3 my-2">
             <TeamMemberCard member={member} />
           </div>
         ))}
@@ -122,9 +119,9 @@ export default async function TimePage() {
         Nível 2
       </p>
       {secondLevel.length && (
-        <div className="mt-4 flex flex-col gap-3 lg:flex-row">
+        <div className="mt-4 flex flex-col lg:flex-row flex-wrap">
           {secondLevel.map((member) => (
-            <div key={member.id} className="flex-grow">
+            <div key={member.id} className="lg:w-1/4 my-2">
               <TeamMemberCard member={member} />
             </div>
           ))}

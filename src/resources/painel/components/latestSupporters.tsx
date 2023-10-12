@@ -1,5 +1,6 @@
 "use client";
 import { headers } from "next/headers";
+import Link from "next/link";
 import { listSupporters } from "../../api/services/campaign";
 import clsx from "clsx";
 import dayjs from "dayjs";
@@ -7,6 +8,7 @@ import utc from "dayjs/plugin/utc";
 import { usePanel } from "../../../common/hooks/usePanel";
 import { useEffect, useState } from "react";
 import SupporterOverview from "./supporterOverview";
+import SupporterBall from "../../../common/components/supporterBall";
 
 export default function LatestSupporters({
   userId,
@@ -15,16 +17,16 @@ export default function LatestSupporters({
 }: {
   userId: string;
   campaign: any;
-  supporters: any[] | number | undefined;
+  supporters: any;
 }) {
   const {
     setUpdatingLatestSupporters,
     updatingLatestSupporters,
     fetchLatestSupporters,
   } = usePanel();
-  const [latestSupporters, setLatestSupporters] = useState(supporters);
-
-  console.log(latestSupporters);
+  const [latestSupporters, setLatestSupporters] = useState(
+    supporters.supporters
+  );
 
   useEffect(() => {
     if (updatingLatestSupporters) {
@@ -74,12 +76,14 @@ export default function LatestSupporters({
           </p>
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-          <button
-            type="button"
-            className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          >
-            Ver Todos
-          </button>
+          <Link href="/relatorios">
+            <button
+              type="button"
+              className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            >
+              Ver Todos
+            </button>
+          </Link>
         </div>
       </div>
       <div className="mt-4 flow-root">
@@ -132,20 +136,7 @@ export default function LatestSupporters({
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                           <div className="mt-1 flex items-center gap-x-1.5">
                             {supporter.referral?.user.name}
-                            <div
-                              className={clsx(
-                                "flex-none rounded-full p-1",
-                                referralColor(supporter.referral?.level)?.shadow
-                              )}
-                            >
-                              <div
-                                className={clsx(
-                                  "h-1.5 w-1.5 rounded-full",
-                                  referralColor(supporter.referral?.level)
-                                    ?.circle
-                                )}
-                              />
-                            </div>
+                            <SupporterBall level={supporter.referral?.level} />
                           </div>
                         </td>
                         <td className="whitespace-nowrap hidden lg:table-cell px-3 py-4 text-sm text-gray-500">

@@ -1,6 +1,6 @@
 import Footer from "../../../common/components/footer";
 import { getCampaignBasicInfo } from "../../../resources/api/services/campaign";
-import { findUser } from "../../../resources/api/services/user";
+import { findSupporter, findUser } from "../../../resources/api/services/user";
 import SupporterSignUpPage from "../../../resources/apoiar/page";
 
 export default async function Apoiar({
@@ -10,9 +10,10 @@ export default async function Apoiar({
   params: { campaignId: string };
   searchParams: { referral: string };
 }) {
-  const campaign = await getCampaignBasicInfo(params.campaignId);
-
-  const referral = await findUser({ id: searchParams.referral });
+  const userId = searchParams.referral;
+  const campaignId = params.campaignId;
+  const campaign = await getCampaignBasicInfo(campaignId);
+  const referral = await findSupporter(userId, campaignId);
 
   return (
     <>
