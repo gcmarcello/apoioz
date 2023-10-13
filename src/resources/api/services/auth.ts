@@ -35,7 +35,7 @@ export async function login(data: LoginType) {
         status: 401,
       };
 
-    return cookies().set("token", generateToken({ id: user.id }));
+    return generateToken({ id: user.id });
   } catch (error) {
     return handlePrismaError("usuário", error);
   }

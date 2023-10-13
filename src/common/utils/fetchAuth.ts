@@ -16,6 +16,8 @@ export async function fetchAuth(roles: string[], request: NextRequest) {
     }
 
     if (request.nextUrl.pathname.startsWith("/login") && isAuth) {
+      const newHeaders = new Headers(request.headers);
+      newHeaders.set("userId", response.id);
       return NextResponse.redirect(new URL("/painel", request.url));
     }
 
