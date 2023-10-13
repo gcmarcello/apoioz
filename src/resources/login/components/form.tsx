@@ -23,7 +23,7 @@ export default function LoginForm() {
         method: "POST",
         body: JSON.stringify(data),
       });
-      router.push("/painel");
+      if (window) window.location.href = "/painel";
     } catch (error: any) {
       console.log(error);
       setError("root.serverError", {
