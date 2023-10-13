@@ -1,20 +1,18 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import jwt from "jsonwebtoken";
 import { findUser } from "../../../../resources/api/services/user";
+import { cookies, headers } from "next/headers";
 
-export async function POST(request: any) {
+export async function GET(request: Request, response: NextResponse) {
   try {
-    const body = await request.json();
-    if (!body || !process.env.JWT_KEY)
-      return NextResponse.json({ body: body.value, env: process.env.JWT_KEY });
-    const token = jwt.verify(body.value, process.env.JWT_KEY);
+    const token = headers().get("Authorization");
+    if (!token) throw "Token não encontrado.";
 
-    return NextResponse.json(await findUser(token));
+    const authenticated = jwt.verify(token, process.env.JWT_KEY!);
+
+    return NextResponse.json(await findUser(authenticated));
   } catch (error) {
-    return NextResponse.json(
-      { message: "Você não tem autorização para fazer isto.", status: 403 },
-      { status: 403 }
-    );
+    return NextResponse.json({ message: error, status: 403 }, { status: 403 });
   }
 }

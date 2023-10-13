@@ -1,4 +1,3 @@
-import { Prisma, PrismaClient } from "@prisma/client";
 import {
   LoginType,
   SignUpType,
@@ -7,11 +6,9 @@ import {
 
 import jwt from "jsonwebtoken";
 
-import { createUser } from "./user";
 import prisma from "../../../common/utils/prisma";
 import { handlePrismaError } from "../../../common/utils/prismaError";
 import { compareHash } from "../../../common/utils/bCrypt";
-import { cookies, headers } from "next/headers";
 
 export async function login(data: LoginType) {
   try {

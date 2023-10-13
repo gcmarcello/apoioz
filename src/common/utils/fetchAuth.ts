@@ -4,8 +4,7 @@ import { ServerExceptionType } from "../types/serverExceptionTypes";
 export async function fetchAuth(roles: string[], request: NextRequest) {
   try {
     const data = await fetch(`${request.nextUrl.origin}/api/auth/verify`, {
-      method: "POST",
-      body: JSON.stringify(request.cookies.get("token")),
+      headers: { Authorization: request.cookies.get("token")?.value! },
     });
     const response = await data.json();
 
@@ -16,8 +15,6 @@ export async function fetchAuth(roles: string[], request: NextRequest) {
     }
 
     if (request.nextUrl.pathname.startsWith("/login") && isAuth) {
-      const newHeaders = new Headers(request.headers);
-      newHeaders.set("userId", response.id);
       return NextResponse.redirect(new URL("/painel", request.url));
     }
 
@@ -36,6 +33,7 @@ export async function fetchAuth(roles: string[], request: NextRequest) {
 
     return NextResponse.redirect(new URL("/login", request.url));
   } catch (error) {
+    console.log(error);
     return NextResponse.json(error, {
       status: (error as ServerExceptionType).status || 400,
     });
