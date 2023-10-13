@@ -19,10 +19,7 @@ export default function LoginForm() {
   async function handleLogin(data: any) {
     try {
       setIsLoading(true);
-      await fetch("/api/auth/login", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
+      await axios.post("/api/auth/login", data);
       if (window) window.location.href = "/painel";
     } catch (error: any) {
       console.log(error);
