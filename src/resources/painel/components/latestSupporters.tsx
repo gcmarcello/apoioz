@@ -9,6 +9,7 @@ import { usePanel } from "../../../common/hooks/usePanel";
 import { useEffect, useState } from "react";
 import SupporterOverview from "./supporterOverview";
 import SupporterBall from "../../../common/components/supporterBall";
+import Date from "../../../common/components/date";
 
 export default function LatestSupporters({
   userId,
@@ -66,14 +67,18 @@ export default function LatestSupporters({
           <h1 className="text-base font-semibold leading-6 text-gray-900">
             Novos Apoiadores
           </h1>
-          <p className="mt-2 text-sm text-gray-700">
-            Uma lista dos apoiadores adicionados desde{" "}
-            {dayjs()
-              .subtract(1, "week")
-              .subtract(4, "hours")
-              .format("DD/MM/YYYY")}
-            .
-          </p>
+          <div className="flex gap-1">
+            <p className="mt-2 text-sm text-gray-700">
+              Uma lista dos apoiadores adicionados desde
+            </p>
+            <Date
+              className="mt-2 text-sm text-gray-700"
+              value={dayjs()
+                .subtract(1, "week")
+                .subtract(4, "hours")
+                .format("DD/MM/YYYY")}
+            />
+          </div>
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
           <Link href="/relatorios">

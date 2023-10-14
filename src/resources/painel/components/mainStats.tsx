@@ -2,6 +2,7 @@ import { ArrowDownIcon, ArrowUpIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import { generateMainPageStats } from "../../api/services/campaign";
 import { cookies, headers } from "next/headers";
+import { getSectionsByCity } from "../../api/services/sections";
 
 export default async function MainStats({ campaign }: { campaign: any }) {
   const userId = headers().get("userId")!;

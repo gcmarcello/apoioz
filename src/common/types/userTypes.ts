@@ -11,6 +11,7 @@ export interface NewUserType {
   zoneId?: string;
   sectionId?: string;
   campaign?: {
+    supporterGroupId: string;
     campaignId: string;
     referralId?: string;
   };

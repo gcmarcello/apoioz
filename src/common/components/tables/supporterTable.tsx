@@ -14,16 +14,13 @@ import LoadingSpinner from "../loadingSpinner";
 import dayjs from "dayjs";
 import useSWR, { SWRConfig, useSWRConfig } from "swr";
 import { listSupporters } from "../../../resources/api/services/campaign";
-import { url } from "inspector";
-import { PanelContext } from "../../contexts/panel.ctx";
-import { usePanel } from "../../hooks/usePanel";
-import { parseSupporters } from "../../functions/parseSupporters";
 import clsx from "clsx";
 import { Section, User, Zone } from "@prisma/client";
 import SupporterBall from "../supporterBall";
 import WhatsAppIcon from "../icons/WhatsAppIcon";
 import Link from "next/link";
 import { AtSymbolIcon } from "@heroicons/react/24/outline";
+import Date from "../date";
 
 export default function SupporterTable({
   originalData,
@@ -96,7 +93,9 @@ export default function SupporterTable({
     columnHelper.accessor("assignedAt", {
       id: "assignedAt",
       header: "Entrou em",
-      cell: (info) => dayjs(info.getValue()).format("DD/MM/YYYY"),
+      cell: (info) => (
+        <Date value={dayjs(info.getValue()).format("DD/MM/YYYY HH:mm")} />
+      ),
     }),
     columnHelper.accessor("user", {
       id: "options",

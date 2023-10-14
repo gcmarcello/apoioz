@@ -1,5 +1,5 @@
 "use client";
-import { Dispatch, Fragment, useRef, useState } from "react";
+import { Dispatch, Fragment, useEffect, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { UserPlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { LinkIcon } from "@heroicons/react/20/solid";
@@ -15,6 +15,8 @@ import { usePanel } from "../hooks/usePanel";
 import QRCode from "react-qr-code";
 import Link from "next/link";
 import Toast from "./toast";
+import { mockSupporter } from "../tests/mockSupporter";
+import { Campaign } from "@prisma/client";
 
 export default function SupporterSideBar({
   open,
@@ -23,11 +25,16 @@ export default function SupporterSideBar({
 }: {
   open: boolean;
   setOpen: Dispatch<boolean>;
-  campaign: any;
   userId: string;
 }) {
-  const { setUpdatingLatestSupporters, setShowToast, siteURL, campaign } =
-    usePanel();
+  const {
+    setUpdatingLatestSupporters,
+    setShowToast,
+    siteURL,
+    campaign,
+    supporter,
+  } = usePanel();
+
   const [option, setOption] = useState<string | null>(null);
   const [sectionList, setSectionList] = useState<SectionType[]>([]);
   const [displayAddress, setDisplayAddress] = useState<AddressType | null>(
@@ -42,6 +49,7 @@ export default function SupporterSideBar({
     reset,
     resetField,
     control,
+    setValue,
     setError,
     formState: { errors },
   } = useForm({
@@ -53,11 +61,20 @@ export default function SupporterSideBar({
       zoneId: "",
       birthDate: "",
       campaign: {
-        referralId: userId,
+        referralId: supporter?.id,
         campaignId: campaign?.id,
       },
     },
   });
+
+  useEffect(() => {
+    setValue("campaign.referralId", supporter?.id);
+  }, [supporter, setValue]);
+
+  async function addMockSupporter(e) {
+    e.preventDefault();
+    await addSupporter(await mockSupporter(campaign.id, supporter!.id));
+  }
 
   const fetchSections = async (zoneId: string) => {
     try {
@@ -196,6 +213,9 @@ export default function SupporterSideBar({
                           <p className="text-sm text-indigo-300">
                             Complete os campos e faça parte da transformação.
                           </p>
+                          <button onClick={(e) => addMockSupporter(e)}>
+                            Teste
+                          </button>
                         </div>
                       </div>
                       <div className="flex flex-1 flex-col justify-between mt-28">
@@ -261,7 +281,6 @@ export default function SupporterSideBar({
                                     <div>Compartilhar no WhatsApp</div>
                                   </div>
                                 </Link>
-                                <Toast />
                               </div>
                             </div>
                           )}
@@ -460,7 +479,7 @@ export default function SupporterSideBar({
                                     {toProperCase(
                                       displayAddress.address +
                                         ", " +
-                                        displayAddress.Zone?.City?.name
+                                        displayAddress.City?.name
                                     )}
                                   </dd>
                                 </div>

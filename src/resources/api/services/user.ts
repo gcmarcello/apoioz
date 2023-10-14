@@ -44,7 +44,7 @@ export async function createUser(data: NewUserType) {
       info: {
         create: {
           ...info,
-          birthDate: dayjs(info.birthDate, "DD/MM/YYYY").toISOString(),
+          birthDate: dayjs(info.birthDate),
         },
       },
       supporter: {},

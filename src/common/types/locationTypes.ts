@@ -25,6 +25,7 @@ export interface AddressType {
   zoneId: string;
   lat: string;
   lng: string;
+  City?: CityType;
 }
 
 export interface SectionType {

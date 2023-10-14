@@ -1,8 +1,10 @@
 import { Dispatch, createContext, useContext, useState } from "react";
 import { UserType } from "../types/userTypes";
+import { Supporter } from "@prisma/client";
 
 export class PanelContextProps {
   updatingLatestSupporters: boolean = false;
+  supporter: Supporter | undefined = undefined;
   setUpdatingLatestSupporters: Dispatch<boolean> = () => {};
   showToast: {
     show: boolean;

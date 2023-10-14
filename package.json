@@ -39,6 +39,7 @@
     "typescript": "5.2.2"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.1.0",
     "@types/bcrypt": "^5.0.0",
     "@types/bcryptjs": "^2.4.3",
     "@types/react-input-mask": "^3.0.3",

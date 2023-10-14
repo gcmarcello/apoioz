@@ -6,6 +6,9 @@ import { getLatestSupporters } from "../../resources/painel/server/mainStats";
 import { findUser } from "../../resources/api/services/user";
 import { getCampaign } from "../../resources/api/services/campaign";
 import { cookies } from "next/headers";
+import { getSupporterByUser } from "../../resources/api/services/supporters";
+import { Supporter } from "@prisma/client";
+import { getSectionsByCity } from "../../resources/api/services/sections";
 
 export default function PanelProvider({
   children,
@@ -24,7 +27,8 @@ export default function PanelProvider({
     message: "",
   });
   const [siteURL, setSiteURL] = useState("");
-  const [user, setUser] = useState<any>("");
+  const [supporter, setSupporter] = useState<Supporter | undefined>(undefined);
+  const [user, setUser] = useState<any>(null);
   const [campaign, setCampaign] = useState<any>(fetchedCampaign);
 
   const fetchLatestSupporters = async (userId: string, campaignId: string) => {
@@ -37,6 +41,13 @@ export default function PanelProvider({
     if (!campaign) getCampaign(userId).then((data) => setCampaign(data));
   }, [campaign, userId]);
 
+  useEffect(() => {
+    if (user && campaign) {
+      getSupporterByUser(user.id, campaign.id).then((data) => {
+        setSupporter(data);
+      });
+    }
+  }, [user, campaign]);
   return (
     <PanelContext.Provider
       value={{
@@ -49,6 +60,7 @@ export default function PanelProvider({
         user,
         campaign,
         setCampaign,
+        supporter,
       }}
     >
       {children}

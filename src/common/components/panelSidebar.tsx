@@ -22,6 +22,7 @@ import { usePanel } from "../hooks/usePanel";
 import ButtonSpinner from "./buttonSpinner";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import Toast from "./toast";
 
 const teams = [
   { id: 1, name: "Heroicons", href: "#", initial: "H", current: false },
@@ -432,15 +433,15 @@ export default function PanelSideBar({
 
           <main className="py-10">
             <div className="px-4 sm:px-6 lg:px-8">{content}</div>
+            <SupporterSideBar
+              open={supporterSideBarOpen}
+              setOpen={setSupporterSideBarOpen}
+              userId={userId}
+            />
+            <Toast />
           </main>
         </div>
       </div>
-      <SupporterSideBar
-        open={supporterSideBarOpen}
-        setOpen={setSupporterSideBarOpen}
-        campaign={campaign}
-        userId={userId}
-      />
     </>
   );
 }

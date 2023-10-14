@@ -1,17 +1,17 @@
 import { NextResponse } from "next/server";
 import { ServerExceptionType } from "../../../../../common/types/serverExceptionTypes";
-import { getSectionsByZone } from "../../../../../resources/api/services/sections";
+import { findAddressBySection } from "../../../../../resources/api/services/locations";
 
 export async function GET(
   request: Request,
-  { params }: { params: { zoneId: string } }
+  { params }: { params: { sectionId: string } }
 ) {
   try {
-    const { zoneId } = params;
+    const { sectionId } = params;
 
-    const sections = await getSectionsByZone(zoneId);
+    const address = await findAddressBySection({ sectionId });
 
-    return NextResponse.json(sections);
+    return NextResponse.json(address);
   } catch (error) {
     console.log(error);
     return NextResponse.json(error, {

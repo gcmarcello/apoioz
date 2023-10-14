@@ -22,9 +22,18 @@ export default function ChooseCampaign({ campaigns }: { campaigns: any }) {
   return (
     <div className="mt-6 px-4 sm:px-6 lg:px-8">
       <Toast />
-      <h2 className="text-4xl mb-4 font-medium text-gray-900">
-        Bem Vindo, {user.name}
-      </h2>
+      <div className="flex">
+        <h2 className="text-4xl mb-4 font-medium text-gray-900">Bem Vindo,</h2>
+        <div className="flex">
+          {user ? (
+            <div className="ms-3 text-4xl mb-4 font-medium text-gray-900">
+              {user?.name}
+            </div>
+          ) : (
+            <div className="flex mb-4 items-center bg-gray-300  ms-3 w-64 animate-pulse rounded-lg"></div>
+          )}
+        </div>
+      </div>
       <h2 className="text-sm font-medium text-gray-900">Campanhas Ativas</h2>
       <ul
         role="list"

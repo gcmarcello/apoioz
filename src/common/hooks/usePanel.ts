@@ -13,6 +13,7 @@ export const usePanel = () => {
     user,
     campaign,
     setCampaign,
+    supporter,
   } = useContext(PanelContext);
 
   return {
@@ -25,5 +26,6 @@ export const usePanel = () => {
     user,
     campaign,
     setCampaign,
+    supporter,
   };
 };

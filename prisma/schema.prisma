@@ -1,14 +1,16 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [uuid_ossp(map: "uuid-ossp")]
 }
 
 model User {
-  id        String      @id @default(uuid())
+  id        String      @id @default(uuid()) @db.Uuid
   email     String      @unique
   name      String?
   password  String?
@@ -20,99 +22,132 @@ model User {
 
 model UserInfo {
   user      User      @relation(fields: [userId], references: [id])
-  userId    String    @id @unique @default(uuid())
+  userId    String    @id @unique @default(uuid()) @db.Uuid
   phone     String?
   birthDate DateTime?
-  stateId   String?
+  stateId   String?   @db.VarChar
   party     Party?    @relation(fields: [partyId], references: [id])
-  partyId   String?
+  partyId   String?   @db.Uuid
   State     State?    @relation(fields: [stateId], references: [id])
   City      City?     @relation(fields: [cityId], references: [id])
-  cityId    String?
+  cityId    String?   @db.VarChar
   Zone      Zone?     @relation(fields: [zoneId], references: [id])
-  zoneId    String?
+  zoneId    String?   @db.Uuid
   Section   Section?  @relation(fields: [sectionId], references: [id])
-  sectionId String?
+  sectionId String?   @db.Uuid
+}
+
+model Party {
+  id       String     @id @default(uuid()) @db.Uuid
+  number   Int        @unique
+  name     String
+  ideology String
+  UserInfo UserInfo[]
+}
+
+model Supporter {
+  id                          String                        @id @default(uuid()) @db.Uuid
+  campaign                    Campaign?                     @relation(fields: [campaignId], references: [id])
+  user                        User                          @relation("UserToSupporter", fields: [userId], references: [id])
+  referral                    Supporter?                    @relation("Referrals", fields: [referralId], references: [id])
+  userId                      String                        @db.Uuid
+  referralId                  String?                       @db.Uuid
+  referred                    Supporter[]                   @relation("Referrals")
+  campaignId                  String?                       @db.Uuid
+  level                       Int
+  assignedAt                  DateTime                      @default(now())
+  supporterGroupId            String?                       @db.Uuid
+  Supporter_to_SupporterGroup Supporter_to_SupporterGroup[]
+  SupporterGroup              SupporterGroup[]
 }
 
 model Campaign {
-  id         String      @id @default(uuid())
+  id         String      @id @default(uuid()) @db.Uuid
   user       User        @relation(fields: [userId], references: [id])
-  userId     String      @unique
+  userId     String      @unique @db.Uuid
   name       String
   year       String
   supporters Supporter[]
   city       City?       @relation(fields: [cityId], references: [id])
-  cityId     String?
+  cityId     String?     @db.VarChar
   state      State?      @relation(fields: [stateId], references: [id])
-  stateId    String?
+  stateId    String?     @db.VarChar
   type       String
 }
 
-model Supporter {
-  id         String      @id @default(uuid())
-  campaign   Campaign?   @relation(fields: [campaignId], references: [id])
-  user       User        @relation("UserToSupporter", fields: [userId], references: [id])
-  referral   Supporter?  @relation("Referrals", fields: [referralId], references: [id])
-  userId     String
-  referralId String?
-  referred   Supporter[] @relation("Referrals")
-  campaignId String?
-  level      Int
-  assignedAt DateTime    @default(now())
-}
-
-model State {
-  id       String     @id @default(uuid())
-  name     String
-  code     String
-  city     City[]
-  UserInfo UserInfo[]
-  Campaign Campaign[]
+model Address {
+  id           String    @id(map: "PK_2a6880f71a7f8d1c677bb2a32a8") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  lat          String?   @db.VarChar
+  lng          String?   @db.VarChar
+  address      String?   @db.VarChar
+  location     String?   @db.VarChar
+  neighborhood String?   @db.VarChar
+  zipcode      String?   @db.VarChar
+  cityId       String    @db.VarChar
+  City         City      @relation(fields: [cityId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_3624b3085165071df70276a4000")
+  Section      Section[]
 }
 
 model City {
-  id       String     @id @default(uuid())
-  name     String
-  zone     Zone[]
-  State    State      @relation(fields: [stateId], references: [id])
-  stateId  String
+  id           String         @id(map: "PK_74346041a3332b7880d76c610f3") @db.VarChar
+  name         String         @db.VarChar
+  stateId      String         @db.VarChar
+  Address      Address[]
+  State        State          @relation(fields: [stateId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_e99de556ee56afe72154f3ed04a")
+  City_To_Zone City_To_Zone[]
+  UserInfo     UserInfo[]
+  Campaign     Campaign[]
+}
+
+model City_To_Zone {
+  id     String @id(map: "PK_a48d0744c1d2890620d19665086") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  cityId String @db.VarChar
+  zoneId String @db.Uuid
+  City   City   @relation(fields: [cityId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_1408688a13ad486e02cf6a50a03")
+  Zone   Zone   @relation(fields: [zoneId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ef5c307ae0af73209fd208026a5")
+}
+
+model Section {
+  id        String     @id(map: "PK_c4cd691e8a76eaaffa862f0fb25") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  number    String     @db.VarChar
+  addressId String?    @db.Uuid
+  zoneId    String     @db.Uuid
+  Address   Address?   @relation(fields: [addressId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_3ff69a4fa9a649daf3fa869bcbc")
+  Zone      Zone       @relation(fields: [zoneId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_deab69c6c23c07560c03943b6aa")
+  UserInfo  UserInfo[]
+}
+
+model State {
+  id       String     @id(map: "PK_be2ef64a21d36522aa1ecb24886") @db.VarChar
+  code     String     @db.VarChar
+  name     String     @db.VarChar
+  City     City[]
+  Zone     Zone[]
   UserInfo UserInfo[]
   Campaign Campaign[]
 }
 
 model Zone {
-  id       String     @id @default(uuid())
-  number   Int
-  address  Address[]
-  City     City       @relation(fields: [cityId], references: [id])
-  cityId   String
-  UserInfo UserInfo[]
+  id           String         @id(map: "PK_3a6cfcf317ea20ea08421eab0a5") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  number       String         @db.VarChar
+  stateId      String         @db.VarChar
+  City_To_Zone City_To_Zone[]
+  Section      Section[]
+  State        State          @relation(fields: [stateId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_943d589a985354af23c8330abde")
+  UserInfo     UserInfo[]
 }
 
-model Address {
-  id       String    @id @default(uuid())
-  address  String
-  location String
-  lat      String
-  lng      String
-  Zone     Zone?     @relation(fields: [zoneId], references: [id])
-  zoneId   String?
-  section  Section[]
+model SupporterGroup {
+  id                          String                        @id @default(uuid()) @db.Uuid
+  ownerId                     String                        @db.Uuid
+  owner                       Supporter                     @relation(fields: [ownerId], references: [id])
+  Supporter_to_SupporterGroup Supporter_to_SupporterGroup[]
 }
 
-model Section {
-  id        String     @id @default(uuid())
-  number    Int
-  Address   Address?   @relation(fields: [addressId], references: [id])
-  addressId String?
-  UserInfo  UserInfo[]
-}
-
-model Party {
-  id       String     @id @unique
-  number   Int        @unique
-  name     String
-  ideology String
-  UserInfo UserInfo[]
+model Supporter_to_SupporterGroup {
+  id               String         @id @default(uuid()) @db.Uuid
+  supporterId      String         @db.Uuid
+  supporter        Supporter      @relation(fields: [supporterId], references: [id])
+  supporterGroupId String         @db.Uuid
+  supporterGroup   SupporterGroup @relation(fields: [supporterGroupId], references: [id])
 }
