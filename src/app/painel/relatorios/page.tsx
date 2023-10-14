@@ -1,3 +1,3 @@
-import RelatoriosPage from "../../../resources/painel/relatorios/page";
+import RelatoriosPage from "@/frontend/panel/report/pages";
 
 export default RelatoriosPage;

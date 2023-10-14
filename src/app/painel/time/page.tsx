@@ -1,3 +1,3 @@
-import TimePage from "../../../resources/painel/time/page";
+import TimePage from "@/frontend/panel/team/pages";
 
 export default TimePage;

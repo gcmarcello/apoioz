@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import jwt from "jsonwebtoken";
-import { findUser } from "../../../../resources/api/services/user";
 import { cookies, headers } from "next/headers";
+import { findUser } from "@/backend/resources/users/users.service";
 
 export async function GET(request: Request, response: NextResponse) {
   try {

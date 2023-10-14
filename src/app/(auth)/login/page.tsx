@@ -1,3 +1,3 @@
-import LoginPage from "../../../resources/login/page";
+import LoginPage from "../../../frontend/(auth)/login/page";
 
 export default LoginPage;

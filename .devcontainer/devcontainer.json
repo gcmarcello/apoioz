@@ -9,16 +9,16 @@
   "customizations": {
     "vscode": {
       "extensions": [
-		"ms-azuretools.vscode-docker",
-		"dbaeumer.vscode-eslint",
-		"esbenp.prettier-vscode@9.14.0",
-		"PKief.material-icon-theme",
-		"natqe.reload",
-		"Prisma.prisma-insider",
-		"maxcutlyp.dotenv-autocomplete",
-		"bradlc.vscode-tailwindcss",
-		"GitHub.copilot"
-	],
+        "ms-azuretools.vscode-docker",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode@9.14.0",
+        "PKief.material-icon-theme",
+        "natqe.reload",
+        "Prisma.prisma-insider",
+        "maxcutlyp.dotenv-autocomplete",
+        "bradlc.vscode-tailwindcss",
+        "GitHub.copilot"
+      ],
       "settings": {
         "extensions.autoCheckUpdates": false,
         "extensions.autoUpdate": false,
@@ -30,6 +30,7 @@
         "editor.codeActionsOnSave": {
           "source.fixAll.eslint": true
         },
+        "material-icon-theme.activeIconPack": "none",
         "editor.formatOnSave": true,
         "editor.formatOnPaste": false,
         "prettier.useEditorConfig": false,
@@ -38,25 +39,9 @@
         "typescript.tsdk": "node_modules/typescript/lib",
         "eslint.workingDirectories": ["./"],
         "explorer.compactFolders": false,
-        "typescript.preferences.importModuleSpecifier": "relative",
+        "typescript.preferences.importModuleSpecifier": "shortest",
         "workbench.tree.indent": 20
       }
     }
   }
-
-  // Features to add to the dev container. More info: https://containers.dev/features.
-  // "features": {},
-
-  // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  // This can be used to network with other containers or with the host.
-  // "forwardPorts": [3000, 5432],
-
-  // Use 'postCreateCommand' to run commands after the container is created.
-  // "postCreateCommand": "yarn install",
-
-  // Configure tool-specific properties.
-  // "customizations": {},
-
-  // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-  // "remoteUser": "root"
 }

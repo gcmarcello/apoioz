@@ -1,6 +1,6 @@
+import { deleteUser } from "@/backend/resources/users/users.service";
+import { ServerExceptionType } from "@/shared/types/serverExceptionTypes";
 import { NextResponse } from "next/server";
-import { ServerExceptionType } from "../../../../common/types/serverExceptionTypes";
-import { deleteUser } from "../../../../resources/api/services/user";
 
 export async function DELETE(
   request: Request,

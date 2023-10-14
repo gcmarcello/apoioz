@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { UserType } from "../../../common/types/userTypes";
-import { ServerExceptionType } from "../../../common/types/serverExceptionTypes";
-import { createUser } from "../../../resources/api/services/user";
-import { listSupporters } from "../../../resources/api/services/campaign";
-import { cookies, headers } from "next/headers";
+import { createUser } from "@/backend/resources/users/users.service";
+import { ServerExceptionType } from "@/shared/types/serverExceptionTypes";
+import { UserType } from "@/shared/types/userTypes";
 
 export async function POST(request: Request) {
   try {

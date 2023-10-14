@@ -1,13 +1,11 @@
-import { headers } from "next/headers";
 import {
   getCampaign,
-  listCampaigns,
   listSupporters,
-} from "../../resources/api/services/campaign";
-import MainStats from "../../resources/painel/components/mainStats";
-import LatestSupporters from "../../resources/painel/components/latestSupporters";
-import { getLatestSupporters } from "../../resources/painel/server/mainStats";
-import Footer from "../../common/components/footer";
+} from "@/backend/resources/campaign/campaign.service";
+import LatestSupporters from "@/frontend/panel/shared/components/latestSupporters";
+import MainStats from "@/frontend/panel/shared/components/mainStats";
+import Footer from "@/frontend/shared/components/footer";
+import { headers } from "next/headers";
 
 export default async function Panel() {
   const userId = headers().get("userId")!;

@@ -1,6 +1,6 @@
+import { getSectionsByZone } from "@/backend/resources/sections/sections.service";
+import { ServerExceptionType } from "@/shared/types/serverExceptionTypes";
 import { NextResponse } from "next/server";
-import { ServerExceptionType } from "../../../../../common/types/serverExceptionTypes";
-import { getSectionsByZone } from "../../../../../resources/api/services/sections";
 
 export async function GET(
   request: Request,

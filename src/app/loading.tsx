@@ -1,4 +1,4 @@
-import LoadingSpinner from "../common/components/loadingSpinner";
+import LoadingSpinner from "@/frontend/shared/components/loadingSpinner";
 
 export default async function Loading() {
   return (

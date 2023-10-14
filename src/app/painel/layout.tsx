@@ -1,17 +1,15 @@
 import "../globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import PanelSideBar from "../../common/components/panelSidebar";
 import { cookies, headers } from "next/headers";
 
-import PanelProvider from "../../common/providers/panelProvider";
-
-import ChooseCampaign from "../../resources/painel/components/chooseCampaign";
+import ChooseCampaign from "../../frontend/panel/shared/components/chooseCampaign";
 import {
   getCampaign,
   listCampaigns,
-} from "../../resources/api/services/campaign";
-import Toast from "../../common/components/toast";
+} from "@/backend/resources/campaign/campaign.service";
+import PanelSideBar from "@/frontend/shared/components/panelSidebar";
+import PanelProvider from "@/frontend/shared/providers/panelProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 

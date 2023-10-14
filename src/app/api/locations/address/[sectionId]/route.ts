@@ -1,6 +1,6 @@
+import { findAddressBySection } from "@/backend/resources/locations/locations.service";
+import { ServerExceptionType } from "@/shared/types/serverExceptionTypes";
 import { NextResponse } from "next/server";
-import { ServerExceptionType } from "../../../../../common/types/serverExceptionTypes";
-import { findAddressBySection } from "../../../../../resources/api/services/locations";
 
 export async function GET(
   request: Request,

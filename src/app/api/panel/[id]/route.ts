@@ -1,7 +1,7 @@
+import { verifyPermission } from "@/backend/resources/campaign/campaign.service";
+import { listUsers } from "@/backend/resources/users/users.service";
+import { ServerExceptionType } from "@/shared/types/serverExceptionTypes";
 import { NextResponse } from "next/server";
-import { ServerExceptionType } from "../../../../common/types/serverExceptionTypes";
-import { listUsers } from "../../../../resources/api/services/user";
-import { verifyPermission } from "../../../../resources/api/services/campaign";
 
 export async function GET(
   request: Request,

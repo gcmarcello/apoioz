@@ -1,7 +1,7 @@
+import { createUser } from "@/backend/resources/users/users.service";
+import { SignUpType } from "@/shared/types/authTypes";
+import { ServerExceptionType } from "@/shared/types/serverExceptionTypes";
 import { NextResponse } from "next/server";
-import { SignUpType } from "../../../../common/types/authTypes";
-import { ServerExceptionType } from "../../../../common/types/serverExceptionTypes";
-import { createUser } from "../../../../resources/api/services/user";
 
 export async function POST(request: Request, response: Response) {
   try {
@@ -9,6 +9,8 @@ export async function POST(request: Request, response: Response) {
     const newUser = await createUser(body);
     return NextResponse.json(newUser);
   } catch (error) {
-    return NextResponse.json(error, { status: (error as ServerExceptionType).status || 400 });
+    return NextResponse.json(error, {
+      status: (error as ServerExceptionType).status || 400,
+    });
   }
 }

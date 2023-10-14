@@ -1,7 +1,7 @@
-import Footer from "../../../common/components/footer";
-import { getCampaignBasicInfo } from "../../../resources/api/services/campaign";
-import { findSupporter, findUser } from "../../../resources/api/services/user";
-import SupporterSignUpPage from "../../../resources/apoiar/page";
+import { getCampaignBasicInfo } from "@/backend/resources/campaign/campaign.service";
+import { findSupporter } from "@/backend/resources/users/users.service";
+import Footer from "@/frontend/shared/components/footer";
+import SupporterSignUpPage from "../../../frontend/support/pages";
 
 export default async function Apoiar({
   params,

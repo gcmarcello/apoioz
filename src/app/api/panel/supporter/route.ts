@@ -1,7 +1,7 @@
+import { listSupporters } from "@/backend/resources/campaign/campaign.service";
+import { ServerExceptionType } from "@/shared/types/serverExceptionTypes";
 import { headers, cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import { ServerExceptionType } from "../../../../common/types/serverExceptionTypes";
-import { listSupporters } from "../../../../resources/api/services/campaign";
 
 export async function GET(request: NextRequest) {
   try {
