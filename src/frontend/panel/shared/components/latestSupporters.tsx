@@ -64,12 +64,12 @@ export default function LatestSupporters({
           <h1 className="text-base font-semibold leading-6 text-gray-900">
             Novos Apoiadores
           </h1>
-          <div className="flex gap-1">
-            <p className="mt-2 text-sm text-gray-700">
+          <div className="flex gap-1 items-center">
+            <p className="mt-1 text-sm text-gray-700">
               Uma lista dos apoiadores adicionados desde
             </p>
             <Date
-              className="mt-2 text-sm text-gray-700"
+              className="mt-1 text-sm text-gray-700"
               value={dayjs()
                 .subtract(1, "week")
                 .subtract(4, "hours")

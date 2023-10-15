@@ -11,4 +11,7 @@ export async function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith("/painel")) {
     return fetchAuth(["user"], request);
   }
+  if (request.nextUrl.pathname.startsWith("/admin")) {
+    return fetchAuth([], request);
+  }
 }

@@ -1,10 +1,11 @@
 "use server";
 import prisma from "@/backend/prisma/prisma";
-import { Supporter, Zone } from "@prisma/client";
+import { Campaign, Supporter, Zone } from "@prisma/client";
 import dayjs from "dayjs";
 import { cookies, headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { getZonesByCity, getZonesByState } from "../zones/zones.service";
+import crypto from "crypto";
 
 export async function verifyPermission(
   userId: string | null,
@@ -32,10 +33,16 @@ export async function verifyPermission(
   }
 }
 
+export async function findCampaignById(campaignId: string) {
+  return await prisma.campaign.findFirst({
+    where: { id: campaignId },
+  });
+}
+
 export async function listCampaigns(userId: string) {
   try {
     return await prisma.campaign.findMany({
-      where: { supporters: { some: { userId: userId } } },
+      where: { OR: [{ supporters: { some: { userId: userId } } }, { userId }] },
       include: { _count: { select: { supporters: true } } },
     });
   } catch (error) {
@@ -109,11 +116,13 @@ export async function getCampaignBasicInfo(campaignId: string) {
 
 export async function listSupporters({
   pagination = { pageSize: 10, pageIndex: 0 },
+  meta,
 }: {
   pagination?: { pageSize: number; pageIndex: number };
+  meta?: { campaignId: string };
 }) {
   const userId = headers().get("userId");
-  const campaignId = cookies().get("activeCampaign")?.value;
+  const campaignId = meta?.campaignId || cookies().get("activeCampaign")?.value;
 
   if (!userId || !campaignId) return;
   const supporterAccount = await verifyPermission(userId, campaignId);
@@ -213,10 +222,12 @@ export async function generateMainPageStats(
 
     take: 1,
   });
+
   const mostFrequentReferral = await prisma.supporter.findUnique({
-    where: { id: mostFrequentReferralId[0].referralId! },
+    where: { id: mostFrequentReferralId[0].referralId! || userId },
     include: { user: { select: { name: true } } },
   });
+
   const supporters = await prisma.supporter.findMany({
     where: { campaignId: campaignId },
     include: {
@@ -282,4 +293,45 @@ export async function activateCampaign(campaignId: string, userId: string) {
 
 export async function deactivateCampaign() {
   cookies().delete("activeCampaign");
+}
+
+export async function createCampaign(data: any) {
+  const supporterId = crypto.randomUUID();
+
+  const supporterGroup = await prisma.supporterGroup.create({
+    data: {},
+  });
+
+  const campaign = await prisma.campaign.create({
+    data: {
+      userId: data.userId,
+      name: data.name,
+      type: data.type,
+      cityId: data.cityId,
+      stateId: data.stateId,
+      year: data.year,
+      supporters: {
+        create: {
+          id: supporterId,
+          userId: data.userId,
+          level: 4,
+          supporterGroupId: supporterGroup.id,
+        },
+      },
+    },
+    include: {
+      supporters: true,
+    },
+  });
+
+  const supporter_to_SupporterGroup =
+    await prisma.supporter_to_SupporterGroup.create({
+      data: {
+        supporterId: supporterId,
+        supporterGroupId: supporterGroup.id,
+        isOwner: true,
+      },
+    });
+
+  return { campaign, supporter_to_SupporterGroup };
 }

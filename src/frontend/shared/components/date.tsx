@@ -17,7 +17,7 @@ export function Date({
 
   if (!date)
     return (
-      <div className="flex bg-gray-400 p-1 animate-pulse w-1/2 rounded-sm"></div>
+      <div className="flex bg-gray-400 p-1 animate-pulse w-20 h-4 rounded-sm"></div>
     );
 
   return <div className={className}>{date}</div>;

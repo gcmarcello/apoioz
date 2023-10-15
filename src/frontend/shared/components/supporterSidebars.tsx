@@ -20,6 +20,7 @@ import Toast from "./toast";
 import { mockSupporter } from "../tests/mockSupporter";
 import { Campaign } from "@prisma/client";
 import { normalizePhone, toProperCase } from "@/shared/utils/format";
+import { createSupporter } from "@/backend/resources/supporters/supporters.service";
 
 export default function SupporterSideBar({
   open,
@@ -76,7 +77,7 @@ export default function SupporterSideBar({
 
   async function addMockSupporter(e) {
     e.preventDefault();
-    await addSupporter(await mockSupporter(campaign.id, supporter!.id));
+    await createSupporter(await mockSupporter(campaign.id));
   }
 
   const fetchSections = async (zoneId: string) => {

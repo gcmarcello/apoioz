@@ -1,8 +1,13 @@
 "use client";
-import { activateCampaign } from "@/backend/resources/campaign/campaign.service";
+import {
+  activateCampaign,
+  createCampaign,
+} from "@/backend/resources/campaign/campaign.service";
 import Toast from "@/frontend/shared/components/toast";
 import { usePanel } from "@/frontend/shared/hooks/usePanel";
 import clsx from "clsx";
+import { Button } from "./button";
+import { mockCampaign } from "@/frontend/shared/tests/mockCampaign";
 
 export default function ChooseCampaign({ campaigns }: { campaigns: any }) {
   const { user, campaign, setCampaign, setShowToast } = usePanel();
@@ -34,10 +39,16 @@ export default function ChooseCampaign({ campaigns }: { campaigns: any }) {
           )}
         </div>
       </div>
+      <Button
+        variant="primary"
+        onClick={async () => await createCampaign(await mockCampaign())}
+      >
+        Criar Campanha
+      </Button>
       <h2 className="text-sm font-medium text-gray-900">Campanhas Ativas</h2>
       <ul
         role="list"
-        className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4"
+        className="mt-3 grid empty:hidden grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4"
       >
         {campaigns.map((campaign: any) => (
           <li

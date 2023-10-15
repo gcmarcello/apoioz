@@ -35,22 +35,3 @@ export interface InfoType {
   zoneId: string;
   sectionId: string;
 }
-
-export interface SupporterType {
-  id: string;
-  userId: string;
-  user?: UserType;
-  referralId: string;
-  referral?: ReferralType;
-  campaignId: string;
-  level: number;
-  campaigns?: any[];
-}
-
-export interface ReferralType {
-  id: string;
-  email: string;
-  name: string;
-  role: string;
-  supporter: SupporterType;
-}

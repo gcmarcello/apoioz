@@ -10,6 +10,7 @@ import {
   HomeIcon,
   UsersIcon,
   XMarkIcon,
+  CalendarIcon,
 } from "@heroicons/react/24/outline";
 import {
   ChevronDownIcon,
@@ -62,6 +63,12 @@ export default function PanelSideBar({
       href: `/painel/mapa`,
       icon: MapIcon,
       current: pathname.includes("/mapa"),
+    },
+    {
+      name: "Calendário",
+      href: `/painel/calendario`,
+      icon: CalendarIcon,
+      current: pathname.includes("/calendario"),
     },
     {
       name: "Relatórios",

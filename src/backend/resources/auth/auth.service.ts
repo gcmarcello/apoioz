@@ -35,7 +35,7 @@ export async function login(data: LoginType) {
   }
 }
 
-export function generateToken(data: TokenGeneratorType) {
+export async function generateToken(data: TokenGeneratorType) {
   if (!process.env.JWT_KEY)
     throw "O serviço de autenticação se encontra fora do ar. ERROR: MISSING JWTKEY";
   return jwt.sign({ id: data.id }, process.env.JWT_KEY, { expiresIn: "10h" });

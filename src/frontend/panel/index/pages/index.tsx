@@ -1,14 +1,30 @@
-"use client";
+import Footer from "@/frontend/shared/components/footer";
+import { headers } from "next/headers";
+import LatestSupporters from "../../shared/components/latestSupporters";
+import MainStats from "../../shared/components/mainStats";
+import {
+  getCampaign,
+  listSupporters,
+} from "@/backend/resources/campaign/campaign.service";
 
-import { useState } from "react";
+export default async function PanelPage() {
+  const userId = headers().get("userId")!;
+  const campaign = await getCampaign(userId);
+  const supporters = await listSupporters({
+    pagination: { pageIndex: 0, pageSize: 4 },
+  });
 
-export default function PanelPage({
-  campaigns,
-  userId,
-}: {
-  campaigns: any;
-  userId: string;
-}) {
-  const [open, setOpen] = useState(false);
-  return <></>;
+  if (!supporters) return;
+
+  return (
+    <>
+      <MainStats campaign={campaign} />
+      <LatestSupporters
+        campaign={campaign}
+        userId={userId}
+        supporters={supporters}
+      />
+      <Footer />
+    </>
+  );
 }

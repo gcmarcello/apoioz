@@ -6,6 +6,7 @@ import prisma from "@/backend/prisma/prisma";
 import { NewUserType } from "@/shared/types/userTypes";
 import { handlePrismaError } from "@/backend/prisma/prismaError";
 import { hashInfo } from "@/shared/utils/bCrypt";
+import { normalizePhone } from "@/shared/utils/format";
 dayjs.extend(customParseFormat);
 
 export async function findUser(data: any) {
@@ -24,47 +25,24 @@ export async function findSupporter(userId: string, campaignId: string) {
   if (supporter) return supporter;
 }
 
-export async function listUsers(campaignId: string, level: number) {
-  if (!campaignId || !level) return;
-  const userList = await prisma.supporter.findMany({
-    where: { campaignId: campaignId, level: { lte: level } },
-    include: { user: { select: { name: true, email: true, info: true } } },
-  });
-  return userList;
-}
-
 export async function createUser(data: NewUserType) {
   try {
-    const { name, email, password, campaign, ...info } = data;
-    let userData = {
-      name: data.name,
-      email: normalize(data.email),
-      password: data.password && (await hashInfo(data.password)),
-      role: "user",
-      info: {
-        create: {
-          ...info,
-          birthDate: dayjs(info.birthDate),
+    const { name, email, password, ...info } = data;
+    const user = await prisma.user.create({
+      data: {
+        email: normalize(data.email),
+        password: data.password && (await hashInfo(data.password)),
+        role: "user",
+        name: data.name,
+        info: {
+          create: {
+            ...info,
+            birthDate: dayjs(info.birthDate, "DD/MM/YYYY").toISOString(),
+          },
         },
       },
-      supporter: {},
-    };
-
-    if (data.campaign?.campaignId) {
-      userData.supporter = {
-        create: {
-          campaignId: data.campaign.campaignId,
-          referralId: data.campaign.referralId,
-          level: 1,
-        },
-      };
-    }
-
-    const user = await prisma.user.create({
-      data: userData,
       include: {
         info: true,
-        supporter: true,
       },
     });
     return {
@@ -76,6 +54,7 @@ export async function createUser(data: NewUserType) {
         city: info.cityId,
         zone: info.zoneId,
         section: info.sectionId,
+        birthDate: info.birthDate,
       },
     };
   } catch (error) {
@@ -84,13 +63,18 @@ export async function createUser(data: NewUserType) {
   }
 }
 
-export async function deleteUser(id: string) {
+export async function listUsers() {
   try {
-    await prisma.$transaction([
-      prisma.userInfo.delete({ where: { userId: id } }),
-      prisma.user.delete({ where: { id: id } }),
-    ]);
+    const users = await prisma.user.findMany({ include: { info: true } });
+    return users;
   } catch (error) {
     return handlePrismaError("usuário", error);
   }
+}
+
+export async function verifyExistingUser(phone: string) {
+  return await prisma.userInfo.findFirst({
+    where: { phone: normalizePhone(phone) },
+    include: { user: true },
+  });
 }

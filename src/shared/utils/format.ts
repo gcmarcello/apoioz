@@ -1,4 +1,4 @@
-export function normalize(data: string) {
+export function normalizeEmail(data: string) {
   return data.toLowerCase();
 }
 

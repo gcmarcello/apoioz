@@ -45,25 +45,9 @@ model Party {
   UserInfo UserInfo[]
 }
 
-model Supporter {
-  id                          String                        @id @default(uuid()) @db.Uuid
-  campaign                    Campaign?                     @relation(fields: [campaignId], references: [id])
-  user                        User                          @relation("UserToSupporter", fields: [userId], references: [id])
-  referral                    Supporter?                    @relation("Referrals", fields: [referralId], references: [id])
-  userId                      String                        @db.Uuid
-  referralId                  String?                       @db.Uuid
-  referred                    Supporter[]                   @relation("Referrals")
-  campaignId                  String?                       @db.Uuid
-  level                       Int
-  assignedAt                  DateTime                      @default(now())
-  supporterGroupId            String?                       @db.Uuid
-  Supporter_to_SupporterGroup Supporter_to_SupporterGroup[]
-  SupporterGroup              SupporterGroup[]
-}
-
 model Campaign {
   id         String      @id @default(uuid()) @db.Uuid
-  user       User        @relation(fields: [userId], references: [id])
+  user       User?        @relation(fields: [userId], references: [id])
   userId     String      @unique @db.Uuid
   name       String
   year       String
@@ -73,6 +57,7 @@ model Campaign {
   state      State?      @relation(fields: [stateId], references: [id])
   stateId    String?     @db.VarChar
   type       String
+  Event      Event[]
 }
 
 model Address {
@@ -137,11 +122,27 @@ model Zone {
   UserInfo     UserInfo[]
 }
 
+model Supporter {
+  id                          String                        @id @default(uuid()) @db.Uuid
+  campaignId                  String                        @db.Uuid
+  campaign                    Campaign?                    @relation(fields: [campaignId], references: [id])
+  user                        User                          @relation("UserToSupporter", fields: [userId], references: [id])
+  userId                      String                        @db.Uuid
+  referral                    Supporter?                    @relation("Referrals", fields: [referralId], references: [id])
+  referralId                  String?                       @db.Uuid
+  referred                    Supporter[]                   @relation("Referrals")
+  level                       Int
+  assignedAt                  DateTime                      @default(now())
+  supporterGroupId            String?                       @db.Uuid
+  Supporter_to_SupporterGroup Supporter_to_SupporterGroup[] // This is automatically inferred by Prisma
+  Event                       Event[]
+  SupporterGroup              SupporterGroup?               @relation(fields: [supporterGroupId], references: [id])
+}
+
 model SupporterGroup {
   id                          String                        @id @default(uuid()) @db.Uuid
-  ownerId                     String                        @db.Uuid
-  owner                       Supporter                     @relation(fields: [ownerId], references: [id])
   Supporter_to_SupporterGroup Supporter_to_SupporterGroup[]
+  Supporter                   Supporter[]
 }
 
 model Supporter_to_SupporterGroup {
@@ -150,4 +151,19 @@ model Supporter_to_SupporterGroup {
   supporter        Supporter      @relation(fields: [supporterId], references: [id])
   supporterGroupId String         @db.Uuid
   supporterGroup   SupporterGroup @relation(fields: [supporterGroupId], references: [id])
+  isOwner          Boolean        @default(false)
+}
+
+model Event {
+  id          String     @id @default(uuid()) @db.Uuid
+  name        String     @db.VarChar
+  description String     @db.Text
+  location    String     @db.VarChar
+  dateStart   DateTime   @db.Timestamptz(3)
+  dateEnd     DateTime   @db.Timestamptz(3)
+  campaignId  String     @db.Uuid
+  Campaign    Campaign   @relation(fields: [campaignId], references: [id])
+  hostId      String     @db.Uuid
+  Supporter   Supporter? @relation(fields: [hostId], references: [id])
+  status      String     @db.VarChar
 }

@@ -1,12 +1,14 @@
 "use server";
+import prisma from "@/backend/prisma/prisma";
 import {
   getCampaign,
   listSupporters,
 } from "@/backend/resources/campaign/campaign.service";
 import { getZonesByCampaign } from "@/backend/resources/zones/zones.service";
+import { normalizeEmail } from "@/shared/utils/format";
 import { fakerPT_BR as faker } from "@faker-js/faker";
 
-export async function mockSupporter(campaignId: string, referralId: string) {
+export async function mockSupporter(campaignId: string) {
   const campaign: any = await getCampaign(campaignId);
   const zones = await getZonesByCampaign(campaignId);
   const supporters = await listSupporters({
@@ -18,7 +20,7 @@ export async function mockSupporter(campaignId: string, referralId: string) {
   const zoneIndex = Math.floor(Math.random() * zones.length);
   return {
     name: faker.person.fullName(),
-    email: faker.internet.email(),
+    email: normalizeEmail(faker.internet.email()),
     phone: faker.phone.number(),
     zoneId: zones[zoneIndex].id,
     sectionId:
@@ -30,7 +32,12 @@ export async function mockSupporter(campaignId: string, referralId: string) {
       referralId:
         supporters?.supporters[
           Math.floor(Math.random() * supporters.supporters.length)
-        ].id,
+        ]?.id ||
+        (
+          await prisma.supporter.findFirst({
+            where: { campaignId: campaignId },
+          })
+        )?.id,
       campaignId: campaignId,
     },
   };

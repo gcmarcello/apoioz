@@ -25,6 +25,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const userId = headers().get("userId")!;
+
   const activeCampaignId = cookies().get("activeCampaign")?.value;
   let campaign = null;
   if (activeCampaignId) campaign = await getCampaign(userId);
