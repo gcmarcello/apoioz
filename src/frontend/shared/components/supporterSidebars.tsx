@@ -21,6 +21,7 @@ import { mockSupporter } from "../tests/mockSupporter";
 import { Campaign } from "@prisma/client";
 import { normalizePhone, toProperCase } from "@/shared/utils/format";
 import { createSupporter } from "@/backend/resources/supporters/supporters.service";
+import dayjs from "dayjs";
 
 export default function SupporterSideBar({
   open,
@@ -77,7 +78,7 @@ export default function SupporterSideBar({
 
   async function addMockSupporter(e) {
     e.preventDefault();
-    await createSupporter(await mockSupporter(campaign.id));
+    await addSupporter(await mockSupporter(campaign.id));
   }
 
   const fetchSections = async (zoneId: string) => {
@@ -126,7 +127,8 @@ export default function SupporterSideBar({
       if (campaign.cityId) supporterInfo.cityId = campaign.cityId;
       if (campaign.stateId) supporterInfo.stateId = campaign.stateId;
       supporterInfo.phone = normalizePhone(supporterInfo.phone);
-      await axios.post(`/api/supporter/`, supporterInfo);
+      supporterInfo.birthDate = dayjs(supporterInfo.birthDate).toISOString();
+      await createSupporter(supporterInfo);
       setUpdatingLatestSupporters(true);
       setShowToast({
         show: true,
@@ -136,15 +138,15 @@ export default function SupporterSideBar({
       });
       setOpen(false);
     } catch (error: any) {
-      setShowToast({
+      /* setShowToast({
         show: true,
         message: `${error.message}`,
         title: "Erro",
         variant: "error",
-      });
+      }); */
       setError("root.serverError", {
         type: "400",
-        message: error.response.data?.message || "Erro inesperado",
+        message: error.message || "Erro inesperado",
       });
       setTimeout(() => {
         errRef.current?.scrollIntoView({ behavior: "smooth" });

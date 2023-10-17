@@ -4,8 +4,9 @@ import {
   getCampaign,
   listSupporters,
 } from "@/backend/resources/campaign/campaign.service";
+import { findCampaignLeader } from "@/backend/resources/supporters/supporters.service";
 import { getZonesByCampaign } from "@/backend/resources/zones/zones.service";
-import { normalizeEmail } from "@/shared/utils/format";
+import { normalizeEmail, normalizePhone } from "@/shared/utils/format";
 import { fakerPT_BR as faker } from "@faker-js/faker";
 
 export async function mockSupporter(campaignId: string) {
@@ -14,6 +15,7 @@ export async function mockSupporter(campaignId: string) {
   const supporters = await listSupporters({
     pagination: { pageIndex: 0, pageSize: 500 },
   });
+  const leader = await findCampaignLeader(campaignId);
 
   if (!zones || !campaign) return;
 
@@ -21,7 +23,7 @@ export async function mockSupporter(campaignId: string) {
   return {
     name: faker.person.fullName(),
     email: normalizeEmail(faker.internet.email()),
-    phone: faker.phone.number(),
+    phone: normalizePhone(faker.phone.number()),
     zoneId: zones[zoneIndex].id,
     sectionId:
       zones[zoneIndex].Section[

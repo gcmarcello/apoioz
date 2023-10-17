@@ -6,6 +6,7 @@ import { cookies, headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { getZonesByCity, getZonesByState } from "../zones/zones.service";
 import crypto from "crypto";
+import { buildHierarchy } from "../supporters/supporters.service";
 
 export async function verifyPermission(
   userId: string | null,
@@ -125,6 +126,63 @@ export async function listSupporters({
   const campaignId = meta?.campaignId || cookies().get("activeCampaign")?.value;
 
   if (!userId || !campaignId) return;
+
+  const supporter = await prisma.supporter.findFirst({
+    where: { userId: userId, campaignId: campaignId },
+  });
+
+  if (!supporter?.supporterGroupId) return;
+
+  const supporterHierarchy = await buildHierarchy(supporter.supporterGroupId);
+
+  console.log(supporterHierarchy);
+
+  const supporterList = await prisma.supporter_to_SupporterGroup.findMany({
+    where: { supporterGroupId: { in: supporterHierarchy }, isOwner: false },
+
+    include: {
+      supporter: {
+        include: {
+          user: {
+            include: {
+              info: { include: { City: true, Zone: true, Section: true } },
+            },
+          },
+          referral: { include: { user: true } },
+        },
+      },
+    },
+  });
+
+  function paginationSlice(data: any[]) {
+    const startIndex = pagination.pageIndex * pagination.pageSize;
+    const endIndex = startIndex + pagination.pageSize;
+    const slicedList = data.slice(startIndex, endIndex);
+    return slicedList;
+  }
+
+  console.log(supporterList.map((supporter) => supporter.supporter.user.name));
+
+  return {
+    supporters: paginationSlice(
+      supporterList.map((supporter) => supporter.supporter)
+    ),
+    meta: { pageIndex: pagination.pageIndex, pageSize: pagination.pageSize },
+    count: supporterList.length,
+  };
+}
+
+/* export async function listSupporters({
+  pagination = { pageSize: 10, pageIndex: 0 },
+  meta,
+}: {
+  pagination?: { pageSize: number; pageIndex: number };
+  meta?: { campaignId: string };
+}) {
+  const userId = headers().get("userId");
+  const campaignId = meta?.campaignId || cookies().get("activeCampaign")?.value;
+
+  if (!userId || !campaignId) return;
   const supporterAccount = await verifyPermission(userId, campaignId);
 
   function generateReferredObject(level: any): any {
@@ -152,8 +210,10 @@ export async function listSupporters({
 
   const supporters: any[] = await prisma.supporter.findMany({
     where: {
-      campaignId,
-      referralId: supporterAccount.id,
+      OR: [
+        { campaignId, referralId: supporterAccount.id },
+        { campaignId, level: 4 },
+      ],
     },
     include: {
       referral: { include: { user: { include: { info: true } } } },
@@ -193,7 +253,7 @@ export async function listSupporters({
     meta: { pageIndex: pagination.pageIndex, pageSize: pagination.pageSize },
     count: flatSupporters.length,
   };
-}
+} */
 
 export async function generateMainPageStats(
   userId: string,
@@ -315,7 +375,14 @@ export async function createCampaign(data: any) {
           id: supporterId,
           userId: data.userId,
           level: 4,
-          supporterGroupId: supporterGroup.id,
+          supporterGroupsMemberships: {
+            create: [
+              {
+                isOwner: true,
+                supporterGroupId: supporterGroup.id,
+              },
+            ],
+          },
         },
       },
     },
@@ -324,14 +391,5 @@ export async function createCampaign(data: any) {
     },
   });
 
-  const supporter_to_SupporterGroup =
-    await prisma.supporter_to_SupporterGroup.create({
-      data: {
-        supporterId: supporterId,
-        supporterGroupId: supporterGroup.id,
-        isOwner: true,
-      },
-    });
-
-  return { campaign, supporter_to_SupporterGroup };
+  return { campaign };
 }

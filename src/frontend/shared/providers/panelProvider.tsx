@@ -4,11 +4,11 @@ import React, { useEffect, useState } from "react";
 import { PanelContext } from "../contexts/panel.ctx";
 import { cookies } from "next/headers";
 import { Supporter } from "@prisma/client";
-import { getCampaign } from "@/backend/resources/campaign/campaign.service";
 import {
-  getLatestSupporters,
-  getSupporterByUser,
-} from "@/backend/resources/supporters/supporters.service";
+  getCampaign,
+  listSupporters,
+} from "@/backend/resources/campaign/campaign.service";
+import { getSupporterByUser } from "@/backend/resources/supporters/supporters.service";
 import { findUser } from "@/backend/resources/users/users.service";
 
 export default function PanelProvider({
@@ -33,7 +33,9 @@ export default function PanelProvider({
   const [campaign, setCampaign] = useState<any>(fetchedCampaign);
 
   const fetchLatestSupporters = async (userId: string, campaignId: string) => {
-    return await getLatestSupporters(userId, campaignId);
+    return await listSupporters({
+      pagination: { pageIndex: 0, pageSize: 5 },
+    });
   };
 
   useEffect(() => {

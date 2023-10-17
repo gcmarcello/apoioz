@@ -20,17 +20,6 @@ export async function getSupporterByUser(userId: string, campaignId: string) {
   if (supporter) return supporter;
 }
 
-export async function getLatestSupporters(
-  userId: string,
-  campaignId: string
-): Promise<any> {
-  const latestSupporters = await listSupporters({
-    pagination: { pageIndex: 0, pageSize: 5 },
-  });
-
-  if (latestSupporters) return latestSupporters.supporters;
-}
-
 export async function verifyConflictingSupporter(
   campaign: Campaign,
   userInfo: UserInfo
@@ -50,9 +39,8 @@ export async function verifyConflictingSupporter(
       campaignId: { in: conflictingCampaigns },
     },
   });
-  if (conflictingSupporter) {
-    throw new Error("Usuário já cadastrado em outra campanha do mesmo tipo");
-  }
+
+  return Boolean(conflictingSupporter);
 }
 
 export async function findSupporterGroup(supporterId: string) {
@@ -64,24 +52,79 @@ export async function findSupporterGroup(supporterId: string) {
 export async function createSupporter(data: any) {
   try {
     const { name, email, password, campaign, ...info } = data;
+
     const checkForExistingUser = await verifyExistingUser(info.phone);
+
     const campaignToBe = await findCampaignById(campaign.campaignId);
 
     if (!campaignToBe) throw new Error("Campanha não encontrada");
+
     if (checkForExistingUser) {
-      await verifyConflictingSupporter(campaignToBe, checkForExistingUser);
+      const conflictingSupporter = await verifyConflictingSupporter(
+        campaignToBe,
+        checkForExistingUser
+      );
+
+      if (conflictingSupporter)
+        throw new Error(
+          "Usuário já cadastrado em outra campanha do mesmo tipo"
+        );
     }
 
-    const supporterGroup = await findSupporterGroup(campaign.referralId);
-    console.log(campaign.referralId);
-    if (!supporterGroup) throw new Error("Grupo de apoiadores não encontrado");
-
-    const supporterGroupId = crypto.randomUUID();
-    const newSupporterGroup = await prisma.supporterGroup.create({
-      data: { id: supporterGroupId },
+    const firstReferral = await prisma.supporter.findFirst({
+      where: {
+        referralId: campaign.referralId,
+      },
+      include: {
+        supporterGroupsMemberships: {
+          where: {
+            isOwner: true,
+          },
+        },
+      },
     });
 
-    return await prisma.supporter.create({
+    const referrals = [firstReferral];
+    while (true) {
+      const referral = await prisma.supporter.findFirst({
+        where: {
+          OR: [
+            {
+              referralId: referrals[referrals.length - 1]?.id,
+            },
+            {
+              level: 4,
+            },
+          ],
+        },
+        include: {
+          supporterGroupsMemberships: {
+            where: {
+              isOwner: true,
+            },
+          },
+        },
+      });
+
+      referrals.push(referral);
+
+      if (!Boolean(referral?.referralId)) {
+        break;
+      }
+    }
+
+    console.log(JSON.stringify(referrals, null, 2));
+
+    const createSupporterGroupMembershipQuery = referrals.map((referral) => ({
+      isOwner: false,
+      supporterGroup: {
+        connect: {
+          id: referral?.supporterGroupsMemberships[0].supporterGroupId,
+        },
+      },
+    }));
+
+    const supporter = await prisma.supporter.create({
       data: {
         level: 1,
         campaign: { connect: { id: campaign.campaignId } },
@@ -97,17 +140,16 @@ export async function createSupporter(data: any) {
                 info: { create: info },
               },
             },
-        SupporterGroup: { connect: { id: supporterGroupId } },
-        Supporter_to_SupporterGroup: {
-          createMany: {
-            data: [
-              { supporterGroupId, isOwner: true },
-              {
-                supporterGroupId: supporterGroup.supporterGroupId,
-                isOwner: false,
+        supporterGroupsMemberships: {
+          create: [
+            {
+              isOwner: true,
+              supporterGroup: {
+                create: {},
               },
-            ],
-          },
+            },
+            ...createSupporterGroupMembershipQuery,
+          ],
         },
       },
     });
@@ -115,6 +157,21 @@ export async function createSupporter(data: any) {
     console.log(error);
     return handlePrismaError("usuário", error);
   }
+}
+
+export async function buildHierarchy(supporterGroupId: string) {
+  let currentSupporterGroupId: string | null = supporterGroupId;
+  let supporterGroups: any[] = [];
+
+  while (currentSupporterGroupId) {
+    supporterGroups.push(currentSupporterGroupId);
+    const groupOwner: any = await prisma.supporter_to_SupporterGroup.findFirst({
+      where: { supporterGroupId: currentSupporterGroupId, isOwner: false },
+      include: { supporter: true },
+    });
+    currentSupporterGroupId = groupOwner?.supporter?.supporterGroupId;
+  }
+  return supporterGroups;
 }
 
 export async function getSupporters({
@@ -196,4 +253,10 @@ export async function getSupporters({
     meta: { pageIndex: pagination.pageIndex, pageSize: pagination.pageSize },
     count: flatSupporters.length,
   };
+}
+
+export async function findCampaignLeader(campaignId: string) {
+  return await prisma.supporter.findFirst({
+    where: { level: 4 },
+  });
 }

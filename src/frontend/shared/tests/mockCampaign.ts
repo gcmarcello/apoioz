@@ -25,7 +25,7 @@ export async function mockCampaign(userId?: string) {
   const date = dayjs(faker.date.soon({ days: Math.ceil(Math.random() * 30) }));
 
   return {
-    userId: user?.id || "11362aaa-def8-487c-8bfe-a7905cb8c20b",
+    userId: "11362aaa-def8-487c-8bfe-a7905cb8c20b",
     name: faker.person.fullName() + " " + date.format("YYYY"),
     type: "vereador",
     cityId: user.info.cityId,

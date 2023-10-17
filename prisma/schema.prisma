@@ -47,8 +47,8 @@ model Party {
 
 model Campaign {
   id         String      @id @default(uuid()) @db.Uuid
-  user       User?        @relation(fields: [userId], references: [id])
-  userId     String      @unique @db.Uuid
+  user       User?       @relation(fields: [userId], references: [id])
+  userId     String      @db.Uuid
   name       String
   year       String
   supporters Supporter[]
@@ -123,35 +123,32 @@ model Zone {
 }
 
 model Supporter {
-  id                          String                        @id @default(uuid()) @db.Uuid
-  campaignId                  String                        @db.Uuid
-  campaign                    Campaign?                    @relation(fields: [campaignId], references: [id])
-  user                        User                          @relation("UserToSupporter", fields: [userId], references: [id])
-  userId                      String                        @db.Uuid
-  referral                    Supporter?                    @relation("Referrals", fields: [referralId], references: [id])
-  referralId                  String?                       @db.Uuid
-  referred                    Supporter[]                   @relation("Referrals")
-  level                       Int
-  assignedAt                  DateTime                      @default(now())
-  supporterGroupId            String?                       @db.Uuid
-  Supporter_to_SupporterGroup Supporter_to_SupporterGroup[] // This is automatically inferred by Prisma
-  Event                       Event[]
-  SupporterGroup              SupporterGroup?               @relation(fields: [supporterGroupId], references: [id])
+  id                         String                     @id @default(uuid()) @db.Uuid
+  campaignId                 String                     @db.Uuid
+  campaign                   Campaign?                  @relation(fields: [campaignId], references: [id])
+  userId                     String                     @db.Uuid
+  user                       User                       @relation("UserToSupporter", fields: [userId], references: [id])
+  referralId                 String?                    @db.Uuid
+  referral                   Supporter?                 @relation("Referrals", fields: [referralId], references: [id])
+  referred                   Supporter[]                @relation("Referrals")
+  level                      Int
+  assignedAt                 DateTime                   @default(now())
+  supporterGroupsMemberships SupporterGroupMembership[]
+  Event                      Event[]
 }
 
 model SupporterGroup {
-  id                          String                        @id @default(uuid()) @db.Uuid
-  Supporter_to_SupporterGroup Supporter_to_SupporterGroup[]
-  Supporter                   Supporter[]
+  id          String                     @id @default(uuid()) @db.Uuid
+  memberships SupporterGroupMembership[]
 }
 
-model Supporter_to_SupporterGroup {
-  id               String         @id @default(uuid()) @db.Uuid
+model SupporterGroupMembership {
   supporterId      String         @db.Uuid
   supporter        Supporter      @relation(fields: [supporterId], references: [id])
   supporterGroupId String         @db.Uuid
   supporterGroup   SupporterGroup @relation(fields: [supporterGroupId], references: [id])
   isOwner          Boolean        @default(false)
+  id               String         @id @default(uuid()) @db.Uuid
 }
 
 model Event {

@@ -9,6 +9,8 @@ export default async function RelatoriosPage({}) {
     },
   });
 
+  console.log(supporters);
+
   if (!supporters) return;
   if (typeof supporters === "number") return;
 

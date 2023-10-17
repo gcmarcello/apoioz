@@ -1,44 +1,57 @@
+"use client";
 import { generateMainPageStats } from "@/backend/resources/campaign/campaign.service";
+import { usePanel } from "@/frontend/shared/hooks/usePanel";
 import { ArrowDownIcon, ArrowUpIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
-import { cookies, headers } from "next/headers";
 
-export default async function MainStats({ campaign }: { campaign: any }) {
-  const userId = headers().get("userId")!;
-  const campaignId = cookies().get("campaignId")?.value!;
-  const mainPageStats = await generateMainPageStats(userId, campaignId);
+import { useEffect, useState } from "react";
+
+export default function MainStats() {
+  const [mainPageStats, setMainPageStats] = useState<any>(null);
+  const { user, campaign } = usePanel();
+
+  useEffect(() => {
+    async function fetchStats() {
+      generateMainPageStats(user.id, campaign.id).then((data: any) =>
+        setMainPageStats(data)
+      );
+    }
+    if (user && campaign) fetchStats();
+  }, [campaign, user]);
+
+  if (!mainPageStats) return;
 
   const stats = [
     {
       name: "Total de Apoiadores",
-      stat: mainPageStats.totalSupporters,
-      previousStat: mainPageStats.supportersLastWeek + " na semana passada",
+      stat: mainPageStats?.totalSupporters,
+      previousStat: mainPageStats?.supportersLastWeek + " na semana passada",
       change:
         Math.round(
-          (mainPageStats.totalSupporters - mainPageStats.supportersLastWeek) /
-            mainPageStats.supportersLastWeek
+          (mainPageStats?.totalSupporters - mainPageStats?.supportersLastWeek) /
+            mainPageStats?.supportersLastWeek
         ) *
           100 +
         "%",
       changeType: !!(
-        mainPageStats.totalSupporters - mainPageStats.supportersLastWeek
+        mainPageStats?.totalSupporters - mainPageStats?.supportersLastWeek
       )
         ? "increase"
         : "decrease",
     },
     {
       name: "Seção Líder",
-      stat: mainPageStats.leadingSection.section.number,
-      previousStat: `Zona ${mainPageStats.leadingSection.zone?.number} - ${mainPageStats.leadingSection.section?.Address.location}`,
-      change: `${mainPageStats.leadingSection.count}`,
+      stat: mainPageStats?.leadingSection.section.number,
+      previousStat: `Zona ${mainPageStats?.leadingSection.zone?.number} - ${mainPageStats?.leadingSection.section?.Address.location}`,
+      change: `${mainPageStats?.leadingSection.count}`,
       changeType: false,
     },
     {
       name: "Líder de indicações",
-      stat: mainPageStats.referralLeader.user?.name,
-      previousStat: `${mainPageStats.referralLeader.count} no total`,
+      stat: mainPageStats?.referralLeader.user?.name,
+      previousStat: `${mainPageStats?.referralLeader.count} no total`,
       change: `${Math.round(
-        (mainPageStats.referralLeader.count / mainPageStats.totalSupporters) *
+        (mainPageStats?.referralLeader.count / mainPageStats?.totalSupporters) *
           100
       )}%`,
       changeType: false,

@@ -115,7 +115,7 @@ export default function SupporterSignUpPage({
     }
   };
 
-  if (!success) return <AddSupporterSuccess campaign={campaign} />;
+  if (success) return <AddSupporterSuccess campaign={campaign} />;
 
   return (
     <div className="isolate bg-white px-6 py-8  lg:px-8">
@@ -317,11 +317,6 @@ export default function SupporterSignUpPage({
                   <option disabled value={""}>
                     Selecione
                   </option>
-                  {campaign.zones?.map((zone: ZoneType) => (
-                    <option key={zone.id} value={zone.id}>
-                      {zone.number.toString()}
-                    </option>
-                  ))}
                 </select>
               </div>
               <div className="col-span-1">

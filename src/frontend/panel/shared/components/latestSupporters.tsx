@@ -10,52 +10,15 @@ import { Date } from "@/frontend/shared/components/date";
 
 export default function LatestSupporters({
   userId,
-  campaign,
   supporters,
 }: {
   userId: string;
-  campaign: any;
   supporters: any;
 }) {
-  const {
-    setUpdatingLatestSupporters,
-    updatingLatestSupporters,
-    fetchLatestSupporters,
-  } = usePanel();
+  const { fetchLatestSupporters, campaign, user } = usePanel();
   const [latestSupporters, setLatestSupporters] = useState(
-    supporters.supporters || []
+    supporters.supporters
   );
-
-  useEffect(() => {
-    if (updatingLatestSupporters) {
-      fetchLatestSupporters(userId, campaign.id).then((data: any) =>
-        setLatestSupporters(data)
-      );
-      setUpdatingLatestSupporters(false);
-    }
-  }, [
-    updatingLatestSupporters,
-    campaign,
-    fetchLatestSupporters,
-    setUpdatingLatestSupporters,
-    userId,
-  ]);
-
-  const referralColor = (level: number) => {
-    switch (level) {
-      case 4:
-        return { circle: "bg-yellow-500", shadow: "bg-yellow-500/20" };
-      case 3:
-        return { circle: "bg-emerald-500", shadow: "bg-emerald-500/20" };
-      case 2:
-        return { circle: "bg-blue-500", shadow: "bg-blue-500/20" };
-      case 1:
-        return { circle: "bg-red-500", shadow: "bg-red-500/20" };
-
-      default:
-        break;
-    }
-  };
 
   return (
     <div className="mt-8">
@@ -130,15 +93,26 @@ export default function LatestSupporters({
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {latestSupporters &&
                     typeof latestSupporters !== "number" &&
-                    latestSupporters.map((supporter: any) => (
-                      <tr key={supporter.id}>
+                    latestSupporters.map((supporter: any, index: number) => (
+                      <tr key={index}>
                         <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                           {supporter.user.name}
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                           <div className="mt-1 flex items-center gap-x-1.5">
-                            {supporter.referral?.user.name}
-                            <SupporterBall level={supporter.referral?.level} />
+                            {supporter.referral ? (
+                              <>
+                                {supporter.referral?.user.name}
+                                <SupporterBall
+                                  level={supporter.referral?.level}
+                                />
+                              </>
+                            ) : (
+                              <>
+                                Líder
+                                <SupporterBall level={4} />
+                              </>
+                            )}
                           </div>
                         </td>
                         <td className="whitespace-nowrap hidden lg:table-cell px-3 py-4 text-sm text-gray-500">
