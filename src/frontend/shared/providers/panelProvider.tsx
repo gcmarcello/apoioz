@@ -4,11 +4,11 @@ import React, { useEffect, useState } from "react";
 import { PanelContext } from "../contexts/panel.ctx";
 import { cookies } from "next/headers";
 import { Supporter } from "@prisma/client";
+import { getCampaign } from "@/backend/resources/campaign/campaign.service";
 import {
-  getCampaign,
+  getSupporterByUser,
   listSupporters,
-} from "@/backend/resources/campaign/campaign.service";
-import { getSupporterByUser } from "@/backend/resources/supporters/supporters.service";
+} from "@/backend/resources/supporters/supporters.service";
 import { findUser } from "@/backend/resources/users/users.service";
 
 export default function PanelProvider({

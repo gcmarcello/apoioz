@@ -6,7 +6,6 @@ import { cookies, headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { getZonesByCity, getZonesByState } from "../zones/zones.service";
 import crypto from "crypto";
-import { buildHierarchy } from "../supporters/supporters.service";
 
 export async function verifyPermission(
   userId: string | null,
@@ -60,7 +59,7 @@ export async function getCampaign(userId: string) {
         supporters: { some: { userId: userId } },
       },
     });
-    let zones: Zone[] = [];
+    let zones: Omit<Zone, "stateId">[] = [];
 
     if (campaign?.cityId) {
       zones = await prisma.zone.findMany({
@@ -68,11 +67,9 @@ export async function getCampaign(userId: string) {
       });
     }
 
+    //TODO - Talvez seja muito pesado carregar todas as zonas dessa forma
     if (campaign?.stateId) {
-      const cities = (
-        await prisma.city.findMany({ where: { stateId: campaign.stateId } })
-      ).map((city) => city.id);
-      zones = await prisma.zone.findMany({ where: { cityId: { in: cities } } });
+      zones = (await getZonesByState(campaign?.stateId)).zones;
     }
 
     if (!campaign)
@@ -113,63 +110,6 @@ export async function getCampaignBasicInfo(campaignId: string) {
   } catch (error) {
     throw error;
   }
-}
-
-export async function listSupporters({
-  pagination = { pageSize: 10, pageIndex: 0 },
-  meta,
-}: {
-  pagination?: { pageSize: number; pageIndex: number };
-  meta?: { campaignId: string };
-}) {
-  const userId = headers().get("userId");
-  const campaignId = meta?.campaignId || cookies().get("activeCampaign")?.value;
-
-  if (!userId || !campaignId) return;
-
-  const supporter = await prisma.supporter.findFirst({
-    where: { userId: userId, campaignId: campaignId },
-  });
-
-  if (!supporter?.supporterGroupId) return;
-
-  const supporterHierarchy = await buildHierarchy(supporter.supporterGroupId);
-
-  console.log(supporterHierarchy);
-
-  const supporterList = await prisma.supporter_to_SupporterGroup.findMany({
-    where: { supporterGroupId: { in: supporterHierarchy }, isOwner: false },
-
-    include: {
-      supporter: {
-        include: {
-          user: {
-            include: {
-              info: { include: { City: true, Zone: true, Section: true } },
-            },
-          },
-          referral: { include: { user: true } },
-        },
-      },
-    },
-  });
-
-  function paginationSlice(data: any[]) {
-    const startIndex = pagination.pageIndex * pagination.pageSize;
-    const endIndex = startIndex + pagination.pageSize;
-    const slicedList = data.slice(startIndex, endIndex);
-    return slicedList;
-  }
-
-  console.log(supporterList.map((supporter) => supporter.supporter.user.name));
-
-  return {
-    supporters: paginationSlice(
-      supporterList.map((supporter) => supporter.supporter)
-    ),
-    meta: { pageIndex: pagination.pageIndex, pageSize: pagination.pageSize },
-    count: supporterList.length,
-  };
 }
 
 /* export async function listSupporters({

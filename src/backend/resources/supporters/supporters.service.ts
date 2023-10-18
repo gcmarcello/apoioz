@@ -2,7 +2,6 @@
 import prisma from "@/backend/prisma/prisma";
 import {
   findCampaignById,
-  listSupporters,
   verifyPermission,
 } from "../campaign/campaign.service";
 import { NewUserType } from "@/shared/types/userTypes";
@@ -11,43 +10,6 @@ import { handlePrismaError } from "@/backend/prisma/prismaError";
 import { normalizePhone } from "@/shared/utils/format";
 import { Campaign, User, UserInfo } from "@prisma/client";
 import { verifyExistingUser } from "../users/users.service";
-import dayjs from "dayjs";
-
-export async function getSupporterByUser(userId: string, campaignId: string) {
-  const supporter = await prisma.supporter.findFirst({
-    where: { userId, campaignId },
-  });
-  if (supporter) return supporter;
-}
-
-export async function verifyConflictingSupporter(
-  campaign: Campaign,
-  userInfo: UserInfo
-) {
-  const conflictingCampaigns: string[] = (
-    await prisma.campaign.findMany({
-      where: {
-        cityId: campaign.cityId,
-        type: campaign.type,
-        year: campaign.year,
-      },
-    })
-  ).map((campaign) => campaign.id);
-  const conflictingSupporter = await prisma.supporter.findFirst({
-    where: {
-      userId: userInfo.userId,
-      campaignId: { in: conflictingCampaigns },
-    },
-  });
-
-  return Boolean(conflictingSupporter);
-}
-
-export async function findSupporterGroup(supporterId: string) {
-  return await prisma.supporter_to_SupporterGroup.findFirst({
-    where: { supporterId },
-  });
-}
 
 export async function createSupporter(data: any) {
   try {
@@ -71,9 +33,9 @@ export async function createSupporter(data: any) {
         );
     }
 
-    const firstReferral = await prisma.supporter.findFirst({
+    const firstReferral = await prisma.supporter.findUnique({
       where: {
-        referralId: campaign.referralId,
+        id: campaign.referralId,
       },
       include: {
         supporterGroupsMemberships: {
@@ -112,8 +74,6 @@ export async function createSupporter(data: any) {
         break;
       }
     }
-
-    console.log(JSON.stringify(referrals, null, 2));
 
     const createSupporterGroupMembershipQuery = referrals.map((referral) => ({
       isOwner: false,
@@ -159,22 +119,7 @@ export async function createSupporter(data: any) {
   }
 }
 
-export async function buildHierarchy(supporterGroupId: string) {
-  let currentSupporterGroupId: string | null = supporterGroupId;
-  let supporterGroups: any[] = [];
-
-  while (currentSupporterGroupId) {
-    supporterGroups.push(currentSupporterGroupId);
-    const groupOwner: any = await prisma.supporter_to_SupporterGroup.findFirst({
-      where: { supporterGroupId: currentSupporterGroupId, isOwner: false },
-      include: { supporter: true },
-    });
-    currentSupporterGroupId = groupOwner?.supporter?.supporterGroupId;
-  }
-  return supporterGroups;
-}
-
-export async function getSupporters({
+export async function listSupporters({
   pagination = { pageSize: 10, pageIndex: 0 },
   meta,
 }: {
@@ -185,74 +130,94 @@ export async function getSupporters({
   const campaignId = meta?.campaignId || cookies().get("activeCampaign")?.value;
 
   if (!userId || !campaignId) return;
-  const supporterAccount = await verifyPermission(userId, campaignId);
 
-  function generateReferredObject(level: any): any {
-    if (level === 1) {
-      return {
-        referral: { include: { user: { include: { info: true } } } },
-        user: { include: { info: { include: { Section: true, Zone: true } } } },
-      };
-    } else {
-      return {
-        referred: {
-          include: {
-            referral: { include: { user: { include: { info: true } } } },
-            user: {
-              include: { info: { include: { Section: true, Zone: true } } },
+  const supporter = await prisma.supporter.findFirst({
+    where: { userId: userId, campaignId: campaignId },
+  });
+
+  if (!supporter) return;
+
+  const supporterGroup = await prisma.supporterGroupMembership.findFirst({
+    where: { supporterId: supporter.id, isOwner: true },
+  });
+
+  const supporterList = await prisma.supporterGroupMembership.findMany({
+    where: { supporterGroupId: supporterGroup?.supporterGroupId },
+    include: {
+      supporter: {
+        include: {
+          user: {
+            include: {
+              info: { include: { Section: true, Zone: true, City: true } },
             },
-            ...generateReferredObject(level - 1),
+          },
+          referral: {
+            include: {
+              user: {
+                include: {
+                  info: { include: { Section: true, Zone: true, City: true } },
+                },
+              },
+              referral: {
+                include: {
+                  user: {
+                    include: {
+                      info: {
+                        include: { Section: true, Zone: true, City: true },
+                      },
+                    },
+                  },
+                },
+              },
+            },
           },
         },
-      };
-    }
-  }
-
-  const includeReferred = generateReferredObject(supporterAccount.level - 1);
-
-  const supporters: any[] = await prisma.supporter.findMany({
-    where: {
-      campaignId,
-      referralId: supporterAccount.id,
+      },
     },
-    include: {
-      referral: { include: { user: { include: { info: true } } } },
-      user: { include: { info: { include: { Section: true, Zone: true } } } },
-      ...includeReferred,
+    take: pagination.pageSize,
+    skip: pagination.pageIndex * pagination.pageSize,
+  });
+
+  const parsedList = supporterList.map((item) => item.supporter);
+  const count = await prisma.supporterGroupMembership.count({
+    where: { supporterGroupId: supporterGroup?.supporterGroupId },
+  });
+
+  return {
+    supporters: parsedList,
+    meta: { pageIndex: pagination.pageIndex, pageSize: pagination.pageSize },
+    count: count,
+  };
+}
+
+export async function getSupporterByUser(userId: string, campaignId: string) {
+  const supporter = await prisma.supporter.findFirst({
+    where: { userId, campaignId },
+  });
+  if (supporter) return supporter;
+}
+
+export async function verifyConflictingSupporter(
+  campaign: Campaign,
+  userInfo: UserInfo
+) {
+  const conflictingCampaigns: string[] = (
+    await prisma.campaign.findMany({
+      where: {
+        cityId: campaign.cityId,
+        type: campaign.type,
+        year: campaign.year,
+      },
+    })
+  ).map((campaign) => campaign.id);
+  const conflictingSupporter = await prisma.supporter.findFirst({
+    where: {
+      userId: userInfo.userId,
+      campaignId: { in: conflictingCampaigns },
     },
   });
 
-  function flattenSupporters(supporters: any[]): any[] {
-    const flatSupporters: any[] = [];
-    supporters.forEach((supporter) => {
-      if (supporter.referred) {
-        flatSupporters.push(supporter);
-        flatSupporters.push(...flattenSupporters(supporter.referred));
-      } else {
-        flatSupporters.push(supporter);
-      }
-    });
-    return flatSupporters;
-  }
-
-  function paginationSlice(data: any[], pageIndex: number, pageSize: number) {
-    const startIndex = pageIndex * pageSize;
-    const endIndex = startIndex + pageSize;
-    const slicedList = data.slice(startIndex, endIndex);
-    return slicedList;
-  }
-
-  const flatSupporters = flattenSupporters(supporters);
-
-  return {
-    supporters: paginationSlice(
-      flatSupporters.sort((a, b) => b.assignedAt - a.assignedAt),
-      pagination.pageIndex,
-      pagination.pageSize
-    ),
-    meta: { pageIndex: pagination.pageIndex, pageSize: pagination.pageSize },
-    count: flatSupporters.length,
-  };
+  return Boolean(conflictingSupporter);
 }
 
 export async function findCampaignLeader(campaignId: string) {

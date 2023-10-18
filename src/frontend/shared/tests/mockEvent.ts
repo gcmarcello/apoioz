@@ -1,9 +1,5 @@
 "use server";
-import {
-  getCampaign,
-  listSupporters,
-} from "@/backend/resources/campaign/campaign.service";
-import { getZonesByCampaign } from "@/backend/resources/zones/zones.service";
+import { listSupporters } from "@/backend/resources/supporters/supporters.service";
 import { fakerPT_BR as faker } from "@faker-js/faker";
 import dayjs from "dayjs";
 

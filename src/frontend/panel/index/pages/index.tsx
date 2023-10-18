@@ -5,8 +5,8 @@ import { cookies, headers } from "next/headers";
 import {
   generateMainPageStats,
   getCampaign,
-  listSupporters,
 } from "@/backend/resources/campaign/campaign.service";
+import { listSupporters } from "@/backend/resources/supporters/supporters.service";
 
 export default async function PanelPage() {
   const userId = headers().get("userId")!;

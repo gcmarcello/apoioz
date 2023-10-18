@@ -1,4 +1,4 @@
-import { listSupporters } from "@/backend/resources/campaign/campaign.service";
+import { listSupporters } from "@/backend/resources/supporters/supporters.service";
 import SupporterTable from "@/frontend/shared/components/tables/supporterTable";
 
 export default async function RelatoriosPage({}) {
@@ -8,8 +8,6 @@ export default async function RelatoriosPage({}) {
       pageSize: 10,
     },
   });
-
-  console.log(supporters);
 
   if (!supporters) return;
   if (typeof supporters === "number") return;
@@ -38,8 +36,8 @@ export default async function RelatoriosPage({}) {
         </div>
       </div>
       <div className="text-sm mb-4">
-        Nessa página você tem acesso a todos os apoiadores da sua rede,
-        indicados por você ou seus indicados!
+        Nessa página você tem acesso a todos os apoiadores da sua rede. Como
+        Funciona?
       </div>
       <SupporterTable
         originalData={{

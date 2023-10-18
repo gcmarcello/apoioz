@@ -20,7 +20,8 @@ import WhatsAppIcon from "../icons/WhatsAppIcon";
 import Link from "next/link";
 import { AtSymbolIcon } from "@heroicons/react/24/outline";
 import { Date } from "../date";
-import { listSupporters } from "@/backend/resources/campaign/campaign.service";
+import { listSupporters } from "@/backend/resources/supporters/supporters.service";
+import SupporterOverview from "@/frontend/panel/shared/components/supporterOverview";
 
 export default function SupporterTable({
   originalData,
@@ -74,9 +75,16 @@ export default function SupporterTable({
       id: "referral",
       header: "Indicado por",
       cell: (info) => (
-        <div className="mt-1 flex items-center gap-x-1.5 text-sm text-gray-500">
-          {info.getValue().user.name}{" "}
-          <SupporterBall level={info.getValue()?.level} />
+        <div className="group">
+          <div className="mt-1 flex items-center gap-x-1.5 text-sm text-gray-500">
+            {info.getValue()?.user.name || "Líder"}
+            {info.getValue()?.user.name && (
+              <SupporterBall level={info.getValue()?.level} />
+            )}
+            <div className="hidden group-hover:block absolute">
+              <SupporterOverview supporter={info.row.original.referral} />
+            </div>
+          </div>
         </div>
       ),
     }),

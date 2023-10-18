@@ -1,6 +1,6 @@
 import { SectionType, ZoneType } from "./locationTypes";
 
-export interface NewUserType {
+export interface listNewUserType {
   email: string;
   password?: string;
   name: string;

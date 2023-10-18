@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import SupporterOverview from "./supporterOverview";
 import { Date } from "@/frontend/shared/components/date";
+import { ChevronDownIcon } from "@heroicons/react/24/solid";
 
 export default function LatestSupporters({
   userId,
@@ -84,6 +85,12 @@ export default function LatestSupporters({
                     </th>
                     <th
                       scope="col"
+                      className="px-3 py-3.5 hidden lg:table-cell text-left text-sm font-semibold text-gray-900"
+                    >
+                      Adicionado em
+                    </th>
+                    <th
+                      scope="col"
                       className="relative py-3.5 pl-3 pr-4 sm:pr-6"
                     >
                       <span className="sr-only">Edit</span>
@@ -121,8 +128,26 @@ export default function LatestSupporters({
                         <td className="whitespace-nowrap hidden lg:table-cell px-3 py-4 text-sm text-gray-500">
                           {supporter.user.info?.Section?.number}
                         </td>
+                        <td className="whitespace-nowrap hidden lg:table-cell px-3 py-4 text-sm text-gray-500">
+                          <Date
+                            value={dayjs(supporter.assignedAt).format(
+                              "DD/MM/YYYY"
+                            )}
+                          />
+                        </td>
                         <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                          <SupporterOverview supporter={supporter} />
+                          <div className="group">
+                            <button className="inline-flex justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-indigo-600  ring-gray-300 hover:bg-gray-50">
+                              Mais
+                              <ChevronDownIcon
+                                className="-mr-1 h-5 w-5 text-gray-400"
+                                aria-hidden="true"
+                              />
+                            </button>
+                            <div className="hidden group-hover:block absolute">
+                              <SupporterOverview supporter={supporter} />
+                            </div>
+                          </div>
                         </td>
                       </tr>
                     ))}
