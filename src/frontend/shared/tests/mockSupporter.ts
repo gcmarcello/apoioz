@@ -1,10 +1,10 @@
 "use server";
 import prisma from "@/backend/prisma/prisma";
+import { getCampaign } from "@/backend/resources/campaign/campaign.service";
 import {
-  getCampaign,
+  findCampaignLeader,
   listSupporters,
-} from "@/backend/resources/campaign/campaign.service";
-import { findCampaignLeader } from "@/backend/resources/supporters/supporters.service";
+} from "@/backend/resources/supporters/supporters.service";
 import { getZonesByCampaign } from "@/backend/resources/zones/zones.service";
 import { normalizeEmail, normalizePhone } from "@/shared/utils/format";
 import { fakerPT_BR as faker } from "@faker-js/faker";

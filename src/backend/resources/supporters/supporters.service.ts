@@ -4,7 +4,6 @@ import {
   findCampaignById,
   verifyPermission,
 } from "../campaign/campaign.service";
-import { NewUserType } from "@/shared/types/userTypes";
 import { cookies, headers } from "next/headers";
 import { handlePrismaError } from "@/backend/prisma/prismaError";
 import { normalizePhone } from "@/shared/utils/format";
@@ -121,14 +120,15 @@ export async function createSupporter(data: any) {
 
 export async function listSupporters({
   pagination = { pageSize: 10, pageIndex: 0 },
+  userId,
+  campaignId,
   meta,
 }: {
   pagination?: { pageSize: number; pageIndex: number };
+  userId?: string;
+  campaignId?: string;
   meta?: { campaignId: string };
 }) {
-  const userId = headers().get("userId");
-  const campaignId = meta?.campaignId || cookies().get("activeCampaign")?.value;
-
   if (!userId || !campaignId) return;
 
   const supporter = await prisma.supporter.findFirst({
@@ -174,6 +174,7 @@ export async function listSupporters({
         },
       },
     },
+    orderBy: { supporter: { assignedAt: "desc" } },
     take: pagination.pageSize,
     skip: pagination.pageIndex * pagination.pageSize,
   });
