@@ -53,6 +53,18 @@ model Party {
   @@schema("public")
 }
 
+enum CampaignTypes {
+  conselheiro_tutelar
+  vereador
+  prefeito
+  deputado_estadual
+  deputado_federal
+  senador
+  governador
+  presidente
+  @@schema("public")
+}
+
 model Campaign {
   id         String      @id @default(uuid()) @db.Uuid
   user       User?       @relation(fields: [userId], references: [id])
@@ -64,7 +76,7 @@ model Campaign {
   cityId     String?     @db.VarChar
   state      State?      @relation(fields: [stateId], references: [id])
   stateId    String?     @db.VarChar
-  type       String
+  type       CampaignTypes
   Event      Event[]
 
   @@schema("public")
