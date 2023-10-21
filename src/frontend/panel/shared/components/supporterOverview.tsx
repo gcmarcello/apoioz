@@ -1,12 +1,12 @@
 "use client";
 import { useFloating, shift, offset } from "@floating-ui/react";
 import { formatPhone, toProperCase } from "@/shared/utils/format";
+import { ChevronDownIcon } from "@heroicons/react/24/solid";
 
 export default function SupporterOverview({ supporter }: { supporter: any }) {
   const { refs, floatingStyles } = useFloating({
     middleware: [shift()],
   });
-
   const menuItems = [
     { name: "Nome", info: supporter?.user?.name },
     { name: "WhatsApp", info: formatPhone(supporter?.user?.info?.phone || "") },
@@ -20,21 +20,27 @@ export default function SupporterOverview({ supporter }: { supporter: any }) {
   if (!menuItems) return;
 
   return (
-    <div
-      ref={refs.setFloating}
-      className="duration-200 right-0 z-10 mt-2  origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-    >
-      <div className="py-1">
-        {menuItems.map((item, index) => (
-          <div key={index}>
-            <div id={supporter?.id} className="flex w-full px-4 py-2 gap-2">
-              <div className="text-gray-700 block  text-left text-sm">
-                {item.name}
+    <div className="group">
+      <button className="inline-flex justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-indigo-600  ring-gray-300 hover:bg-gray-50">
+        Mais
+        <ChevronDownIcon
+          className="-mr-1 h-5 w-5 text-gray-400"
+          aria-hidden="true"
+        />
+      </button>
+      <div className="hidden group-hover:block absolute z-50 duration-200 right-0 mt-2  origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+        <div className="py-1">
+          {menuItems.map((item, index) => (
+            <div key={index}>
+              <div id={supporter?.id} className="flex w-full px-4 py-2 gap-2">
+                <div className="text-gray-700 block  text-left text-sm">
+                  {item.name}
+                </div>
+                <div>{item.info}</div>
               </div>
-              <div>{item.info}</div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );

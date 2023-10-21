@@ -6,7 +6,6 @@ import dayjs from "dayjs";
 export async function mockEvent(campaignId: string) {
   const supporters = await listSupporters({
     pagination: { pageIndex: 0, pageSize: 500 },
-    meta: { campaignId },
   });
 
   const date = dayjs(faker.date.soon({ days: Math.ceil(Math.random() * 30) }));

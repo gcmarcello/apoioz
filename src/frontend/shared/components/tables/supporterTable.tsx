@@ -6,6 +6,7 @@ import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
@@ -32,6 +33,7 @@ export default function SupporterTable({
 }: {
   originalData: { supporters: any; count: number };
 }) {
+  const [globalFilter, setGlobalFilter] = useState("");
   const { cache } = useSWRConfig();
 
   const columnHelper = createColumnHelper<SupporterTableType>();
@@ -41,6 +43,7 @@ export default function SupporterTable({
       id: "name",
       header: "Nome",
       enableSorting: true,
+      enableGlobalFilter: true,
       cell: (info) => info.getValue(),
     }),
     columnHelper.accessor("referral", {
@@ -53,9 +56,7 @@ export default function SupporterTable({
           {info.getValue()?.user.name && (
             <SupporterBall level={info.getValue()?.level} />
           )}
-          <div className="hidden group-hover:block absolute">
-            <SupporterOverview supporter={info.row.original.referral} />
-          </div>
+          <div className="absolute hidden group-hover:block"></div>
         </div>
       ),
     }),
@@ -69,8 +70,8 @@ export default function SupporterTable({
       header: "Seção",
       cell: (info) => info.getValue(),
     }),
-    columnHelper.accessor("assignedAt", {
-      id: "assignedAt",
+    columnHelper.accessor("createdAt", {
+      id: "createdAt",
       header: "Entrou em",
       cell: (info) => (
         <Date value={dayjs(info.getValue()).format("DD/MM/YYYY HH:mm")} />
@@ -86,10 +87,10 @@ export default function SupporterTable({
             href={`https://wa.me/${info.getValue().info.phone}`}
             target="_blank"
           >
-            <WhatsAppIcon className="fill-gray-400 h-5 w-5 hover:fill-gray-500" />
+            <WhatsAppIcon className="h-5 w-5 fill-gray-400 hover:fill-gray-500" />
           </a>
           <a href={`mailto:${info.getValue().email}`} target="_blank">
-            <AtSymbolIcon className="text-gray-400 h-[1.45rem] w-[1.45rem] hover:text-gray-500" />
+            <AtSymbolIcon className="h-[1.45rem] w-[1.45rem] text-gray-400 hover:text-gray-500" />
           </a>
         </div>
       ),
@@ -119,34 +120,36 @@ export default function SupporterTable({
 
   const [sorting, setSorting] = useState<SortingState>([]);
 
-  const { data, isLoading } = useSWR(
+  /*const { data, isLoading } = useSWR(
     pageIndex !== 0 &&
       !cache.get(
         `#pagination:#pageSize:${pageSize},pageIndex:${pageIndex},,`
-      ) && {
-        pagination,
-      },
+      ) &&  {
+      pagination,
+    },
     listSupporters,
     {}
-  );
+  );*/
 
   const table = useReactTable({
-    data: parseCachedData(),
+    data: /* parseCachedData() */ originalData.supporters,
     columns: supporterTableColumns,
     pageCount: Math.ceil(originalData.count / pageSize),
     state: {
       pagination,
       sorting,
+      globalFilter,
     },
     onPaginationChange: setPagination,
     manualPagination: true,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onGlobalFilterChange: setGlobalFilter,
   });
 
   const pages = Array.from(Array(table.getPageCount()).keys());
 
-  if (isLoading)
+  /* if (isLoading)
     return (
       <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
@@ -168,13 +171,13 @@ export default function SupporterTable({
                   </th>
                   <th
                     scope="col"
-                    className="px-3 hidden lg:table-cell py-3.5 text-left text-sm font-semibold text-gray-900"
+                    className="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 lg:table-cell"
                   >
                     Zona
                   </th>
                   <th
                     scope="col"
-                    className="px-3 py-3.5 hidden lg:table-cell text-left text-sm font-semibold text-gray-900"
+                    className="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 lg:table-cell"
                   >
                     Seção
                   </th>
@@ -186,7 +189,7 @@ export default function SupporterTable({
               <tbody className="divide-y divide-gray-200 bg-white">
                 <tr>
                   <td colSpan={5}>
-                    <div className="flex justify-center mt-4">
+                    <div className="mt-4 flex justify-center">
                       <LoadingSpinner />
                     </div>
                   </td>
@@ -196,12 +199,18 @@ export default function SupporterTable({
           </div>
         </div>
       </div>
-    );
+    ); */
 
   return (
     <SWRConfig value={{ provider: () => new Map([]) }}>
       <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+          <div className="my-3">
+            <TableSearch
+              globalFilter={globalFilter}
+              setGlobalFilter={setGlobalFilter}
+            />
+          </div>
           <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
             <table className="min-w-full divide-y divide-gray-300">
               <thead className="bg-gray-50">

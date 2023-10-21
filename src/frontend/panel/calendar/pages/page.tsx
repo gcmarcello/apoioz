@@ -25,7 +25,7 @@ import {
 } from "@/backend/resources/events/events.service";
 import { cookies } from "next/headers";
 import { Event } from "@prisma/client";
-import { mockEvent } from "@/frontend/shared/tests/mockEvent";
+import { mockEvent } from "@/tests/mockEvent";
 import { usePanel } from "@/frontend/shared/hooks/usePanel";
 import { faker } from "@faker-js/faker";
 dayjs.extend(customParseFormat);

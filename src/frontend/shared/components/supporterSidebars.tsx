@@ -17,7 +17,7 @@ import { usePanel } from "../hooks/usePanel";
 import QRCode from "react-qr-code";
 import Link from "next/link";
 import Toast from "./toast";
-import { mockSupporter } from "../tests/mockSupporter";
+import { mockSupporter } from "../../../tests/mockSupporter";
 import { Campaign } from "@prisma/client";
 import { normalizePhone, toProperCase } from "@/shared/utils/format";
 import { createSupporter } from "@/backend/resources/supporters/supporters.service";
@@ -76,7 +76,7 @@ export default function SupporterSideBar({
     setValue("campaign.referralId", supporter?.id);
   }, [supporter, setValue]);
 
-  async function addMockSupporter(e) {
+  async function addMockSupporter(e: any) {
     e.preventDefault();
     await addSupporter(await mockSupporter(campaign.id));
   }
@@ -102,10 +102,9 @@ export default function SupporterSideBar({
     try {
       setIsLoading(true);
       const { data } = await axios.get(
-        `/api/locations/address/${
-          sectionList.find((section: SectionType) => section.id === value)
-            ?.addressId
-        }`
+        `/api/locations/address/${sectionList.find(
+          (section: SectionType) => section.id === value
+        )?.addressId}`
       );
       setDisplayAddress(data);
       onChange(value);
@@ -124,11 +123,15 @@ export default function SupporterSideBar({
 
   const addSupporter = async (supporterInfo: any) => {
     try {
-      if (campaign.cityId) supporterInfo.cityId = campaign.cityId;
-      if (campaign.stateId) supporterInfo.stateId = campaign.stateId;
+      console.log(supporterInfo);
+      if (campaign?.cityId) supporterInfo.cityId = campaign.cityId;
+      if (campaign?.stateId) supporterInfo.stateId = campaign.stateId;
+
       supporterInfo.phone = normalizePhone(supporterInfo.phone);
       supporterInfo.birthDate = dayjs(supporterInfo.birthDate).toISOString();
+
       await createSupporter(supporterInfo);
+
       setUpdatingLatestSupporters(true);
       setShowToast({
         show: true,
@@ -144,6 +147,7 @@ export default function SupporterSideBar({
         title: "Erro",
         variant: "error",
       }); */
+      console.log(error);
       setError("root.serverError", {
         type: "400",
         message: error.message || "Erro inesperado",
@@ -224,14 +228,14 @@ export default function SupporterSideBar({
                           </button>
                         </div>
                       </div>
-                      <div className="flex flex-1 flex-col justify-between mt-28">
+                      <div className="mt-28 flex flex-1 flex-col justify-between">
                         <div className="divide-y divide-gray-200 px-4 sm:px-6">
                           {!option && (
                             <div className="flex flex-col gap-8 pb-4 pt-20">
                               <button
                                 onClick={() => setOption("add")}
                                 type="button"
-                                className="rounded-md mx-auto bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                className="mx-auto rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                               >
                                 <UserPlusIcon className="h-30 w-30 text-indigo-500 group-hover:text-indigo-900" />
                                 Adicionar Apoiador
@@ -239,7 +243,7 @@ export default function SupporterSideBar({
                               <button
                                 onClick={() => setOption("share")}
                                 type="button"
-                                className="rounded-md mx-auto bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                className="mx-auto rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                               >
                                 <LinkIcon className="h-30 w-30 text-gray-400 group-hover:text-gray-500" />
                                 Compartilhar Link
@@ -247,9 +251,9 @@ export default function SupporterSideBar({
                             </div>
                           )}
                           {option === "share" && (
-                            <div className="space-y-6 pb-5 pt-8 flex flex-col items-center">
+                            <div className="flex flex-col items-center space-y-6 pb-5 pt-8">
                               <QRCode
-                                className="rounded-md h-[250px] w-[250px]"
+                                className="h-[250px] w-[250px] rounded-md"
                                 value={`${siteURL}/apoiar/${campaign.id}?referral=${userId}`}
                               />
 
@@ -267,7 +271,7 @@ export default function SupporterSideBar({
                                       variant: "success",
                                     });
                                   }}
-                                  className="rounded-md w-full bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                  className="w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                 >
                                   Copiar Link
                                 </button>
@@ -275,7 +279,7 @@ export default function SupporterSideBar({
                                   href={`https://wa.me/?text=${siteURL}/apoiar/${campaign.id}?referral=${userId}`}
                                   target="_blank"
                                 >
-                                  <div className="flex my-4 rounded-md justify-center space-x-2 bg-green-500 hover:bg-green-400 px-3 py-2 text-sm font-semibold text-white">
+                                  <div className="my-4 flex justify-center space-x-2 rounded-md bg-green-500 px-3 py-2 text-sm font-semibold text-white hover:bg-green-400">
                                     <svg
                                       role="button"
                                       xmlns="http://www.w3.org/2000/svg"
@@ -381,7 +385,7 @@ export default function SupporterSideBar({
                                   />
                                 </div>
                               </div>
-                              <div className="grid gap-3 grid-cols-2">
+                              <div className="grid grid-cols-2 gap-3">
                                 <div className="col-span-1">
                                   <label
                                     htmlFor="location"
@@ -444,7 +448,7 @@ export default function SupporterSideBar({
                           {isLoading && (
                             <div className="flex items-center justify-center">
                               <svg
-                                className="animate-spin w-[50px] h-[50px] mt-24"
+                                className="mt-24 h-[50px] w-[50px] animate-spin"
                                 viewBox="0 0 24 24"
                               >
                                 <circle

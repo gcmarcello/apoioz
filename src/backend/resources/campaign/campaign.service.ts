@@ -186,7 +186,7 @@ export async function getCampaignBasicInfo(campaignId: string) {
 
   return {
     supporters: paginationSlice(
-      flatSupporters.sort((a, b) => b.assignedAt - a.assignedAt),
+      flatSupporters.sort((a, b) => b.createdAt - a.createdAt),
       pagination.pageIndex,
       pagination.pageSize
     ),
@@ -206,7 +206,7 @@ export async function generateMainPageStats(
   const supportersLastWeek = await prisma.supporter.count({
     where: {
       campaignId: campaignId,
-      assignedAt: { lt: dayjs().subtract(1, "week").toISOString() },
+      createdAt: { lt: dayjs().subtract(1, "week").toISOString() },
     },
   });
   const mostFrequentReferralId = await prisma.supporter.groupBy({

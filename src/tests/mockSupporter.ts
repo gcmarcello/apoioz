@@ -8,22 +8,29 @@ import {
 import { getZonesByCampaign } from "@/backend/resources/zones/zones.service";
 import { normalizeEmail, normalizePhone } from "@/shared/utils/format";
 import { fakerPT_BR as faker } from "@faker-js/faker";
+import { cookies } from "next/headers";
 
-export async function mockSupporter(campaignId: string) {
-  const campaign: any = await getCampaign(campaignId);
-  const zones = await getZonesByCampaign(campaignId);
+export async function mockSupporter(campaignId?: string, ownerId?: string) {
+  if (!campaignId && !cookies().get("activeCampaign")?.value) return;
+
+  const zones = await getZonesByCampaign(
+    campaignId || cookies().get("activeCampaign")!.value
+  );
+
   const supporters = await listSupporters({
     pagination: { pageIndex: 0, pageSize: 500 },
+    campaignOwnerId: campaignId,
+    ownerId: ownerId,
   });
-  const leader = await findCampaignLeader(campaignId);
 
-  if (!zones || !campaign) return;
+  if (!zones) return;
 
   const zoneIndex = Math.floor(Math.random() * zones.length);
-  return {
+  const phone = faker.phone.number();
+  const data = {
     name: faker.person.fullName(),
     email: normalizeEmail(faker.internet.email()),
-    phone: normalizePhone(faker.phone.number()),
+    phone: normalizePhone(phone),
     zoneId: zones[zoneIndex].id,
     sectionId:
       zones[zoneIndex].Section[
@@ -43,4 +50,6 @@ export async function mockSupporter(campaignId: string) {
       campaignId: campaignId,
     },
   };
+
+  return data;
 }
