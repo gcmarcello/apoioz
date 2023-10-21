@@ -18,6 +18,8 @@ model User {
   info      UserInfo?
   campaign  Campaign[]
   supporter Supporter[] @relation(name: "UserToSupporter")
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 }
 
 model UserInfo {
@@ -35,6 +37,8 @@ model UserInfo {
   zoneId    String?   @db.Uuid
   Section   Section?  @relation(fields: [sectionId], references: [id])
   sectionId String?   @db.Uuid
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model Party {
@@ -58,6 +62,8 @@ model Campaign {
   stateId    String?     @db.VarChar
   type       String
   Event      Event[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 }
 
 model Address {
@@ -132,14 +138,17 @@ model Supporter {
   referral                   Supporter?                 @relation("Referrals", fields: [referralId], references: [id])
   referred                   Supporter[]                @relation("Referrals")
   level                      Int
-  assignedAt                 DateTime                   @default(now())
   supporterGroupsMemberships SupporterGroupMembership[]
   Event                      Event[]
+  createdAt                  DateTime                   @default(now())
+  updatedAt                  DateTime                   @updatedAt
 }
 
 model SupporterGroup {
   id          String                     @id @default(uuid()) @db.Uuid
   memberships SupporterGroupMembership[]
+  createdAt   DateTime                   @default(now())
+  updatedAt   DateTime                   @updatedAt
 }
 
 model SupporterGroupMembership {
@@ -149,6 +158,8 @@ model SupporterGroupMembership {
   supporterGroup   SupporterGroup @relation(fields: [supporterGroupId], references: [id])
   isOwner          Boolean        @default(false)
   id               String         @id @default(uuid()) @db.Uuid
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
 }
 
 model Event {
@@ -163,4 +174,6 @@ model Event {
   hostId      String     @db.Uuid
   Supporter   Supporter? @relation(fields: [hostId], references: [id])
   status      String     @db.VarChar
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
