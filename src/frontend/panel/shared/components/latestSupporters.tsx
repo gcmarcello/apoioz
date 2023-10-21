@@ -16,7 +16,6 @@ export default function LatestSupporters({
   userId: string;
   supporters: any;
 }) {
-  const { fetchLatestSupporters, campaign, user } = usePanel();
   const [latestSupporters, setLatestSupporters] = useState(
     supporters.supporters
   );
@@ -28,7 +27,7 @@ export default function LatestSupporters({
           <h1 className="text-base font-semibold leading-6 text-gray-900">
             Novos Apoiadores
           </h1>
-          <div className="flex gap-1 items-center">
+          <div className="flex items-center gap-1">
             <p className="mt-1 text-sm text-gray-700">
               Uma lista dos apoiadores adicionados desde
             </p>
@@ -73,19 +72,19 @@ export default function LatestSupporters({
                     </th>
                     <th
                       scope="col"
-                      className="px-3 hidden lg:table-cell py-3.5 text-left text-sm font-semibold text-gray-900"
+                      className="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 lg:table-cell"
                     >
                       Zona
                     </th>
                     <th
                       scope="col"
-                      className="px-3 py-3.5 hidden lg:table-cell text-left text-sm font-semibold text-gray-900"
+                      className="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 lg:table-cell"
                     >
                       Seção
                     </th>
                     <th
                       scope="col"
-                      className="px-3 py-3.5 hidden lg:table-cell text-left text-sm font-semibold text-gray-900"
+                      className="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 lg:table-cell"
                     >
                       Adicionado em
                     </th>
@@ -122,32 +121,21 @@ export default function LatestSupporters({
                             )}
                           </div>
                         </td>
-                        <td className="whitespace-nowrap hidden lg:table-cell px-3 py-4 text-sm text-gray-500">
+                        <td className="hidden whitespace-nowrap px-3 py-4 text-sm text-gray-500 lg:table-cell">
                           {supporter.user.info?.Zone?.number}
                         </td>
-                        <td className="whitespace-nowrap hidden lg:table-cell px-3 py-4 text-sm text-gray-500">
+                        <td className="hidden whitespace-nowrap px-3 py-4 text-sm text-gray-500 lg:table-cell">
                           {supporter.user.info?.Section?.number}
                         </td>
-                        <td className="whitespace-nowrap hidden lg:table-cell px-3 py-4 text-sm text-gray-500">
+                        <td className="hidden whitespace-nowrap px-3 py-4 text-sm text-gray-500 lg:table-cell">
                           <Date
-                            value={dayjs(supporter.assignedAt).format(
+                            value={dayjs(supporter.createdAt).format(
                               "DD/MM/YYYY"
                             )}
                           />
                         </td>
                         <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                          <div className="group">
-                            <button className="inline-flex justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-indigo-600  ring-gray-300 hover:bg-gray-50">
-                              Mais
-                              <ChevronDownIcon
-                                className="-mr-1 h-5 w-5 text-gray-400"
-                                aria-hidden="true"
-                              />
-                            </button>
-                            <div className="hidden group-hover:block absolute">
-                              <SupporterOverview supporter={supporter} />
-                            </div>
-                          </div>
+                          <SupporterOverview supporter={supporter} />
                         </td>
                       </tr>
                     ))}

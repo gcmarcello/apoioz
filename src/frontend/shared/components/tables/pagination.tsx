@@ -14,8 +14,14 @@ export default function PaginationControl({
   pageIndex: number;
   count: number;
 }) {
+  const pagesArray = Array.from({ length: table.getPageCount() }, (_, i) => i);
+  const visiblePages =
+    pageIndex === 0 || pageIndex > pages.slice(-4)[0]
+      ? [0, 1, 2]
+      : [pageIndex - 1, pageIndex, pageIndex + 1];
+
   return (
-    <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+    <div className="flex w-full items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
       <div className="flex flex-1 justify-between sm:hidden">
         <a
           href="#"
@@ -52,7 +58,32 @@ export default function PaginationControl({
               <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
             </button>
             {/* Current: "z-10 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", Default: "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0" */}
-            {pages.map((page) => (
+            {visiblePages.map((page) => (
+              <a
+                key={`page-${page}`}
+                href="#"
+                onClick={() => table.setPageIndex(page)}
+                aria-current="page"
+                className={clsx(
+                  pageIndex === page
+                    ? "relative z-10 inline-flex items-center bg-indigo-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    : "relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                )}
+              >
+                {page + 1}
+              </a>
+            ))}
+            <button
+              onClick={() =>
+                table.setPageIndex(
+                  pageIndex > pages.slice(-4)[0] ? pageIndex - 4 : pageIndex + 3
+                )
+              }
+              className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+            >
+              ...
+            </button>
+            {pages.slice(-3).map((page) => (
               <a
                 key={`page-${page}`}
                 href="#"

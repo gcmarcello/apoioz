@@ -3,7 +3,6 @@ import { normalize } from "path";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import prisma from "@/backend/prisma/prisma";
-import { NewUserType } from "@/shared/types/userTypes";
 import { handlePrismaError } from "@/backend/prisma/prismaError";
 import { hashInfo } from "@/shared/utils/bCrypt";
 import { normalizePhone } from "@/shared/utils/format";
@@ -25,7 +24,7 @@ export async function findSupporter(userId: string, campaignId: string) {
   if (supporter) return supporter;
 }
 
-export async function createUser(data: NewUserType) {
+export async function createUser(data: any) {
   try {
     const { name, email, password, ...info } = data;
     const user = await prisma.user.create({

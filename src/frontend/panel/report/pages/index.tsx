@@ -1,11 +1,13 @@
 import { listSupporters } from "@/backend/resources/supporters/supporters.service";
 import SupporterTable from "@/frontend/shared/components/tables/supporterTable";
+import { usePanel } from "@/frontend/shared/hooks/usePanel";
+import { cookies, headers } from "next/headers";
+import SupportersTable from "../components/SupportersTable";
 
 export default async function RelatoriosPage({}) {
   const supporters = await listSupporters({
     pagination: {
       pageIndex: 0,
-      pageSize: 10,
     },
   });
 
@@ -14,7 +16,7 @@ export default async function RelatoriosPage({}) {
 
   return (
     <>
-      <div className="md:flex md:items-center md:justify-between mb-1 -mt-4">
+      <div className="-mt-4 mb-1 md:flex md:items-center md:justify-between">
         <div className="min-w-0 flex-1">
           <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
             Relatório de Apoiadores
@@ -35,16 +37,22 @@ export default async function RelatoriosPage({}) {
           </button>
         </div>
       </div>
-      <div className="text-sm mb-4">
-        Nessa página você tem acesso a todos os apoiadores da sua rede. Como
-        Funciona?
+      <div className="mb-4 text-sm">
+        Nessa página você tem acesso a todos os apoiadores da sua rede.{" "}
+        <span
+          className="font-bold text-indigo-600 hover:text-indigo-400"
+          role="button"
+        >
+          Como funciona?
+        </span>
       </div>
-      <SupporterTable
+      {/* <SupporterTable
         originalData={{
           supporters: supporters.supporters,
           count: supporters.count,
         }}
-      />
+      /> */}
+      <SupportersTable rawData={supporters} />
     </>
   );
 }

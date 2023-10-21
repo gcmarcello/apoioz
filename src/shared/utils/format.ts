@@ -3,6 +3,7 @@ export function normalizeEmail(data: string) {
 }
 
 export function normalizePhone(data: string) {
+  if (!data) return null;
   return data.replace(/[^0-9]/g, "");
 }
 

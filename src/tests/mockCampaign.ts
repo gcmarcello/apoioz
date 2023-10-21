@@ -1,16 +1,12 @@
 "use server";
 import prisma from "@/backend/prisma/prisma";
-import {
-  getCampaign,
-  listSupporters,
-} from "@/backend/resources/campaign/campaign.service";
 import { listUsers } from "@/backend/resources/users/users.service";
-import { getZonesByCampaign } from "@/backend/resources/zones/zones.service";
 import { fakerPT_BR as faker } from "@faker-js/faker";
+import { User, UserInfo } from "@prisma/client";
 import dayjs from "dayjs";
 
 export async function mockCampaign(userId?: string) {
-  let user: any;
+  let user: any = null;
 
   if (userId) {
     user = await prisma.user.findUnique({

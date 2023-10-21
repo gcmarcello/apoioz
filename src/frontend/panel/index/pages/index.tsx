@@ -7,11 +7,13 @@ import {
   getCampaign,
 } from "@/backend/resources/campaign/campaign.service";
 import { listSupporters } from "@/backend/resources/supporters/supporters.service";
+import { usePanel } from "@/frontend/shared/hooks/usePanel";
 
 export default async function PanelPage() {
   const userId = headers().get("userId")!;
   const supporters = await listSupporters({
     pagination: { pageIndex: 0, pageSize: 5 },
+    ownerId: userId,
   });
 
   if (!supporters) return;

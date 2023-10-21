@@ -1,7 +1,7 @@
 import { Section, Zone } from "@prisma/client";
 
 export type SupporterTableType = {
-  assignedAt: Date;
+  createdAt: Date;
   campaignId: string;
   id: string;
   level: number;

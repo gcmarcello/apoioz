@@ -7,7 +7,7 @@ import Toast from "@/frontend/shared/components/toast";
 import { usePanel } from "@/frontend/shared/hooks/usePanel";
 import clsx from "clsx";
 import { Button } from "./button";
-import { mockCampaign } from "@/frontend/shared/tests/mockCampaign";
+import { mockCampaign } from "@/tests/mockCampaign";
 
 export default function ChooseCampaign({ campaigns }: { campaigns: any }) {
   const { user, campaign, setCampaign, setShowToast } = usePanel();
@@ -28,14 +28,14 @@ export default function ChooseCampaign({ campaigns }: { campaigns: any }) {
     <div className="mt-6 px-4 sm:px-6 lg:px-8">
       <Toast />
       <div className="flex">
-        <h2 className="text-4xl mb-4 font-medium text-gray-900">Bem Vindo,</h2>
+        <h2 className="mb-4 text-4xl font-medium text-gray-900">Bem Vindo,</h2>
         <div className="flex">
           {user ? (
-            <div className="ms-3 text-4xl mb-4 font-medium text-gray-900">
+            <div className="mb-4 ms-3 text-4xl font-medium text-gray-900">
               {user?.name}
             </div>
           ) : (
-            <div className="flex mb-4 items-center bg-gray-300  ms-3 w-64 animate-pulse rounded-lg"></div>
+            <div className="mb-4 ms-3 flex w-64  animate-pulse items-center rounded-lg bg-gray-300"></div>
           )}
         </div>
       </div>
@@ -48,7 +48,7 @@ export default function ChooseCampaign({ campaigns }: { campaigns: any }) {
       <h2 className="text-sm font-medium text-gray-900">Campanhas Ativas</h2>
       <ul
         role="list"
-        className="mt-3 grid empty:hidden grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4"
+        className="mt-3 grid grid-cols-1 gap-4 empty:hidden sm:grid-cols-2 sm:gap-6 xl:grid-cols-4"
       >
         {campaigns.map((campaign: any) => (
           <li
@@ -65,7 +65,7 @@ export default function ChooseCampaign({ campaigns }: { campaigns: any }) {
             >
               {campaign.name.split(" ")[0][0] + campaign.name.split(" ")[1][0]}
             </div>
-            <div className="flex flex-1 items-center justify-between truncate rounded-r-md border-b border-r border-t border-gray-200 bg-white hover:bg-slate-100 duration-200">
+            <div className="flex flex-1 items-center justify-between truncate rounded-r-md border-b border-r border-t border-gray-200 bg-white duration-200 hover:bg-slate-100">
               <div className="flex-1 truncate px-4 py-2 text-sm">
                 <a
                   href="#"
