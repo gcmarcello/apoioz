@@ -126,7 +126,7 @@ export async function listSupporters({
   ownerId,
   campaignOwnerId,
 }: {
-  pagination?: { pageSize: number; pageIndex: number };
+  pagination?: { pageSize?: number; pageIndex: number };
   ownerId?: string;
   campaignOwnerId?: string;
 }) {
@@ -182,8 +182,8 @@ export async function listSupporters({
       },
 
       orderBy: { supporter: { createdAt: "desc" } },
-      /* take: pagination.pageSize,
-      skip: pagination.pageIndex * pagination.pageSize, */
+      take: pagination.pageSize || undefined,
+      skip: pagination.pageIndex * (pagination.pageSize || 0),
     });
 
     const parsedList = supporterList.map((item) => item.supporter);

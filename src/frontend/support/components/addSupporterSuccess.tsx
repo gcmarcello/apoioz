@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Footer from "../../../common/components/footer";
 import { CheckCircleIcon } from "@heroicons/react/20/solid";
 
 export default function AddSupporterSuccess({ campaign }: { campaign: any }) {
@@ -77,7 +76,7 @@ export default function AddSupporterSuccess({ campaign }: { campaign: any }) {
               campanha. Se você cadastrou uma senha, clique abaixo para acessar
               o painel.
             </p>
-            <div className="fixed left-0 divide-x lg:divide-x-0 bottom-0 bg-indigo-600 lg:bg-transparent w-full lg:static flex justify-between items-center gap-2 mt-8">
+            <div className="fixed bottom-0 left-0 mt-8 flex w-full items-center justify-between gap-2 divide-x bg-indigo-600 lg:static lg:divide-x-0 lg:bg-transparent">
               <Link href={"/login"}>
                 <button
                   type="button"
@@ -88,7 +87,7 @@ export default function AddSupporterSuccess({ campaign }: { campaign: any }) {
               </Link>
 
               <Link href={"/recuperar"}>
-                <p className="text-sm block text-white lg:text-indigo-600 hover:text-indigo-400">
+                <p className="block text-sm text-white hover:text-indigo-400 lg:text-indigo-600">
                   Configurar senha
                 </p>
               </Link>

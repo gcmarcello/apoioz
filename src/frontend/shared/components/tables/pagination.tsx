@@ -14,6 +14,7 @@ export default function PaginationControl({
   pageIndex: number;
   count: number;
 }) {
+  const pagesArray = Array.from({ length: table.getPageCount() }, (_, i) => i);
   const visiblePages =
     pageIndex === 0 || pageIndex > pages.slice(-4)[0]
       ? [0, 1, 2]

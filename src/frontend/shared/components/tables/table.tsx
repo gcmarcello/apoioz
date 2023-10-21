@@ -80,9 +80,10 @@ interface TableProps {
   data: any;
   columns: any;
   dataSetter?: JSX.Element;
+  count: number;
 }
 
-export function DefaultTable({ data, columns, dataSetter }: TableProps) {
+export function DefaultTable({ data, columns, dataSetter, count }: TableProps) {
   const [globalFilter, setGlobalFilter] = useState("");
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -187,7 +188,7 @@ export function DefaultTable({ data, columns, dataSetter }: TableProps) {
                 </tfoot>
               </table>
               <PaginationControl
-                count={data.length}
+                count={count}
                 pageIndex={table.getState().pagination.pageIndex}
                 pages={Array.from(
                   { length: table.getPageCount() },

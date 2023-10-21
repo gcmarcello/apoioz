@@ -11,7 +11,7 @@ export async function GET(
     const permission: number = (
       await verifyPermission(request.headers.get("userId"), params.id)
     ).level;
-    return NextResponse.json(await listUsers(params.id, permission));
+    return NextResponse.json(await listUsers());
   } catch (error) {
     return NextResponse.json(error, {
       status: (error as ServerExceptionType).status || 400,

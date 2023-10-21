@@ -8,7 +8,6 @@ export default async function RelatoriosPage({}) {
   const supporters = await listSupporters({
     pagination: {
       pageIndex: 0,
-      pageSize: 10,
     },
   });
 
@@ -53,7 +52,7 @@ export default async function RelatoriosPage({}) {
           count: supporters.count,
         }}
       /> */}
-      <SupportersTable rawData={supporters.supporters} />
+      <SupportersTable rawData={supporters} />
     </>
   );
 }

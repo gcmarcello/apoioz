@@ -16,7 +16,6 @@ export default function LatestSupporters({
   userId: string;
   supporters: any;
 }) {
-  const { fetchLatestSupporters, campaign, user } = usePanel();
   const [latestSupporters, setLatestSupporters] = useState(
     supporters.supporters
   );

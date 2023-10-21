@@ -71,7 +71,7 @@ export default function SupportersTable({ rawData }: { rawData: any }) {
     }),
   ];
 
-  const [data, setData] = useState(rawData);
+  const [data, setData] = useState(rawData.supporters);
 
-  return <DefaultTable data={data} columns={columns} />;
+  return <DefaultTable data={data} columns={columns} count={rawData.count} />;
 }

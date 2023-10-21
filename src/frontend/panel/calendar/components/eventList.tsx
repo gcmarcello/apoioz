@@ -51,16 +51,16 @@ export default function EventList({ events }: { events: Event[] }) {
                   </dt>
                   <dd>
                     <div className="flex items-baseline">
-                      <time dateTime={dayjs(meeting.date).toISOString()}>
+                      <time dateTime={dayjs(meeting.dateStart).toISOString()}>
                         {
                           <Date
-                            value={dayjs(meeting.date)
+                            value={dayjs(meeting.dateStart)
                               .locale("pt-br")
                               .format("DD/MM/YYYY")}
                           />
                         }
                       </time>
-                      <span className="ms-2 italic text-xs">
+                      <span className="ms-2 text-xs italic">
                         horário de Brasília
                       </span>
                     </div>
