@@ -7,7 +7,7 @@ datasource db {
   provider   = "postgresql"
   url        = env("DATABASE_URL")
   extensions = [uuid_ossp(map: "uuid-ossp", schema: "extensions")]
-  schemas    = ["public", "section_mapping", "extensions"]
+  schemas    = ["public", "elections", "extensions"]
 }
 
 model User {
@@ -32,7 +32,7 @@ model UserInfo {
   birthDate DateTime?
   stateId   String?   @db.VarChar
   party     Party?    @relation(fields: [partyId], references: [id])
-  partyId   String?   @db.Uuid
+  partyId   String?
   State     State?    @relation(fields: [stateId], references: [id])
   City      City?     @relation(fields: [cityId], references: [id])
   cityId    String?   @db.VarChar
@@ -47,13 +47,13 @@ model UserInfo {
 }
 
 model Party {
-  id       String     @id @default(uuid()) @db.Uuid
+  id       String     @id @unique
   number   Int        @unique
   name     String
   ideology String
   UserInfo UserInfo[]
 
-  @@schema("public")
+  @@schema("elections")
 }
 
 model Campaign {
@@ -145,7 +145,7 @@ model Address {
   City         City      @relation(fields: [cityId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_3624b3085165071df70276a4000")
   Section      Section[]
 
-  @@schema("section_mapping")
+  @@schema("elections")
 }
 
 model City {
@@ -158,7 +158,7 @@ model City {
   UserInfo     UserInfo[]
   Campaign     Campaign[]
 
-  @@schema("section_mapping")
+  @@schema("elections")
 }
 
 model City_To_Zone {
@@ -168,7 +168,7 @@ model City_To_Zone {
   City   City   @relation(fields: [cityId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_1408688a13ad486e02cf6a50a03")
   Zone   Zone   @relation(fields: [zoneId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ef5c307ae0af73209fd208026a5")
 
-  @@schema("section_mapping")
+  @@schema("elections")
 }
 
 model Section {
@@ -180,7 +180,7 @@ model Section {
   Zone      Zone       @relation(fields: [zoneId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_deab69c6c23c07560c03943b6aa")
   UserInfo  UserInfo[]
 
-  @@schema("section_mapping")
+  @@schema("elections")
 }
 
 model State {
@@ -192,7 +192,7 @@ model State {
   UserInfo UserInfo[]
   Campaign Campaign[]
 
-  @@schema("section_mapping")
+  @@schema("elections")
 }
 
 model Zone {
@@ -204,5 +204,5 @@ model Zone {
   State        State          @relation(fields: [stateId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_943d589a985354af23c8330abde")
   UserInfo     UserInfo[]
 
-  @@schema("section_mapping")
+  @@schema("elections")
 }
