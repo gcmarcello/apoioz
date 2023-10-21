@@ -18,7 +18,7 @@ import dayjs from "dayjs";
 import useSWR, { SWRConfig, useSWRConfig } from "swr";
 import clsx from "clsx";
 import { Section, User, Zone } from "@prisma/client";
-import SupporterBall from "../supporterBall";
+import SupporterBall from "../../../panel/shared/components/supporterBall";
 import WhatsAppIcon from "../icons/WhatsAppIcon";
 import Link from "next/link";
 import { AtSymbolIcon } from "@heroicons/react/24/outline";
