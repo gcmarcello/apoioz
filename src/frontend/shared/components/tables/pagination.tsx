@@ -72,9 +72,16 @@ export default function PaginationControl({
                 {page + 1}
               </a>
             ))}
-            <span className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+            <button
+              onClick={() =>
+                table.setPageIndex(
+                  pageIndex > pages.slice(-4)[0] ? pageIndex - 4 : pageIndex + 3
+                )
+              }
+              className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+            >
               ...
-            </span>
+            </button>
             {pages.slice(-3).map((page) => (
               <a
                 key={`page-${page}`}
