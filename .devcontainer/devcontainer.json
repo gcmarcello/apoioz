@@ -17,7 +17,8 @@
         "Prisma.prisma-insider",
         "maxcutlyp.dotenv-autocomplete",
         "bradlc.vscode-tailwindcss",
-        "GitHub.copilot"
+        "GitHub.copilot",
+        "rangav.vscode-thunder-client"
       ],
       "settings": {
         "extensions.autoCheckUpdates": false,
