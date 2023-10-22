@@ -75,8 +75,6 @@ export async function createSupporter(data: any) {
       }
     }
 
-    console.log(referrals);
-
     const createSupporterGroupMembershipQuery = referrals.map((referral) => ({
       isOwner: false,
       supporterGroup: {

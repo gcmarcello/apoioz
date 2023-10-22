@@ -155,8 +155,8 @@ export default function PanelSideBar({
                                   className={clsx(
                                     item.current
                                       ? "bg-indigo-700 text-white"
-                                      : "text-indigo-200 hover:text-white hover:bg-indigo-700",
-                                    "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                                      : "text-indigo-200 hover:bg-indigo-700 hover:text-white",
+                                    "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
                                   )}
                                 >
                                   <item.icon
@@ -186,8 +186,8 @@ export default function PanelSideBar({
                                   className={clsx(
                                     team.current
                                       ? "bg-indigo-700 text-white"
-                                      : "text-indigo-200 hover:text-white hover:bg-indigo-700",
-                                    "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                                      : "text-indigo-200 hover:bg-indigo-700 hover:text-white",
+                                    "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
                                   )}
                                 >
                                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-indigo-400 bg-indigo-500 text-[0.625rem] font-medium text-white">
@@ -208,7 +208,7 @@ export default function PanelSideBar({
                               className="h-6 w-6 shrink-0 text-indigo-200 group-hover:text-white"
                               aria-hidden="true"
                             />
-                            Settings
+                            Configurações
                           </a>
                         </li>
                       </ul>
@@ -243,8 +243,8 @@ export default function PanelSideBar({
                           className={clsx(
                             item.current
                               ? "bg-indigo-700 text-white"
-                              : "text-indigo-200 hover:text-white hover:bg-indigo-700",
-                            "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                              : "text-indigo-200 hover:bg-indigo-700 hover:text-white",
+                            "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
                           )}
                         >
                           <item.icon
@@ -274,8 +274,8 @@ export default function PanelSideBar({
                           className={clsx(
                             team.current
                               ? "bg-indigo-700 text-white"
-                              : "text-indigo-200 hover:text-white hover:bg-indigo-700",
-                            "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                              : "text-indigo-200 hover:bg-indigo-700 hover:text-white",
+                            "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
                           )}
                         >
                           <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-indigo-400 bg-indigo-500 text-[0.625rem] font-medium text-white">
@@ -296,7 +296,7 @@ export default function PanelSideBar({
                       className="h-6 w-6 shrink-0 text-indigo-200 group-hover:text-white"
                       aria-hidden="true"
                     />
-                    Settings
+                    Configurações
                   </a>
                 </li>
               </ul>
@@ -322,10 +322,10 @@ export default function PanelSideBar({
             />
 
             <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-              <div className="min-w-0 pt-[1.65rem] md:pt-5 flex flex-1">
-                <h2 className="text-2xl flex font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+              <div className="flex min-w-0 flex-1 pt-[1.65rem] md:pt-5">
+                <h2 className="flex text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
                   Campanha
-                  <span className="md:inline-block hidden ms-1">
+                  <span className="ms-1 hidden md:inline-block">
                     - {campaign.name}
                   </span>
                 </h2>

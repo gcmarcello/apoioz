@@ -13,16 +13,10 @@ export async function findAddressBySection({
 }
 
 export async function getStates() {
-  return await prisma.state.findMany();
+  return await prisma.state.findMany({ orderBy: { name: "asc" } });
 }
 
-export async function getCities({
-  stateId,
-  idOnly,
-}: {
-  stateId: string;
-  idOnly: boolean;
-}) {
+export async function getCities({ stateId }: { stateId: string }) {
   return await prisma.city.findMany({
     where: { stateId: stateId },
     select: {

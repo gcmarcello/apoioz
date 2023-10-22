@@ -123,7 +123,6 @@ export default function SupporterSideBar({
 
   const addSupporter = async (supporterInfo: any) => {
     try {
-      console.log(supporterInfo);
       if (campaign?.cityId) supporterInfo.cityId = campaign.cityId;
       if (campaign?.stateId) supporterInfo.stateId = campaign.stateId;
 

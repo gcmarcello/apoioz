@@ -29,6 +29,7 @@ export async function getZonesByCity(cityId: string) {
   const selectedZones = await prisma.city_To_Zone.findMany({
     where: { cityId },
     select: { City: true, Zone: true },
+    orderBy: { Zone: { number: "asc" } },
   });
   return {
     city: selectedZones[0].City,

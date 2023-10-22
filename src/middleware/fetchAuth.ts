@@ -14,6 +14,14 @@ export async function fetchAuth(roles: string[], request: NextRequest) {
       return NextResponse.next();
     }
 
+    if (request.nextUrl.pathname.startsWith("/registrar") && !isAuth) {
+      return NextResponse.next();
+    }
+
+    if (request.nextUrl.pathname.startsWith("/registrar") && isAuth) {
+      return NextResponse.redirect(new URL("/painel", request.url));
+    }
+
     if (request.nextUrl.pathname.startsWith("/login") && isAuth) {
       return NextResponse.redirect(new URL("/painel", request.url));
     }

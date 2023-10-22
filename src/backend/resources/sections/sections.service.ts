@@ -11,7 +11,10 @@ export async function getSectionsByState(stateId: string) {
 }
 
 export async function getSectionsByZone(zoneId: string) {
-  return await prisma.section.findMany({ where: { zoneId } });
+  return await prisma.section.findMany({
+    where: { zoneId },
+    orderBy: { number: "asc" },
+  });
 }
 
 export async function getSectionsByCity(cityId: string) {
@@ -21,6 +24,7 @@ export async function getSectionsByCity(cityId: string) {
   });
   const sections = await prisma.section.findMany({
     where: { addressId: { in: addresses.map((address) => address.id) } },
+    orderBy: { number: "asc" },
   });
   return {
     city: addresses[0].City,

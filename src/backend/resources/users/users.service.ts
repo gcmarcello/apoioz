@@ -45,6 +45,7 @@ export async function createUser(data: any) {
       },
     });
     return {
+      id: user.id,
       name: user.name,
       email: user.email,
       info: {
