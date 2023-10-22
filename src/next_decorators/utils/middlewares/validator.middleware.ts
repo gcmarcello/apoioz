@@ -1,5 +1,4 @@
 import "reflect-metadata";
-import { MiddlewareImplementation } from "../../lib/decorators/UseMiddlewares";
 
 const VALIDATOR_METADATA = Symbol("validate");
 
@@ -9,24 +8,26 @@ export function ValidationSchema(type: object) {
   };
 }
 
-export class ValidatorMiddleware implements MiddlewareImplementation {
-  async implementation(payload: any, target: any, propertyKey?: string) {
-    try {
-      const schema = Reflect.getMetadata(VALIDATOR_METADATA, target, propertyKey || "");
+export async function ValidatorMiddleware(
+  payload: any,
+  target: any,
+  propertyKey?: string
+) {
+  try {
+    const schema = Reflect.getMetadata(VALIDATOR_METADATA, target, propertyKey || "");
 
-      if (!schema) {
-        console.error("No schema provided for validation.");
-        return false;
-      }
-
-      const { success, error } = schema.safeParse(payload);
-
-      if (!success) {
-        console.error(error);
-        return false;
-      }
-    } catch (err) {
-      console.log(err);
+    if (!schema) {
+      console.error("No schema provided for validation.");
+      return false;
     }
+
+    const { success, error } = schema.safeParse(payload);
+
+    if (!success) {
+      console.error(error);
+      return false;
+    }
+  } catch (err) {
+    console.log(err);
   }
 }
