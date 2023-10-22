@@ -1,5 +1,5 @@
 import { Dispatch, createContext, useContext, useState } from "react";
-import { UserType } from "../../../shared/types/userTypes";
+import { UserType } from "../../../(shared)/types/userTypes";
 import { Supporter } from "@prisma/client";
 
 export class PanelContextProps {

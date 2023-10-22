@@ -6,10 +6,10 @@ import { Controller, useForm } from "react-hook-form";
 import axios from "axios";
 import { EyeIcon, EyeSlashIcon, UserIcon } from "@heroicons/react/24/outline";
 import AddSupporterSuccess from "../components/AddSupporterSuccess";
-import ComboboxInput from "@/frontend/shared/components/combobox";
-import ErrorAlert from "@/frontend/shared/components/errorAlert";
-import { SectionType, AddressType, ZoneType } from "@/shared/types/locationTypes";
-import { normalizePhone, toProperCase } from "@/shared/utils/format";
+import ComboboxInput from "@/frontend/(shared)/components/combobox";
+import ErrorAlert from "@/frontend/(shared)/components/errorAlert";
+import { SectionType, AddressType, ZoneType } from "@/(shared)/types/locationTypes";
+import { normalizePhone, toProperCase } from "@/(shared)/utils/format";
 
 export default function SupporterSignUpPage({
   referral,

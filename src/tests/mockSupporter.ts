@@ -6,7 +6,7 @@ import {
   listSupporters,
 } from "@/backend/resources/supporters/supporters.service";
 import { getZonesByCampaign } from "@/backend/resources/elections/zones/zones.service";
-import { normalizeEmail, normalizePhone } from "@/shared/utils/format";
+import { normalizeEmail, normalizePhone } from "@/(shared)/utils/format";
 import { fakerPT_BR as faker } from "@faker-js/faker";
 import { cookies } from "next/headers";
 

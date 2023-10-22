@@ -1,9 +1,9 @@
 "use client";
-import { Date } from "@/frontend/shared/components/date";
-import WhatsAppIcon from "@/frontend/shared/components/icons/WhatsAppIcon";
-import SupporterBall from "@/frontend/shared/components/supporterBall";
-import { DefaultTable } from "@/frontend/shared/components/tables/table";
-import { SupporterTableType } from "@/shared/types/tableTypes";
+import { Date } from "@/frontend/(shared)/components/Date";
+import WhatsAppIcon from "@/frontend/(shared)/components/icons/WhatsAppIcon";
+import SupporterBall from "../../team/components/SupporterBall";
+import { DefaultTable } from "@/frontend/(shared)/components/tables/table";
+import { SupporterTableType } from "@/(shared)/types/tableTypes";
 import { ArrowPathIcon, AtSymbolIcon } from "@heroicons/react/24/solid";
 import { createColumnHelper } from "@tanstack/react-table";
 import dayjs from "dayjs";

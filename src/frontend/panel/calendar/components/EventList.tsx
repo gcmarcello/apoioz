@@ -9,7 +9,7 @@ import clsx from "clsx";
 import dayjs from "dayjs";
 import { Fragment } from "react";
 import googleCalendarLink from "../utils/generateGoogleCalendarLink";
-import { Date } from "@/frontend/shared/components/date";
+import { Date } from "@/frontend/(shared)/components/Date";
 
 const meetings = [
   {

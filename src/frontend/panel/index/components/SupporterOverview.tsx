@@ -1,6 +1,6 @@
 "use client";
 import { useFloating, shift, offset } from "@floating-ui/react";
-import { formatPhone, toProperCase } from "@/shared/utils/format";
+import { formatPhone, toProperCase } from "@/(shared)/utils/format";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 
 export default function SupporterOverview({ supporter }: { supporter: any }) {

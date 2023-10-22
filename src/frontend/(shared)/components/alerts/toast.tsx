@@ -5,9 +5,9 @@ import {
   XCircleIcon,
   ExclamationCircleIcon,
 } from "@heroicons/react/24/outline";
-import { usePanel } from "../../hooks/usePanel";
 import clsx from "clsx";
 import { XMarkIcon } from "@heroicons/react/20/solid";
+import { usePanel } from "@/frontend/panel/(shared)/hooks/usePanel";
 
 interface ToastVariantTypes {
   success: { bg: string; icon: JSX.Element };

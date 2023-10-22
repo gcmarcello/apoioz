@@ -1,4 +1,4 @@
-import { ServerExceptionType } from "@/shared/types/serverExceptionTypes";
+import { ServerExceptionType } from "@/(shared)/types/serverExceptionTypes";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function fetchAuth(roles: string[], request: NextRequest) {

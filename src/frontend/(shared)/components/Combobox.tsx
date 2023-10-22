@@ -7,7 +7,7 @@ import {
 import { useState } from "react";
 import { Combobox } from "@headlessui/react";
 import clsx from "clsx";
-import { SectionType } from "../../../shared/types/locationTypes";
+import { SectionType } from "../../../(shared)/types/locationTypes";
 
 export default function ComboboxInput({
   data,

@@ -1,5 +1,5 @@
 import { getSectionsByZone } from "@/backend/resources/sections/sections.service";
-import { ServerExceptionType } from "@/shared/types/serverExceptionTypes";
+import { ServerExceptionType } from "@/(shared)/types/serverExceptionTypes";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request, { params }: { params: { zoneId: string } }) {

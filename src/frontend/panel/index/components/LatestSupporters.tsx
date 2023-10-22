@@ -1,13 +1,13 @@
 "use client";
 
-import SupporterBall from "@/frontend/shared/components/supporterBall";
-import { usePanel } from "@/frontend/shared/hooks/usePanel";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import SupporterOverview from "./SupporterOverview";
-import { Date } from "@/frontend/shared/components/date";
+
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
+import { Date } from "@/frontend/(shared)/components/Date";
+import SupporterBall from "../../team/components/SupporterBall";
 
 export default function LatestSupporters({
   userId,

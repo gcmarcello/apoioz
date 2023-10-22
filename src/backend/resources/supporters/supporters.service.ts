@@ -2,7 +2,7 @@ import prisma from "@/backend/prisma/prisma";
 import { findCampaignById, verifyPermission } from "../campaign/campaign.service";
 import { cookies, headers } from "next/headers";
 import { handlePrismaError } from "@/backend/prisma/prismaError";
-import { normalizePhone } from "@/shared/utils/format";
+import { normalizePhone } from "@/(shared)/utils/format";
 import { Campaign, User, UserInfo } from "@prisma/client";
 import { verifyExistingUser } from "../users/users.service";
 

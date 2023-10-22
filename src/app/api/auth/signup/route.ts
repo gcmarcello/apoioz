@@ -1,7 +1,7 @@
 import { createCampaign } from "@/backend/resources/campaign/campaign.service";
 import { createUser } from "@/backend/resources/users/users.service";
-import { SignUpType } from "@/shared/types/authTypes";
-import { ServerExceptionType } from "@/shared/types/serverExceptionTypes";
+import { SignUpType } from "@/(shared)/types/authTypes";
+import { ServerExceptionType } from "@/(shared)/types/serverExceptionTypes";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request, response: Response) {

@@ -3,14 +3,14 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { cookies, headers } from "next/headers";
 
-import ChooseCampaign from "../../frontend/panel/(shared)/components/ChooseCampaign";
 import {
   deactivateCampaign,
   getCampaign,
   listCampaigns,
 } from "@/backend/resources/campaign/campaign.service";
-import PanelSideBar from "@/frontend/shared/components/panelSidebar";
-import PanelProvider from "@/frontend/shared/providers/panelProvider";
+import PanelSideBar from "@/frontend/panel/(shared)/components/PanelSidebar";
+import PanelProvider from "@/frontend/panel/(shared)/providers/panelProvider";
+import ChooseCampaign from "@/frontend/panel/index/components/ChooseCampaign";
 
 const inter = Inter({ subsets: ["latin"] });
 

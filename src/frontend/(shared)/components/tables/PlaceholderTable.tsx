@@ -1,4 +1,4 @@
-import LoadingSpinner from "../loadingSpinner";
+import { LoadingSpinner } from "../Spinners";
 
 export default function PlaceholderTable() {
   return (
