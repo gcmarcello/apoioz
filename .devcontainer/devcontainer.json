@@ -31,6 +31,9 @@
         "editor.codeActionsOnSave": {
           "source.fixAll.eslint": true
         },
+        "material-icon-theme.folders.associations": {
+          "(shared)": "shared"
+        },
         "material-icon-theme.activeIconPack": "none",
         "editor.formatOnSave": true,
         "editor.formatOnPaste": false,

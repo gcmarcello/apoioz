@@ -1,5 +1,3 @@
-"use server";
-
 import prisma from "@/backend/prisma/prisma";
 
 export async function getZonesByCampaign(campaignId: string) {

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { cookies, headers } from "next/headers";
 
-import ChooseCampaign from "../../frontend/panel/shared/components/chooseCampaign";
+import ChooseCampaign from "../../frontend/panel/(shared)/components/ChooseCampaign";
 import {
   getCampaign,
   listCampaigns,

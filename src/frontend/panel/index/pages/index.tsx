@@ -1,6 +1,6 @@
 import Footer from "@/frontend/shared/components/footer";
-import LatestSupporters from "../../shared/components/latestSupporters";
-import MainStats from "../../shared/components/mainStats";
+import LatestSupporters from "../../(shared)/components/LatestSupporters";
+import MainStats from "../../(shared)/components/MainStats";
 import { cookies, headers } from "next/headers";
 import {
   generateMainPageStats,

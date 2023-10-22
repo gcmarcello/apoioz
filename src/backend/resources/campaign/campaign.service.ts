@@ -1,4 +1,3 @@
-"use server";
 import prisma from "@/backend/prisma/prisma";
 import { Campaign, Supporter, Zone } from "@prisma/client";
 import dayjs from "dayjs";

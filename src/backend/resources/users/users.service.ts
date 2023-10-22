@@ -1,4 +1,3 @@
-"use server";
 import { normalize } from "path";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";

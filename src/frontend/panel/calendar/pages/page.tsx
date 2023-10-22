@@ -16,9 +16,9 @@ import updateLocale from "dayjs/plugin/updateLocale";
 import { Fragment, useEffect, useState } from "react";
 import { generateCalendarDays } from "../utils/generateCalendarDays";
 import Loading from "@/app/loading";
-import Calendar from "../components/calendar";
-import EventList from "../components/eventList";
-import DayModal from "../components/dayModal";
+import Calendar from "../components/Calendar";
+import EventList from "../components/EventList";
+import DayModal from "../components/DayModal";
 import {
   createEvent,
   getEventsByCampaign,
