@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import { isMethod, createInstance } from "../utils";
+import { MIDDLEWARE_METADATA } from "../constants/middleware_metadata";
 
 export type MiddlewareImplementation<T> = (
   payload: T,
@@ -59,6 +60,8 @@ export function UseMiddlewares(...middlewares: MiddlewareImplementation<any>[]) 
     if (propertyKey) {
       // O decorator pode ser aplicado a um método ou a uma propriedade, então é necessário verificar se o decorator está sendo aplicado a um método ou a uma propriedade.
       if (descriptor && descriptor.value) {
+        Reflect.defineMetadata(MIDDLEWARE_METADATA, middlewares, target, propertyKey);
+
         // Caso o decorator esteja sendo aplicado a um método, então é necessário envolver o método com os middlewares, utilizando a função wrapWithMiddlewares (definida abaixo).
         descriptor.value = wrapWithMiddlewares(
           descriptor.value,
@@ -126,7 +129,27 @@ function wrapPrototypeMethods(target: any, middlewares: MiddlewareImplementation
     // Salva o método em uma variável
     const originalMethod = prototype[propertyKey];
 
+    // Check if the method already has UseMiddlewares decorators
+    const existingMiddlewares = Reflect.getMetadata(
+      MIDDLEWARE_METADATA,
+      target,
+      propertyKey
+    );
+
+    // Combine existing middlewares with the new ones
+    const combinedMiddlewares = existingMiddlewares
+      ? [...existingMiddlewares, ...middlewares]
+      : middlewares;
+
     // Substitui o método original pelo método envolvido pelos middlewares
-    prototype[propertyKey] = wrapWithMiddlewares(originalMethod, middlewares, target);
+    prototype[propertyKey] = wrapWithMiddlewares(
+      originalMethod,
+      combinedMiddlewares,
+      target,
+      propertyKey
+    );
+
+    // Update the metadata with the combined middlewares
+    Reflect.defineMetadata(MIDDLEWARE_METADATA, combinedMiddlewares, target, propertyKey);
   });
 }
