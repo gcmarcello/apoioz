@@ -1,26 +1,37 @@
 import { NextRequest } from "next/server";
 import { fetchAuth } from "./middleware/fetchAuth";
+import { Path } from "./next_decorators/lib/decorators/Path";
+import { middlewareHandler } from "./next_decorators/lib/handlers/middlewareHandler";
 
-export async function middleware(request: NextRequest) {
-  if (request.nextUrl.pathname.startsWith("/api/panel")) {
+class Middleware {
+  @Path("/api/panel")
+  async panel(request: NextRequest) {
     return fetchAuth(["user"], request);
   }
-  if (request.nextUrl.pathname.startsWith("/api/signup")) {
+
+  @Path("/api/signup")
+  async signup(request: NextRequest) {
     return fetchAuth([], request);
   }
-  if (request.nextUrl.pathname.startsWith("/registrar")) {
+
+  @Path("/registrar")
+  async registrar(request: NextRequest) {
     return fetchAuth(["user"], request);
   }
-  if (request.nextUrl.pathname.startsWith("/login")) {
+
+  @Path("/login")
+  async login(request: NextRequest) {
     return fetchAuth(["user"], request);
   }
-  if (request.nextUrl.pathname.startsWith("/painel")) {
+
+  @Path("/painel")
+  async painel(request: NextRequest) {
     return fetchAuth(["user"], request);
   }
-  if (request.nextUrl.pathname.startsWith("/admin")) {
-    return fetchAuth([], request);
-  }
-  if (request.nextUrl.pathname.startsWith("/registrar")) {
+
+  @Path("/admin")
+  async admin(request: NextRequest) {
     return fetchAuth([], request);
   }
 }
+export const middleware = middlewareHandler(Middleware);

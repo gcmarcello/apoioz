@@ -1,33 +1,14 @@
 "use client";
-import { Menu, Transition } from "@headlessui/react";
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  CalendarIcon,
-  MapPinIcon,
-  EllipsisHorizontalIcon,
-  ChevronDoubleRightIcon,
-  ChevronDoubleLeftIcon,
-} from "@heroicons/react/24/solid";
-import clsx from "clsx";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import updateLocale from "dayjs/plugin/updateLocale";
 import { Fragment, useEffect, useState } from "react";
-import { generateCalendarDays } from "../utils/generateCalendarDays";
-import Loading from "@/app/loading";
-import Calendar from "../components/calendar";
-import EventList from "../components/eventList";
-import DayModal from "../components/dayModal";
-import {
-  createEvent,
-  getEventsByCampaign,
-} from "@/backend/resources/events/events.service";
-import { cookies } from "next/headers";
+import EventList from "../components/EventList";
+import { createEvent } from "@/backend/resources/events/events.actions";
 import { Event } from "@prisma/client";
 import { mockEvent } from "@/tests/mockEvent";
-import { usePanel } from "@/frontend/shared/hooks/usePanel";
-import { faker } from "@faker-js/faker";
+import { usePanel } from "../../(shared)/hooks/usePanel";
+import Calendar from "../components/Calendar";
 dayjs.extend(customParseFormat);
 dayjs.extend(updateLocale);
 

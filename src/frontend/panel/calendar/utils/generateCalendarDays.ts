@@ -34,8 +34,7 @@ export function generateCalendarDays(today: any, events?: Event[]) {
       dayjs(generateDay(today, i)).year() === dayjs().year(),
     isSelected: false,
     events: events?.filter(
-      (event) =>
-        dayjs(event.dateStart).format("YYYY-MM-DD") === generateDay(today, i)
+      (event) => dayjs(event.dateStart).format("YYYY-MM-DD") === generateDay(today, i)
     ),
   }));
 
@@ -48,8 +47,7 @@ export function generateCalendarDays(today: any, events?: Event[]) {
       isToday: false,
       isSelected: false,
       events: events?.filter(
-        (event) =>
-          dayjs(event.dateStart).format("YYYY-MM-DD") === generateDay(today, i)
+        (event) => dayjs(event.dateStart).format("YYYY-MM-DD") === generateDay(today, i)
       ),
     })
   );

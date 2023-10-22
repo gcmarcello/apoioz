@@ -1,10 +1,9 @@
-"use server";
 import prisma from "@/backend/prisma/prisma";
 import { Campaign, Supporter, Zone } from "@prisma/client";
 import dayjs from "dayjs";
 import { cookies, headers } from "next/headers";
 import { NextResponse } from "next/server";
-import { getZonesByCity, getZonesByState } from "../zones/zones.service";
+import { getZonesByCity, getZonesByState } from "../elections/zones/zones.service";
 import crypto from "crypto";
 
 export async function verifyPermission(
@@ -196,10 +195,13 @@ export async function getCampaignBasicInfo(campaignId: string) {
   };
 } */
 
-export async function generateMainPageStats(
-  userId: string,
-  campaignId: string
-) {
+export async function generateMainPageStats({
+  userId,
+  campaignId,
+}: {
+  userId: string;
+  campaignId: string;
+}) {
   await verifyPermission(userId, campaignId);
   const totalSupporters = await prisma.supporter.count({
     where: { campaignId: campaignId },
@@ -287,7 +289,13 @@ export async function fetchCampaignTeamMembers() {
   return teamMembers;
 }
 
-export async function activateCampaign(campaignId: string, userId: string) {
+export async function activateCampaign({
+  userId,
+  campaignId,
+}: {
+  userId: string;
+  campaignId: string;
+}) {
   cookies().set("activeCampaign", campaignId);
   return await getCampaign(userId);
 }

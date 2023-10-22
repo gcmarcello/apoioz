@@ -1,4 +1,3 @@
-"use server";
 import prisma from "@/backend/prisma/prisma";
 import { handlePrismaError } from "@/backend/prisma/prismaError";
 import { LoginType, TokenGeneratorType } from "@/shared/types/authTypes";

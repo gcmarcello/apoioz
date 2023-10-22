@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { cookies, headers } from "next/headers";
 
-import ChooseCampaign from "../../frontend/panel/shared/components/chooseCampaign";
+import ChooseCampaign from "../../frontend/panel/(shared)/components/ChooseCampaign";
 import {
   deactivateCampaign,
   getCampaign,
@@ -20,11 +20,7 @@ export const metadata: Metadata = {
   themeColor: "#FFFFFF",
 };
 
-export default async function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const userId = headers().get("userId")!;
 
   const activeCampaignId = cookies().get("activeCampaign")?.value;

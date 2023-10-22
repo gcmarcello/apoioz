@@ -1,4 +1,4 @@
-import { findAddressBySection } from "@/backend/resources/locations/locations.service";
+import { findAddressBySection } from "@/backend/resources/elections/locations/locations.service";
 import { ServerExceptionType } from "@/shared/types/serverExceptionTypes";
 import { NextResponse } from "next/server";
 

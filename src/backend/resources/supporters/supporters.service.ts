@@ -1,9 +1,5 @@
-"use server";
 import prisma from "@/backend/prisma/prisma";
-import {
-  findCampaignById,
-  verifyPermission,
-} from "../campaign/campaign.service";
+import { findCampaignById, verifyPermission } from "../campaign/campaign.service";
 import { cookies, headers } from "next/headers";
 import { handlePrismaError } from "@/backend/prisma/prismaError";
 import { normalizePhone } from "@/shared/utils/format";
@@ -27,9 +23,7 @@ export async function createSupporter(data: any) {
       );
 
       if (conflictingSupporter)
-        throw new Error(
-          "Usuário já cadastrado em outra campanha do mesmo tipo"
-        );
+        throw new Error("Usuário já cadastrado em outra campanha do mesmo tipo");
     }
 
     const firstReferral = await prisma.supporter.findUnique({
@@ -130,8 +124,7 @@ export async function listSupporters({
 }) {
   try {
     const userId = ownerId || headers().get("userId")!;
-    const campaignId =
-      campaignOwnerId || cookies().get("activeCampaign")!.value;
+    const campaignId = campaignOwnerId || cookies().get("activeCampaign")!.value;
 
     const supporter = await prisma.supporter.findFirst({
       where: { userId: userId, campaignId: campaignId },
@@ -199,17 +192,20 @@ export async function listSupporters({
   }
 }
 
-export async function getSupporterByUser(userId: string, campaignId: string) {
+export async function getSupporterByUser({
+  userId,
+  campaignId,
+}: {
+  userId: string;
+  campaignId: string;
+}) {
   const supporter = await prisma.supporter.findFirst({
     where: { userId, campaignId },
   });
   if (supporter) return supporter;
 }
 
-export async function verifyConflictingSupporter(
-  campaign: Campaign,
-  userInfo: UserInfo
-) {
+export async function verifyConflictingSupporter(campaign: Campaign, userInfo: UserInfo) {
   const conflictingCampaigns: string[] = (
     await prisma.campaign.findMany({
       where: {

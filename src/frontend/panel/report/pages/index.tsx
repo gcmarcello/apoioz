@@ -1,6 +1,4 @@
-import { listSupporters } from "@/backend/resources/supporters/supporters.service";
-import SupporterTable from "@/frontend/shared/components/tables/supporterTable";
-import { usePanel } from "@/frontend/shared/hooks/usePanel";
+import { listSupporters } from "@/backend/resources/supporters/supporters.actions";
 import { cookies, headers } from "next/headers";
 import SupportersTable from "../components/SupportersTable";
 
@@ -39,10 +37,7 @@ export default async function RelatoriosPage({}) {
       </div>
       <div className="mb-4 text-sm">
         Nessa página você tem acesso a todos os apoiadores da sua rede.{" "}
-        <span
-          className="font-bold text-indigo-600 hover:text-indigo-400"
-          role="button"
-        >
+        <span className="font-bold text-indigo-600 hover:text-indigo-400" role="button">
           Como funciona?
         </span>
       </div>

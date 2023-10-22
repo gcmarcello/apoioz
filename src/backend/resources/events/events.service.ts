@@ -1,5 +1,3 @@
-"use server";
-
 import prisma from "@/backend/prisma/prisma";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";

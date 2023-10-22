@@ -6,10 +6,6 @@ export const metadata: Metadata = {
   description: "Página de Login",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return <main className="h-screen">{children}</main>;
 }
