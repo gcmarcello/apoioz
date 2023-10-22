@@ -1,6 +1,6 @@
 import { Dispatch, createContext, useContext, useState } from "react";
-import { UserType } from "../../../(shared)/types/userTypes";
-import { Supporter } from "@prisma/client";
+import { Prisma, Supporter } from "@prisma/client";
+import { UserType } from "@/(shared)/types/userTypes";
 
 export class PanelContextProps {
   updatingLatestSupporters: boolean = false;
@@ -25,18 +25,7 @@ export class PanelContextProps {
   }> = () => {};
   fetchLatestSupporters: (userId: string, campaignId: string) => any = () => {};
   siteURL: string = "";
-  user: UserType = {
-    email: "",
-    name: "",
-    id: "",
-    role: "",
-    info: {
-      cityId: "",
-      phone: "",
-      sectionId: "",
-      zoneId: "",
-    },
-  };
+  user: Omit<Prisma.UserGetPayload<{ include: { info: true } }>, "password">;
   campaign: any = null;
   setCampaign: Dispatch<any> = () => {};
 }

@@ -5,7 +5,7 @@ import { User } from "@prisma/client";
 import * as service from "./sections.service";
 
 class SectionActions {
-  async getSectionsByZone(payload) {
+  async getSectionsByZone(payload: string) {
     return service.getSectionsByZone(payload);
   }
 }

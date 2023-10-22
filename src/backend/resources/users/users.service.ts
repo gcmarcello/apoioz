@@ -1,14 +1,16 @@
+"use server";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import prisma from "@/backend/prisma/prisma";
 import { handlePrismaError } from "@/backend/prisma/prismaError";
 import { hashInfo } from "@/(shared)/utils/bCrypt";
 import { normalizePhone, normalizeEmail } from "@/(shared)/utils/format";
+import { JwtPayload } from "jsonwebtoken";
 dayjs.extend(customParseFormat);
 
-export async function findUser(data: any) {
+export async function findUser({ id }: JwtPayload) {
   const user = await prisma.user.findFirst({
-    where: { id: data.id || "0" },
+    where: { id: id || "0" },
     include: { info: true },
   });
   if (user) return user;
@@ -42,6 +44,7 @@ export async function createUser(data: any) {
         info: {
           create: {
             ...info,
+            phone: normalizePhone(info.phone),
             birthDate: dayjs(info.birthDate, "DD/MM/YYYY").toISOString(),
           },
         },

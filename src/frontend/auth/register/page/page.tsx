@@ -5,14 +5,13 @@ import {
   InformationCircleIcon,
   LockClosedIcon,
 } from "@heroicons/react/24/solid";
-import { Party, State } from "@prisma/client";
+import { City, Party, State } from "@prisma/client";
 import clsx from "clsx";
 import Link from "next/link";
 import { Fragment, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import InputMask from "react-input-mask";
 import CheckoutTotal from "./CheckoutTotal";
-import { getCities } from "@/backend/resources/elections/locations/locations.actions";
 import Image from "next/image";
 import {
   getZonesByCity,
@@ -27,6 +26,7 @@ import { useRouter } from "next/navigation";
 import SelectListbox, {
   ListboxOptionType,
 } from "@/frontend/(shared)/components/SelectListbox";
+import { getCitiesByState } from "@/backend/resources/elections/locations/locations.service";
 
 export default function RegistrarPage({
   parties,
@@ -124,7 +124,7 @@ export default function RegistrarPage({
   useEffect(() => {
     if (!form.watch("state")) return;
     form.resetField("city");
-    getCities({ stateId: form.watch("state").id }).then((cities) => {
+    getCitiesByState(form.watch("state").id).then((cities) => {
       setCities(cities.map((city) => ({ id: city.id, name: city.name, value: city.id })));
     });
   }, [form.watch("state")]);

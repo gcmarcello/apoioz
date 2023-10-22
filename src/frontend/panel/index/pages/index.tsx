@@ -9,7 +9,9 @@ export default async function PanelPage() {
   const userId = headers().get("userId")!;
   const supporters = await listSupporters({
     pagination: { pageIndex: 0, pageSize: 5 },
-    ownerId: userId,
+    data: {
+      ownerId: userId,
+    },
   });
 
   if (!supporters) return;

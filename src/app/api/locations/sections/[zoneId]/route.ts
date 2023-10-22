@@ -1,4 +1,4 @@
-import { getSectionsByZone } from "@/backend/resources/sections/sections.service";
+import { getSectionsByZone } from "@/backend/resources/elections/sections/sections.service";
 import { ServerExceptionType } from "@/(shared)/types/serverExceptionTypes";
 import { NextResponse } from "next/server";
 

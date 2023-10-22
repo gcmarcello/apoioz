@@ -1,3 +1,4 @@
+"use server";
 import prisma from "@/backend/prisma/prisma";
 
 export async function findAddressBySection({ sectionId }: { sectionId: string }) {
@@ -11,7 +12,7 @@ export async function getStates() {
   return await prisma.state.findMany({ orderBy: { name: "asc" } });
 }
 
-export async function getCities({ stateId }: { stateId: string }) {
+export async function getCitiesByState(stateId: string) {
   return await prisma.city.findMany({
     where: { stateId: stateId },
     select: {

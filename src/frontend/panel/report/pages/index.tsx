@@ -6,6 +6,7 @@ export default async function RelatoriosPage({}) {
   const supporters = await listSupporters({
     pagination: {
       pageIndex: 0,
+      pageSize: 10,
     },
   });
 

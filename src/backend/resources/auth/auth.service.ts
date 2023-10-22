@@ -1,10 +1,10 @@
+"use server";
 import prisma from "@/backend/prisma/prisma";
 import { handlePrismaError } from "@/backend/prisma/prismaError";
 import { LoginType, TokenGeneratorType } from "@/(shared)/types/authTypes";
 import { ServerExceptionType } from "@/(shared)/types/serverExceptionTypes";
 import { compareHash } from "@/(shared)/utils/bCrypt";
 import jwt from "jsonwebtoken";
-import { NextRequest, NextResponse } from "next/server";
 
 export async function login(data: LoginType) {
   try {

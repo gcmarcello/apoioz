@@ -1,17 +1,17 @@
+import { HttpStatusCode } from "axios";
 import { NextResponse } from "next/server";
-import { HttpStatus } from "../../types/http/HttpStatus";
 
 interface ResponseObject {
   messages?: string[];
   data?: unknown;
-  status?: keyof typeof HttpStatus | HttpStatus;
+  status?: keyof typeof HttpStatusCode | HttpStatusCode;
 }
 
 export class _NextResponse {
   static raw({ messages, data, status }: ResponseObject) {
     const isStatusNumeric = typeof status === "number";
 
-    const statusCode = status ? (isStatusNumeric ? status : HttpStatus[status]) : 200;
+    const statusCode = status ? (isStatusNumeric ? status : HttpStatusCode[status]) : 200;
 
     const response = {
       messages,

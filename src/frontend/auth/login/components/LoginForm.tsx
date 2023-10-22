@@ -9,6 +9,9 @@ import { fakerPT_BR } from "@faker-js/faker";
 import { TextField } from "@/frontend/(shared)/components/Fields";
 import ErrorAlert from "@/frontend/(shared)/components/alerts/errorAlert";
 import { ButtonSpinner } from "@/frontend/(shared)/components/Spinners";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { LoginDto, loginDto } from "@/(shared)/dto/schemas/auth/login";
+import { z } from "zod";
 
 export default function LoginForm() {
   const {
@@ -16,8 +19,9 @@ export default function LoginForm() {
     register,
     handleSubmit,
     ...form
-  } = useForm({
+  } = useForm<LoginDto>({
     mode: "onChange",
+    resolver: zodResolver(loginDto as any),
   });
   const [isLoading, setIsLoading] = useState(false);
 

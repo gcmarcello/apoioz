@@ -9,6 +9,7 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "strictPropertyInitialization": false,
     "module": "esnext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,

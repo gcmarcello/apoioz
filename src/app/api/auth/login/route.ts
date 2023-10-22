@@ -11,6 +11,11 @@ export async function POST(request: NextRequest, response: NextResponse) {
 
     if (userLogin) {
       return cookies().set("token", userLogin);
+    } else {
+      throw {
+        message: "Usuário ou senha incorretos.",
+        status: 401,
+      };
     }
   } catch (error) {
     console.log(error);

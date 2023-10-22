@@ -1,5 +1,4 @@
 import Image from "next/image";
-import LoginButton from "../frontend/(auth)/login/components/form";
 
 export default async function Home() {
   return (

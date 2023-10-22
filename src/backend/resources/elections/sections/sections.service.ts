@@ -1,3 +1,4 @@
+"use server";
 import prisma from "@/backend/prisma/prisma";
 import { getZonesByState } from "../zones/zones.service";
 

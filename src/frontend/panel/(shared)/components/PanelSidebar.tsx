@@ -17,7 +17,7 @@ import clsx from "clsx";
 import SupporterSideBar from "./SupporterSidebars";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import Toast from "../../../(shared)/components/alerts/toast";
+import { Toast } from "@/frontend/(shared)/components/alerts/toast";
 import { deactivateCampaign } from "@/backend/resources/campaign/campaign.actions";
 import { usePanel } from "../hooks/usePanel";
 import { ButtonSpinner } from "@/frontend/(shared)/components/Spinners";

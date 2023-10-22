@@ -1,6 +1,7 @@
 export function cpfMock() {
-  const rnd = (n) => Math.round(Math.random() * n);
-  const mod = (base, div) => Math.round(base - Math.floor(base / div) * div);
+  const rnd = (n: number) => Math.round(Math.random() * n);
+  const mod = (base: number, div: number) =>
+    Math.round(base - Math.floor(base / div) * div);
   const n = Array(9)
     .fill("")
     .map(() => rnd(9));

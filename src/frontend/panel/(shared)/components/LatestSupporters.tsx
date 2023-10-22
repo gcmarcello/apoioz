@@ -3,7 +3,7 @@
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import SupporterOverview from "./SupporterOverview";
+import SupporterOverview from "../../index/components/SupporterOverview";
 
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import { Date } from "@/frontend/(shared)/components/Date";
@@ -39,7 +39,7 @@ export default function LatestSupporters({
           </div>
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-          <Link href="/painel/relatorios">
+          <Link href="/painel/(shared)/">
             <button
               type="button"
               className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"

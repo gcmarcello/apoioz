@@ -11,7 +11,7 @@ import ErrorAlert from "../../../(shared)/components/alerts/errorAlert";
 import InputMask from "react-input-mask";
 import QRCode from "react-qr-code";
 import Link from "next/link";
-import Toast from "../../../(shared)/components/alerts/toast";
+import { Toast } from "@/frontend/(shared)/components/alerts/toast";
 import { mockSupporter } from "../../../../tests/mockSupporter";
 import { Address, Campaign, Prisma, Section, Zone } from "@prisma/client";
 

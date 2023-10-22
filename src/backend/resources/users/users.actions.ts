@@ -3,8 +3,8 @@
 import * as usersService from "./users.service";
 
 class UsersActions {
-  findUser(data) {
-    return usersService.findUser(data);
+  findUser(id: string) {
+    return usersService.findUser({ id });
   }
 }
 export const { findUser } = new UsersActions();

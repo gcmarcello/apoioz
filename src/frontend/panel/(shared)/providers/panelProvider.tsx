@@ -39,7 +39,7 @@ export default function PanelProvider({
 
   useEffect(() => {
     setSiteURL(document.location.origin);
-    findUser({ id: userId }).then((data) => setUser(data));
+    findUser(userId).then((data) => setUser(data));
     if (!campaign) getCampaign(userId).then((data) => setCampaign(data));
   }, [campaign, userId]);
 

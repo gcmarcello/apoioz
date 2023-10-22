@@ -23,6 +23,6 @@ export async function mockEvent(campaignId: string) {
         Math.random() *
           supporters?.supporters.filter((supporter) => supporter.level > 1).length
       )
-    ].id,
+    ].id!,
   };
 }

@@ -19,8 +19,10 @@ export async function mockSupporter(campaignId?: string, ownerId?: string) {
 
   const supporters = await listSupporters({
     pagination: { pageIndex: 0, pageSize: 500 },
-    campaignOwnerId: campaignId,
-    ownerId: ownerId,
+    data: {
+      campaignOwnerId: campaignId,
+      ownerId: ownerId,
+    },
   });
 
   if (!zones) return;
