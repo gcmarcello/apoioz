@@ -1,8 +1,14 @@
+import { useSearchParams } from "next/navigation";
 import LoginForm from "../components/form";
+import { CheckCircleIcon, XMarkIcon } from "@heroicons/react/24/solid";
 
-export default async function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: { success?: number };
+}) {
   return (
-    <div className="flex bg-gray-900 min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+    <div className="flex min-h-full flex-1 flex-col justify-center bg-gray-900 px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <img
           className="mx-auto h-10 w-auto"
@@ -12,6 +18,23 @@ export default async function LoginPage() {
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white">
           Faça login no ApoioZ
         </h2>
+        {searchParams.success && (
+          <div className="my-4 rounded-md bg-green-50 p-4">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <CheckCircleIcon
+                  className="h-5 w-5 text-green-400"
+                  aria-hidden="true"
+                />
+              </div>
+              <div className="ml-3">
+                <p className="text-sm font-medium text-green-800">
+                  Campanha criada com sucesso! Faça login para continuar.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       <LoginForm />
 

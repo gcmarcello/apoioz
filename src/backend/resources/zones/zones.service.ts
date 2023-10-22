@@ -32,7 +32,7 @@ export async function getZonesByCity(cityId: string) {
     orderBy: { Zone: { number: "asc" } },
   });
   return {
-    city: selectedZones[0].City,
+    city: selectedZones[0]?.City,
     zones: selectedZones.flatMap((zone) => zone.Zone),
     count: selectedZones.flatMap((zone) => zone.Zone).length,
   };

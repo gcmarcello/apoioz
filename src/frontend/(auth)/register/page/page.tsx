@@ -26,6 +26,7 @@ import { Button } from "@/frontend/panel/shared/components/button";
 import dayjs from "dayjs";
 import axios from "axios";
 import ErrorAlert from "@/frontend/shared/components/errorAlert";
+import { useRouter } from "next/navigation";
 
 export default function RegistrarPage({
   parties,
@@ -42,6 +43,7 @@ export default function RegistrarPage({
   const [zones, setZones] = useState<ListboxOptionType[]>([]);
   const [sections, setSections] = useState<ListboxOptionType[]>([]);
   const form = useForm();
+  const actualYear = Number(dayjs().year());
   const campaignTypes = [
     { id: "1", name: "Conselheiro Tutelar", value: "conselheiro" },
     { id: "2", name: "Vereador", value: "vereador" },
@@ -79,6 +81,7 @@ export default function RegistrarPage({
     name: state.name,
     value: state.id,
   }));
+  const router = useRouter();
 
   const handleSubmit = async (data: any) => {
     const body = {
@@ -104,8 +107,8 @@ export default function RegistrarPage({
     };
     try {
       const { data: response } = await axios.post("/api/auth/signup", body);
-      if (response.user === "success") {
-        window.location.href = "/auth/login";
+      if (response.user) {
+        router.push("/login?success=1");
       }
     } catch (error: any) {
       form.setError("root.serverError", {
@@ -204,249 +207,308 @@ export default function RegistrarPage({
           <form onSubmit={form.handleSubmit(handleSubmit)}>
             <div className="mx-auto max-w-2xl px-4 lg:max-w-none lg:px-0">
               {form.formState.errors.root?.serverError.message ? (
-                <div ref={errRef} className="scroll-mt-64">
+                <div ref={errRef} className="mb-4 scroll-mt-64">
                   <ErrorAlert
                     errors={[form.formState.errors.root.serverError.message]}
                   />
                 </div>
               ) : null}
-              <div>
+              <div className="divide-y">
                 <div>
-                  <h3
-                    id="contact-info-heading"
-                    className="text-lg font-medium text-gray-900"
-                  >
-                    Informação do Líder de Campanha
-                  </h3>
-                  <h4 className="text-sm text-gray-500">
-                    Preencha seus dados para realizar o cadastro de usuário.
-                  </h4>
-                </div>
+                  <div>
+                    <h3
+                      id="contact-info-heading"
+                      className="text-lg font-medium text-gray-900"
+                    >
+                      Informação do Líder de Campanha
+                    </h3>
+                    <h4 className="text-sm text-gray-500">
+                      Preencha seus dados para realizar o cadastro de usuário.
+                    </h4>
+                  </div>
 
-                <div className="mt-6">
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Nome Completo
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      {...form.register("name", { required: true })}
-                      type="text"
-                      id="name"
-                      name="name"
-                      autoComplete="name"
-                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                  </div>
-                </div>
-                <div className="mt-6">
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Endereço de Email
-                  </label>
-                  <div className="mt-1">
-                    <input
-                      {...form.register("email", { required: true })}
-                      type="email"
-                      id="email"
-                      name="email"
-                      autoComplete="email"
-                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                    />
-                  </div>
-                </div>
-                <div className="mt-6 grid grid-cols-4 gap-x-4 gap-y-6">
-                  <div className="col-span-4 sm:col-span-2">
+                  <div className="mt-6">
                     <label
-                      htmlFor="phone"
+                      htmlFor="name"
                       className="block text-sm font-medium text-gray-700"
                     >
-                      Telefone de Contato
-                    </label>
-                    <div className="mt-1">
-                      <InputMask
-                        type="text"
-                        inputMode="numeric"
-                        autoComplete="phone"
-                        {...form.register("phone", { required: true })}
-                        name="phone"
-                        id="phone"
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        mask={"(99) 99999-9999"}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-span-4 sm:col-span-2">
-                    <label
-                      htmlFor="birthDate"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Data de Nascimento
-                    </label>
-                    <div className="mt-1">
-                      <InputMask
-                        type="text"
-                        inputMode="numeric"
-                        autoComplete="birthDate"
-                        {...form.register("birthDate", { required: true })}
-                        name="birthDate"
-                        id="birthDate"
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        mask={"99/99/9999"}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-6 grid grid-cols-4 gap-x-4 gap-y-6">
-                  <div className="col-span-4 sm:col-span-2">
-                    <label
-                      htmlFor="password"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Senha
+                      Nome Completo
                     </label>
                     <div className="mt-1">
                       <input
-                        {...form.register("password", { required: true })}
-                        type="password"
-                        id="password"
-                        name="password"
-                        autoComplete="password"
+                        {...form.register("name", { required: true })}
+                        type="text"
+                        id="name"
+                        name="name"
+                        autoComplete="name"
                         className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                       />
                     </div>
                   </div>
-
-                  <div className="col-span-4 sm:col-span-2">
+                  <div className="mt-6">
                     <label
-                      htmlFor="confirmPassword"
+                      htmlFor="email"
                       className="block text-sm font-medium text-gray-700"
                     >
-                      Confirmar Senha
+                      Endereço de Email
                     </label>
                     <div className="mt-1">
                       <input
-                        {...form.register("confirmPassword", {
-                          required: true,
-                          validate: (value) => value === form.watch("password"),
-                        })}
-                        type="password"
-                        id="confirmPassword"
-                        name="confirmPassword"
-                        autoComplete="phone"
+                        {...form.register("email", { required: true })}
+                        type="email"
+                        id="email"
+                        name="email"
+                        autoComplete="email"
                         className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                       />
                     </div>
                   </div>
-                </div>
-              </div>
+                  <div className="mt-6 grid grid-cols-4 gap-x-4 gap-y-6">
+                    <div className="col-span-4 sm:col-span-2">
+                      <label
+                        htmlFor="phone"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Telefone de Contato
+                      </label>
+                      <div className="mt-1">
+                        <InputMask
+                          type="text"
+                          inputMode="numeric"
+                          autoComplete="phone"
+                          {...form.register("phone", { required: true })}
+                          name="phone"
+                          id="phone"
+                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          mask={"(99) 99999-9999"}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-span-4 sm:col-span-2">
+                      <label
+                        htmlFor="birthDate"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Data de Nascimento
+                      </label>
+                      <div className="mt-1">
+                        <InputMask
+                          type="text"
+                          inputMode="numeric"
+                          autoComplete="birthDate"
+                          {...form.register("birthDate", { required: true })}
+                          name="birthDate"
+                          id="birthDate"
+                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          mask={"99/99/9999"}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-6 grid grid-cols-4 gap-x-4 gap-y-6">
+                    <div className="col-span-4 sm:col-span-2">
+                      <label
+                        htmlFor="password"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Senha
+                      </label>
+                      <div className="mt-1">
+                        <input
+                          {...form.register("password", { required: true })}
+                          type="password"
+                          id="password"
+                          name="password"
+                          autoComplete="password"
+                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        />
+                      </div>
+                    </div>
 
-              <div className="mt-10">
-                <h3 className="text-lg font-medium text-gray-900">
-                  Informações da sua campanha
-                </h3>
-                <h4 className="text-sm text-gray-500">
-                  Aqui vão os dados da campanha e a zona/seção do candidato.
-                </h4>
-                <div className="mt-6 grid grid-cols-4 gap-x-4 gap-y-6 sm:grid-cols-4">
-                  <div
-                    className={clsx(
-                      "col-span-4",
-                      form.watch("campaignType")?.value !== "conselheiro" &&
-                        "sm:col-span-2"
+                    <div className="col-span-4 sm:col-span-2">
+                      <label
+                        htmlFor="confirmPassword"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Confirmar Senha
+                      </label>
+                      <div className="mt-1">
+                        <input
+                          {...form.register("confirmPassword", {
+                            required: true,
+                            validate: (value) =>
+                              value === form.watch("password"),
+                          })}
+                          type="password"
+                          id="confirmPassword"
+                          name="confirmPassword"
+                          autoComplete="phone"
+                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 grid grid-cols-4 gap-x-4 gap-y-6">
+                    <div className={clsx("col-span-4 sm:col-span-2")}>
+                      <div className="mt-1">
+                        <SelectListbox
+                          options={parsedStates}
+                          label={"Estado"}
+                          formLabel={"state"}
+                          form={form}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="col-span-4 sm:col-span-2">
+                      <div className="mt-1">
+                        <SelectListbox
+                          options={cities}
+                          label={"Cidade"}
+                          formLabel={"city"}
+                          form={form}
+                          disabled={!cities.length}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-6 grid grid-cols-4 gap-x-4 gap-y-6">
+                    {form.watch("city") && (
+                      <div
+                        className={clsx(
+                          "col-span-4",
+                          sections.length && "sm:col-span-2"
+                        )}
+                      >
+                        <div className="mt-1">
+                          <SelectListbox
+                            options={zones}
+                            label={"Zona"}
+                            formLabel={"zone"}
+                            form={form}
+                            disabled={!zones.length}
+                          />
+                        </div>
+                      </div>
                     )}
-                  >
-                    <div className="mt-1">
-                      <SelectListbox
-                        options={campaignTypes}
-                        label={"Tipo de Campanha"}
-                        formLabel={"campaignType"}
-                        form={form}
-                      />
-                    </div>
-                  </div>
 
-                  {form.watch("campaignType")?.value !== "conselheiro" && (
-                    <div className="col-span-4 sm:col-span-2">
-                      <div className="mt-1">
+                    {form.watch("zone") && sections.length ? (
+                      <div className="col-span-4 sm:col-span-2">
+                        <div className="mt-1">
+                          <SelectListbox
+                            options={sections}
+                            label={"Seção"}
+                            formLabel={"section"}
+                            form={form}
+                            disabled={!sections.length}
+                          />
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+
+                <div className="mt-10">
+                  <div className="mt-8">
+                    <h3 className="text-lg font-medium text-gray-900">
+                      Informações da sua campanha
+                    </h3>
+                    <h4 className="text-sm text-gray-500">
+                      Aqui vão os dados da campanha e a zona/seção do candidato.
+                    </h4>
+                    <div className="mt-6 grid grid-cols-4 gap-x-4 gap-y-6">
+                      <div className="col-span-4 sm:col-span-2">
+                        <label
+                          htmlFor="campaignName"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Nome da Campanha
+                        </label>
+                        <div className="mt-1">
+                          <input
+                            {...form.register("campaignName", {
+                              required: true,
+                            })}
+                            type="text"
+                            id="campaignName"
+                            name="campaignName"
+                            defaultValue={`${
+                              form.watch("name") || "Campanha"
+                            } ${
+                              form.watch("campaignYear")?.value || actualYear
+                            }`}
+                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="col-span-4 sm:col-span-2">
                         <SelectListbox
-                          options={parsedParties}
-                          label={"Partido Político"}
-                          formLabel={"party"}
                           form={form}
+                          formLabel="campaignYear"
+                          label="Ano"
+                          reverseOptions={true}
+                          options={[
+                            {
+                              id: actualYear,
+                              name: actualYear,
+                              value: actualYear,
+                            },
+                            {
+                              id: actualYear + 1,
+                              name: actualYear + 1,
+                              value: actualYear + 1,
+                            },
+                            {
+                              id: actualYear + 2,
+                              name: actualYear + 2,
+                              value: actualYear + 2,
+                            },
+                          ]}
                         />
                       </div>
                     </div>
-                  )}
-                </div>
-                <div className="mt-6 grid grid-cols-4 gap-x-4 gap-y-6">
-                  <div className={clsx("col-span-4 sm:col-span-2")}>
-                    <div className="mt-1">
-                      <SelectListbox
-                        options={parsedStates}
-                        label={"Estado"}
-                        formLabel={"state"}
-                        form={form}
-                      />
-                    </div>
-                  </div>
+                    <div className="mt-6 grid grid-cols-4 gap-x-4 gap-y-6 sm:grid-cols-4">
+                      <div
+                        className={clsx(
+                          "col-span-4",
+                          form.watch("campaignType")?.value !== "conselheiro" &&
+                            "sm:col-span-2"
+                        )}
+                      >
+                        <div className="mt-1">
+                          <SelectListbox
+                            options={campaignTypes}
+                            label={"Tipo de Campanha"}
+                            formLabel={"campaignType"}
+                            form={form}
+                            reverseOptions={true}
+                          />
+                        </div>
+                      </div>
 
-                  <div className="col-span-4 sm:col-span-2">
-                    <div className="mt-1">
-                      <SelectListbox
-                        options={cities}
-                        label={"Cidade"}
-                        formLabel={"city"}
-                        form={form}
-                        disabled={!cities.length}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-6 grid grid-cols-4 gap-x-4 gap-y-6">
-                  {form.watch("city") && (
-                    <div
-                      className={clsx(
-                        "col-span-4",
-                        sections.length && "sm:col-span-2"
+                      {form.watch("campaignType")?.value !== "conselheiro" && (
+                        <div className="col-span-4 sm:col-span-2">
+                          <div className="mt-1">
+                            <SelectListbox
+                              options={parsedParties}
+                              label={"Partido Político"}
+                              formLabel={"party"}
+                              form={form}
+                              reverseOptions={true}
+                            />
+                          </div>
+                        </div>
                       )}
-                    >
-                      <div className="mt-1">
-                        <SelectListbox
-                          options={zones}
-                          label={"Zona"}
-                          formLabel={"zone"}
-                          form={form}
-                          disabled={!zones.length}
-                          reverseOptions={true}
-                        />
-                      </div>
                     </div>
-                  )}
-
-                  {form.watch("zone") && sections.length ? (
-                    <div className="col-span-4 sm:col-span-2">
-                      <div className="mt-1">
-                        <SelectListbox
-                          options={sections}
-                          label={"Seção"}
-                          formLabel={"section"}
-                          form={form}
-                          disabled={!sections.length}
-                          reverseOptions={true}
-                        />
-                      </div>
-                    </div>
-                  ) : null}
+                  </div>
                 </div>
               </div>
+
               <div className="my-4 flex justify-end">
                 <Button type="submit" variant="primary">
-                  Finalizar Pagamento
+                  Finalizar Cadastro
                 </Button>
               </div>
 

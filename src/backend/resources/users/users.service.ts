@@ -1,11 +1,10 @@
 "use server";
-import { normalize } from "path";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import prisma from "@/backend/prisma/prisma";
 import { handlePrismaError } from "@/backend/prisma/prismaError";
 import { hashInfo } from "@/shared/utils/bCrypt";
-import { normalizePhone } from "@/shared/utils/format";
+import { normalizePhone, normalizeEmail } from "@/shared/utils/format";
 dayjs.extend(customParseFormat);
 
 export async function findUser(data: any) {
@@ -27,9 +26,17 @@ export async function findSupporter(userId: string, campaignId: string) {
 export async function createUser(data: any) {
   try {
     const { name, email, password, ...info } = data;
+    const existingUser = await prisma.user.findFirst({
+      where: { email: normalizeEmail(email) },
+    });
+    if (existingUser)
+      throw {
+        message: `Usuário com este email já existe.`,
+        status: 409,
+      };
     const user = await prisma.user.create({
       data: {
-        email: normalize(data.email),
+        email: normalizeEmail(data.email),
         password: data.password && (await hashInfo(data.password)),
         role: "user",
         name: data.name,

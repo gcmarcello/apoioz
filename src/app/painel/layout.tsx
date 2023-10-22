@@ -5,6 +5,7 @@ import { cookies, headers } from "next/headers";
 
 import ChooseCampaign from "../../frontend/panel/shared/components/chooseCampaign";
 import {
+  deactivateCampaign,
   getCampaign,
   listCampaigns,
 } from "@/backend/resources/campaign/campaign.service";
@@ -29,6 +30,7 @@ export default async function RootLayout({
   const activeCampaignId = cookies().get("activeCampaign")?.value;
   let campaign = null;
   if (activeCampaignId) campaign = await getCampaign(userId);
+  if (!campaign) deactivateCampaign();
   const userCampaigns = await listCampaigns(userId);
 
   return (

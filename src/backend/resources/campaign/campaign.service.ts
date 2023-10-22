@@ -59,6 +59,7 @@ export async function getCampaign(userId: string) {
         supporters: { some: { userId: userId } },
       },
     });
+    if (!campaign) return;
     let zones: Omit<Zone, "stateId">[] = [];
 
     if (campaign?.cityId) {
