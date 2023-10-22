@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { CanActivate } from "../lib/decorators/UseGuards";
+import { CanActivate } from "../../lib/decorators/UseGuards";
 
 const VALIDATOR_METADATA = Symbol("validate");
 
@@ -12,11 +12,7 @@ export function ValidationSchema(type: object) {
 export class ValidatorGuard implements CanActivate {
   async implementation(payload: any, target: any, propertyKey?: string) {
     try {
-      const schema = Reflect.getMetadata(
-        VALIDATOR_METADATA,
-        target,
-        propertyKey || ""
-      );
+      const schema = Reflect.getMetadata(VALIDATOR_METADATA, target, propertyKey || "");
 
       if (!schema) {
         console.error("No schema provided for validation.");
@@ -25,7 +21,7 @@ export class ValidatorGuard implements CanActivate {
 
       const { success, error } = schema.safeParse(payload);
 
-      if(!success) {
+      if (!success) {
         console.error(error);
         return false;
       }

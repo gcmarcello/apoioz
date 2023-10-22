@@ -2,19 +2,22 @@
 import {
   activateCampaign,
   createCampaign,
-} from "@/backend/resources/campaign/campaign.service";
-import Toast from "@/frontend/shared/components/toast";
-import { usePanel } from "@/frontend/shared/hooks/usePanel";
+} from "@/backend/resources/campaign/campaign.actions";
 import clsx from "clsx";
-import { Button } from "./button";
 import { mockCampaign } from "@/tests/mockCampaign";
+import { Toast } from "@/frontend/(shared)/components/alerts/toast";
+import { Button } from "../../(shared)/components/button";
+import { usePanel } from "../../(shared)/hooks/usePanel";
 
 export default function ChooseCampaign({ campaigns }: { campaigns: any }) {
   const { user, campaign, setCampaign, setShowToast } = usePanel();
 
   const handleCampaignSelection = async (campaignId: string) => {
     try {
-      const campaign = await activateCampaign(campaignId, user.id);
+      const campaign = await activateCampaign({
+        campaignId,
+        userId: user.id,
+      });
       setCampaign(campaign);
     } catch (error) {
       console.log(error);
@@ -67,15 +70,10 @@ export default function ChooseCampaign({ campaigns }: { campaigns: any }) {
             </div>
             <div className="flex flex-1 items-center justify-between truncate rounded-r-md border-b border-r border-t border-gray-200 bg-white duration-200 hover:bg-slate-100">
               <div className="flex-1 truncate px-4 py-2 text-sm">
-                <a
-                  href="#"
-                  className="font-medium text-gray-900 hover:text-gray-600"
-                >
+                <a href="#" className="font-medium text-gray-900 hover:text-gray-600">
                   {campaign.name}
                 </a>
-                <p className="text-gray-500">
-                  {campaign._count.supporters} Apoiadores
-                </p>
+                <p className="text-gray-500">{campaign._count.supporters} Apoiadores</p>
               </div>
               {/* <Menu as="div" className="flex-shrink-0 pr-2">
                 <Menu.Button className="inline-flex h-8 w-8 items-center justify-center rounded-full  text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">

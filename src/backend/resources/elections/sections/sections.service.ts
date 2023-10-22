@@ -46,9 +46,7 @@ export async function getSectionsByCampaign(campaignId: string) {
     });
 
     if (campaign?.city) {
-      return campaign.city.City_To_Zone.flatMap(
-        (cityToZone) => cityToZone.Zone.Section
-      );
+      return campaign.city.City_To_Zone.flatMap((cityToZone) => cityToZone.Zone.Section);
     }
   } catch (error) {
     console.log(error);

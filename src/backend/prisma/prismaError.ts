@@ -1,4 +1,4 @@
-import { toProperCase } from "@/shared/utils/format";
+import { toProperCase } from "@/(shared)/utils/format";
 import { Prisma } from "@prisma/client";
 
 export function handlePrismaError(target: string, error: any) {

@@ -1,10 +1,10 @@
 "use client";
-import { generateMainPageStats } from "@/backend/resources/campaign/campaign.service";
-import { usePanel } from "@/frontend/shared/hooks/usePanel";
+import { generateMainPageStats } from "@/backend/resources/campaign/campaign.actions";
 import { ArrowDownIcon, ArrowUpIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 
 import { useEffect, useState } from "react";
+import { usePanel } from "../../(shared)/hooks/usePanel";
 
 export default function MainStats() {
   const [mainPageStats, setMainPageStats] = useState<any>(null);
@@ -12,9 +12,10 @@ export default function MainStats() {
 
   useEffect(() => {
     async function fetchStats() {
-      generateMainPageStats(user.id, campaign.id).then((data: any) =>
-        setMainPageStats(data)
-      );
+      generateMainPageStats({
+        campaignId: campaign.id,
+        userId: user.id,
+      }).then((data: any) => setMainPageStats(data));
     }
     if (user && campaign) fetchStats();
   }, [campaign, user]);
@@ -32,11 +33,8 @@ export default function MainStats() {
       name: "Total de Apoiadores",
       stat: mainPageStats?.totalSupporters,
       previousStat: mainPageStats?.supportersLastWeek + " na semana passada",
-      change:
-        totalSupportersChange !== Infinity ? totalSupportersChange + "%" : "",
-      changeType: !!(
-        mainPageStats?.totalSupporters - mainPageStats?.supportersLastWeek
-      )
+      change: totalSupportersChange !== Infinity ? totalSupportersChange + "%" : "",
+      changeType: !!(mainPageStats?.totalSupporters - mainPageStats?.supportersLastWeek)
         ? "increase"
         : "decrease",
     },
@@ -52,8 +50,7 @@ export default function MainStats() {
       stat: mainPageStats?.referralLeader.user?.name,
       previousStat: `${mainPageStats?.referralLeader.count} no total`,
       change: `${Math.round(
-        (mainPageStats?.referralLeader.count / mainPageStats?.totalSupporters) *
-          100
+        (mainPageStats?.referralLeader.count / mainPageStats?.totalSupporters) * 100
       )}%`,
       changeType: false,
     },
@@ -103,10 +100,7 @@ export default function MainStats() {
 
                   <span className="sr-only">
                     {" "}
-                    {item.changeType === "increase"
-                      ? "Increased"
-                      : "Decreased"}{" "}
-                    by{" "}
+                    {item.changeType === "increase" ? "Increased" : "Decreased"} by{" "}
                   </span>
                   {item.change}
                 </div>

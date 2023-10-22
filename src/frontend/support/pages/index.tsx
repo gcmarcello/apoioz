@@ -8,11 +8,7 @@ import { EyeIcon, EyeSlashIcon, UserIcon } from "@heroicons/react/24/outline";
 import AddSupporterSuccess from "../components/AddSupporterSuccess";
 import ComboboxInput from "@/frontend/shared/components/combobox";
 import ErrorAlert from "@/frontend/shared/components/errorAlert";
-import {
-  SectionType,
-  AddressType,
-  ZoneType,
-} from "@/shared/types/locationTypes";
+import { SectionType, AddressType, ZoneType } from "@/shared/types/locationTypes";
 import { normalizePhone, toProperCase } from "@/shared/utils/format";
 
 export default function SupporterSignUpPage({
@@ -24,9 +20,7 @@ export default function SupporterSignUpPage({
 }) {
   const [willAddPassword, setWillAddPassword] = useState(false);
   const [sectionList, setSectionList] = useState<SectionType[]>([]);
-  const [displayAddress, setDisplayAddress] = useState<AddressType | null>(
-    null
-  );
+  const [displayAddress, setDisplayAddress] = useState<AddressType | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -95,10 +89,9 @@ export default function SupporterSignUpPage({
     try {
       setIsLoading(true);
       const { data } = await axios.get(
-        `/api/locations/address/${
-          sectionList.find((section: SectionType) => section.id === value)
-            ?.addressId
-        }`
+        `/api/locations/address/${sectionList.find(
+          (section: SectionType) => section.id === value
+        )?.addressId}`
       );
       setDisplayAddress(data);
       onChange(value);
@@ -120,7 +113,7 @@ export default function SupporterSignUpPage({
   return (
     <div className="isolate bg-white px-6 py-8  lg:px-8">
       <div
-        className="absolute inset-x-0 lg:top-[-10rem] -z-10 transform-gpu overflow-hidden blur-3xl top-[-4rem]"
+        className="absolute inset-x-0 top-[-4rem] -z-10 transform-gpu overflow-hidden blur-3xl lg:top-[-10rem]"
         aria-hidden="true"
       >
         <div
@@ -140,8 +133,7 @@ export default function SupporterSignUpPage({
         </p>
         {referral && (
           <div className="my-4 inline-flex text-gray-500 hover:text-gray-600">
-            <UserIcon className="h-6 w-6 me-2" />{" "}
-            <p>Convidado por {referral.name}</p>
+            <UserIcon className="me-2 h-6 w-6" /> <p>Convidado por {referral.name}</p>
           </div>
         )}
         <form
@@ -248,14 +240,11 @@ export default function SupporterSignUpPage({
                 />
               </div>
               <div className="ml-3 text-sm leading-6">
-                <label
-                  htmlFor="candidates"
-                  className="font-medium text-gray-900"
-                >
+                <label htmlFor="candidates" className="font-medium text-gray-900">
                   <span className="me-1">Configurar senha</span>
                   <span id="candidates-description" className="text-gray-500">
-                    <span className="sr-only">Configurar senha </span>para ter
-                    acesso ao painel de controle.
+                    <span className="sr-only">Configurar senha </span>para ter acesso ao
+                    painel de controle.
                   </span>
                 </label>{" "}
               </div>
@@ -281,7 +270,7 @@ export default function SupporterSignUpPage({
                   <button
                     onClick={() => setShowPassword(!showPassword)}
                     type="button"
-                    className="relative -ml-px inline-flex items-center gap-x-1.5 border-none rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                    className="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md border-none px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                   >
                     {showPassword ? (
                       <EyeSlashIcon
@@ -298,7 +287,7 @@ export default function SupporterSignUpPage({
                 </div>
               </div>
             )}
-            <div className="grid gap-3 grid-cols-2">
+            <div className="grid grid-cols-2 gap-3">
               <div className="col-span-1">
                 <label
                   htmlFor="location"
@@ -364,9 +353,7 @@ export default function SupporterSignUpPage({
                   </dt>
                   <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                     {toProperCase(
-                      displayAddress.address +
-                        ", " +
-                        displayAddress.Zone?.City?.name
+                      displayAddress.address + ", " + displayAddress.Zone?.City?.name
                     )}
                   </dd>
                 </div>
@@ -376,7 +363,7 @@ export default function SupporterSignUpPage({
           <button
             disabled={!isValid}
             type="submit"
-            className=" inline-flex justify-center rounded-md disabled:bg-indigo-300 bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            className=" inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-indigo-300"
           >
             Inscrever
           </button>

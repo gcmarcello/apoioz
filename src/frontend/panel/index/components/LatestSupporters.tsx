@@ -16,9 +16,7 @@ export default function LatestSupporters({
   userId: string;
   supporters: any;
 }) {
-  const [latestSupporters, setLatestSupporters] = useState(
-    supporters.supporters
-  );
+  const [latestSupporters, setLatestSupporters] = useState(supporters.supporters);
 
   return (
     <div className="mt-8">
@@ -88,10 +86,7 @@ export default function LatestSupporters({
                     >
                       Adicionado em
                     </th>
-                    <th
-                      scope="col"
-                      className="relative py-3.5 pl-3 pr-4 sm:pr-6"
-                    >
+                    <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
                       <span className="sr-only">Edit</span>
                     </th>
                   </tr>
@@ -109,9 +104,7 @@ export default function LatestSupporters({
                             {supporter.referral ? (
                               <>
                                 {supporter.referral?.user.name}
-                                <SupporterBall
-                                  level={supporter.referral?.level}
-                                />
+                                <SupporterBall level={supporter.referral?.level} />
                               </>
                             ) : (
                               <>
@@ -128,11 +121,7 @@ export default function LatestSupporters({
                           {supporter.user.info?.Section?.number}
                         </td>
                         <td className="hidden whitespace-nowrap px-3 py-4 text-sm text-gray-500 lg:table-cell">
-                          <Date
-                            value={dayjs(supporter.createdAt).format(
-                              "DD/MM/YYYY"
-                            )}
-                          />
+                          <Date value={dayjs(supporter.createdAt).format("DD/MM/YYYY")} />
                         </td>
                         <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                           <SupporterOverview supporter={supporter} />
@@ -142,8 +131,8 @@ export default function LatestSupporters({
                   {typeof supporters === "number" && (
                     <tr>
                       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm  text-gray-900 sm:pl-6">
-                        Mais {supporters} apoiadores se juntaram à campanha na
-                        última semana!
+                        Mais {supporters} apoiadores se juntaram à campanha na última
+                        semana!
                       </td>
                     </tr>
                   )}

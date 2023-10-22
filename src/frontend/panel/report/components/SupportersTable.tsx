@@ -27,9 +27,7 @@ export default function SupportersTable({ rawData }: { rawData: any }) {
       cell: (info) => (
         <div className="group flex items-center gap-x-1.5 text-gray-500">
           {info.getValue()?.user.name || "Líder"}
-          {info.getValue()?.user.name && (
-            <SupporterBall level={info.getValue()?.level} />
-          )}
+          {info.getValue()?.user.name && <SupporterBall level={info.getValue()?.level} />}
           <div className="absolute hidden group-hover:block"></div>
         </div>
       ),
@@ -47,9 +45,7 @@ export default function SupportersTable({ rawData }: { rawData: any }) {
     columnHelper.accessor("createdAt", {
       id: "createdAt",
       header: "Entrou em",
-      cell: (info) => (
-        <Date value={dayjs(info.getValue()).format("DD/MM/YYYY HH:mm")} />
-      ),
+      cell: (info) => <Date value={dayjs(info.getValue()).format("DD/MM/YYYY HH:mm")} />,
     }),
     columnHelper.accessor("user", {
       id: "options",

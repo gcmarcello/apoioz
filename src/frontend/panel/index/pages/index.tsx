@@ -1,13 +1,9 @@
-import Footer from "@/frontend/shared/components/footer";
-import LatestSupporters from "../../(shared)/components/LatestSupporters";
-import MainStats from "../../(shared)/components/MainStats";
 import { cookies, headers } from "next/headers";
-import {
-  generateMainPageStats,
-  getCampaign,
-} from "@/backend/resources/campaign/campaign.service";
-import { listSupporters } from "@/backend/resources/supporters/supporters.service";
-import { usePanel } from "@/frontend/shared/hooks/usePanel";
+
+import { listSupporters } from "@/backend/resources/supporters/supporters.actions";
+import Footer from "../../(shared)/components/Footer";
+import LatestSupporters from "../components/LatestSupporters";
+import MainStats from "../components/MainStats";
 
 export default async function PanelPage() {
   const userId = headers().get("userId")!;

@@ -14,9 +14,7 @@ export async function getZonesByCampaign(campaignId: string) {
     });
 
     if (campaign?.city) {
-      return campaign.city.City_To_Zone.flatMap(
-        (cityToZone) => cityToZone.Zone
-      );
+      return campaign.city.City_To_Zone.flatMap((cityToZone) => cityToZone.Zone);
     }
   } catch (error) {
     console.log(error);
@@ -44,7 +42,6 @@ export async function getZonesByState(stateId: string) {
   return {
     state: selectedZones[0].State,
     zones: selectedZones.map((zone) => ({ id: zone.id, number: zone.number })),
-    count: selectedZones.map((zone) => ({ id: zone.id, number: zone.number }))
-      .length,
+    count: selectedZones.map((zone) => ({ id: zone.id, number: zone.number })).length,
   };
 }

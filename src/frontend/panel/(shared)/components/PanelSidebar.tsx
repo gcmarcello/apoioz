@@ -12,18 +12,15 @@ import {
   XMarkIcon,
   CalendarIcon,
 } from "@heroicons/react/24/outline";
-import {
-  ChevronDownIcon,
-  MagnifyingGlassIcon,
-} from "@heroicons/react/20/solid";
+import { ChevronDownIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import SupporterSideBar from "./SupporterSidebars";
-import { usePanel } from "../../../(shared)/hooks/usePanel";
-import ButtonSpinner from "./buttonSpinner";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import Toast from "../../../(shared)/components/alerts/toast";
-import { deactivateCampaign } from "@/backend/resources/campaign/campaign.service";
+import { deactivateCampaign } from "@/backend/resources/campaign/campaign.actions";
+import { usePanel } from "../hooks/usePanel";
+import { ButtonSpinner } from "@/frontend/(shared)/components/Spinners";
 
 const teams = [
   { id: 1, name: "Heroicons", href: "#", initial: "H", current: false },
@@ -83,11 +80,7 @@ export default function PanelSideBar({
     <>
       <div className="overflow-clip">
         <Transition.Root show={sidebarOpen} as={Fragment}>
-          <Dialog
-            as="div"
-            className="relative z-50 lg:hidden"
-            onClose={setSidebarOpen}
-          >
+          <Dialog as="div" className="relative z-50 lg:hidden" onClose={setSidebarOpen}>
             <Transition.Child
               as={Fragment}
               enter="transition-opacity ease-linear duration-300"
@@ -127,10 +120,7 @@ export default function PanelSideBar({
                         onClick={() => setSidebarOpen(false)}
                       >
                         <span className="sr-only">Close sidebar</span>
-                        <XMarkIcon
-                          className="h-6 w-6 text-white"
-                          aria-hidden="true"
-                        />
+                        <XMarkIcon className="h-6 w-6 text-white" aria-hidden="true" />
                       </button>
                     </div>
                   </Transition.Child>
@@ -316,18 +306,13 @@ export default function PanelSideBar({
             </button>
 
             {/* Separator */}
-            <div
-              className="h-6 w-px bg-gray-900/10 lg:hidden"
-              aria-hidden="true"
-            />
+            <div className="h-6 w-px bg-gray-900/10 lg:hidden" aria-hidden="true" />
 
             <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
               <div className="flex min-w-0 flex-1 pt-[1.65rem] md:pt-5">
                 <h2 className="flex text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
                   Campanha
-                  <span className="ms-1 hidden md:inline-block">
-                    - {campaign.name}
-                  </span>
+                  <span className="ms-1 hidden md:inline-block">- {campaign.name}</span>
                 </h2>
               </div>
               <div className="flex items-center gap-x-4 lg:gap-x-6">

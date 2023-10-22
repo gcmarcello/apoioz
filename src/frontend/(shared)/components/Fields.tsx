@@ -25,9 +25,7 @@ type TextFieldProps = Omit<React.ComponentPropsWithoutRef<"input">, "id"> & {
 };
 
 export const ErrorField = ({ message }: { message: string | undefined }) =>
-  message ? (
-    <p className="mt-1 h-2 w-full text-[11px] text-red-600">{message}</p>
-  ) : null;
+  message ? <p className="mt-1 h-2 w-full text-[11px] text-red-600">{message}</p> : null;
 
 const InputField = ({ children, errorMessage, relative }: any) => (
   <>
@@ -41,10 +39,7 @@ const InputField = ({ children, errorMessage, relative }: any) => (
       >
         <div className="flex h-full w-full items-center pr-2">
           {errorMessage ? (
-            <ExclamationCircleIcon
-              className="h-5 w-5 text-red-500"
-              aria-hidden="true"
-            />
+            <ExclamationCircleIcon className="h-5 w-5 text-red-500" aria-hidden="true" />
           ) : (
             relative
           )}
@@ -55,37 +50,32 @@ const InputField = ({ children, errorMessage, relative }: any) => (
   </>
 );
 
-export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
-  (_props, ref) => {
-    const id = useId();
+export const TextField = forwardRef<HTMLInputElement, TextFieldProps>((_props, ref) => {
+  const id = useId();
 
-    const { options, ...props } = _props;
+  const { options, ...props } = _props;
 
-    return (
-      <div className={props.className}>
-        {props.label && <Label id={id}>{props.label}</Label>}
-        <InputField
-          errorMessage={options?.errorMessage}
-          relative={props.relative}
-        >
-          <input
-            ref={ref}
-            id={id}
-            type={props.type}
-            {...props}
-            className={clsx(
-              fieldClasses,
-              "pr-8",
-              options?.errorMessage
-                ? "border-red-500 ring-red-500"
-                : "focus:border-indigo-500 focus:ring-indigo-500"
-            )}
-          />
-        </InputField>
-      </div>
-    );
-  }
-);
+  return (
+    <div className={props.className}>
+      {props.label && <Label id={id}>{props.label}</Label>}
+      <InputField errorMessage={options?.errorMessage} relative={props.relative}>
+        <input
+          ref={ref}
+          id={id}
+          type={props.type}
+          {...props}
+          className={clsx(
+            fieldClasses,
+            "pr-8",
+            options?.errorMessage
+              ? "border-red-500 ring-red-500"
+              : "focus:border-indigo-500 focus:ring-indigo-500"
+          )}
+        />
+      </InputField>
+    </div>
+  );
+});
 
 type MaskedTextFieldProps = TextFieldProps & {
   mask: {
@@ -95,46 +85,42 @@ type MaskedTextFieldProps = TextFieldProps & {
   };
 };
 
-export const MaskedTextField = forwardRef<
-  HTMLInputElement,
-  MaskedTextFieldProps
->((_props, ref) => {
-  const id = useId();
+export const MaskedTextField = forwardRef<HTMLInputElement, MaskedTextFieldProps>(
+  (_props, ref) => {
+    const id = useId();
 
-  const { options, mask, onChange, onBlur, ...props } = _props;
+    const { options, mask, onChange, onBlur, ...props } = _props;
 
-  return (
-    <div className={props.className}>
-      {props.label && <Label id={id}>{props.label}</Label>}
-      <InputField
-        errorMessage={options?.errorMessage}
-        relative={props.relative}
-      >
-        <Controller
-          name={mask.fieldName}
-          control={mask.control}
-          render={({ field }) => (
-            <InputMask
-              mask={mask.value}
-              onChange={field.onChange}
-              onBlur={field.onBlur}
-              value={field.value}
-              id={id}
-              type={props.type}
-              {...props}
-              className={clsx(
-                fieldClasses,
-                options?.errorMessage
-                  ? "border-red-500 ring-red-500"
-                  : "focus:border-emerald-500 focus:ring-emerald-500"
-              )}
-            />
-          )}
-        />
-      </InputField>
-    </div>
-  );
-});
+    return (
+      <div className={props.className}>
+        {props.label && <Label id={id}>{props.label}</Label>}
+        <InputField errorMessage={options?.errorMessage} relative={props.relative}>
+          <Controller
+            name={mask.fieldName}
+            control={mask.control}
+            render={({ field }) => (
+              <InputMask
+                mask={mask.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                value={field.value}
+                id={id}
+                type={props.type}
+                {...props}
+                className={clsx(
+                  fieldClasses,
+                  options?.errorMessage
+                    ? "border-red-500 ring-red-500"
+                    : "focus:border-emerald-500 focus:ring-emerald-500"
+                )}
+              />
+            )}
+          />
+        </InputField>
+      </div>
+    );
+  }
+);
 
 export function SelectField({
   label,

@@ -4,12 +4,12 @@ import React, { useEffect, useState } from "react";
 import { PanelContext } from "../contexts/panel.ctx";
 import { cookies } from "next/headers";
 import { Supporter } from "@prisma/client";
-import { getCampaign } from "@/backend/resources/campaign/campaign.service";
 import {
   getSupporterByUser,
   listSupporters,
-} from "@/backend/resources/supporters/supporters.service";
-import { findUser } from "@/backend/resources/users/users.service";
+} from "@/backend/resources/supporters/supporters.actions";
+import { findUser } from "@/backend/resources/users/users.actions";
+import { getCampaign } from "@/backend/resources/campaign/campaign.actions";
 
 export default function PanelProvider({
   children,
@@ -20,8 +20,7 @@ export default function PanelProvider({
   userId: string;
   fetchedCampaign: any;
 }) {
-  const [updatingLatestSupporters, setUpdatingLatestSupporters] =
-    useState(false);
+  const [updatingLatestSupporters, setUpdatingLatestSupporters] = useState(false);
   const [showToast, setShowToast] = useState({
     show: false,
     title: "",
@@ -46,7 +45,10 @@ export default function PanelProvider({
 
   useEffect(() => {
     if (user && campaign) {
-      getSupporterByUser(user.id, campaign.id).then((data) => {
+      getSupporterByUser({
+        userId: user.id,
+        campaignId: campaign.id,
+      }).then((data) => {
         setSupporter(data);
       });
     }

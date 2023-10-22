@@ -19,11 +19,7 @@ export const metadata: Metadata = {
   themeColor: "#FFFFFF",
 };
 
-export default async function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const userId = headers().get("userId")!;
 
   const activeCampaignId = cookies().get("activeCampaign")?.value;

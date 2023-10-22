@@ -1,10 +1,6 @@
 import { Button } from "@/frontend/panel/(shared)/components/button";
 
-export default function AsaasButton({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AsaasButton({ children }: { children: React.ReactNode }) {
   return (
     <Button className="flex-fill rounded-md bg-[#0030b9] px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset duration-200 hover:bg-[#0041b9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">
       <div className="flex items-center">

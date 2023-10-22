@@ -30,26 +30,15 @@ export default function CheckoutTotal({
             Total <span className="ms-2">R$4.000,00</span>
           </dt>
           <dd>
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={!form.formState.isValid}
-            >
+            <Button type="submit" variant="primary" disabled={!form.formState.isValid}>
               Finalizar Pagamento
             </Button>
           </dd>
         </div>
         <p className="mt-6 flex justify-start text-sm font-medium text-gray-500">
-          <LockClosedIcon
-            className="mr-1.5 h-5 w-5 text-gray-400"
-            aria-hidden="true"
-          />
+          <LockClosedIcon className="mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
           Pagamentos processados via banco digital{" "}
-          <a
-            href="https://asaas.com"
-            className="ms-1 underline"
-            target="_blank"
-          >
+          <a href="https://asaas.com" className="ms-1 underline" target="_blank">
             Asaas
           </a>
         </p>

@@ -18,17 +18,9 @@ export default function SupporterBall({ level }: { level: number }) {
   };
 
   return (
-    <div
-      className={clsx(
-        "flex-none rounded-full p-1",
-        referralColor(level).shadow
-      )}
-    >
+    <div className={clsx("flex-none rounded-full p-1", referralColor(level).shadow)}>
       <div
-        className={clsx(
-          "h-1.5 w-1.5 rounded-full",
-          referralColor(level).circle
-        )}
+        className={clsx("h-1.5 w-1.5 rounded-full", referralColor(level).circle)}
       ></div>
     </div>
   );

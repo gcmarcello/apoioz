@@ -1,39 +1,37 @@
 import { NextRequest } from "next/server";
 import { fetchAuth } from "./middleware/fetchAuth";
-import { Path, middlewareHandler } from "./middleware/Decorators";
+import { MiddlewarePath } from "../next_decorators/lib/decorators/MiddlewarePath";
+import { middlewareHandler } from "../next_decorators/lib/handlers/middlewareHandler";
 
 class Middleware {
-  @Path("/api/panel")
+  @MiddlewarePath("/api/panel")
   async panel(request: NextRequest) {
     return fetchAuth(["user"], request);
   }
 
-  @Path("/api/signup")
+  @MiddlewarePath("/api/signup")
   async signup(request: NextRequest) {
     return fetchAuth([], request);
   }
 
-  @Path("/registrar")
+  @MiddlewarePath("/registrar")
   async registrar(request: NextRequest) {
     return fetchAuth(["user"], request);
   }
 
-  @Path("/login")
+  @MiddlewarePath("/login")
   async login(request: NextRequest) {
     return fetchAuth(["user"], request);
   }
 
-  @Path("/painel")
+  @MiddlewarePath("/painel")
   async painel(request: NextRequest) {
     return fetchAuth(["user"], request);
   }
 
-  @Path("/admin")
+  @MiddlewarePath("/admin")
   async admin(request: NextRequest) {
     return fetchAuth([], request);
   }
-
-  
 }
 export const middleware = middlewareHandler(Middleware);
-

@@ -14,9 +14,7 @@ export function For<T>({ each, children, identifier, fallback }: ForProps<T>) {
     return (
       <>
         {each.map((element, index) => (
-          <Fragment key={identifier + index}>
-            {children(element, index)}
-          </Fragment>
+          <Fragment key={identifier + index}>{children(element, index)}</Fragment>
         ))}
       </>
     );

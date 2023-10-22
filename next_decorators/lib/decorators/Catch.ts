@@ -2,10 +2,7 @@ import { isPromise, isFunction } from "../utils";
 
 export type Handler = (err: any, context: any, ...args: any) => any;
 
-const Factory = (
-  ErrorClassConstructor: Function | Handler,
-  handler?: Handler
-) => {
+const Factory = (ErrorClassConstructor: Function | Handler, handler?: Handler) => {
   return (target: any, key: string, descriptor: PropertyDescriptor) => {
     const { value } = descriptor;
 
@@ -21,8 +18,7 @@ const Factory = (
       } catch (error) {
         if (
           isFunction(handler) &&
-          (ErrorClassConstructor === undefined ||
-            error instanceof ErrorClassConstructor)
+          (ErrorClassConstructor === undefined || error instanceof ErrorClassConstructor)
         ) {
           return handler.call(null, error, this, ...args);
         }

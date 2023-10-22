@@ -3,9 +3,12 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useState } from "react";
-import ButtonSpinner from "@/frontend/shared/components/buttonSpinner";
-import ErrorAlert from "@/frontend/shared/components/errorAlert";
-import { login } from "@/backend/resources/auth/auth.service";
+import { login } from "@/backend/resources/auth/auth.actions";
+import { Mocker } from "@/frontend/(shared)/components/Mocker";
+import { fakerPT_BR } from "@faker-js/faker";
+import { TextField } from "@/frontend/(shared)/components/Fields";
+import ErrorAlert from "@/frontend/(shared)/components/alerts/errorAlert";
+import { ButtonSpinner } from "@/frontend/(shared)/components/Spinners";
 
 export default function LoginForm() {
   const {
@@ -13,7 +16,7 @@ export default function LoginForm() {
     register,
     handleSubmit,
     ...form
-  } = useForm<LoginDto>({
+  } = useForm({
     mode: "onChange",
   });
   const [isLoading, setIsLoading] = useState(false);

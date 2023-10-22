@@ -21,8 +21,7 @@ export async function mockEvent(campaignId: string) {
     hostId: supporters?.supporters.filter((supporter) => supporter.level > 1)[
       Math.floor(
         Math.random() *
-          supporters?.supporters.filter((supporter) => supporter.level > 1)
-            .length
+          supporters?.supporters.filter((supporter) => supporter.level > 1).length
       )
     ].id,
   };

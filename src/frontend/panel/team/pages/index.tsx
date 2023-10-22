@@ -3,9 +3,9 @@ import { cookies } from "next/headers";
 import clsx from "clsx";
 import { AtSymbolIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import { fetchCampaignTeamMembers } from "@/backend/resources/campaign/campaign.service";
-import WhatsAppIcon from "@/frontend/shared/components/icons/WhatsAppIcon";
-import { toProperCase } from "@/shared/utils/format";
+import { fetchCampaignTeamMembers } from "@/backend/resources/campaign/campaign.actions";
+import { toProperCase } from "@/(shared)/utils/format";
+import WhatsAppIcon from "@/frontend/(shared)/components/icons/WhatsAppIcon";
 
 export default async function TimePage() {
   const teamMembers = await fetchCampaignTeamMembers();
@@ -17,10 +17,10 @@ export default async function TimePage() {
   const CampaignLeaderCard = () => {
     return (
       <div className="flex items-center justify-center gap-2">
-        <div className="h-28 w-28 lg:h-64 lg:w-64 relative">
+        <div className="relative h-28 w-28 lg:h-64 lg:w-64">
           <Image
             fill={true}
-            className="inline-block rounded-full border-yellow-500 border-4"
+            className="inline-block rounded-full border-4 border-yellow-500"
             src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
             alt=""
           />
@@ -42,7 +42,7 @@ export default async function TimePage() {
     if (member)
       return (
         <div className="flex items-center justify-start gap-2">
-          <div className="h-16 w-16 lg:h-28 lg:w-28 relative">
+          <div className="relative h-16 w-16 lg:h-28 lg:w-28">
             <Image
               fill={true}
               className={clsx(
@@ -62,15 +62,12 @@ export default async function TimePage() {
               Zona {member.user?.info?.Zone?.number} -{" "}
               {toProperCase(member.user?.info?.City.name)}
             </p>
-            <span className="flex gap-1 items-center">
-              <Link
-                href={`https://wa.me/55${member.user.info?.phone}`}
-                target="_blank"
-              >
-                <WhatsAppIcon className="fill-gray-400 hover:fill-gray-600 duration-200 h-6 w-6" />
+            <span className="flex items-center gap-1">
+              <Link href={`https://wa.me/55${member.user.info?.phone}`} target="_blank">
+                <WhatsAppIcon className="h-6 w-6 fill-gray-400 duration-200 hover:fill-gray-600" />
               </Link>
               <Link href={`mailto:${member.user.email}`}>
-                <AtSymbolIcon className="h-7 w-7 text-gray-400 hover:text-gray-600 duration-200" />
+                <AtSymbolIcon className="h-7 w-7 text-gray-400 duration-200 hover:text-gray-600" />
               </Link>
             </span>
           </div>
@@ -80,19 +77,18 @@ export default async function TimePage() {
 
   return (
     <>
-      <p className="text-xl mb-2 font-medium text-gray-700 group-hover:text-gray-900">
+      <p className="mb-2 text-xl font-medium text-gray-700 group-hover:text-gray-900">
         Líder
       </p>
       <div className="flex items-center justify-center gap-10">
         <CampaignLeaderCard />
-        <p className="w-1/2 hidden lg:block">
-          Somos mais do que uma equipe: somos uma família de sonhadores, movidos
-          pela paixão de construir um futuro melhor para todos nós. Cada rosto,
-          cada história em nossa equipe reflete a esperança e o desejo de um
-          Brasil mais justo e solidário. Se você se identifica com essa visão,
-          saiba que não está sozinho. Estamos aqui, juntos, e contamos com você
-          nessa jornada. Conheça nosso time e venha fazer parte dessa
-          transformação conosco.
+        <p className="hidden w-1/2 lg:block">
+          Somos mais do que uma equipe: somos uma família de sonhadores, movidos pela
+          paixão de construir um futuro melhor para todos nós. Cada rosto, cada história
+          em nossa equipe reflete a esperança e o desejo de um Brasil mais justo e
+          solidário. Se você se identifica com essa visão, saiba que não está sozinho.
+          Estamos aqui, juntos, e contamos com você nessa jornada. Conheça nosso time e
+          venha fazer parte dessa transformação conosco.
         </p>
       </div>
       <div className="my-3">
@@ -103,9 +99,9 @@ export default async function TimePage() {
       <p className="text-lg font-medium text-gray-700 group-hover:text-gray-900">
         Nível 3
       </p>
-      <div className="mt-4 flex flex-col lg:flex-row flex-wrap">
+      <div className="mt-4 flex flex-col flex-wrap lg:flex-row">
         {thirdLevel.map((member) => (
-          <div key={member.id} className="lg:w-1/3 my-2">
+          <div key={member.id} className="my-2 lg:w-1/3">
             <TeamMemberCard member={member} />
           </div>
         ))}
@@ -119,9 +115,9 @@ export default async function TimePage() {
         Nível 2
       </p>
       {secondLevel.length && (
-        <div className="mt-4 flex flex-col lg:flex-row flex-wrap">
+        <div className="mt-4 flex flex-col flex-wrap lg:flex-row">
           {secondLevel.map((member) => (
-            <div key={member.id} className="lg:w-1/4 my-2">
+            <div key={member.id} className="my-2 lg:w-1/4">
               <TeamMemberCard member={member} />
             </div>
           ))}

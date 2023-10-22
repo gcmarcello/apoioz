@@ -128,14 +128,8 @@ export default function Calendar({ events }: { events?: Event[] }) {
                 : "bg-gray-50",
               (day.isSelected || day.isToday) && "font-semibold",
               day.isSelected && "text-white",
-              !day.isSelected &&
-                day.isCurrentMonth &&
-                !day.isToday &&
-                "text-gray-900",
-              !day.isSelected &&
-                !day.isCurrentMonth &&
-                !day.isToday &&
-                "text-gray-400",
+              !day.isSelected && day.isCurrentMonth && !day.isToday && "text-gray-900",
+              !day.isSelected && !day.isCurrentMonth && !day.isToday && "text-gray-400",
               day.isToday && "text-white",
               day.isToday && !day.isSelected && "text-indigo-600",
               dayIdx === 0 && "rounded-tl-lg",

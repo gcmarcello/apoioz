@@ -82,9 +82,7 @@ export default function SelectListbox({
                     defaultChecked
                     className={({ active }) =>
                       clsx(
-                        active
-                          ? "bg-indigo-600 text-white"
-                          : "bg-gray-100 text-gray-900",
+                        active ? "bg-indigo-600 text-white" : "bg-gray-100 text-gray-900",
                         "relative cursor-default select-none py-2 pl-3 pr-9"
                       )
                     }
@@ -148,10 +146,7 @@ export default function SelectListbox({
                                 "absolute inset-y-0 right-0 flex items-center pr-4"
                               )}
                             >
-                              <CheckIcon
-                                className="h-5 w-5"
-                                aria-hidden="true"
-                              />
+                              <CheckIcon className="h-5 w-5" aria-hidden="true" />
                             </span>
                           ) : null}
                         </>

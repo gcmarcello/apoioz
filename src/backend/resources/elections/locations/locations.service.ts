@@ -1,10 +1,6 @@
 import prisma from "@/backend/prisma/prisma";
 
-export async function findAddressBySection({
-  sectionId,
-}: {
-  sectionId: string;
-}) {
+export async function findAddressBySection({ sectionId }: { sectionId: string }) {
   return await prisma.address.findUnique({
     where: { id: sectionId },
     include: { City: true },

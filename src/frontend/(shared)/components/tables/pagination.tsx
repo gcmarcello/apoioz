@@ -39,8 +39,7 @@ export default function PaginationControl({
       <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
         <div>
           <p className="text-sm text-gray-700">
-            Mostrando{" "}
-            <span className="font-medium">{table.options.data.length}</span> de{" "}
+            Mostrando <span className="font-medium">{table.options.data.length}</span> de{" "}
             <span className="font-medium">{count}</span> apoiadores
           </p>
         </div>

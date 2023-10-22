@@ -11,11 +11,7 @@ export class _NextResponse {
   static raw({ messages, data, status }: ResponseObject) {
     const isStatusNumeric = typeof status === "number";
 
-    const statusCode = status
-      ? isStatusNumeric
-        ? status
-        : HttpStatus[status]
-      : 200;
+    const statusCode = status ? (isStatusNumeric ? status : HttpStatus[status]) : 200;
 
     const response = {
       messages,

@@ -5,7 +5,7 @@ import {
   findCampaignLeader,
   listSupporters,
 } from "@/backend/resources/supporters/supporters.service";
-import { getZonesByCampaign } from "@/backend/resources/zones/zones.service";
+import { getZonesByCampaign } from "@/backend/resources/elections/zones/zones.service";
 import { normalizeEmail, normalizePhone } from "@/shared/utils/format";
 import { fakerPT_BR as faker } from "@faker-js/faker";
 import { cookies } from "next/headers";
@@ -39,9 +39,8 @@ export async function mockSupporter(campaignId?: string, ownerId?: string) {
     birthDate: faker.date.birthdate(),
     campaign: {
       referralId:
-        supporters?.supporters[
-          Math.floor(Math.random() * supporters.supporters.length)
-        ]?.id ||
+        supporters?.supporters[Math.floor(Math.random() * supporters.supporters.length)]
+          ?.id ||
         (
           await prisma.supporter.findFirst({
             where: { campaignId: campaignId },

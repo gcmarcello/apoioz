@@ -12,21 +12,14 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useEffect, useMemo, useState } from "react";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
-import LoadingSpinner from "../loadingSpinner";
 import dayjs from "dayjs";
 import useSWR, { SWRConfig, useSWRConfig } from "swr";
-import clsx from "clsx";
-import { Section, User, Zone } from "@prisma/client";
-import SupporterBall from "../../../panel/(shared)/components/supporterBall";
 import WhatsAppIcon from "../icons/WhatsAppIcon";
-import Link from "next/link";
 import { AtSymbolIcon } from "@heroicons/react/24/outline";
 import { Date } from "../Date";
-import { listSupporters } from "@/backend/resources/supporters/supporters.service";
-import SupporterOverview from "@/frontend/panel/(shared)/components/supporterOverview";
 import PaginationControl from "./pagination";
-import { SupporterTableType } from "@/shared/types/tableTypes";
+import SupporterBall from "@/frontend/panel/team/components/SupporterBall";
+import { SupporterTableType } from "@/(shared)/types/tableTypes";
 
 export default function SupporterTable({
   originalData,
@@ -53,9 +46,7 @@ export default function SupporterTable({
       cell: (info) => (
         <div className="group flex items-center gap-x-1.5 text-gray-500">
           {info.getValue()?.user.name || "Líder"}
-          {info.getValue()?.user.name && (
-            <SupporterBall level={info.getValue()?.level} />
-          )}
+          {info.getValue()?.user.name && <SupporterBall level={info.getValue()?.level} />}
           <div className="absolute hidden group-hover:block"></div>
         </div>
       ),
@@ -73,9 +64,7 @@ export default function SupporterTable({
     columnHelper.accessor("createdAt", {
       id: "createdAt",
       header: "Entrou em",
-      cell: (info) => (
-        <Date value={dayjs(info.getValue()).format("DD/MM/YYYY HH:mm")} />
-      ),
+      cell: (info) => <Date value={dayjs(info.getValue()).format("DD/MM/YYYY HH:mm")} />,
     }),
     columnHelper.accessor("user", {
       id: "options",
@@ -247,10 +236,7 @@ export default function SupporterTable({
                             key={cell.id}
                             className="whitespace-nowrap px-3 py-4 text-sm text-gray-900"
                           >
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
                           </td>
                         );
                       })}

@@ -9,9 +9,7 @@ export function cpfMock() {
   d1 = 11 - mod(d1, 11);
   if (d1 >= 10) d1 = 0;
 
-  let d2 =
-    d1 * 2 +
-    n.reduce((total, number, index) => total + number * (11 - index), 0);
+  let d2 = d1 * 2 + n.reduce((total, number, index) => total + number * (11 - index), 0);
   d2 = 11 - mod(d2, 11);
   if (d2 >= 10) d2 = 0;
 

@@ -81,9 +81,7 @@ export default function DayModal({
                       className="text-base font-semibold leading-6 text-gray-900"
                     >
                       {showForm ? "Agendar - " : "Agenda - "}
-                      {selectedDay
-                        ? dayjs(selectedDay.date).format("DD/MM/YYYY")
-                        : "Dia"}
+                      {selectedDay ? dayjs(selectedDay.date).format("DD/MM/YYYY") : "Dia"}
                     </Dialog.Title>
                   </div>
                   <div className="absolute right-0 top-0 pr-4 pt-4 sm:block">
@@ -144,9 +142,7 @@ export default function DayModal({
 
                                       <div className="mt-2 flex items-start space-x-3 xl:ml-3.5 xl:mt-0 xl:border-l xl:border-gray-400 xl:border-opacity-50 xl:pl-3.5">
                                         <dt className="mt-0.5">
-                                          <span className="sr-only">
-                                            Location
-                                          </span>
+                                          <span className="sr-only">Location</span>
                                           <MapPinIcon
                                             className="h-5 w-5 text-gray-400"
                                             aria-hidden="true"
@@ -162,9 +158,7 @@ export default function DayModal({
                                   >
                                     <div>
                                       <Menu.Button className="-m-2 flex items-center rounded-full p-2 text-gray-500 hover:text-gray-600">
-                                        <span className="sr-only">
-                                          Open options
-                                        </span>
+                                        <span className="sr-only">Open options</span>
                                         <EllipsisHorizontalIcon
                                           className="h-5 w-5"
                                           aria-hidden="true"
@@ -237,10 +231,10 @@ export default function DayModal({
                               </Dialog.Title>
                               <div className="mt-2">
                                 <p className="text-sm text-gray-500">
-                                  Clique no botão abaixo para solicitar um
-                                  evento na sua área! Assim que a equipe
-                                  verificar a agenda, seu evento será confirmado
-                                  e você receberá uma mensagem com os detalhes.
+                                  Clique no botão abaixo para solicitar um evento na sua
+                                  área! Assim que a equipe verificar a agenda, seu evento
+                                  será confirmado e você receberá uma mensagem com os
+                                  detalhes.
                                 </p>
                               </div>
                             </div>
@@ -261,10 +255,7 @@ export default function DayModal({
                       >
                         Voltar
                       </Button>
-                      <Button
-                        variant="primary"
-                        onClick={() => setShowForm(true)}
-                      >
+                      <Button variant="primary" onClick={() => setShowForm(true)}>
                         Marcar Evento
                       </Button>
                     </div>

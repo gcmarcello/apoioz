@@ -54,13 +54,7 @@ function DebouncedInput({
     };
   }, [value, debounce, onChange]);
 
-  return (
-    <input
-      {...props}
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
-    />
-  );
+  return <input {...props} value={value} onChange={(e) => setValue(e.target.value)} />;
 }
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
@@ -153,14 +147,8 @@ export function DefaultTable({ data, columns, dataSetter, count }: TableProps) {
                   {table.getRowModel().rows.map((row) => (
                     <tr key={row.id}>
                       {row.getVisibleCells().map((cell) => (
-                        <td
-                          key={cell.id}
-                          className="whitespace-nowrap px-4 py-4 text-sm"
-                        >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
+                        <td key={cell.id} className="whitespace-nowrap px-4 py-4 text-sm">
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </td>
                       ))}
                     </tr>
@@ -190,10 +178,7 @@ export function DefaultTable({ data, columns, dataSetter, count }: TableProps) {
               <PaginationControl
                 count={count}
                 pageIndex={table.getState().pagination.pageIndex}
-                pages={Array.from(
-                  { length: table.getPageCount() },
-                  (_, i) => i
-                )}
+                pages={Array.from({ length: table.getPageCount() }, (_, i) => i)}
                 table={table}
               />
             </div>

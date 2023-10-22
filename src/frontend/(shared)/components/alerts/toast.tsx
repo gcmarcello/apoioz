@@ -15,7 +15,7 @@ interface ToastVariantTypes {
   alert: { bg: string; icon: JSX.Element };
 }
 
-export default function Toast() {
+export function Toast() {
   const { setShowToast, showToast } = usePanel();
 
   const handleCloseToast = () => {
@@ -33,24 +33,15 @@ export default function Toast() {
   const variants: ToastVariantTypes = {
     success: {
       bg: "bg-green-300",
-      icon: (
-        <CheckCircleIcon className="h-6 w-6 text-white" aria-hidden="true" />
-      ),
+      icon: <CheckCircleIcon className="h-6 w-6 text-white" aria-hidden="true" />,
     },
     error: {
       bg: "bg-red-300",
-      icon: (
-        <XCircleIcon className="h-6 w-6 text-gray-800" aria-hidden="true" />
-      ),
+      icon: <XCircleIcon className="h-6 w-6 text-gray-800" aria-hidden="true" />,
     },
     alert: {
       bg: "bg-yellow-300",
-      icon: (
-        <ExclamationCircleIcon
-          className="h-6 w-6 text-black"
-          aria-hidden="true"
-        />
-      ),
+      icon: <ExclamationCircleIcon className="h-6 w-6 text-black" aria-hidden="true" />,
     },
   };
 
@@ -61,7 +52,7 @@ export default function Toast() {
       {/* Global notification live region, render this permanently at the end of the document */}
       <div
         aria-live="assertive"
-        className="pointer-events-none z-[100] fixed inset-0 flex items-end px-4 py-6  sm:p-6"
+        className="pointer-events-none fixed inset-0 z-[100] flex items-end px-4 py-6  sm:p-6"
       >
         <div className="flex w-full flex-col items-center space-y-4 sm:items-end">
           {/* Notification panel, dynamically insert this into the live region when it needs to be displayed */}
@@ -83,16 +74,10 @@ export default function Toast() {
             >
               <div className="p-4">
                 <div className="flex items-start">
-                  <div className="flex-shrink-0">
-                    {variants[showToast.variant].icon}
-                  </div>
+                  <div className="flex-shrink-0">{variants[showToast.variant].icon}</div>
                   <div className="ml-3 w-0 flex-1 pt-0.5">
-                    <p className="text-sm font-medium text-gray-700">
-                      {showToast.title}
-                    </p>
-                    <p className="mt-1 text-sm text-gray-500">
-                      {showToast.message}
-                    </p>
+                    <p className="text-sm font-medium text-gray-700">{showToast.title}</p>
+                    <p className="mt-1 text-sm text-gray-500">{showToast.message}</p>
                   </div>
                   <div className="ml-4 flex flex-shrink-0">
                     <button

@@ -3,25 +3,22 @@ import { Dispatch, Fragment, useEffect, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { UserPlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { LinkIcon } from "@heroicons/react/20/solid";
-import {
-  AddressType,
-  SectionType,
-  ZoneType,
-} from "../../../shared/types/locationTypes";
+
 import { Controller, useForm } from "react-hook-form";
 import axios from "axios";
 import ComboboxInput from "../../../(shared)/components/Combobox";
 import ErrorAlert from "../../../(shared)/components/alerts/errorAlert";
 import InputMask from "react-input-mask";
-import { usePanel } from "../../../(shared)/hooks/usePanel";
 import QRCode from "react-qr-code";
 import Link from "next/link";
 import Toast from "../../../(shared)/components/alerts/toast";
 import { mockSupporter } from "../../../../tests/mockSupporter";
-import { Campaign } from "@prisma/client";
-import { normalizePhone, toProperCase } from "@/shared/utils/format";
-import { createSupporter } from "@/backend/resources/supporters/supporters.service";
+import { Address, Campaign, Prisma, Section, Zone } from "@prisma/client";
+
+import { createSupporter } from "@/backend/resources/supporters/supporters.actions";
 import dayjs from "dayjs";
+import { usePanel } from "../hooks/usePanel";
+import { normalizePhone, toProperCase } from "@/(shared)/utils/format";
 
 export default function SupporterSideBar({
   open,
@@ -32,19 +29,14 @@ export default function SupporterSideBar({
   setOpen: Dispatch<boolean>;
   userId: string;
 }) {
-  const {
-    setUpdatingLatestSupporters,
-    setShowToast,
-    siteURL,
-    campaign,
-    supporter,
-  } = usePanel();
+  const { setUpdatingLatestSupporters, setShowToast, siteURL, campaign, supporter } =
+    usePanel();
 
   const [option, setOption] = useState<string | null>(null);
-  const [sectionList, setSectionList] = useState<SectionType[]>([]);
-  const [displayAddress, setDisplayAddress] = useState<AddressType | null>(
-    null
-  );
+  const [sectionList, setSectionList] = useState<Section[]>([]);
+  const [displayAddress, setDisplayAddress] = useState<Prisma.AddressGetPayload<{
+    include: { City: true };
+  }> | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const ref = useRef<null | HTMLDivElement>(null);
   const errRef = useRef<null | HTMLDivElement>(null);
@@ -103,7 +95,7 @@ export default function SupporterSideBar({
       setIsLoading(true);
       const { data } = await axios.get(
         `/api/locations/address/${sectionList.find(
-          (section: SectionType) => section.id === value
+          (section: Section) => section.id === value
         )?.addressId}`
       );
       setDisplayAddress(data);
@@ -211,10 +203,7 @@ export default function SupporterSideBar({
                             >
                               <span className="absolute -inset-2.5" />
                               <span className="sr-only">Fechar menu</span>
-                              <XMarkIcon
-                                className="h-6 w-6"
-                                aria-hidden="true"
-                              />
+                              <XMarkIcon className="h-6 w-6" aria-hidden="true" />
                             </button>
                           </div>
                         </div>
@@ -222,9 +211,7 @@ export default function SupporterSideBar({
                           <p className="text-sm text-indigo-300">
                             Complete os campos e faça parte da transformação.
                           </p>
-                          <button onClick={(e) => addMockSupporter(e)}>
-                            Teste
-                          </button>
+                          <button onClick={(e) => addMockSupporter(e)}>Teste</button>
                         </div>
                       </div>
                       <div className="mt-28 flex flex-1 flex-col justify-between">
@@ -395,8 +382,7 @@ export default function SupporterSideBar({
                                   <select
                                     id="zone"
                                     {...register("zoneId", {
-                                      onChange: (e) =>
-                                        fetchSections(e.target.value),
+                                      onChange: (e) => fetchSections(e.target.value),
                                     })}
                                     className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
                                     defaultValue={""}
@@ -404,7 +390,7 @@ export default function SupporterSideBar({
                                     <option disabled value={""}>
                                       Selecione
                                     </option>
-                                    {campaign.zones.map((zone: ZoneType) => (
+                                    {campaign.zones.map((zone: Zone) => (
                                       <option key={zone.id} value={zone.id}>
                                         {zone.number.toString()}
                                       </option>
@@ -423,17 +409,12 @@ export default function SupporterSideBar({
                                       name="sectionId"
                                       control={control}
                                       defaultValue={""}
-                                      render={({
-                                        field: { onChange, value },
-                                      }) => (
+                                      render={({ field: { onChange, value } }) => (
                                         <ComboboxInput
                                           data={sectionList}
                                           disabled={!sectionList.length}
                                           onChange={(value: string) =>
-                                            handleComboBoxChange(
-                                              onChange,
-                                              value
-                                            )
+                                            handleComboBoxChange(onChange, value)
                                           }
                                           value={value}
                                         />
@@ -467,17 +448,14 @@ export default function SupporterSideBar({
                             </div>
                           )}
                           {displayAddress && !isLoading && (
-                            <div
-                              ref={ref}
-                              className="mt-6 border-t border-gray-100"
-                            >
+                            <div ref={ref} className="mt-6 border-t border-gray-100">
                               <dl className="divide-y divide-gray-100">
                                 <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                                   <dt className="text-sm font-medium leading-6 text-gray-900">
                                     Local de Votação
                                   </dt>
                                   <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                                    {toProperCase(displayAddress.location)}
+                                    {toProperCase(displayAddress.location || "")}
                                   </dd>
                                 </div>
                                 <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">

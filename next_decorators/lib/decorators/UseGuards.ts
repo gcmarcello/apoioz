@@ -1,12 +1,8 @@
 import "reflect-metadata";
-import { isMethod, createInstance } from '../utils';
+import { isMethod, createInstance } from "../utils";
 
 export interface CanActivate {
-  implementation(
-    payload: unknown,
-    target: any,
-    propertyKey?: string
-  ): Promise<unknown>;
+  implementation(payload: unknown, target: any, propertyKey?: string): Promise<unknown>;
 }
 
 export function UseGuards(...GuardClasses: Array<new () => CanActivate>) {
@@ -17,17 +13,27 @@ export function UseGuards(...GuardClasses: Array<new () => CanActivate>) {
   ): any {
     if (propertyKey) {
       if (descriptor && descriptor.value) {
-        descriptor.value = wrapWithGuard(descriptor.value, GuardClasses, target, propertyKey);
+        descriptor.value = wrapWithGuard(
+          descriptor.value,
+          GuardClasses,
+          target,
+          propertyKey
+        );
         return descriptor;
       }
       return;
     }
-    
+
     wrapPrototypeMethods(target, GuardClasses);
   };
 }
 
-function wrapWithGuard(originalMethod: any, GuardClasses: Array<new () => CanActivate>, target: any, propertyKey?: string) {
+function wrapWithGuard(
+  originalMethod: any,
+  GuardClasses: Array<new () => CanActivate>,
+  target: any,
+  propertyKey?: string
+) {
   return async function (payload: unknown): Promise<unknown> {
     for (const GuardClass of GuardClasses) {
       const guardInstance = createInstance(GuardClass);

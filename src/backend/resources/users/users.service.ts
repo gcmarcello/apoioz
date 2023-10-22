@@ -3,8 +3,8 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import prisma from "@/backend/prisma/prisma";
 import { handlePrismaError } from "@/backend/prisma/prismaError";
-import { hashInfo } from "@/shared/utils/bCrypt";
-import { normalizePhone } from "@/shared/utils/format";
+import { hashInfo } from "@/(shared)/utils/bCrypt";
+import { normalizePhone } from "@/(shared)/utils/format";
 dayjs.extend(customParseFormat);
 
 export async function findUser(data: any) {

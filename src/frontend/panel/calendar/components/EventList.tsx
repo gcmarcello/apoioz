@@ -36,18 +36,13 @@ export default function EventList({ events }: { events: Event[] }) {
             className="h-14 w-14 flex-none rounded-full"
           />
           <div className="flex-auto">
-            <h3 className="pr-10 font-semibold text-gray-900 xl:pr-0">
-              {meeting.name}
-            </h3>
+            <h3 className="pr-10 font-semibold text-gray-900 xl:pr-0">{meeting.name}</h3>
             <dl className="mt-2 flex flex-col gap-x-5 text-gray-500 xl:flex-row">
               <div>
                 <div className="flex items-start space-x-3">
                   <dt className="mt-0.5">
                     <span className="sr-only">Date</span>
-                    <CalendarIcon
-                      className="h-5 w-5 text-gray-400"
-                      aria-hidden="true"
-                    />
+                    <CalendarIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
                   </dt>
                   <dd>
                     <div className="flex items-baseline">
@@ -60,9 +55,7 @@ export default function EventList({ events }: { events: Event[] }) {
                           />
                         }
                       </time>
-                      <span className="ms-2 text-xs italic">
-                        horário de Brasília
-                      </span>
+                      <span className="ms-2 text-xs italic">horário de Brasília</span>
                     </div>
                   </dd>
                 </div>
@@ -71,10 +64,7 @@ export default function EventList({ events }: { events: Event[] }) {
               <div className="mt-2 flex items-start space-x-3 xl:ml-3.5 xl:mt-0 xl:border-l xl:border-gray-400 xl:border-opacity-50 xl:pl-3.5">
                 <dt className="mt-0.5">
                   <span className="sr-only">Location</span>
-                  <MapPinIcon
-                    className="h-5 w-5 text-gray-400"
-                    aria-hidden="true"
-                  />
+                  <MapPinIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
                 </dt>
                 <dd>{meeting.location}</dd>
               </div>
@@ -87,10 +77,7 @@ export default function EventList({ events }: { events: Event[] }) {
             <div>
               <Menu.Button className="-m-2 flex items-center rounded-full p-2 text-gray-500 hover:text-gray-600">
                 <span className="sr-only">Open options</span>
-                <EllipsisHorizontalIcon
-                  className="h-5 w-5"
-                  aria-hidden="true"
-                />
+                <EllipsisHorizontalIcon className="h-5 w-5" aria-hidden="true" />
               </Menu.Button>
             </div>
 
@@ -110,9 +97,7 @@ export default function EventList({ events }: { events: Event[] }) {
                       <a
                         href="#"
                         className={clsx(
-                          active
-                            ? "bg-gray-100 text-gray-900"
-                            : "text-gray-700",
+                          active ? "bg-gray-100 text-gray-900" : "text-gray-700",
                           "block px-4 py-2 text-sm"
                         )}
                       >
@@ -125,9 +110,7 @@ export default function EventList({ events }: { events: Event[] }) {
                       <a
                         href="#"
                         className={clsx(
-                          active
-                            ? "bg-gray-100 text-gray-900"
-                            : "text-gray-700",
+                          active ? "bg-gray-100 text-gray-900" : "text-gray-700",
                           "block px-4 py-2 text-sm"
                         )}
                       >

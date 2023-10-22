@@ -1,7 +1,4 @@
 "use client";
-import SelectListbox, {
-  ListboxOptionType,
-} from "@/frontend/shared/components/SelectListbox";
 import {
   ChevronUpDownIcon,
   CheckIcon,
@@ -15,17 +12,20 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import InputMask from "react-input-mask";
 import CheckoutTotal from "./CheckoutTotal";
-import { getCities } from "@/backend/resources/locations/locations.service";
+import { getCities } from "@/backend/resources/elections/locations/locations.actions";
 import Image from "next/image";
 import {
   getZonesByCity,
   getZonesByState,
-} from "@/backend/resources/zones/zones.service";
-import { getSectionsByZone } from "@/backend/resources/sections/sections.service";
+} from "@/backend/resources/elections/zones/zones.actions";
+import { getSectionsByZone } from "@/backend/resources/elections/sections/sections.actions";
 import { Button } from "@/frontend/panel/(shared)/components/button";
 import dayjs from "dayjs";
 import axios from "axios";
-import ErrorAlert from "@/frontend/shared/components/errorAlert";
+import ErrorAlert from "@/frontend/(shared)/components/alerts/errorAlert";
+import SelectListbox, {
+  ListboxOptionType,
+} from "@/frontend/(shared)/components/SelectListbox";
 
 export default function RegistrarPage({
   parties,
@@ -34,9 +34,9 @@ export default function RegistrarPage({
   parties: Party[];
   states: State[];
 }) {
-  const [campaignLevel, setCampaignLevel] = useState<
-    "municipal" | "estadual" | null
-  >(null);
+  const [campaignLevel, setCampaignLevel] = useState<"municipal" | "estadual" | null>(
+    null
+  );
   const errRef = useRef<null | HTMLDivElement>(null);
   const [cities, setCities] = useState<ListboxOptionType[]>([]);
   const [zones, setZones] = useState<ListboxOptionType[]>([]);
@@ -122,9 +122,7 @@ export default function RegistrarPage({
     if (!form.watch("state")) return;
     form.resetField("city");
     getCities({ stateId: form.watch("state").id }).then((cities) => {
-      setCities(
-        cities.map((city) => ({ id: city.id, name: city.name, value: city.id }))
-      );
+      setCities(cities.map((city) => ({ id: city.id, name: city.name, value: city.id })));
     });
   }, [form.watch("state")]);
 
@@ -184,15 +182,8 @@ export default function RegistrarPage({
         >
           <div className="mx-auto max-w-2xl px-4 lg:max-w-none lg:px-0">
             <div className="flex items-center ">
-              <Image
-                src={"/logo.svg"}
-                alt="logo"
-                height={80}
-                width={80}
-              ></Image>
-              <span className="ms-2 text-xl font-bold text-white">
-                Cadastro
-              </span>
+              <Image src={"/logo.svg"} alt="logo" height={80} width={80}></Image>
+              <span className="ms-2 text-xl font-bold text-white">Cadastro</span>
             </div>
           </div>
         </section>
@@ -205,9 +196,7 @@ export default function RegistrarPage({
             <div className="mx-auto max-w-2xl px-4 lg:max-w-none lg:px-0">
               {form.formState.errors.root?.serverError.message ? (
                 <div ref={errRef} className="scroll-mt-64">
-                  <ErrorAlert
-                    errors={[form.formState.errors.root.serverError.message]}
-                  />
+                  <ErrorAlert errors={[form.formState.errors.root.serverError.message]} />
                 </div>
               ) : null}
               <div>
@@ -410,10 +399,7 @@ export default function RegistrarPage({
                 <div className="mt-6 grid grid-cols-4 gap-x-4 gap-y-6">
                   {form.watch("city") && (
                     <div
-                      className={clsx(
-                        "col-span-4",
-                        sections.length && "sm:col-span-2"
-                      )}
+                      className={clsx("col-span-4", sections.length && "sm:col-span-2")}
                     >
                       <div className="mt-1">
                         <SelectListbox

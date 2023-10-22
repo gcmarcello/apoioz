@@ -111,7 +111,7 @@ export default function SubmitEventRequest() {
           />
         </div>
       </div>
-      <div className="flex space-x-2 justify-end mt-5 sm:mt-6">
+      <div className="mt-5 flex justify-end space-x-2 sm:mt-6">
         <Button variant="secondary" onClick={() => {}}>
           Voltar
         </Button>
