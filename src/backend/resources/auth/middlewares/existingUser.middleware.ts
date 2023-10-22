@@ -1,12 +1,12 @@
+import { LoginDto } from "@/(shared)/dto/schemas/auth/login";
 import { handlePrismaError } from "@/backend/prisma/prismaError";
-import { CanActivate } from "@/next_decorators/decorators/Guard";
-import { LoginDto } from "@/shared/types/dto/auth/login";
-import { bindToPayload } from "@/shared/utils/bind";
-import { _NextResponse } from "@/shared/utils/http/_NextResponse";
-import prisma from "@/tests/client";
 
-export class ExistingUserGuard implements CanActivate {
-  async canActivate(payload: any) {
+import prisma from "@/tests/client";
+import { MiddlewareImplementation } from "@/next_decorators/lib/decorators/UseMiddlewares";
+import { bindToPayload } from "@/(shared)/utils/bind";
+
+export class ExistingUserMiddleware implements MiddlewareImplementation {
+  async implementation(payload: any) {
     const data = payload as LoginDto;
 
     const isEmail = data.identifier.includes("@");

@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { CanActivate } from "../../lib/decorators/UseGuards";
+import { MiddlewareImplementation } from "../../lib/decorators/UseMiddlewares";
 
 const VALIDATOR_METADATA = Symbol("validate");
 
@@ -9,7 +9,7 @@ export function ValidationSchema(type: object) {
   };
 }
 
-export class ValidatorGuard implements CanActivate {
+export class ValidatorMiddleware implements MiddlewareImplementation {
   async implementation(payload: any, target: any, propertyKey?: string) {
     try {
       const schema = Reflect.getMetadata(VALIDATOR_METADATA, target, propertyKey || "");

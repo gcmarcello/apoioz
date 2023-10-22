@@ -1,11 +1,13 @@
 import "reflect-metadata";
 import { isMethod, createInstance } from "../utils";
 
-export interface CanActivate {
+export interface MiddlewareImplementation {
   implementation(payload: unknown, target: any, propertyKey?: string): Promise<unknown>;
 }
 
-export function UseGuards(...GuardClasses: Array<new () => CanActivate>) {
+export function UseMiddlewares(
+  ...GuardClasses: Array<new () => MiddlewareImplementation>
+) {
   return function (
     target: any,
     propertyKey?: string,
@@ -30,7 +32,7 @@ export function UseGuards(...GuardClasses: Array<new () => CanActivate>) {
 
 function wrapWithGuard(
   originalMethod: any,
-  GuardClasses: Array<new () => CanActivate>,
+  GuardClasses: Array<new () => MiddlewareImplementation>,
   target: any,
   propertyKey?: string
 ) {
@@ -44,7 +46,10 @@ function wrapWithGuard(
   };
 }
 
-function wrapPrototypeMethods(target: any, GuardClasses: Array<new () => CanActivate>) {
+function wrapPrototypeMethods(
+  target: any,
+  GuardClasses: Array<new () => MiddlewareImplementation>
+) {
   const prototype = target.prototype;
 
   Object.getOwnPropertyNames(prototype).forEach((method) => {
