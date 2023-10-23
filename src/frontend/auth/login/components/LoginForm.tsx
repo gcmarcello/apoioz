@@ -11,7 +11,6 @@ import ErrorAlert from "@/frontend/(shared)/components/alerts/errorAlert";
 import { ButtonSpinner } from "@/frontend/(shared)/components/Spinners";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginDto, loginDto } from "@/(shared)/dto/schemas/auth/login";
-import { z } from "zod";
 
 export default function LoginForm() {
   const {
@@ -24,16 +23,20 @@ export default function LoginForm() {
     resolver: zodResolver(loginDto as any),
   });
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
-  async function submit(data: any) {
+  async function submit(data: LoginDto) {
     try {
       setIsLoading(true);
-      login(data);
+      const response = await login(data);
+      if (!response.data) {
+        throw response?.message;
+      }
+      router.push("/painel");
     } catch (error: any) {
-      console.log(error.response.data);
       form.setError("root.serverError", {
         type: "400",
-        message: error.response.data?.messages[0] || "Erro inesperado",
+        message: error || "Erro inesperado",
       });
       setIsLoading(false);
     }

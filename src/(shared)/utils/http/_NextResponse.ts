@@ -1,20 +1,22 @@
 import { HttpStatusCode } from "axios";
 import { NextResponse } from "next/server";
 
-interface ResponseObject {
-  messages?: string[];
-  data?: unknown;
+export interface ResponseObject<T = unknown> {
+  message?: string[] | string;
+  data?: T;
   status?: keyof typeof HttpStatusCode | HttpStatusCode;
 }
 
+export type Error = ResponseObject;
+
 export class _NextResponse {
-  static raw({ messages, data, status }: ResponseObject) {
+  static raw<T>({ message, data, status }: ResponseObject<T>) {
     const isStatusNumeric = typeof status === "number";
 
     const statusCode = status ? (isStatusNumeric ? status : HttpStatusCode[status]) : 200;
 
     const response = {
-      messages,
+      message,
       data,
       statusCode,
     };
@@ -23,6 +25,15 @@ export class _NextResponse {
   }
 
   static json(response: ResponseObject) {
+    const _response = this.raw(response);
+    return NextResponse.json(_response, { status: _response.statusCode });
+  }
+
+  static rawError(response: Omit<ResponseObject, "data">) {
+    return this.raw(response);
+  }
+
+  static jsonError(response: Omit<ResponseObject, "data">) {
     const _response = this.raw(response);
     return NextResponse.json(_response, { status: _response.statusCode });
   }

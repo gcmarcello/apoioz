@@ -7,12 +7,29 @@ import * as authService from "./auth.service";
 import { cookies } from "next/headers";
 import { UseMiddlewares } from "@/next_decorators/lib/decorators/UseMiddlewares";
 import { ExistingUserMiddleware } from "./middlewares/existingUser.middleware";
+import { Catch } from "@/next_decorators/lib/decorators/Catch";
+import { _NextResponse, type ResponseObject } from "@/(shared)/utils/http/_NextResponse";
 
 class AuthActions {
-  @UseMiddlewares(ExistingUserMiddleware, ExistingUserMiddleware)
+  @Catch((err: ResponseObject) => {
+    return _NextResponse.rawError(err);
+  })
+  @UseMiddlewares(ExistingUserMiddleware)
   async login(payload: Bind<LoginDto, { user: User; isEmail: boolean }>) {
     const token = await authService.login(payload);
-    if (token) return cookies().set("token", token);
+
+    if (!token)
+      return _NextResponse.rawError({
+        message: "Erro fazer login, tente novamente",
+        status: 500,
+      });
+
+    cookies().set("token", token);
+
+    return _NextResponse.raw({
+      data: token,
+      message: "Login realizado com sucesso!",
+    });
   }
 }
 
