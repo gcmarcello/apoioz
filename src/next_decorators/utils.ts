@@ -1,3 +1,5 @@
+import "reflect-metadata";
+
 export function isMethod(instance: any, key: string): boolean {
   return key !== "constructor" && typeof instance[key] === "function";
 }
@@ -16,4 +18,14 @@ export function isPromise(object: any): object is Promise<any> {
 
 export function isFunction(func: any): func is Function {
   return typeof func === "function" || func instanceof Function;
+}
+
+export function getMetadata(
+  symbol: Symbol,
+  identifiers: {
+    target: any;
+    propertyKey?: string;
+  }
+) {
+  return Reflect.getMetadata(symbol, identifiers.target, identifiers.propertyKey || "");
 }

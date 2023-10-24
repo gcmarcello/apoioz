@@ -1,11 +1,10 @@
-"use server";
 import prisma from "@/backend/prisma/prisma";
-import { Campaign, Supporter, Zone } from "@prisma/client";
+import { Supporter, Zone } from "@prisma/client";
 import dayjs from "dayjs";
-import { cookies, headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { getZonesByCity, getZonesByState } from "../elections/zones/zones.service";
 import crypto from "crypto";
+import { _NextResponse } from "@/(shared)/utils/http/_NextResponse";
 
 export async function verifyPermission(
   userId: string | null,
@@ -50,16 +49,28 @@ export async function listCampaigns(userId: string) {
   }
 }
 
-export async function getCampaign(userId: string) {
+export async function getCampaign({
+  userId,
+  campaignId,
+}: {
+  userId: string;
+  campaignId: string;
+}) {
   try {
-    if (!cookies().get("activeCampaign")?.value) return;
-    const campaign = await prisma.campaign.findUnique({
-      where: {
-        id: cookies().get("activeCampaign")?.value,
-        supporters: { some: { userId: userId } },
-      },
-    });
+    const campaign = await prisma.supporter
+      .findUnique({
+        where: {
+          id: userId,
+          campaignId,
+        },
+        include: {
+          campaign: true,
+        },
+      })
+      .then((supporter) => supporter?.campaign);
+
     if (!campaign) return;
+
     let zones: Omit<Zone, "stateId">[] = [];
 
     if (campaign?.cityId) {
@@ -74,9 +85,8 @@ export async function getCampaign(userId: string) {
     }
 
     if (!campaign)
-      return NextResponse.json({
+      throw _NextResponse.rawError({
         message: `Você não tem permissão para acessar os dados dessa campanha.`,
-        status: 403,
       });
 
     return { ...campaign, zones };
@@ -112,89 +122,6 @@ export async function getCampaignBasicInfo(campaignId: string) {
     throw error;
   }
 }
-
-/* export async function listSupporters({
-  pagination = { pageSize: 10, pageIndex: 0 },
-  meta,
-}: {
-  pagination?: { pageSize: number; pageIndex: number };
-  meta?: { campaignId: string };
-}) {
-  const userId = headers().get("userId");
-  const campaignId = meta?.campaignId || cookies().get("activeCampaign")?.value;
-
-  if (!userId || !campaignId) return;
-  const supporterAccount = await verifyPermission(userId, campaignId);
-
-  function generateReferredObject(level: any): any {
-    if (level === 1) {
-      return {
-        referral: { include: { user: { include: { info: true } } } },
-        user: { include: { info: { include: { Section: true, Zone: true } } } },
-      };
-    } else {
-      return {
-        referred: {
-          include: {
-            referral: { include: { user: { include: { info: true } } } },
-            user: {
-              include: { info: { include: { Section: true, Zone: true } } },
-            },
-            ...generateReferredObject(level - 1),
-          },
-        },
-      };
-    }
-  }
-
-  const includeReferred = generateReferredObject(supporterAccount.level - 1);
-
-  const supporters: any[] = await prisma.supporter.findMany({
-    where: {
-      OR: [
-        { campaignId, referralId: supporterAccount.id },
-        { campaignId, level: 4 },
-      ],
-    },
-    include: {
-      referral: { include: { user: { include: { info: true } } } },
-      user: { include: { info: { include: { Section: true, Zone: true } } } },
-      ...includeReferred,
-    },
-  });
-
-  function flattenSupporters(supporters: any[]): any[] {
-    const flatSupporters: any[] = [];
-    supporters.forEach((supporter) => {
-      if (supporter.referred) {
-        flatSupporters.push(supporter);
-        flatSupporters.push(...flattenSupporters(supporter.referred));
-      } else {
-        flatSupporters.push(supporter);
-      }
-    });
-    return flatSupporters;
-  }
-
-  function paginationSlice(data: any[], pageIndex: number, pageSize: number) {
-    const startIndex = pageIndex * pageSize;
-    const endIndex = startIndex + pageSize;
-    const slicedList = data.slice(startIndex, endIndex);
-    return slicedList;
-  }
-
-  const flatSupporters = flattenSupporters(supporters);
-
-  return {
-    supporters: paginationSlice(
-      flatSupporters.sort((a, b) => b.createdAt - a.createdAt),
-      pagination.pageIndex,
-      pagination.pageSize
-    ),
-    meta: { pageIndex: pagination.pageIndex, pageSize: pagination.pageSize },
-    count: flatSupporters.length,
-  };
-} */
 
 export async function generateMainPageStats({
   userId,
@@ -277,32 +204,17 @@ export async function generateMainPageStats({
 }
 
 export async function fetchCampaignTeamMembers() {
-  const userId = headers().get("userId");
-  const campaignId = cookies().get("activeCampaign")?.value;
-
-  if (!userId || !campaignId) return;
-  const teamMembers = await prisma.supporter.findMany({
-    where: { campaignId: campaignId, level: { gt: 1 } },
-    include: {
-      user: { include: { info: { include: { City: true, Zone: true } } } },
-    },
-  });
-  return teamMembers;
-}
-
-export async function activateCampaign({
-  userId,
-  campaignId,
-}: {
-  userId: string;
-  campaignId: string;
-}) {
-  cookies().set("activeCampaign", campaignId);
-  return await getCampaign(userId);
-}
-
-export async function deactivateCampaign() {
-  cookies().delete("activeCampaign");
+  //const userId = headers().get("userId");
+  //const campaignId = cookies().get("activeCampaign")?.value;
+  //
+  //if (!userId || !campaignId) return;
+  //const teamMembers = await prisma.supporter.findMany({
+  //  where: { campaignId: campaignId, level: { gt: 1 } },
+  //  include: {
+  //    user: { include: { info: { include: { City: true, Zone: true } } } },
+  //  },
+  //});
+  //return teamMembers;
 }
 
 export async function createCampaign(data: any) {

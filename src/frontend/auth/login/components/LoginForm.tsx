@@ -1,7 +1,6 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import { useState } from "react";
 import { login } from "@/backend/resources/auth/auth.actions";
 import { Mocker } from "@/frontend/(shared)/components/Mocker";
@@ -20,7 +19,7 @@ export default function LoginForm() {
     ...form
   } = useForm<LoginDto>({
     mode: "onChange",
-    resolver: zodResolver(loginDto as any),
+    resolver: zodResolver(loginDto),
   });
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();

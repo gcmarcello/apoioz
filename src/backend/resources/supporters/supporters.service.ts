@@ -4,7 +4,7 @@ import { findCampaignById, verifyPermission } from "../campaign/campaign.service
 import { cookies, headers } from "next/headers";
 import { handlePrismaError } from "@/backend/prisma/prismaError";
 import { normalizePhone } from "@/(shared)/utils/format";
-import { Campaign, User, UserInfo } from "@prisma/client";
+import { Campaign, Supporter, User, UserInfo } from "@prisma/client";
 import { verifyExistingUser } from "../users/users.service";
 import {
   CreateSupportersDto,
@@ -118,23 +118,24 @@ export async function createSupporter(data: CreateSupportersDto) {
   }
 }
 
-export async function listSupporters({
-  pagination = { pageSize: 10, pageIndex: 0 },
-  data,
-}: ListSupportersDto) {
+export async function listSupporters(
+  { pagination = { pageSize: 10, pageIndex: 0 }, data }: ListSupportersDto,
+  supporterSession: Supporter
+) {
   try {
-    const userId = data?.ownerId || headers().get("userId")!;
-    const campaignId = data?.campaignOwnerId || cookies().get("activeCampaign")!.value;
+    const userId = data?.ownerId || supporterSession.userId;
+
+    const campaignId = data?.campaignOwnerId || supporterSession.campaignId;
 
     const supporter = await prisma.supporter.findFirst({
       where: { userId: userId, campaignId: campaignId },
     });
 
-    if (!supporter) return;
-
     const supporterGroup = await prisma.supporterGroupMembership.findFirst({
-      where: { supporterId: supporter.id, isOwner: true },
+      where: { supporterId: supporter?.id, isOwner: true },
     });
+
+    if (!supporter) return;
 
     const supporterList = await prisma.supporterGroupMembership.findMany({
       where: { supporterGroupId: supporterGroup?.supporterGroupId },

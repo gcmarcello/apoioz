@@ -1,25 +1,17 @@
 "use server";
 import prisma from "@/tests/client";
-import { MiddlewareImplementation } from "@/next_decorators/lib/decorators/UseMiddlewares";
 import { ListSupportersDto } from "@/(shared)/dto/schemas/supporters/supporters";
 import { cookies, headers } from "next/headers";
 import { _NextResponse } from "@/(shared)/utils/http/_NextResponse";
+import { Supporter } from "@prisma/client";
+import { MiddlewarePayload } from "@/next_decorators/decorators/UseMiddlewares";
 
-export async function ListSupportersMiddleware(payload: ListSupportersDto) {
-  const untrustedOwnerId = headers().get("userId")!;
-  const campaignId = cookies().get("activeCampaign")!.value;
-
-  const supporterLevel = await prisma.supporter
-    .findFirst({
-      where: {
-        campaignId,
-        userId: untrustedOwnerId,
-      },
-    })
-    .then((supporter) => supporter?.level);
-
-  if (payload && payload.data && supporterLevel != 4) {
-    payload.data.ownerId = "";
-    payload.data.campaignOwnerId = "";
+export async function ListSupportersMiddleware({
+  data: { data },
+  bind,
+}: MiddlewarePayload<ListSupportersDto>) {
+  if (data && bind.supporterSession.level != 4) {
+    data.ownerId = "";
+    data.campaignOwnerId = "";
   }
 }

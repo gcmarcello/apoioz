@@ -1,7 +1,6 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 import { useState } from "react";
-import { CheckIcon, XMarkIcon } from "@heroicons/react/20/solid";
 import {
   ArrowPathIcon,
   PaperAirplaneIcon,
@@ -9,14 +8,9 @@ import {
   ChevronLeftIcon,
 } from "@heroicons/react/24/solid";
 
-export function Mocker({
-  mockData,
-  submit,
-}: {
-  mockData: () => void;
-  submit: () => void;
-}) {
+export function Mocker({ mockData, submit }: { mockData?: any; submit?: any }) {
   const [isFolded, setIsFolded] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   return (
     <div className="fixed bottom-0 right-0 p-4">
@@ -44,12 +38,26 @@ export function Mocker({
               }}
               className="text-emerald-500 hover:cursor-pointer"
             />
-            <PaperAirplaneIcon
-              width={35}
-              height={35}
-              onClick={submit}
-              className="text-red-500 hover:cursor-pointer"
-            />
+            {isSubmitting ? (
+              <PaperAirplaneIcon
+                width={35}
+                height={35}
+                className="pointer-events-none animate-spin text-gray-500"
+              />
+            ) : (
+              <PaperAirplaneIcon
+                width={35}
+                height={35}
+                onClick={() => {
+                  setIsSubmitting(true);
+                  setTimeout(async () => {
+                    await submit();
+                    setIsSubmitting((prev) => !prev);
+                  }, 500);
+                }}
+                className="text-red-500 hover:cursor-pointer"
+              />
+            )}
             <img
               alt="mock data"
               onClick={mockData}

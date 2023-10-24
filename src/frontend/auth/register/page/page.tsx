@@ -26,7 +26,7 @@ import { useRouter } from "next/navigation";
 import SelectListbox, {
   ListboxOptionType,
 } from "@/frontend/(shared)/components/SelectListbox";
-import { getCitiesByState } from "@/backend/resources/elections/locations/locations.service";
+import { getCitiesByState } from "@/backend/resources/elections/locations/locations.actions";
 
 export default function RegistrarPage({
   parties,

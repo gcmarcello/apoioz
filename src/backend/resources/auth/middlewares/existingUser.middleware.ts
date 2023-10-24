@@ -1,19 +1,20 @@
 import { LoginDto } from "@/(shared)/dto/schemas/auth/login";
-import { bindToPayload } from "@/(shared)/utils/bind";
 import { handlePrismaError } from "@/backend/prisma/prismaError";
+import { MiddlewarePayload } from "@/next_decorators/decorators/UseMiddlewares";
 import prisma from "@/tests/client";
 
-export async function ExistingUserMiddleware(payload: LoginDto) {
-  const isEmail = payload.identifier.includes("@");
+export async function ExistingUserMiddleware({
+  data: { identifier },
+  bind,
+}: MiddlewarePayload<LoginDto>) {
+  const isEmail = identifier.includes("@");
 
   const user = await prisma.user.findFirst({
-    where: isEmail ? { email: payload.identifier } : { name: payload.identifier },
+    where: isEmail ? { email: identifier } : { name: identifier },
   });
 
   if (!user) return handlePrismaError("Usuário", user);
 
-  bindToPayload(payload, {
-    user,
-    isEmail,
-  });
+  bind["user"] = user;
+  bind["isEmail"] = isEmail;
 }

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { PanelContext } from "../contexts/panel.ctx";
 import { cookies } from "next/headers";
-import { Supporter } from "@prisma/client";
+import { Campaign, Supporter } from "@prisma/client";
 import {
   getSupporterByUser,
   listSupporters,
@@ -14,11 +14,11 @@ import { getCampaign } from "@/backend/resources/campaign/campaign.actions";
 export default function PanelProvider({
   children,
   userId,
-  fetchedCampaign,
+  activeCampaign,
 }: {
   children: React.ReactNode;
   userId: string;
-  fetchedCampaign: any;
+  activeCampaign: Campaign;
 }) {
   const [updatingLatestSupporters, setUpdatingLatestSupporters] = useState(false);
   const [showToast, setShowToast] = useState({
@@ -29,7 +29,7 @@ export default function PanelProvider({
   const [siteURL, setSiteURL] = useState("");
   const [supporter, setSupporter] = useState<Supporter | undefined>(undefined);
   const [user, setUser] = useState<any>(null);
-  const [campaign, setCampaign] = useState<any>(fetchedCampaign);
+  const [campaign, setCampaign] = useState<any>(activeCampaign);
 
   const fetchLatestSupporters = async (userId: string, campaignId: string) => {
     return await listSupporters({
@@ -40,7 +40,6 @@ export default function PanelProvider({
   useEffect(() => {
     setSiteURL(document.location.origin);
     findUser(userId).then((data) => setUser(data));
-    if (!campaign) getCampaign(userId).then((data) => setCampaign(data));
   }, [campaign, userId]);
 
   useEffect(() => {
@@ -56,9 +55,6 @@ export default function PanelProvider({
   return (
     <PanelContext.Provider
       value={{
-        updatingLatestSupporters,
-        setUpdatingLatestSupporters,
-        fetchLatestSupporters,
         showToast,
         setShowToast,
         siteURL,

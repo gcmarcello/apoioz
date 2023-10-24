@@ -1,10 +1,26 @@
 "use server";
 
+import { cookies } from "next/headers";
 import * as service from "./campaign.service";
 
 class CampaignActions {
-  async getCampaign(payload: string) {
-    return service.getCampaign(payload);
+  async deactivateCampaign() {
+    cookies().delete("activeCampaign");
+  }
+
+  async activateCampaign(campaignId: string) {
+    return cookies().set("activeCampaign", campaignId);
+  }
+
+  async listCampaigns(userId: string) {
+    return service.listCampaigns(userId);
+  }
+
+  async getCampaign({ userId, campaignId }: { userId: string; campaignId: string }) {
+    return service.getCampaign({
+      userId,
+      campaignId: campaignId,
+    });
   }
 
   async fetchCampaignTeamMembers() {
@@ -15,24 +31,17 @@ class CampaignActions {
     return service.generateMainPageStats(data);
   }
 
-  async deactivateCampaign() {
-    return service.deactivateCampaign();
-  }
-
   async createCampaign(data: any) {
     return service.createCampaign(data);
-  }
-
-  async activateCampaign(data: any) {
-    return service.activateCampaign(data);
   }
 }
 
 export const {
+  deactivateCampaign,
+  listCampaigns,
   getCampaign,
   fetchCampaignTeamMembers,
   generateMainPageStats,
-  deactivateCampaign,
   createCampaign,
   activateCampaign,
 } = new CampaignActions();
