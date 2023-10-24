@@ -2,10 +2,9 @@
 
 import dayjs from "dayjs";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import SupporterOverview from "./SupporterOverview";
 
-import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import { Date } from "@/frontend/(shared)/components/Date";
 import SupporterBall from "../../team/components/SupporterBall";
 

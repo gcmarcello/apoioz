@@ -1,12 +1,10 @@
 "use server";
 import prisma from "@/backend/prisma/prisma";
 import { findCampaignById, verifyPermission } from "../campaign/campaign.service";
-import { cookies, headers } from "next/headers";
 import { handlePrismaError } from "@/backend/prisma/prismaError";
-import { normalizePhone } from "@/(shared)/utils/format";
-import { Campaign, Supporter, User, UserInfo } from "@prisma/client";
+import type { Campaign, Supporter, User, UserInfo } from "@prisma/client";
 import { verifyExistingUser } from "../users/users.service";
-import {
+import type {
   CreateSupportersDto,
   ListSupportersDto,
 } from "@/(shared)/dto/schemas/supporters/supporters";
@@ -118,10 +116,14 @@ export async function createSupporter(data: CreateSupportersDto) {
   }
 }
 
-export async function listSupporters(
-  { pagination = { pageSize: 10, pageIndex: 0 }, data }: ListSupportersDto,
-  supporterSession: Supporter
-) {
+export async function listSupporters({
+  pagination,
+  data,
+  supporterSession,
+}: ListSupportersDto & {
+  userSession: User;
+  supporterSession: Supporter;
+}) {
   try {
     const userId = data?.ownerId || supporterSession.userId;
 

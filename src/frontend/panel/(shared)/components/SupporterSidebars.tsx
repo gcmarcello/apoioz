@@ -11,9 +11,8 @@ import ErrorAlert from "../../../(shared)/components/alerts/errorAlert";
 import InputMask from "react-input-mask";
 import QRCode from "react-qr-code";
 import Link from "next/link";
-import { Toast } from "@/frontend/(shared)/components/alerts/toast";
 import { mockSupporter } from "../../../../tests/mockSupporter";
-import { Address, Campaign, Prisma, Section, Zone } from "@prisma/client";
+import { Prisma, Section, Zone } from "@prisma/client";
 
 import { createSupporter } from "@/backend/resources/supporters/supporters.actions";
 import dayjs from "dayjs";
@@ -247,9 +246,11 @@ export default function SupporterSideBar({
                                 <button
                                   onClick={(e) => {
                                     e.preventDefault();
-                                    navigator.clipboard.writeText(
-                                      `${siteURL}/apoiar/${campaign.id}?referral=${userId}`
-                                    );
+                                    navigator.clipboard
+                                      .writeText(
+                                        `${siteURL}/apoiar/${campaign.id}?referral=${userId}`
+                                      )
+                                      .catch((err) => console.log(err));
                                     setShowToast({
                                       message: "Link copiado!",
                                       show: true,

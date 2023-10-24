@@ -7,6 +7,7 @@ import utc from "dayjs/plugin/utc";
 import { cookies, headers } from "next/headers";
 import { getSupporterByUser } from "../supporters/supporters.service";
 import { _NextResponse } from "@/(shared)/utils/http/_NextResponse";
+import { Supporter } from "@prisma/client";
 dayjs.extend(customParseFormat);
 dayjs.extend(utc);
 
@@ -54,8 +55,7 @@ export async function getEventsByCampaign({
   const allActiveEvents = allEvents.filter((event) => event.status === "active");
   const allPendingEvents = allEvents.filter((event) => event.status === "pending");
   const userPendingEvents = allPendingEvents.filter((event) => event.hostId === userId);
-  const level = (await prisma.supporter.findFirst({ where: { userId, campaignId } }))
-    ?.level;
+  const level = (await prisma.supporter.findFirst({ where: { userId, campaignId } }))?.level;
 
   if (level === 4) {
     return { active: allActiveEvents, pending: allPendingEvents };
@@ -73,7 +73,7 @@ export async function getAvailableTimesByDay(campaignId: string, day: string) {
     start: dayjs(event.dateStart).utcOffset(-3).toISOString(),
     end: dayjs(event.dateEnd).utcOffset(-3).toISOString(),
   }));
-  let timeslots = [];
+  const timeslots = [];
 
   let time = dayjs(correctedTimeZoneDay).utcOffset(-3).startOf("day");
   for (let i = 0; i < 24; i++) {
@@ -84,40 +84,35 @@ export async function getAvailableTimesByDay(campaignId: string, day: string) {
 
   eventTimestamps.forEach((event) => {
     // Adjust for the -3 hour timezone offset
-    let startTime = dayjs(event.start).subtract(1, "hour");
+    const startTime = dayjs(event.start).subtract(1, "hour");
 
     // Extend the end time by one hour to ensure a gap between events
-    let endTime = dayjs(event.end).add(1, "hour");
+    const endTime = dayjs(event.end).add(1, "hour");
 
-    let occupiedSlots: any[] = [];
+    const occupiedSlots: any[] = [];
     let currentTime = startTime;
     while (currentTime.isBefore(endTime)) {
       occupiedSlots.push(currentTime.toISOString());
       currentTime = currentTime.add(1, "hour");
     }
-    availableTimeslots = availableTimeslots.filter(
-      (slot) => !occupiedSlots.includes(slot)
-    );
+    availableTimeslots = availableTimeslots.filter((slot) => !occupiedSlots.includes(slot));
   });
 
   return { available: availableTimeslots, events: eventTimestamps };
 }
 
-export async function updateEventStatus({
-  eventId,
-  status,
-}: {
-  eventId: string;
-  status: string;
-}) {
+export async function updateEventStatus(
+  request: { eventId: string; status: string } & { supporterSession: Supporter }
+) {
+  if (request.supporterSession.level !== 4) throw "Você não tem permissão de alterar este evento";
   try {
     return await prisma.event.update({
-      where: { id: eventId },
-      data: { status },
+      where: { id: request.eventId },
+      data: { status: request.status },
     });
   } catch (error) {
     console.log(error);
-    throw _NextResponse.rawError({ message: "Erro ao atualizar evento" });
+    throw error;
   }
 }
 

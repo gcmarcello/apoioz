@@ -44,7 +44,9 @@ export default function SubmitEventRequest({
         value: string,
       }));
     }
-    fetchAvailableTimes().then((times) => setAvailableTimes(times));
+    fetchAvailableTimes()
+      .then((times) => setAvailableTimes(times))
+      .catch((err) => console.log(err));
   }, []);
 
   useEffect(() => {
@@ -58,7 +60,7 @@ export default function SubmitEventRequest({
       if (dateEvents) {
         times = times?.filter((time) => {
           const selectedEndTime = dayjs(time.value);
-          for (let event of dateEvents) {
+          for (const event of dateEvents) {
             const eventStartTime = dayjs(event.start);
             const eventEndTime = dayjs(event.end);
             if (

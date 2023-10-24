@@ -1,14 +1,10 @@
 "use server";
 import prisma from "@/backend/prisma/prisma";
-import { getCampaign } from "@/backend/resources/campaign/campaign.service";
-import {
-  findCampaignLeader,
-  listSupporters,
-} from "@/backend/resources/supporters/supporters.service";
 import { getZonesByCampaign } from "@/backend/resources/elections/zones/zones.service";
 import { normalizeEmail, normalizePhone } from "@/(shared)/utils/format";
 import { fakerPT_BR as faker } from "@faker-js/faker";
 import { cookies } from "next/headers";
+import { listSupporters } from "@/backend/resources/supporters/supporters.actions";
 
 export async function mockSupporter(campaignId?: string, ownerId?: string) {
   if (!campaignId && !cookies().get("activeCampaign")?.value) return;
@@ -18,10 +14,13 @@ export async function mockSupporter(campaignId?: string, ownerId?: string) {
   );
 
   const supporters = await listSupporters({
-    pagination: { pageIndex: 0, pageSize: 500 },
     data: {
       campaignOwnerId: campaignId,
       ownerId: ownerId,
+    },
+    pagination: {
+      pageIndex: 1,
+      pageSize: 100,
     },
   });
 

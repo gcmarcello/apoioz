@@ -138,7 +138,7 @@ export default function SupporterSignUpPage({
         )}
         <form
           className="flex h-full flex-col divide-y divide-gray-200  text-left"
-          onSubmit={handleSubmit(addSupporter)}
+          onSubmit={() => handleSubmit(addSupporter)}
         >
           <div className="space-y-4 pb-5 ">
             {errors.root?.serverError.message ? (
@@ -298,7 +298,7 @@ export default function SupporterSignUpPage({
                 <select
                   id="zone"
                   {...register("zoneId", {
-                    onChange: (e) => fetchSections(e.target.value),
+                    onChange: async (e) => fetchSections(e.target.value),
                   })}
                   className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   defaultValue={""}

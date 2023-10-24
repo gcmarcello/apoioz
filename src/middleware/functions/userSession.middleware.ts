@@ -1,13 +1,10 @@
 "use server";
 import prisma from "@/backend/prisma/prisma";
-import { MiddlewarePayload } from "@/next_decorators/decorators/UseMiddlewares";
 import { User } from "@prisma/client";
 import { headers } from "next/headers";
-import "reflect-metadata";
+import { MiddlewareArguments } from "../types/types";
 
-export async function UserSessionMiddleware({
-  bind,
-}: MiddlewarePayload<any, { userSession: Omit<User, "password"> }>) {
+export async function UserSessionMiddleware<P>({ request }: { request: P }) {
   const userId = headers().get("userId")!;
 
   const user = await prisma.user
@@ -20,5 +17,8 @@ export async function UserSessionMiddleware({
 
   const { password, ...rest } = user;
 
-  bind["userSession"] = rest;
+  return {
+    ...request,
+    userSession: rest,
+  };
 }

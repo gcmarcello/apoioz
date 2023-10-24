@@ -1,6 +1,4 @@
 import { listSupporters } from "@/backend/resources/supporters/supporters.actions";
-import { cookies, headers } from "next/headers";
-import SupportersTable from "../components/SupportersTable";
 
 export default async function RelatoriosPage({}) {
   const supporters = await listSupporters({

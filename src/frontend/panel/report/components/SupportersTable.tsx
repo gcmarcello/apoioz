@@ -4,7 +4,7 @@ import WhatsAppIcon from "@/frontend/(shared)/components/icons/WhatsAppIcon";
 import SupporterBall from "../../team/components/SupporterBall";
 import { DefaultTable } from "@/frontend/(shared)/components/tables/table";
 import { SupporterTableType } from "@/(shared)/types/tableTypes";
-import { ArrowPathIcon, AtSymbolIcon } from "@heroicons/react/24/solid";
+import { AtSymbolIcon } from "@heroicons/react/24/solid";
 import { createColumnHelper } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import React, { useState } from "react";

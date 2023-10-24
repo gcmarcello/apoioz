@@ -5,33 +5,21 @@ import * as authService from "./auth.service";
 import { cookies } from "next/headers";
 import { ExistingUserMiddleware } from "./middlewares/existingUser.middleware";
 import { _NextResponse, type ResponseObject } from "@/(shared)/utils/http/_NextResponse";
-import { Supporter, User } from "@prisma/client";
-import { Catch } from "@/next_decorators/decorators/Catch";
-import { UseMiddlewares } from "@/next_decorators/decorators/UseMiddlewares";
 
-class AuthActions {
-  @Catch((err: ResponseObject) => {
-    return _NextResponse.rawError(err);
-  })
-  @UseMiddlewares(ExistingUserMiddleware)
-  async login(payload: LoginDto, bind?: { user: User; isEmail: boolean }) {
-    const token = await authService.login({
-      ...payload,
-      ...bind!,
+export async function login(originalRequest: LoginDto) {
+  const parsedRequest = await ExistingUserMiddleware(originalRequest);
+
+  const token = await authService.login(parsedRequest);
+
+  if (!token)
+    return _NextResponse.rawError({
+      message: "Erro fazer login, tente novamente",
     });
 
-    if (!token)
-      return _NextResponse.rawError({
-        message: "Erro fazer login, tente novamente",
-      });
+  cookies().set("token", token);
 
-    cookies().set("token", token);
-
-    return _NextResponse.raw({
-      data: token,
-      message: "Login realizado com sucesso!",
-    });
-  }
+  return _NextResponse.raw({
+    data: token,
+    message: "Login realizado com sucesso!",
+  });
 }
-
-export const { login } = new AuthActions();

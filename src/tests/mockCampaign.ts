@@ -2,7 +2,6 @@
 import prisma from "@/backend/prisma/prisma";
 import { listUsers } from "@/backend/resources/users/users.service";
 import { fakerPT_BR as faker } from "@faker-js/faker";
-import { User, UserInfo } from "@prisma/client";
 import dayjs from "dayjs";
 
 export async function mockCampaign(userId?: string) {

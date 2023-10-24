@@ -1,4 +1,4 @@
-import { cookies, headers } from "next/headers";
+import { headers } from "next/headers";
 
 import { listSupporters } from "@/backend/resources/supporters/supporters.actions";
 import Footer from "../../(shared)/components/Footer";

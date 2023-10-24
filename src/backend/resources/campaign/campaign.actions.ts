@@ -1,47 +1,38 @@
+/* eslint-disable @typescript-eslint/require-await */
 "use server";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import * as service from "./campaign.service";
 
-class CampaignActions {
-  async deactivateCampaign() {
-    cookies().delete("activeCampaign");
-  }
-
-  async activateCampaign(campaignId: string) {
-    return cookies().set("activeCampaign", campaignId);
-  }
-
-  async listCampaigns(userId: string) {
-    return service.listCampaigns(userId);
-  }
-
-  async getCampaign({ userId, campaignId }: { userId: string; campaignId: string }) {
-    return service.getCampaign({
-      userId,
-      campaignId: campaignId,
-    });
-  }
-
-  async fetchCampaignTeamMembers() {
-    return service.fetchCampaignTeamMembers();
-  }
-
-  async generateMainPageStats(data: any) {
-    return service.generateMainPageStats(data);
-  }
-
-  async createCampaign(data: any) {
-    return service.createCampaign(data);
-  }
+export async function deactivateCampaign() {
+  return cookies().delete("activeCampaign");
 }
 
-export const {
-  deactivateCampaign,
-  listCampaigns,
-  getCampaign,
-  fetchCampaignTeamMembers,
-  generateMainPageStats,
-  createCampaign,
-  activateCampaign,
-} = new CampaignActions();
+export async function activateCampaign(campaignId: string) {
+  return cookies().set("activeCampaign", campaignId);
+}
+
+export async function listCampaigns(userId: string) {
+  return service.listCampaigns(userId);
+}
+
+export async function getCampaign(request: { userId: string; campaignId: string }) {
+  return service.getCampaign(request);
+}
+
+export async function fetchCampaignTeamMembers() {
+  const userId = headers().get("userId");
+  const campaignId = cookies().get("activeCampaign")?.value;
+
+  if (!userId || !campaignId) return;
+
+  return service.fetchCampaignTeamMembers(campaignId);
+}
+
+export async function generateMainPageStats(data: any) {
+  return service.generateMainPageStats(data);
+}
+
+export async function createCampaign(data: any) {
+  return service.createCampaign(data);
+}

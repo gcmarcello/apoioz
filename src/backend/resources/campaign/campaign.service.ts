@@ -49,25 +49,18 @@ export async function listCampaigns(userId: string) {
   }
 }
 
-export async function getCampaign({
-  userId,
-  campaignId,
-}: {
-  userId: string;
-  campaignId: string;
-}) {
+export async function getCampaign(request: { userId: string; campaignId: string }) {
   try {
     const campaign = await prisma.supporter
-      .findUnique({
-        where: {
-          id: userId,
-          campaignId,
-        },
+      .findFirst({
+        where: request,
         include: {
           campaign: true,
         },
       })
       .then((supporter) => supporter?.campaign);
+
+    console.log(`kkkkk`, campaign);
 
     if (!campaign) return;
 
@@ -203,18 +196,14 @@ export async function generateMainPageStats({
   };
 }
 
-export async function fetchCampaignTeamMembers() {
-  //const userId = headers().get("userId");
-  //const campaignId = cookies().get("activeCampaign")?.value;
-  //
-  //if (!userId || !campaignId) return;
-  //const teamMembers = await prisma.supporter.findMany({
-  //  where: { campaignId: campaignId, level: { gt: 1 } },
-  //  include: {
-  //    user: { include: { info: { include: { City: true, Zone: true } } } },
-  //  },
-  //});
-  //return teamMembers;
+export async function fetchCampaignTeamMembers(campaignId: string) {
+  const teamMembers = await prisma.supporter.findMany({
+    where: { campaignId: campaignId, level: { gt: 1 } },
+    include: {
+      user: { include: { info: { include: { City: true, Zone: true } } } },
+    },
+  });
+  return teamMembers;
 }
 
 export async function createCampaign(data: any) {

@@ -12,7 +12,7 @@ import {
   XMarkIcon,
   CalendarIcon,
 } from "@heroicons/react/24/outline";
-import { ChevronDownIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import SupporterSideBar from "./SupporterSidebars";
 import Image from "next/image";

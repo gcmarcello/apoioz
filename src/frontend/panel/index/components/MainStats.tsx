@@ -11,13 +11,16 @@ export default function MainStats() {
   const { user, campaign } = usePanel();
 
   useEffect(() => {
-    async function fetchStats() {
-      generateMainPageStats({
-        campaignId: campaign.id,
-        userId: user.id,
-      }).then((data: any) => setMainPageStats(data));
-    }
-    if (user && campaign) fetchStats();
+    (async () => {
+      if (user && campaign) {
+        generateMainPageStats({
+          campaignId: campaign.id,
+          userId: user.id,
+        })
+          .then((data: any) => setMainPageStats(data))
+          .catch((err) => console.log(err));
+      }
+    })();
   }, [campaign, user]);
 
   if (!mainPageStats) return;

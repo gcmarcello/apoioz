@@ -1,17 +1,16 @@
 "use server";
-import prisma from "@/tests/client";
 import { ListSupportersDto } from "@/(shared)/dto/schemas/supporters/supporters";
-import { cookies, headers } from "next/headers";
 import { _NextResponse } from "@/(shared)/utils/http/_NextResponse";
-import { Supporter } from "@prisma/client";
-import { MiddlewarePayload } from "@/next_decorators/decorators/UseMiddlewares";
+import { Supporter, User } from "@prisma/client";
+import { MiddlewareArguments } from "@/middleware/types/types";
 
 export async function ListSupportersMiddleware({
-  data: { data },
-  bind,
-}: MiddlewarePayload<ListSupportersDto>) {
-  if (data && bind.supporterSession.level != 4) {
-    data.ownerId = "";
-    data.campaignOwnerId = "";
+  request,
+}: MiddlewareArguments<ListSupportersDto & { supporterSession: Supporter; userSession: User }>) {
+  if (request.data && request.supporterSession.level != 4) {
+    request.data.ownerId = "";
+    request.data.campaignOwnerId = "";
   }
+
+  return request;
 }

@@ -1,5 +1,5 @@
 "use server";
-import { listSupporters } from "@/backend/resources/supporters/supporters.service";
+import { listSupporters } from "@/backend/resources/supporters/supporters.actions";
 import { fakerPT_BR as faker } from "@faker-js/faker";
 import dayjs from "dayjs";
 
@@ -23,6 +23,6 @@ export async function mockEvent(campaignId: string) {
         Math.random() *
           supporters?.supporters.filter((supporter) => supporter.level > 1).length
       )
-    ].id!,
+    ].id,
   };
 }

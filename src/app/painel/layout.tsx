@@ -11,7 +11,7 @@ import PanelSideBar from "@/frontend/panel/(shared)/components/PanelSidebar";
 import PanelProvider from "@/frontend/panel/(shared)/providers/panelProvider";
 import ChooseCampaign from "@/frontend/panel/(shared)/components/ChooseCampaign";
 import prisma from "@/tests/client";
-import { getCampaign } from "@/backend/resources/campaign/campaign.service";
+import { getCampaign } from "@/backend/resources/campaign/campaign.actions";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,6 +25,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const userId = headers().get("userId")!;
 
   const activeCampaignId = cookies().get("activeCampaign")?.value;
+
   if (activeCampaignId && userId) {
     const campaign = await getCampaign({
       userId,

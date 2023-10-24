@@ -1,14 +1,14 @@
 import Image from "next/image";
-import { cookies } from "next/headers";
 import clsx from "clsx";
 import { AtSymbolIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { fetchCampaignTeamMembers } from "@/backend/resources/campaign/campaign.actions";
 import { toProperCase } from "@/(shared)/utils/format";
 import WhatsAppIcon from "@/frontend/(shared)/components/icons/WhatsAppIcon";
+import { Supporter } from "@prisma/client";
 
 export default async function TimePage() {
-  const teamMembers = await fetchCampaignTeamMembers();
+  const teamMembers: Supporter[] = await fetchCampaignTeamMembers();
   if (!teamMembers) return;
   const leader = teamMembers.find((member) => member.level === 4)!;
   const thirdLevel = teamMembers.filter((member) => member.level === 3);
