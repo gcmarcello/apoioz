@@ -5,12 +5,13 @@ import { cookies, headers } from "next/headers";
 
 import {
   deactivateCampaign,
-  getCampaign,
   listCampaigns,
-} from "@/backend/resources/campaign/campaign.service";
+} from "@/backend/resources/campaign/campaign.actions";
 import PanelSideBar from "@/frontend/panel/(shared)/components/PanelSidebar";
 import PanelProvider from "@/frontend/panel/(shared)/providers/panelProvider";
-import ChooseCampaign from "@/frontend/panel/index/components/ChooseCampaign";
+import ChooseCampaign from "@/frontend/panel/(shared)/components/ChooseCampaign";
+import prisma from "@/tests/client";
+import { getCampaign } from "@/backend/resources/campaign/campaign.service";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,17 +25,31 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const userId = headers().get("userId")!;
 
   const activeCampaignId = cookies().get("activeCampaign")?.value;
-  let campaign = null;
-  if (activeCampaignId) campaign = await getCampaign(userId);
-  if (!campaign) deactivateCampaign();
-  const userCampaigns = await listCampaigns(userId);
+  if (activeCampaignId && userId) {
+    const campaign = await getCampaign({
+      userId,
+      campaignId: activeCampaignId,
+    });
 
-  return (
-    <main>
-      <PanelProvider userId={userId} fetchedCampaign={campaign}>
-        <ChooseCampaign campaigns={userCampaigns} />
-        <PanelSideBar content={children} userId={userId} />
-      </PanelProvider>
-    </main>
-  );
+    if (!campaign) return;
+
+    return (
+      <main>
+        <PanelProvider userId={userId} activeCampaign={campaign}>
+          <PanelSideBar content={children} userId={userId} />
+        </PanelProvider>
+      </main>
+    );
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { info: true },
+  });
+
+  if (!user) return;
+
+  const userCampaigns = await listCampaigns(user?.id);
+
+  return <ChooseCampaign campaigns={userCampaigns} user={user} />;
 }

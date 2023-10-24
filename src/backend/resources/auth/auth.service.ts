@@ -1,34 +1,25 @@
-"use server";
-import prisma from "@/backend/prisma/prisma";
 import { handlePrismaError } from "@/backend/prisma/prismaError";
-import { LoginType, TokenGeneratorType } from "@/(shared)/types/authTypes";
-import { ServerExceptionType } from "@/(shared)/types/serverExceptionTypes";
+import { TokenGeneratorType } from "@/(shared)/types/authTypes";
 import { compareHash } from "@/(shared)/utils/bCrypt";
 import jwt from "jsonwebtoken";
+import { LoginDto } from "@/(shared)/dto/schemas/auth/login";
+import { User } from "@prisma/client";
 
-export async function login(data: LoginType) {
+export async function login(data: LoginDto & { isEmail: boolean; user: User }) {
   try {
-    const isEmail = data.identifier.match(
-      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-    );
-    const user = await prisma.user.findFirst({
-      where: isEmail ? { email: data.identifier } : { name: data.identifier },
-    });
-    if (!user) return handlePrismaError("Usuário", user);
-
-    if (!user.password)
+    if (!data.user.password)
       throw {
         message: `Seu acesso ao painel está restrito. Clique <a href="/" class="underline text-indigo-400">aqui</a> para finalizar a configuração.`,
         status: 401,
       };
 
-    if (!(await compareHash(data.password, user.password)))
+    if (!(await compareHash(data.password, data.user.password)))
       throw {
-        message: `${isEmail ? "Email" : "Usuário"} ou senha incorretos.`,
+        message: `${data.isEmail ? "Email" : "Usuário"} ou senha incorretos.`,
         status: 401,
       };
 
-    return generateToken({ id: user.id });
+    return generateToken({ id: data.user.id });
   } catch (error) {
     return handlePrismaError("usuário", error);
   }

@@ -3,10 +3,23 @@ import type {
   ListSupportersDto,
 } from "@/(shared)/dto/schemas/supporters/supporters";
 import * as supportersService from "./supporters.service";
+import { ListSupportersMiddleware } from "./middlewares/listSupporters.middleware";
+import { Supporter, User } from "@prisma/client";
+import { UseMiddlewares } from "@/next_decorators/decorators/UseMiddlewares";
+import { SupporterSessionMiddleware } from "@/backend/(shared)/utils/middlewares/supporterSession.middleware";
+import { UserSessionMiddleware } from "@/backend/(shared)/utils/middlewares/userSession.middleware";
 
 class SupportersActions {
-  async listSupporters(data: ListSupportersDto) {
-    return supportersService.listSupporters(data);
+  @UseMiddlewares(
+    UserSessionMiddleware,
+    SupporterSessionMiddleware,
+    ListSupportersMiddleware
+  )
+  async listSupporters(
+    data: ListSupportersDto,
+    bind?: { userSession: User; supporterSession: Supporter }
+  ) {
+    return supportersService.listSupporters(data, bind!.supporterSession);
   }
 
   async getSupporterByUser(data: { userId: string; campaignId: string }) {

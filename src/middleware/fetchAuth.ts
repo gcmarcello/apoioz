@@ -1,17 +1,21 @@
 import { ServerExceptionType } from "@/(shared)/types/serverExceptionTypes";
+import { Logger } from "@/(shared)/utils/logger/Logger";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function fetchAuth(roles: string[], request: NextRequest) {
   try {
-    const data = await fetch(`${request.nextUrl.origin}/api/auth/verify`, {
-      headers: { Authorization: request.cookies.get("token")?.value! },
-    });
-    const response = await data.json();
+    const token = request.cookies.get("token")?.value;
 
-    const isAuth = [...roles, "admin"].includes(response.role);
+    let isAuth = null;
+    if (token) {
+      const data = await fetch(`${request.nextUrl.origin}/api/auth/verify`, {
+        headers: { Authorization: token },
+      }).then((res) => res.json());
+      isAuth = [...roles, "admin"].includes(data.role);
+    }
 
     if (request.nextUrl.pathname.startsWith("/login") && !isAuth) {
-      return NextResponse.next();
+      return;
     }
 
     if (request.nextUrl.pathname.startsWith("/registrar") && !isAuth) {

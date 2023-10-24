@@ -4,32 +4,37 @@ import {
   createCampaign,
 } from "@/backend/resources/campaign/campaign.actions";
 import clsx from "clsx";
-import { mockCampaign } from "@/tests/mockCampaign";
 import { Toast } from "@/frontend/(shared)/components/alerts/toast";
-import { Button } from "../../(shared)/components/button";
-import { usePanel } from "../../(shared)/hooks/usePanel";
+import { usePanel } from "../hooks/usePanel";
+import { fakerPT_BR } from "@faker-js/faker";
+import dayjs from "dayjs";
+import { Mocker } from "@/frontend/(shared)/components/Mocker";
+import { Campaign, Prisma } from "@prisma/client";
 
-export default function ChooseCampaign({ campaigns }: { campaigns: any }) {
-  const { user, campaign, setCampaign, setShowToast } = usePanel();
+export default function ChooseCampaign({
+  campaigns,
+  user,
+}: {
+  campaigns: Campaign[];
+  user: Prisma.UserGetPayload<{ include: { info: true } }>;
+}) {
+  const mockData = () => {
+    const date = dayjs(fakerPT_BR.date.soon({ days: Math.ceil(Math.random() * 30) }));
 
-  const handleCampaignSelection = async (campaignId: string) => {
-    try {
-      const campaign = await activateCampaign({
-        campaignId,
-        userId: user.id,
-      });
-      setCampaign(campaign);
-    } catch (error) {
-      console.log(error);
-      setShowToast;
-    }
+    return {
+      userId: user.id,
+      name: fakerPT_BR.person.fullName() + " " + date.format("YYYY"),
+      type: "vereador",
+      cityId: user?.info?.cityId,
+      stateId: null,
+      year: date.format("YYYY"),
+    };
   };
-
-  if (campaign) return;
 
   return (
     <div className="mt-6 px-4 sm:px-6 lg:px-8">
       <Toast />
+      <Mocker submit={async () => await createCampaign(mockData())} />
       <div className="flex">
         <h2 className="mb-4 text-4xl font-medium text-gray-900">Bem Vindo,</h2>
         <div className="flex">
@@ -42,12 +47,7 @@ export default function ChooseCampaign({ campaigns }: { campaigns: any }) {
           )}
         </div>
       </div>
-      <Button
-        variant="primary"
-        onClick={async () => await createCampaign(await mockCampaign())}
-      >
-        Criar Campanha
-      </Button>
+
       <h2 className="text-sm font-medium text-gray-900">Campanhas Ativas</h2>
       <ul
         role="list"
@@ -58,7 +58,7 @@ export default function ChooseCampaign({ campaigns }: { campaigns: any }) {
             key={campaign.id}
             role="button"
             className="relative col-span-1 flex rounded-md shadow-sm"
-            onClick={async () => handleCampaignSelection(campaign.id)}
+            onClick={async () => await activateCampaign(campaign.id)}
           >
             <div
               className={clsx(

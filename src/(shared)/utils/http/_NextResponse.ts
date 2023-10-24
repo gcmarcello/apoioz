@@ -10,10 +10,16 @@ export interface ResponseObject<T = unknown> {
 export type Error = ResponseObject;
 
 export class _NextResponse {
-  static raw<T>({ message, data, status }: ResponseObject<T>) {
+  static raw<T>({ message, data, status }: ResponseObject<T>, isError?: boolean) {
     const isStatusNumeric = typeof status === "number";
 
-    const statusCode = status ? (isStatusNumeric ? status : HttpStatusCode[status]) : 200;
+    const statusCode = status
+      ? isStatusNumeric
+        ? status
+        : HttpStatusCode[status]
+      : isError
+      ? 400
+      : 200;
 
     const response = {
       message,
