@@ -14,7 +14,11 @@ import { Event } from "@prisma/client";
 import { CalendarDay } from "../pages/page";
 import DayModal from "./DayModal";
 
-export default function Calendar({ events }: { events?: Event[] }) {
+export default function Calendar({
+  events,
+}: {
+  events: { active: Event[]; pending: Event[] };
+}) {
   const [today, setToday] = useState(dayjs());
   const [selectedDay, setSelectedDay] = useState<CalendarDay | null>(null);
   const [show, setShow] = useState(false);
@@ -65,7 +69,7 @@ export default function Calendar({ events }: { events?: Event[] }) {
   }
 
   return (
-    <div className="mt-10 text-center ">
+    <div className="text-center ">
       <div className="flex items-center text-gray-900">
         <button
           onClick={() => handlePreviousYear()}
@@ -163,11 +167,33 @@ export default function Calendar({ events }: { events?: Event[] }) {
       </div>
       <button
         type="button"
+        onClick={() =>
+          handleDayButtonClick({
+            date: dayjs().format("YYYY-MM-DD"),
+            isCurrentMonth: true,
+            isToday: true,
+            isSelected: true,
+          })
+        }
         className="mt-8 w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
       >
         Adicionar Evento
       </button>
-      <DayModal show={show} setShow={setShow} selectedDay={selectedDay} />
+      <DayModal
+        show={show}
+        setShow={setShow}
+        selectedDay={
+          selectedDay || {
+            date: dayjs().format("YYYY-MM-DD"),
+            isCurrentMonth: true,
+            isToday: true,
+            isSelected: true,
+            events: events.active.filter((event) =>
+              dayjs(event.dateStart).isSame(dayjs(), "day")
+            ),
+          }
+        }
+      />
     </div>
   );
 }

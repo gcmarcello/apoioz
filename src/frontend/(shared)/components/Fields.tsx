@@ -111,7 +111,7 @@ export const MaskedTextField = forwardRef<HTMLInputElement, MaskedTextFieldProps
                   fieldClasses,
                   options?.errorMessage
                     ? "border-red-500 ring-red-500"
-                    : "focus:border-emerald-500 focus:ring-emerald-500"
+                    : "focus:border-indigo-500 focus:ring-indigo-500"
                 )}
               />
             )}

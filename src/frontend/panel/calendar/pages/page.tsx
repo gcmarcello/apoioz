@@ -9,6 +9,7 @@ import { Event } from "@prisma/client";
 import { mockEvent } from "@/tests/mockEvent";
 import { usePanel } from "../../(shared)/hooks/usePanel";
 import Calendar from "../components/Calendar";
+import { getAvailableTimesByDay } from "@/backend/resources/events/events.actions";
 dayjs.extend(customParseFormat);
 dayjs.extend(updateLocale);
 
@@ -22,20 +23,26 @@ export type CalendarDay = {
   events?: Event[];
 };
 
-export default function CalendarPage({ events }: { events: Event[] }) {
+export default function CalendarPage({
+  events,
+}: {
+  events: { active: Event[]; pending: Event[] };
+}) {
   const [calendarData, setCalendarData] = useState(null);
   const { campaign } = usePanel();
 
   async function createMockEvent() {
-    createEvent(await mockEvent(campaign.id));
+    /* createEvent(await mockEvent(campaign.id)); */
+    console.log(
+      await getAvailableTimesByDay({
+        campaignId: campaign.id,
+        day: dayjs().toISOString(),
+      })
+    );
   }
 
   return (
     <div>
-      <h2 className="text-base font-semibold leading-6 text-gray-900">
-        Próximos Eventos
-      </h2>
-
       <button
         onClick={() => createMockEvent()}
         className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"

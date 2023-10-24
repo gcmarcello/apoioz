@@ -6,7 +6,10 @@ function generateDay(today: any, index: number): string {
   return date.format("YYYY-MM-DD");
 }
 
-export function generateCalendarDays(today: any, events?: Event[]) {
+export function generateCalendarDays(
+  today: any,
+  events?: { active: Event[]; pending: Event[] }
+) {
   const actualToday = dayjs();
   const daysInMonth = today.daysInMonth();
   const month = today.month();
@@ -33,7 +36,7 @@ export function generateCalendarDays(today: any, events?: Event[]) {
       dayjs(generateDay(today, i)).month() === dayjs().month() &&
       dayjs(generateDay(today, i)).year() === dayjs().year(),
     isSelected: false,
-    events: events?.filter(
+    events: events?.active?.filter(
       (event) => dayjs(event.dateStart).format("YYYY-MM-DD") === generateDay(today, i)
     ),
   }));
@@ -46,7 +49,7 @@ export function generateCalendarDays(today: any, events?: Event[]) {
       isNextMonth: true,
       isToday: false,
       isSelected: false,
-      events: events?.filter(
+      events: events?.active?.filter(
         (event) => dayjs(event.dateStart).format("YYYY-MM-DD") === generateDay(today, i)
       ),
     })

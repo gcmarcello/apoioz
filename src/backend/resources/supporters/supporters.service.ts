@@ -123,7 +123,6 @@ export async function listSupporters({
   data,
 }: ListSupportersDto) {
   try {
-    console.log("ownerId", data?.ownerId);
     const userId = data?.ownerId || headers().get("userId")!;
     const campaignId = data?.campaignOwnerId || cookies().get("activeCampaign")!.value;
 
