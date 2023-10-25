@@ -1,4 +1,3 @@
-"use server";
 import prisma from "@/backend/prisma/prisma";
 
 export async function findAddressBySection({ sectionId }: { sectionId: string }) {

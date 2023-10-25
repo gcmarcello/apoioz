@@ -13,7 +13,7 @@ export async function login(request: LoginDto & { user: User; isEmail: boolean }
         status: 401,
       };
 
-    if (!(await compareHash(request.user.password, request.password)))
+    if (!(await compareHash(request.password, request.user.password)))
       throw {
         message: `${request.isEmail ? "Email" : "Usuário"} ou senha incorretos.`,
         status: 401,

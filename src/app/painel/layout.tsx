@@ -2,11 +2,7 @@ import "../globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { cookies, headers } from "next/headers";
-
-import {
-  deactivateCampaign,
-  listCampaigns,
-} from "@/backend/resources/campaign/campaign.actions";
+import { listCampaigns } from "@/backend/resources/campaign/campaign.actions";
 import PanelSideBar from "@/frontend/panel/(shared)/components/PanelSidebar";
 import PanelProvider from "@/frontend/panel/(shared)/providers/panelProvider";
 import ChooseCampaign from "@/frontend/panel/(shared)/components/ChooseCampaign";

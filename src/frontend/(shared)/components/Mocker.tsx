@@ -13,62 +13,60 @@ export function Mocker({ mockData, submit }: { mockData?: any; submit?: any }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   return (
-    <div className="fixed bottom-0 right-0 p-4">
-      <div className="flex items-center gap-3 ">
-        {isFolded ? (
-          <ChevronLeftIcon
+    <div className="flex items-center gap-3 ">
+      {isFolded ? (
+        <ChevronLeftIcon
+          width={35}
+          height={35}
+          className="text-gray-500 hover:cursor-pointer"
+          onClick={() => setIsFolded(false)}
+        />
+      ) : (
+        <>
+          <ChevronRightIcon
             width={35}
             height={35}
             className="text-gray-500 hover:cursor-pointer"
-            onClick={() => setIsFolded(false)}
+            onClick={() => setIsFolded(true)}
           />
-        ) : (
-          <>
-            <ChevronRightIcon
+          <ArrowPathIcon
+            width={35}
+            height={35}
+            onClick={() => {
+              if (window) window.location.reload();
+            }}
+            className="text-emerald-500 hover:cursor-pointer"
+          />
+          {isSubmitting ? (
+            <PaperAirplaneIcon
               width={35}
               height={35}
-              className="text-gray-500 hover:cursor-pointer"
-              onClick={() => setIsFolded(true)}
+              className="pointer-events-none animate-spin text-gray-500"
             />
-            <ArrowPathIcon
+          ) : (
+            <PaperAirplaneIcon
               width={35}
               height={35}
               onClick={() => {
-                if (window) window.location.reload();
+                setIsSubmitting(true);
+                setTimeout(async () => {
+                  await submit();
+                  setIsSubmitting((prev) => !prev);
+                }, 500);
               }}
-              className="text-emerald-500 hover:cursor-pointer"
+              className="text-red-500 hover:cursor-pointer"
             />
-            {isSubmitting ? (
-              <PaperAirplaneIcon
-                width={35}
-                height={35}
-                className="pointer-events-none animate-spin text-gray-500"
-              />
-            ) : (
-              <PaperAirplaneIcon
-                width={35}
-                height={35}
-                onClick={() => {
-                  setIsSubmitting(true);
-                  setTimeout(async () => {
-                    await submit();
-                    setIsSubmitting((prev) => !prev);
-                  }, 500);
-                }}
-                className="text-red-500 hover:cursor-pointer"
-              />
-            )}
-            <img
-              alt="mock data"
-              onClick={mockData}
-              className="hover:cursor-pointer "
-              src="https://fakerjs.dev/logo.svg"
-              width={35}
-              height={35}
-            />
-          </>
-        )}
-      </div>
+          )}
+          <img
+            alt="mock data"
+            onClick={mockData}
+            className="hover:cursor-pointer "
+            src="https://fakerjs.dev/logo.svg"
+            width={35}
+            height={35}
+          />
+        </>
+      )}
     </div>
   );
 }

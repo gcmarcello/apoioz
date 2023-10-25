@@ -1,6 +1,6 @@
 "use server";
 import prisma from "@/backend/prisma/prisma";
-import { findCampaignById, verifyPermission } from "../campaign/campaign.service";
+import { findCampaignById } from "../campaign/campaign.service";
 import { handlePrismaError } from "@/backend/prisma/prismaError";
 import type { Campaign, Supporter, User, UserInfo } from "@prisma/client";
 import { verifyExistingUser } from "../users/users.service";
@@ -8,21 +8,30 @@ import type {
   CreateSupportersDto,
   ListSupportersDto,
 } from "@/(shared)/dto/schemas/supporters/supporters";
+import { UserWithoutPassword } from "@/backend/prisma/types/User";
 
-export async function createSupporter(data: CreateSupportersDto) {
+export async function createSupporter({
+  request,
+}: {
+  request: CreateSupportersDto & {
+    userSession: UserWithoutPassword;
+    supporterSession: Supporter;
+  };
+}) {
   try {
-    const { name, email, password, campaign, ...info } = data;
+    console.log(request);
+    const { name, email, password, ...info } = request;
 
-    const checkForExistingUser = await verifyExistingUser(info.phone);
+    const existingUser = await verifyExistingUser(info.phone);
 
-    const campaignToBe = await findCampaignById(campaign.campaignId);
+    const campaign = await findCampaignById(request.supporterSession.campaignId);
 
-    if (!campaignToBe) throw new Error("Campanha não encontrada");
+    if (!campaign) throw new Error("Campanha não encontrada");
 
-    if (checkForExistingUser) {
+    if (existingUser) {
       const conflictingSupporter = await verifyConflictingSupporter(
-        campaignToBe,
-        checkForExistingUser
+        campaign,
+        existingUser
       );
 
       if (conflictingSupporter)
@@ -31,7 +40,7 @@ export async function createSupporter(data: CreateSupportersDto) {
 
     const firstReferral = await prisma.supporter.findUnique({
       where: {
-        id: campaign.referralId,
+        id: _campaign.referralId,
       },
       include: {
         supporterGroupsMemberships: {
@@ -81,7 +90,7 @@ export async function createSupporter(data: CreateSupportersDto) {
       },
     }));
 
-    const supporter = await prisma.supporter.create({
+    await prisma.supporter.create({
       data: {
         level: 1,
         campaign: { connect: { id: campaign.campaignId } },
@@ -121,7 +130,7 @@ export async function listSupporters({
   data,
   supporterSession,
 }: ListSupportersDto & {
-  userSession: User;
+  userSession: Omit<User, "password">;
   supporterSession: Supporter;
 }) {
   try {

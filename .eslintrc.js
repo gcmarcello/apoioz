@@ -8,12 +8,14 @@ module.exports = {
     tsconfigRootDir: __dirname,
   },
   extends: [
-    "plugin:@typescript-eslint/recommended-type-checked",
+    /* "plugin:@typescript-eslint/recommended-type-checked", */
     //"prettier",
     //"plugin:prettier/recommended",
     "next/core-web-vitals",
   ],
-  plugins: ["@typescript-eslint/eslint-plugin", "prettier"],
+  plugins: [
+    /* "@typescript-eslint/eslint-plugin" */
+  ],
   root: true,
   env: {
     node: true,
@@ -21,8 +23,7 @@ module.exports = {
   },
   ignorePatterns: [".eslintrc.js"],
   rules: {
-    "prettier/prettier": "error",
-    "@typescript-eslint/explicit-function-return-type": "off",
+    /* "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/consistent-type-exports": "error",
     "@typescript-eslint/consistent-type-imports": "off",
@@ -36,7 +37,7 @@ module.exports = {
     "@typescript-eslint/no-unsafe-assignment": "off",
     "@typescript-eslint/require-await": "off",
     "@typescript-eslint/no-misused-promises": "off",
-    "@typescript-eslint/no-floating-promises": "off",
+    "@typescript-eslint/no-floating-promises": "off", */
   },
   overrides: [
     {

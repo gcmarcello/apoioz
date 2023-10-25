@@ -31,10 +31,11 @@ class Middleware {
       additionalArguments: { roles: ["user"] },
     });
 
-    if (parsedRequest)
-      return NextResponse.next({
-        headers: parsedRequest.newHeaders,
-      });
+    if (!("newHeaders" in parsedRequest)) return parsedRequest;
+
+    return NextResponse.next({
+      headers: parsedRequest.newHeaders,
+    });
   }
 
   @Path("/admin")

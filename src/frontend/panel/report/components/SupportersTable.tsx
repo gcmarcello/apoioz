@@ -7,7 +7,7 @@ import { SupporterTableType } from "@/(shared)/types/tableTypes";
 import { AtSymbolIcon } from "@heroicons/react/24/solid";
 import { createColumnHelper } from "@tanstack/react-table";
 import dayjs from "dayjs";
-import React, { useState } from "react";
+import React from "react";
 
 export default function SupportersTable({ rawData }: { rawData: any }) {
   const columnHelper = createColumnHelper<SupporterTableType>();
@@ -67,7 +67,7 @@ export default function SupportersTable({ rawData }: { rawData: any }) {
     }),
   ];
 
-  const [data, setData] = useState(rawData.supporters);
-
-  return <DefaultTable data={data} columns={columns} count={rawData.count} />;
+  return (
+    <DefaultTable data={rawData.supporters} columns={columns} count={rawData.count} />
+  );
 }

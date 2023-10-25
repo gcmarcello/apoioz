@@ -4,10 +4,10 @@ import type { LoginDto } from "@/(shared)/dto/schemas/auth/login";
 import * as authService from "./auth.service";
 import { cookies } from "next/headers";
 import { ExistingUserMiddleware } from "./middlewares/existingUser.middleware";
-import { _NextResponse, type ResponseObject } from "@/(shared)/utils/http/_NextResponse";
+import { _NextResponse } from "@/(shared)/utils/http/_NextResponse";
 
-export async function login(originalRequest: LoginDto) {
-  const parsedRequest = await ExistingUserMiddleware(originalRequest);
+export async function login(request: LoginDto) {
+  const parsedRequest = await ExistingUserMiddleware({ request });
 
   const token = await authService.login(parsedRequest);
 

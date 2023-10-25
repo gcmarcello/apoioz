@@ -1,5 +1,4 @@
-import { _NextResponse } from "@/(shared)/utils/http/_NextResponse";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function AuthMiddleware({
   request,
@@ -13,8 +12,10 @@ export async function AuthMiddleware({
   const token = request.cookies.get("token")?.value;
 
   if (!token) {
-    _NextResponse.json({ message: "Deslogado.", status: 403 });
-    return;
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    console.log(`PIRUZORD`);
+    return NextResponse.redirect(url);
   }
 
   const user = await fetch(`${request.nextUrl.origin}/api/auth/verify`, {
@@ -24,8 +25,9 @@ export async function AuthMiddleware({
   const isAuthenticated = [...roles, "admin"].includes(user.role);
 
   if (!isAuthenticated) {
-    _NextResponse.json({ message: "Deslogado.", status: 403 });
-    return;
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    return NextResponse.redirect(url);
   }
 
   const newHeaders = new Headers(request.headers);

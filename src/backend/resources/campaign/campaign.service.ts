@@ -196,7 +196,7 @@ export async function generateMainPageStats({
   };
 }
 
-export async function fetchCampaignTeamMembers(campaignId: string) {
+export async function getCampaignTeamMembers(campaignId: string) {
   const teamMembers = await prisma.supporter.findMany({
     where: { campaignId: campaignId, level: { gt: 1 } },
     include: {

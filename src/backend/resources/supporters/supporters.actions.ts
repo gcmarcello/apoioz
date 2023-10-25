@@ -19,6 +19,10 @@ export async function getSupporterByUser(data: { userId: string; campaignId: str
   return supportersService.getSupporterByUser(data);
 }
 
-export async function createSupporter(data: CreateSupportersDto) {
-  return supportersService.createSupporter(data);
+export async function createSupporter(request: CreateSupportersDto) {
+  const parsedRequest = await UserSessionMiddleware({ request }).then((request) =>
+    SupporterSessionMiddleware({ request })
+  );
+
+  return supportersService.createSupporter(parsedRequest);
 }

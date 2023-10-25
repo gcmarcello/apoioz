@@ -26,7 +26,7 @@ export async function fetchCampaignTeamMembers() {
 
   if (!userId || !campaignId) return;
 
-  return service.fetchCampaignTeamMembers(campaignId);
+  return service.getCampaignTeamMembers(campaignId);
 }
 
 export async function generateMainPageStats(data: any) {

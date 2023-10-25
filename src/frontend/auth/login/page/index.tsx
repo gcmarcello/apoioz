@@ -1,6 +1,5 @@
-import { useSearchParams } from "next/navigation";
 import LoginForm from "../components/LoginForm";
-import { CheckCircleIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import { CheckCircleIcon } from "@heroicons/react/24/solid";
 
 export default async function LoginPage({
   searchParams,
@@ -15,7 +14,7 @@ export default async function LoginPage({
           src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
           alt="Your Company"
         />
-        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white">
+        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-700">
           Faça login no ApoioZ
         </h2>
         {searchParams.success && (
