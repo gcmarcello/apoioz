@@ -1,11 +1,13 @@
+"use server";
 import type {
   CreateSupportersDto,
   ListSupportersDto,
-} from "@/(shared)/dto/schemas/supporters/supporters";
+} from "@/backend/dto/schemas/supporters/supporters";
 import * as supportersService from "./supporters.service";
 import { ListSupportersMiddleware } from "./middlewares/listSupporters.middleware";
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
+import { _NextResponse } from "@/(shared)/utils/http/_NextResponse";
 
 export async function listSupporters(request: ListSupportersDto) {
   const parsedRequest = await UserSessionMiddleware({ request })
@@ -20,9 +22,17 @@ export async function getSupporterByUser(data: { userId: string; campaignId: str
 }
 
 export async function createSupporter(request: CreateSupportersDto) {
-  const parsedRequest = await UserSessionMiddleware({ request }).then((request) =>
-    SupporterSessionMiddleware({ request })
-  );
+  try {
+    const parsedRequest = await UserSessionMiddleware({ request }).then((request) =>
+      SupporterSessionMiddleware({ request })
+    );
 
-  return supportersService.createSupporter(parsedRequest);
+    console.log(parsedRequest);
+
+    return await supportersService.createSupporter(parsedRequest);
+  } catch (err: any) {
+    return _NextResponse.rawError({
+      message: err,
+    });
+  }
 }

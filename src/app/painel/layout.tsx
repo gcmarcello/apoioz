@@ -2,12 +2,10 @@ import "../globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { cookies, headers } from "next/headers";
-import { listCampaigns } from "@/backend/resources/campaign/campaign.actions";
-import PanelSideBar from "@/frontend/panel/(shared)/components/PanelSidebar";
-import PanelProvider from "@/frontend/panel/(shared)/providers/panelProvider";
-import ChooseCampaign from "@/frontend/panel/(shared)/components/ChooseCampaign";
-import prisma from "@/tests/client";
 import { getCampaign } from "@/backend/resources/campaign/campaign.actions";
+import ChooseCampaign from "@/frontend/panel/(shared)/components/ChooseCampaign/ChooseCampaign";
+import { Toast } from "@/frontend/(shared)/components/alerts/toast";
+import { PanelSidebarsLayout } from "@/frontend/panel/(shared)/components/Sidebars/PanelSidebarsLayout";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +16,16 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const userId = headers().get("userId")!;
+  const userId = headers().get("userId");
+
+  if (!userId) return;
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { info: true },
+  });
+
+  if (!user) return;
 
   const activeCampaignId = cookies().get("activeCampaign")?.value;
 
@@ -32,21 +39,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
     return (
       <main>
-        <PanelProvider userId={userId} activeCampaign={campaign}>
-          <PanelSideBar content={children} userId={userId} />
-        </PanelProvider>
+        <PanelSidebarsLayout campaign={campaign} user={user} />
+
+        <div className="p-8">{children}</div>
+
+        <Toast />
       </main>
     );
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: { info: true },
-  });
-
-  if (!user) return;
-
-  const userCampaigns = await listCampaigns(user?.id);
-
-  return <ChooseCampaign campaigns={userCampaigns} user={user} />;
+  return <ChooseCampaign user={user} />;
 }

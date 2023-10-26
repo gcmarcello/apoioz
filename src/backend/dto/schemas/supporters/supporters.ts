@@ -17,11 +17,13 @@ export type ListSupportersDto = z.infer<typeof listSupportersDto>;
 export const createSupportersDto = z.object({
   name: z.string(),
   email: z.string().email(),
-  phone: z.custom(phoneValidator),
   password: z.string().optional(),
-  zoneId: z.string(),
-  sectionId: z.string(),
-  birthDate: z.string(),
+  info: z.object({
+    phone: z.custom(phoneValidator),
+    zoneId: z.string(),
+    sectionId: z.string(),
+    birthDate: z.string(),
+  }),
 });
 
 export type CreateSupportersDto = z.infer<typeof createSupportersDto>;

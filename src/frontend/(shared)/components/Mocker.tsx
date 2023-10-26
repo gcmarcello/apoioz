@@ -70,3 +70,17 @@ export function Mocker({ mockData, submit }: { mockData?: any; submit?: any }) {
     </div>
   );
 }
+
+export function BottomRightMocker({
+  mockData,
+  submit,
+}: {
+  mockData?: any;
+  submit?: any;
+}) {
+  return (
+    <div className="absolute bottom-0 right-0 p-4">
+      <Mocker mockData={mockData} submit={submit} />
+    </div>
+  );
+}

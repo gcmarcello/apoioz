@@ -5,10 +5,16 @@ import clsx from "clsx";
 
 import { useEffect, useState } from "react";
 import { usePanel } from "../../(shared)/hooks/usePanel";
+import { Campaign, User } from "@prisma/client";
 
-export default function MainStats() {
+export default function MainStats({
+  user,
+  campaign,
+}: {
+  user: User;
+  campaign: Campaign;
+}) {
   const [mainPageStats, setMainPageStats] = useState<any>(null);
-  const { user, campaign } = usePanel();
 
   useEffect(() => {
     (async () => {

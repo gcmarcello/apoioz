@@ -9,7 +9,7 @@ import { TextField } from "@/frontend/(shared)/components/Fields";
 import ErrorAlert from "@/frontend/(shared)/components/alerts/errorAlert";
 import { ButtonSpinner } from "@/frontend/(shared)/components/Spinners";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginDto, loginDto } from "@/(shared)/dto/schemas/auth/login";
+import { LoginDto, loginDto } from "@/backend/dto/schemas/auth/login";
 
 export default function LoginForm() {
   const {
@@ -33,6 +33,7 @@ export default function LoginForm() {
       }
       router.push("/painel");
     } catch (error: any) {
+      ``;
       form.setError("root.serverError", {
         type: "400",
         message: error || "Erro inesperado",
@@ -47,40 +48,44 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-      <Mocker mockData={generateFakeData} submit={handleSubmit(submit)} />
-      <form className="mt-4 space-y-6" onSubmit={handleSubmit(submit)}>
-        {errors.root?.serverError.message ? (
-          <ErrorAlert errors={[errors.root.serverError.message]} />
-        ) : null}
+    <>
+      <div className="absolute bottom-0 right-0 p-4">
+        <Mocker mockData={generateFakeData} submit={handleSubmit(submit)} />
+      </div>
+      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+        <form className="mt-4 space-y-6" onSubmit={handleSubmit(submit)}>
+          {errors.root?.serverError.message ? (
+            <ErrorAlert errors={[errors.root.serverError.message]} />
+          ) : null}
 
-        <TextField
-          {...register("identifier")}
-          label="Email"
-          name="identifier"
-          placeholder="seu_email@email.com"
-          options={{ errorMessage: errors.identifier?.message }}
-        />
+          <TextField
+            {...register("identifier")}
+            label="Email"
+            name="identifier"
+            placeholder="seu_email@email.com"
+            options={{ errorMessage: errors.identifier?.message }}
+          />
 
-        <TextField
-          {...register("password")}
-          label="Senha"
-          name="password"
-          type={"password"}
-          placeholder="•••••••••••"
-          options={{ errorMessage: errors.password?.message }}
-        />
+          <TextField
+            {...register("password")}
+            label="Senha"
+            name="password"
+            type={"password"}
+            placeholder="•••••••••••"
+            options={{ errorMessage: errors.password?.message }}
+          />
 
-        <div>
-          <button
-            disabled={isLoading}
-            type="submit"
-            className="flex min-h-[36px] w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-          >
-            {isLoading ? <ButtonSpinner /> : "Login"}
-          </button>
-        </div>
-      </form>
-    </div>
+          <div>
+            <button
+              disabled={isLoading}
+              type="submit"
+              className="flex min-h-[36px] w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+            >
+              {isLoading ? <ButtonSpinner /> : "Login"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </>
   );
 }

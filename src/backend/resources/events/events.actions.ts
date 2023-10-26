@@ -1,8 +1,8 @@
 "use server";
 
-import { LoginDto } from "@/(shared)/dto/schemas/auth/login";
+import { LoginDto } from "@/backend/dto/schemas/auth/login";
 import * as service from "./events.service";
-import type { CreateEventDto } from "@/(shared)/dto/schemas/events/event";
+import type { CreateEventDto } from "@/backend/dto/schemas/events/event";
 import { cookies, headers } from "next/headers";
 import { getSupporterByUser } from "../supporters/supporters.service";
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
@@ -31,7 +31,10 @@ export async function getEventsByCampaign(payload: string) {
   return service.getEventsByCampaign({ userId, campaignId: payload });
 }
 
-export async function getAvailableTimesByDay(payload: { campaignId: string; day: string }) {
+export async function getAvailableTimesByDay(payload: {
+  campaignId: string;
+  day: string;
+}) {
   return await service.getAvailableTimesByDay(payload.campaignId, payload.day);
 }
 

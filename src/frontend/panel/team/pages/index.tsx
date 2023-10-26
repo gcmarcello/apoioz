@@ -13,8 +13,6 @@ export default async function TimePage() {
   const thirdLevel = teamMembers.filter((member) => member.level === 3);
   const secondLevel = teamMembers.filter((member) => member.level === 2);
 
-  console.log("kkkkkkkkkkkkkkkkkkkkk", teamMembers);
-
   const CampaignLeaderCard = () => {
     return (
       <div className="flex items-center justify-center gap-2">

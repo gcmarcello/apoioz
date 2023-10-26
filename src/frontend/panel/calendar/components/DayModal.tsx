@@ -17,7 +17,7 @@ import googleCalendarLink from "../utils/generateGoogleCalendarLink";
 import { Button } from "../../(shared)/components/button";
 import SubmitEventRequest from "./DayModalForm";
 import { set, useForm } from "react-hook-form";
-import { CreateEventDto } from "@/(shared)/dto/schemas/events/event";
+import { CreateEventDto } from "@/backend/dto/schemas/events/event";
 import { createEvent } from "@/backend/resources/events/events.actions";
 import Loading from "@/app/loading";
 import { usePanel } from "../../(shared)/hooks/usePanel";

@@ -1,5 +1,5 @@
 "use server";
-import { ListSupportersDto } from "@/(shared)/dto/schemas/supporters/supporters";
+import { ListSupportersDto } from "@/backend/dto/schemas/supporters/supporters";
 import { Supporter, User } from "@prisma/client";
 import { MiddlewareArguments } from "@/middleware/types/types";
 

@@ -50,42 +50,21 @@ export async function listCampaigns(userId: string) {
 }
 
 export async function getCampaign(request: { userId: string; campaignId: string }) {
-  try {
-    const campaign = await prisma.supporter
-      .findFirst({
-        where: request,
-        include: {
-          campaign: true,
-        },
-      })
-      .then((supporter) => supporter?.campaign);
+  const campaign = await prisma.supporter
+    .findFirst({
+      where: request,
+      include: {
+        campaign: true,
+      },
+    })
+    .then((supporter) => supporter?.campaign);
 
-    console.log(`kkkkk`, campaign);
+  if (!campaign)
+    throw _NextResponse.rawError({
+      message: `Você não tem permissão para acessar os dados dessa campanha.`,
+    });
 
-    if (!campaign) return;
-
-    let zones: Omit<Zone, "stateId">[] = [];
-
-    if (campaign?.cityId) {
-      zones = await prisma.zone.findMany({
-        where: { City_To_Zone: { some: { cityId: campaign.cityId } } },
-      });
-    }
-
-    //TODO - Talvez seja muito pesado carregar todas as zonas dessa forma
-    if (campaign?.stateId) {
-      zones = (await getZonesByState(campaign?.stateId)).zones;
-    }
-
-    if (!campaign)
-      throw _NextResponse.rawError({
-        message: `Você não tem permissão para acessar os dados dessa campanha.`,
-      });
-
-    return { ...campaign, zones };
-  } catch (error) {
-    throw error;
-  }
+  return campaign;
 }
 
 export async function getCampaignBasicInfo(campaignId: string) {

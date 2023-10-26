@@ -10,11 +10,9 @@ import { findUser } from "@/backend/resources/users/users.actions";
 export default function PanelProvider({
   children,
   userId,
-  activeCampaign,
 }: {
   children: React.ReactNode;
   userId: string;
-  activeCampaign: Campaign;
 }) {
   const [showToast, setShowToast] = useState({
     show: false,
@@ -24,14 +22,6 @@ export default function PanelProvider({
   const [siteURL, setSiteURL] = useState("");
   const [supporter, setSupporter] = useState<Supporter | undefined>(undefined);
   const [user, setUser] = useState<any>(null);
-  const [campaign, setCampaign] = useState<any>(activeCampaign);
-
-  useEffect(() => {
-    setSiteURL(document.location.origin);
-    findUser(userId)
-      .then((data) => setUser(data))
-      .catch((err) => console.log(err));
-  }, [campaign, userId]);
 
   useEffect(() => {
     if (user && campaign) {

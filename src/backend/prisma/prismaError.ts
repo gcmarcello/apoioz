@@ -3,8 +3,7 @@ import { _NextResponse } from "@/(shared)/utils/http/_NextResponse";
 import { Prisma } from "@prisma/client";
 
 export function handlePrismaError(target: string, error: any) {
-  if (!error)
-    throw _NextResponse.rawError({ message: `${target} não encontrado(a)`, status: 404 });
+  if (!error) throw [`${target} não encontrado(a)`, `${target} não encontrado(a)`];
   if (!(error instanceof Prisma.PrismaClientKnownRequestError)) throw error;
 
   switch (error.code) {

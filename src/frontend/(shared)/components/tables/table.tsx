@@ -104,7 +104,7 @@ export function DefaultTable({ data, columns, dataSetter, count }: TableProps) {
   if (isLoading) return <PlaceholderTable />;
 
   return (
-    <section className="mx-auto px-4">
+    <section className="mx-auto">
       <div className="relative mt-4 flex w-full items-center justify-between md:mt-0">
         <span className="absolute">
           <MagnifyingGlassIcon className="mx-3 h-5 w-5 text-gray-400 dark:text-gray-600" />

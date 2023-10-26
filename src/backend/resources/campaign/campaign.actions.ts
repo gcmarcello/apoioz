@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/require-await */
 "use server";
 
 import { cookies, headers } from "next/headers";
