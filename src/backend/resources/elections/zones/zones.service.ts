@@ -1,4 +1,3 @@
-"use server";
 import prisma from "@/backend/prisma/prisma";
 
 export async function getZonesByCampaign(campaignId: string) {
@@ -8,7 +7,7 @@ export async function getZonesByCampaign(campaignId: string) {
       include: {
         city: {
           include: {
-            City_To_Zone: { include: { Zone: { include: { Section: true } } } },
+            City_To_Zone: { include: { Zone: true } },
           },
         },
       },

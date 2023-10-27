@@ -8,6 +8,7 @@ import { ListSupportersMiddleware } from "./middlewares/listSupporters.middlewar
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 import { _NextResponse } from "@/(shared)/utils/http/_NextResponse";
+import { revalidatePath } from "next/cache";
 
 export async function listSupporters(request: ListSupportersDto) {
   const parsedRequest = await UserSessionMiddleware({ request })
@@ -27,9 +28,11 @@ export async function createSupporter(request: CreateSupportersDto) {
       SupporterSessionMiddleware({ request })
     );
 
-    console.log(parsedRequest);
+    const newSupporter = await supportersService.createSupporter(parsedRequest);
 
-    return await supportersService.createSupporter(parsedRequest);
+    revalidatePath("/painel");
+
+    return newSupporter;
   } catch (err: any) {
     return _NextResponse.rawError({
       message: err,

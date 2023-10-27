@@ -1,24 +1,22 @@
-'use client'
-import { User, Campaign } from "@prisma/client";
+"use client";
+import { User, Campaign, Prisma, Supporter } from "@prisma/client";
 import PanelSideBar from "./PanelSidebar";
-import SupporterSideBar from "./Supporter/Sidebar/SupporterSidebars";
-import { SupporterTopBar } from "./Supporter/SupporterTobBar";
+import SupporterSideBar from "./Supporter/SupporterSidebars";
+import { SupporterTopBar } from "./PanelTopbar";
+import SidebarProvider from "../../providers/SidebarProvider";
 
 export function PanelSidebarsLayout({
   user,
   campaign,
 }: {
-  user: User;
+  user: Omit<Prisma.UserGetPayload<{ include: { info: true } }>, "password">;
   campaign: Campaign;
 }) {
-
-  const 
-
   return (
-    <>
-      <PanelSideBar user={user} campaign={campaign} />
-      <SupporterTopBar user={user} campaign={campaign} />
-      <SupporterSideBar user={user} campaign={campaign} />
-    </>
+    <SidebarProvider user={user} campaign={campaign}>
+      <PanelSideBar />
+      <SupporterTopBar />
+      <SupporterSideBar />
+    </SidebarProvider>
   );
 }

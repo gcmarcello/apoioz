@@ -75,7 +75,7 @@ export default function LatestSupportersTable({
       cell: (info) => <Date value={dayjs(info.getValue()).format("DD/MM/YYYY HH:mm")} />,
     }),
     columnHelper.accessor("id", {
-      id: "createdAt",
+      id: "id",
       header: "Entrou em",
       cell: (info) => <SupporterOverview supporter={info.row.original} />,
     }),

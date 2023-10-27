@@ -14,9 +14,10 @@ import {
 } from "@heroicons/react/24/outline";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
-import SupporterSideBar from "./Supporter/Sidebar/SupporterSidebars";
+import SupporterSideBar from "./Supporter/SupporterSidebars";
 import { usePathname } from "next/navigation";
 import { Campaign, User } from "@prisma/client";
+import { useSidebar } from "../../hooks/useSidebar";
 
 const teams = [
   { id: 1, name: "Heroicons", href: "#", initial: "H", current: false },
@@ -24,15 +25,9 @@ const teams = [
   { id: 3, name: "Workcation", href: "#", initial: "W", current: false },
 ];
 
-export default function PanelSideBar({
-  campaign,
-  user,
-}: {
-  campaign: Campaign;
-  user: User;
-}) {
+export default function PanelSideBar() {
+  const { user, campaign, visibility, setVisibility } = useSidebar();
   const pathname = usePathname();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const navigation = [
     {
@@ -71,9 +66,18 @@ export default function PanelSideBar({
   if (!campaign) return;
   return (
     <>
-      <div className="overflow-clip">
-        <Transition.Root show={sidebarOpen} as={Fragment}>
-          <Dialog as="div" className="relative z-50 lg:hidden" onClose={setSidebarOpen}>
+      <div className="absolute w-64 overflow-clip">
+        <Transition.Root show={visibility.panelSidebar} as={Fragment}>
+          <Dialog
+            as="div"
+            className="relative z-50 lg:hidden"
+            onClose={() =>
+              setVisibility((prev) => ({
+                ...prev,
+                panelSidebar: false,
+              }))
+            }
+          >
             <Transition.Child
               as={Fragment}
               enter="transition-opacity ease-linear duration-300"
@@ -110,7 +114,12 @@ export default function PanelSideBar({
                       <button
                         type="button"
                         className="-m-2.5 p-2.5"
-                        onClick={() => setSidebarOpen(false)}
+                        onClick={() =>
+                          setVisibility((prev) => ({
+                            ...prev,
+                            panelSidebar: false,
+                          }))
+                        }
                       >
                         <span className="sr-only">Close sidebar</span>
                         <XMarkIcon className="h-6 w-6 text-white" aria-hidden="true" />
@@ -203,7 +212,6 @@ export default function PanelSideBar({
         </Transition.Root>
 
         <div className="hidden lg:flex lg:h-screen lg:w-64 lg:flex-col">
-          {/* Sidebar component, swap this element with another sidebar if you like */}
           <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-indigo-600 px-6 pb-4">
             <div className="flex h-16 shrink-0 items-center">
               <img

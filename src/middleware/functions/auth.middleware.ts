@@ -14,7 +14,6 @@ export async function AuthMiddleware({
   if (!token) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
-    console.log(`PIRUZORD`);
     return NextResponse.redirect(url);
   }
 

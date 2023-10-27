@@ -1,7 +1,5 @@
 "use server";
 
-import { LoginDto } from "@/backend/dto/schemas/auth/login";
-import { User } from "@prisma/client";
 import * as service from "./zones.service";
 
 export async function getZonesByCity(payload: string) {
@@ -9,7 +7,9 @@ export async function getZonesByCity(payload: string) {
 }
 
 export async function getZonesByCampaign(payload: string) {
-  return service.getZonesByCampaign(payload);
+  const zones = await service.getZonesByCampaign(payload);
+  console.log(zones);
+  return zones;
 }
 
 export async function getZonesByState(payload: string) {

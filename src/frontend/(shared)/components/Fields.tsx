@@ -103,7 +103,7 @@ export const MaskedTextField = forwardRef<HTMLInputElement, MaskedTextFieldProps
                 mask={mask.value}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
-                value={field.value}
+                value={field.value || ""}
                 id={id}
                 type={props.type}
                 {...props}

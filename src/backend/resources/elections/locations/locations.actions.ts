@@ -7,5 +7,7 @@ export async function getCitiesByState(data: string) {
 }
 
 export async function getAddressBySection(sectionId: string) {
-  return service.findAddressBySection(sectionId);
+  const address = await service.findAddressBySection(sectionId);
+  console.log(address);
+  return address;
 }

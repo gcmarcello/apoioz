@@ -8,6 +8,8 @@ import type {
   ListSupportersDto,
 } from "@/backend/dto/schemas/supporters/supporters";
 import { UserWithoutPassword } from "@/backend/prisma/types/User";
+import { normalizeEmail, normalizePhone } from "@/(shared)/utils/format";
+import dayjs from "dayjs";
 
 export async function createSupporter(
   request: CreateSupportersDto & {
@@ -15,68 +17,66 @@ export async function createSupporter(
     supporterSession: Supporter;
   }
 ) {
-  try {
-    const existingUser = await verifyExistingUser(request.info.phone);
+  const existingUser = await verifyExistingUser(request.info.phone);
 
-    const campaign = await findCampaignById(request.supporterSession.campaignId);
+  const campaign = await findCampaignById(request.supporterSession.campaignId);
 
-    if (!campaign) throw "Campanha não encontrada";
+  if (!campaign) throw "Campanha não encontrada";
 
-    if (existingUser) {
-      const conflictingSupporter = await verifyConflictingSupporter(
-        campaign,
-        existingUser
-      );
+  if (existingUser) {
+    const conflictingSupporter = await verifyConflictingSupporter(campaign, existingUser);
 
-      if (conflictingSupporter)
-        throw "Usuário já cadastrado em outra campanha do mesmo tipo";
-    }
+    if (conflictingSupporter)
+      throw "Usuário já cadastrado em outra campanha do mesmo tipo";
+  }
 
-    let referralTree = [request.supporterSession];
-    if (referralTree[0].level != 4) {
-      while (true) {
-        const referral = await prisma.supporter.findFirst({
-          where: {
-            OR: [
-              {
-                referralId: referralTree[referralTree.length - 1]?.id,
-              },
-              {
-                level: 4,
-              },
-            ],
-          },
-        });
-
-        if (!referral) continue;
-
-        referralTree.push(referral);
-
-        if (referral.level === 4) break;
-      }
-    }
-
-    const ownedSupporterGroupsFromReferralTree =
-      await prisma.supporterGroupMembership.findMany({
+  let referralTree = [request.supporterSession];
+  if (referralTree[0].level != 4) {
+    while (true) {
+      const referral = await prisma.supporter.findFirst({
         where: {
-          supporterId: {
-            in: referralTree.map((referral) => referral.id),
-          },
+          OR: [
+            {
+              referralId: referralTree[referralTree.length - 1]?.id,
+            },
+            {
+              level: 4,
+            },
+          ],
         },
       });
 
-    const createSupporterGroupMembershipQuery = ownedSupporterGroupsFromReferralTree.map(
-      (supporterGroup) => ({
-        isOwner: false,
-        supporterGroup: {
-          connect: {
-            id: supporterGroup.id,
-          },
-        },
-      })
-    );
+      if (!referral) continue;
 
-    await prisma.supporter.create({
+      referralTree.push(referral);
+
+      if (referral.level === 4) break;
+    }
+  }
+
+  const ownedSupporterGroupsFromReferralTree =
+    await prisma.supporterGroupMembership.findMany({
+      where: {
+        supporterId: {
+          in: referralTree.map((referral) => referral.id),
+        },
+        isOwner: true,
+      },
+    });
+
+  const createSupporterGroupMembershipQuery = ownedSupporterGroupsFromReferralTree.map(
+    (supporterGroup) => ({
+      isOwner: false,
+      supporterGroup: {
+        connect: {
+          id: supporterGroup.supporterGroupId,
+        },
+      },
+    })
+  );
+
+  const supporter = await prisma.supporter
+    .create({
       data: {
         level: 1,
         campaign: { connect: { id: request.supporterSession.campaignId } },
@@ -85,11 +85,21 @@ export async function createSupporter(
           ? { connect: { id: existingUser.userId } }
           : {
               create: {
-                email: request.email,
+                email: normalizeEmail(request.email),
                 password: request.password,
                 name: request.name,
                 role: "user",
-                info: { create: request.info },
+                info: {
+                  create: {
+                    ...request.info,
+                    birthDate: dayjs(
+                      request.info.birthDate,
+                      "DD/MM/YYYY",
+                      true
+                    ).toISOString(),
+                    phone: normalizePhone(request.info.phone),
+                  },
+                },
               },
             },
         supporterGroupsMemberships: {
@@ -104,10 +114,10 @@ export async function createSupporter(
           ],
         },
       },
-    });
-  } catch (error) {
-    return handlePrismaError("usuário", error);
-  }
+    })
+    .catch((err) => console.log(err));
+
+  return supporter;
 }
 
 export async function listSupporters({

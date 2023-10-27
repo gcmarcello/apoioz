@@ -6,13 +6,13 @@ import { getCampaign } from "@/backend/resources/campaign/campaign.actions";
 import ChooseCampaign from "@/frontend/panel/(shared)/components/ChooseCampaign/ChooseCampaign";
 import { Toast } from "@/frontend/(shared)/components/alerts/toast";
 import { PanelSidebarsLayout } from "@/frontend/panel/(shared)/components/Sidebars/PanelSidebarsLayout";
+import prisma from "@/backend/prisma/prisma";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "ApoioZ - Painel",
   description: "Painel de Controle",
-  themeColor: "#FFFFFF",
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -38,10 +38,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     if (!campaign) return;
 
     return (
-      <main>
+      <main className="">
         <PanelSidebarsLayout campaign={campaign} user={user} />
 
-        <div className="p-8">{children}</div>
+        <div className="p-8 lg:ml-64">{children}</div>
 
         <Toast />
       </main>
