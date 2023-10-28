@@ -29,7 +29,43 @@ export default function MainStats({
     })();
   }, [campaign, user]);
 
-  if (!mainPageStats) return;
+  if (!mainPageStats)
+    return (
+      <div>
+        <h3 className="text-base font-semibold leading-6 text-gray-900">
+          Estatísticas Semanais
+        </h3>
+        <dl className="mt-5 grid grid-cols-1 divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow md:grid-cols-3 md:divide-x md:divide-y-0">
+          <div className="px-4 py-5 sm:p-6">
+            <dt className="text-base font-normal text-gray-900">Total de Apoiadores</dt>
+            <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
+              <div className="flex animate-pulse items-baseline text-2xl font-semibold text-indigo-600">
+                Carregando...
+                <span className="ml-2 text-clip text-sm font-medium text-gray-500"></span>
+              </div>
+            </dd>
+          </div>
+          <div className="px-4 py-5 sm:p-6">
+            <dt className="text-base font-normal text-gray-900">Seção Líder</dt>
+            <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
+              <div className="flex animate-pulse items-baseline text-2xl font-semibold text-indigo-600">
+                Carregando...
+                <span className="ml-2 text-clip text-sm font-medium text-gray-500"></span>
+              </div>
+            </dd>
+          </div>
+          <div className="px-4 py-5 sm:p-6">
+            <dt className="text-base font-normal text-gray-900">Líder de Indicações</dt>
+            <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
+              <div className="flex animate-pulse items-baseline text-2xl font-semibold text-indigo-600">
+                Carregando...
+                <span className="ml-2 text-clip text-sm font-medium text-gray-500"></span>
+              </div>
+            </dd>
+          </div>
+        </dl>
+      </div>
+    );
 
   const totalSupportersChange =
     Math.round(

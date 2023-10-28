@@ -68,6 +68,10 @@ export default function SupportersTable({ rawData }: { rawData: any }) {
   ];
 
   return (
-    <DefaultTable data={rawData.supporters} columns={columns} count={rawData.count} />
+    <DefaultTable
+      data={rawData.data}
+      columns={columns}
+      count={rawData.pagination.count}
+    />
   );
 }

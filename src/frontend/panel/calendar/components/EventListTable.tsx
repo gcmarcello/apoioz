@@ -1,3 +1,4 @@
+"use client";
 import { Date } from "@/frontend/(shared)/components/Date";
 import { contrastingColor } from "@/frontend/(shared)/utils/colors";
 import { Menu, Transition } from "@headlessui/react";

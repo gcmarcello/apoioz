@@ -81,5 +81,12 @@ export default function LatestSupportersTable({
     }),
   ];
 
-  return <DefaultTable data={initialData} columns={columns} count={pagination.count} />;
+  return (
+    <DefaultTable
+      data={initialData}
+      columns={columns}
+      count={pagination.count}
+      disablePagination={true}
+    />
+  );
 }

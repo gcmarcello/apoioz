@@ -13,13 +13,21 @@ export default function EventList({
         <h2 className="text-base font-semibold leading-6 text-gray-900">
           Próximos Eventos
         </h2>
-        <EventListTable events={events.active} />
+        {events.active.length ? (
+          <EventListTable events={events.active} />
+        ) : (
+          <span className="text-sm">Nenhum evento ativo</span>
+        )}
       </div>
       <div className="py-4">
         <h2 className="text-base font-semibold leading-6 text-gray-900">
           Eventos Pendentes
         </h2>
-        <EventListTable events={events.pending} />
+        {events.pending.length ? (
+          <EventListTable events={events.pending} />
+        ) : (
+          <span className="text-sm">Nenhum evento pendente</span>
+        )}
       </div>
     </section>
   );

@@ -26,8 +26,11 @@ export async function createSupporter(
   if (existingUser) {
     const conflictingSupporter = await verifyConflictingSupporter(campaign, existingUser);
 
-    if (conflictingSupporter)
-      throw "Usuário já cadastrado em outra campanha do mesmo tipo";
+    if (conflictingSupporter?.type === "sameCampaign")
+      throw "Usuário já cadastrado nesta campanha.";
+    if (conflictingSupporter?.type === "otherCampaign") {
+      throw "Usuário já cadastrado em outra campanha do mesmo tipo.";
+    }
   }
 
   let referralTree = [request.supporterSession];
@@ -77,6 +80,7 @@ export async function createSupporter(
 
   const supporter = await prisma.supporter
     .create({
+      include: { user: true },
       data: {
         level: 1,
         campaign: { connect: { id: request.supporterSession.campaignId } },
@@ -225,6 +229,7 @@ export async function verifyConflictingSupporter(campaign: Campaign, userInfo: U
       },
     })
   ).map((campaign) => campaign.id);
+
   const conflictingSupporter = await prisma.supporter.findFirst({
     where: {
       userId: userInfo.userId,
@@ -232,7 +237,11 @@ export async function verifyConflictingSupporter(campaign: Campaign, userInfo: U
     },
   });
 
-  return Boolean(conflictingSupporter);
+  if (conflictingSupporter?.campaignId === campaign.id)
+    return { type: "sameCampaign", supporter: conflictingSupporter };
+  if (conflictingSupporter)
+    return { type: "otherCampaign", supporter: conflictingSupporter };
+  return null;
 }
 
 export async function findCampaignLeader(campaignId: string) {

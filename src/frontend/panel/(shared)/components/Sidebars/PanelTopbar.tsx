@@ -3,7 +3,8 @@
 import { deactivateCampaign } from "@/backend/resources/campaign/campaign.actions";
 import { ButtonSpinner } from "@/frontend/(shared)/components/Spinners";
 import { Menu, Transition } from "@headlessui/react";
-import { Bars3Icon, ChevronDownIcon, PlusCircleIcon } from "@heroicons/react/24/solid";
+import { Bars3Icon, ChevronDownIcon } from "@heroicons/react/24/solid";
+import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import Image from "next/image";
 import { useState, Fragment } from "react";

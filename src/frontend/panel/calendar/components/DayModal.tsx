@@ -7,7 +7,7 @@ import {
   MapPinIcon,
   XMarkIcon,
 } from "@heroicons/react/24/solid";
-import { Event } from "@prisma/client";
+import { Campaign, Event } from "@prisma/client";
 import dayjs from "dayjs";
 import { Dispatch, Fragment, useEffect, useRef, useState } from "react";
 import { CalendarDay } from "../pages/page";
@@ -26,10 +26,12 @@ export default function DayModal({
   show,
   setShow,
   selectedDay,
+  campaign,
 }: {
   show: boolean;
   setShow: Dispatch<boolean>;
   selectedDay: CalendarDay;
+  campaign: Campaign;
 }) {
   const completeButtonRef = useRef(null);
   const [showForm, setShowForm] = useState(false);
@@ -142,7 +144,11 @@ export default function DayModal({
                     </div>
                   </div>
                   {showForm ? (
-                    <SubmitEventRequest form={form} day={selectedDay} />
+                    <SubmitEventRequest
+                      form={form}
+                      day={selectedDay}
+                      campaign={campaign}
+                    />
                   ) : isLoading ? (
                     <Loading />
                   ) : (

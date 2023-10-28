@@ -113,6 +113,7 @@ export async function generateMainPageStats({
     },
   });
   const mostFrequentReferralId = await prisma.supporter.groupBy({
+    where: { campaignId: campaignId },
     by: ["referralId"],
     _count: {
       referralId: true,

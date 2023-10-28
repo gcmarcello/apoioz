@@ -41,9 +41,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <main className="">
         <PanelSidebarsLayout campaign={campaign} user={user} />
 
-        <div className="p-8 lg:ml-64">{children}</div>
-
-        <Toast />
+        <div className="p-4 lg:ml-64 lg:p-8">{children}</div>
       </main>
     );
   }

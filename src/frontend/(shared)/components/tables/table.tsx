@@ -1,12 +1,6 @@
 import React, { Dispatch, useState } from "react";
 
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ChevronDoubleLeftIcon,
-  ChevronDoubleRightIcon,
-  MagnifyingGlassIcon,
-} from "@heroicons/react/24/outline";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 import { rankItem } from "@tanstack/match-sorter-utils";
 
@@ -75,9 +69,16 @@ interface TableProps {
   columns: any;
   dataSetter?: JSX.Element;
   count: number;
+  disablePagination?: boolean;
 }
 
-export function DefaultTable({ data, columns, dataSetter, count }: TableProps) {
+export function DefaultTable({
+  data,
+  columns,
+  dataSetter,
+  count,
+  disablePagination,
+}: TableProps) {
   const [globalFilter, setGlobalFilter] = useState("");
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -90,6 +91,7 @@ export function DefaultTable({ data, columns, dataSetter, count }: TableProps) {
     state: {
       globalFilter,
     },
+    pageCount: Math.ceil(count / 10),
     onGlobalFilterChange: setGlobalFilter,
     globalFilterFn: fuzzyFilter,
     getCoreRowModel: getCoreRowModel(),
@@ -175,12 +177,14 @@ export function DefaultTable({ data, columns, dataSetter, count }: TableProps) {
                   </For> */}
                 </tfoot>
               </table>
-              <PaginationControl
-                count={count}
-                pageIndex={table.getState().pagination.pageIndex}
-                pages={Array.from({ length: table.getPageCount() }, (_, i) => i)}
-                table={table}
-              />
+              {!disablePagination && (
+                <PaginationControl
+                  count={count}
+                  pageIndex={table.getState().pagination.pageIndex}
+                  pages={Array.from({ length: table.getPageCount() }, (_, i) => i)}
+                  table={table}
+                />
+              )}
             </div>
           </div>
         </div>

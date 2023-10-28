@@ -10,14 +10,16 @@ import dayjs from "dayjs";
 import { useState, useEffect, Dispatch } from "react";
 import { generateCalendarDays } from "../utils/generateCalendarDays";
 import Loading from "@/app/loading";
-import { Event } from "@prisma/client";
+import { Campaign, Event } from "@prisma/client";
 import { CalendarDay } from "../pages/page";
 import DayModal from "./DayModal";
 
 export default function Calendar({
   events,
+  campaign,
 }: {
   events: { active: Event[]; pending: Event[] };
+  campaign: Campaign;
 }) {
   const [today, setToday] = useState(dayjs());
   const [selectedDay, setSelectedDay] = useState<CalendarDay | null>(null);
@@ -182,6 +184,7 @@ export default function Calendar({
       <DayModal
         show={show}
         setShow={setShow}
+        campaign={campaign}
         selectedDay={
           selectedDay || {
             date: dayjs().format("YYYY-MM-DD"),

@@ -110,7 +110,7 @@ export default function PanelSideBar() {
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                   >
-                    <div className="absolute left-full top-0 flex w-16 justify-center pt-5">
+                    <div className="sm:left-13/16 absolute left-full top-0 flex w-16 justify-center pt-5">
                       <button
                         type="button"
                         className="-m-2.5 p-2.5"
@@ -126,7 +126,7 @@ export default function PanelSideBar() {
                       </button>
                     </div>
                   </Transition.Child>
-                  <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-indigo-600 px-6 pb-4">
+                  <div className="fixed flex h-full w-64 grow flex-col gap-y-5 overflow-y-auto bg-indigo-600 px-6 pb-4">
                     <div className="flex h-16 shrink-0 items-center">
                       <img
                         width={32}
@@ -212,7 +212,7 @@ export default function PanelSideBar() {
         </Transition.Root>
 
         <div className="hidden lg:flex lg:h-screen lg:w-64 lg:flex-col">
-          <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-indigo-600 px-6 pb-4">
+          <div className="fixed flex h-full w-64 grow flex-col gap-y-5 overflow-y-auto bg-indigo-600 px-6 pb-4">
             <div className="flex h-16 shrink-0 items-center">
               <img
                 width={32}

@@ -14,12 +14,14 @@ export default function ComboboxInput<T>({
   onChange,
   value,
   displayValueKey,
+  reverseOptions,
 }: {
   rawData: any[] | undefined;
   disabled?: boolean;
   onChange: any;
   value: any;
   displayValueKey: string;
+  reverseOptions?: boolean;
 }) {
   const data = rawData.map((i) => ({
     id: i.id as string,
@@ -61,7 +63,6 @@ export default function ComboboxInput<T>({
             setQuery(event.target.value);
           }}
           displayValue={(item: DataType) => {
-            console.log(item);
             return item.displayValue;
           }}
         />
@@ -73,7 +74,7 @@ export default function ComboboxInput<T>({
           <Combobox.Options
             className={clsx(
               "absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm",
-              filteredData.length === 1 ? "" : "top-[-15.55rem] sm:top-full"
+              filteredData.length === 1 ? "" : "top-[-15.55rem] "
             )}
           >
             {filteredData.map((data) => (

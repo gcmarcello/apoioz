@@ -1,10 +1,16 @@
 "use client ";
-import { Campaign, User } from "@prisma/client";
+import { Campaign, Prisma, User } from "@prisma/client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
 
-export function ShareSupporter({ user, campaign }: { user: User; campaign: Campaign }) {
+export function ShareSupporter({
+  user,
+  campaign,
+}: {
+  user: Omit<Prisma.UserGetPayload<{ include: { info: true } }>, "password">;
+  campaign: Campaign;
+}) {
   const [isMounted, setMounted] = useState(false);
 
   useEffect(() => {

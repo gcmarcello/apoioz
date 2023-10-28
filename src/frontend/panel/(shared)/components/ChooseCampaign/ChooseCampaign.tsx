@@ -39,7 +39,6 @@ export default async function ChooseCampaign({
     <>
       <BottomRightMocker submit={mockAndSubmit} />
       <div className="mt-6 px-4 sm:px-6 lg:px-8">
-        <Toast />
         <div className="flex">
           <h2 className="mb-4 text-4xl font-medium text-gray-900">Bem Vindo,</h2>
           <div className="flex">

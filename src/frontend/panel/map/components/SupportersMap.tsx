@@ -25,7 +25,12 @@ export function SupportersMap() {
   const purpleOptions = { color: "purple" };
 
   return (
-    <MapContainer className="h-[300px]" center={center} zoom={13} scrollWheelZoom={true}>
+    <MapContainer
+      className="z-0 h-[600px]"
+      center={center}
+      zoom={13}
+      scrollWheelZoom={true}
+    >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

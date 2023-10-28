@@ -13,14 +13,17 @@ import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import { da } from "@faker-js/faker";
 import { XMarkIcon } from "@heroicons/react/20/solid";
+import { Campaign } from "@prisma/client";
 dayjs.extend(isBetween);
 
 export default function SubmitEventRequest({
   form,
   day,
+  campaign,
 }: {
   form: UseFormReturn<any, any, undefined>;
   day: CalendarDay;
+  campaign: Campaign;
 }) {
   const [availableTimes, setAvailableTimes] = useState<ListboxOptionType[] | null>(null);
   const [endingAvailableTimes, setEndingAvailableTimes] = useState<
@@ -29,23 +32,27 @@ export default function SubmitEventRequest({
   const [dateEvents, setDateEvents] = useState<{ start: string; end: string }[] | null>(
     null
   );
-  const { campaign } = usePanel();
+  const [error, setError] = useState<any>(null);
 
   useEffect(() => {
     async function fetchAvailableTimes() {
-      const serverTimes = await getAvailableTimesByDay({
-        campaignId: campaign.id,
-        day: day.date,
-      });
-      setDateEvents(serverTimes.events);
-      return serverTimes.available.map((string, index) => ({
-        id: index + 1,
-        name: dayjs(string).format("HH:mm"),
-        value: string,
-      }));
+      try {
+        const serverTimes = await getAvailableTimesByDay({
+          campaignId: campaign.id,
+          day: day.date,
+        });
+        setDateEvents(serverTimes.events);
+        return serverTimes.available.map((string, index) => ({
+          id: index + 1,
+          name: dayjs(string).format("HH:mm"),
+          value: string,
+        }));
+      } catch (error) {
+        setError(error);
+      }
     }
     fetchAvailableTimes()
-      .then((times) => setAvailableTimes(times))
+      .then((times: any) => setAvailableTimes(times))
       .catch((err) => console.log(err));
   }, []);
 
@@ -120,8 +127,15 @@ export default function SubmitEventRequest({
             formLabel="dateStart"
             label="Hora de início"
             options={availableTimes || []}
+            disabled={!availableTimes?.length}
           />
+          {Array.isArray(availableTimes) && !availableTimes.length && (
+            <span className="text-xs font-normal italic text-red-400">
+              Sem horários disponíveis.
+            </span>
+          )}
         </div>
+
         <div>
           <SelectListbox
             form={form}
