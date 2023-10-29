@@ -18,6 +18,5 @@ export async function getAddressesByCampaign(request = {}) {
   const parsedRequest = await UserSessionMiddleware({ request }).then((request) =>
     SupporterSessionMiddleware({ request })
   );
-
   return await service.getAddressesByCampaign(parsedRequest.supporterSession.campaignId);
 }
