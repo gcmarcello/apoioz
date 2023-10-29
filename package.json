@@ -39,6 +39,7 @@
     "react-hot-toast": "^2.4.1",
     "react-input-mask": "3.0.0-alpha.2",
     "react-leaflet": "^4.2.1",
+    "react-leaflet-cluster": "^2.1.0",
     "react-qr-code": "^2.0.12",
     "reflect-metadata": "0.1.13",
     "swr": "^2.2.4",

@@ -18,54 +18,30 @@ import { createSupporter } from "@/backend/resources/supporters/supporters.actio
 import { useToast } from "@/frontend/(shared)/components/hooks/useToast";
 import { showToast } from "@/frontend/(shared)/components/alerts/toast";
 
+export type FormContext = {
+  submit: () => void;
+  reset: () => void;
+  isSubmitting: boolean;
+  isValid: boolean;
+};
+
 export default function SupporterSideBar() {
   const { user, campaign, visibility, setVisibility } = useSidebar();
-  const [options, setOptions] = useState<{
-    current: {
-      key: string;
-      submitter: Dispatch<any> | undefined;
-    };
-    previous: string | undefined;
-  }>
-  ({
-    current: {
-      key: "start",
-      submitter: undefined,
-    },
-    previous: undefined
+  const [option, setOption] = useState("start");
+
+  const [formContext, setFormContext] = useState<FormContext>({
+    submit: () => {},
+    reset: () => {},
+    isSubmitting: false,
+    isValid: false,
   });
-
-  const setCurrentOption = (key: string, submitter: Dispatch<any> | undefined) => {
-    setOptions(prev => ({
-      previous: prev.current.key,
-      'current': {
-        key,
-        submitter
-      }
-    }))
-  }
-
-  /* useEffect(() => {
-    if (supporter) {
-      setVisibility((prev) => ({
-        ...prev,
-        supporterSidebar: false,
-      }));
-    }
-  }, [supporter, setVisibility]); */
 
   return (
     <>
       <Transition.Root
         show={visibility.supporterSidebar}
         afterLeave={() => {
-          setOptions((prev) => ({
-            ...prev,
-            start: {
-              ...prev.start,
-              current: true,
-            },
-          }))
+          setOption("start");
         }}
         as={Fragment}
       >
@@ -94,10 +70,7 @@ export default function SupporterSideBar() {
                   leaveTo="translate-x-full"
                 >
                   <Dialog.Panel className="pointer-events-auto w-screen max-w-md">
-                    <form
-                      onSubmit={}
-                      className="flex h-full flex-col divide-y divide-gray-200 bg-white shadow-xl"
-                    >
+                    <div className="flex h-full flex-col divide-y divide-gray-200 bg-white shadow-xl">
                       <div className="h-0 flex-1 overflow-y-auto">
                         <div className="bg-indigo-700 px-4 py-6 sm:px-6">
                           <div className="flex items-center justify-between">
@@ -129,16 +102,10 @@ export default function SupporterSideBar() {
                         </div>
                         <div className="flex flex-1 flex-col justify-between">
                           <div className="divide-y divide-gray-200 px-4 sm:px-6">
-                            {options.start.current && (
+                            {option && (
                               <div className="flex flex-col gap-8 pb-4 pt-20">
                                 <button
-                                  onClick={() => setOptions(prev => ({
-                                    ...prev,
-                                    add: {
-                                      ...prev.add,
-                                      current: true
-                                    },
-                                  }))}
+                                  onClick={() => setOption("add")}
                                   type="button"
                                   className="mx-auto rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                                 >
@@ -159,7 +126,10 @@ export default function SupporterSideBar() {
                               <ShareSupporter user={user} campaign={campaign} />
                             )}
                             {option === "add" && (
-                              <AddSupporterForm campaign={campaign} form={form} />
+                              <AddSupporterForm
+                                campaign={campaign}
+                                setFormContext={setFormContext}
+                              />
                             )}
                           </div>
                         </div>
@@ -182,11 +152,17 @@ export default function SupporterSideBar() {
                         >
                           Voltar
                         </button>
-                        {
-                          option === 'add' && 
-                        }
+                        {option === "add" && (
+                          <button
+                            type="button"
+                            className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                            onClick={() => {}}
+                          >
+                            Adicionar
+                          </button>
+                        )}
                       </div>
-                    </form>
+                    </div>
                   </Dialog.Panel>
                 </Transition.Child>
               </div>
@@ -194,7 +170,6 @@ export default function SupporterSideBar() {
           </div>
         </Dialog>
       </Transition.Root>
-      <div></div>
     </>
   );
 }

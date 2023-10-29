@@ -20,3 +20,15 @@ export async function getCitiesByState(stateId: string) {
     },
   });
 }
+
+export async function getAddressesByCampaign(campaignId: string) {
+  const cityId = await prisma.campaign
+    .findUnique({ where: { id: campaignId } })
+    .then((campaign) => campaign!.cityId);
+
+  if (!cityId) throw new Error("City not found");
+
+  return await prisma.address.findMany({
+    where: { cityId },
+  });
+}
