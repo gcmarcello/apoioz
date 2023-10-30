@@ -11,13 +11,13 @@ export type SupporterTableType = {
   user: {
     email: string;
     id: string;
+    phone: string;
     info: {
       Section: Section;
       Zone: Zone;
       birthDate: null;
       cityId: string;
       partyId?: string;
-      phone: string;
       sectionId: string;
       stateId: null;
       userId: string;

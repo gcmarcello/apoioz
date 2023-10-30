@@ -18,12 +18,12 @@ module.exports = {
   ignorePatterns: [".eslintrc.js"],
   overrides: [
     {
-      files: ["**/frontend/**"],
+      files: ["**/(frontend)/**"],
       rules: {
         "no-restricted-imports": [
           "error",
           {
-            patterns: ["**/*.service"],
+            patterns: ["**/*service"],
           },
         ],
       },

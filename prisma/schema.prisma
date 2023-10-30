@@ -13,6 +13,7 @@ datasource db {
 model User {
   id        String      @id @default(uuid()) @db.Uuid
   email     String      @unique
+  phone     String?     @unique
   name      String?
   password  String?
   role      String
@@ -22,13 +23,13 @@ model User {
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 
+
   @@schema("public")
 }
 
 model UserInfo {
   user      User      @relation(fields: [userId], references: [id])
   userId    String    @id @unique @default(uuid()) @db.Uuid
-  phone     String?
   birthDate DateTime?
   stateId   String?   @db.VarChar
   party     Party?    @relation(fields: [partyId], references: [id])
@@ -102,6 +103,10 @@ model Supporter {
   Event                      Event[]
   createdAt                  DateTime                   @default(now())
   updatedAt                  DateTime                   @updatedAt
+  Section                   Section?                   @relation(fields: [sectionId], references: [id])
+  sectionId                  String?                    @db.Uuid
+  Zone                       Zone?                      @relation(fields: [zoneId], references: [id])
+  zoneId                     String?                    @db.Uuid
 
   @@schema("public")
 }
@@ -193,6 +198,7 @@ model Section {
   Address   Address?   @relation(fields: [addressId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_3ff69a4fa9a649daf3fa869bcbc")
   Zone      Zone       @relation(fields: [zoneId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_deab69c6c23c07560c03943b6aa")
   UserInfo  UserInfo[]
+  Supporter Supporter[]
 
   @@schema("elections")
 }
@@ -217,6 +223,7 @@ model Zone {
   Section      Section[]
   State        State          @relation(fields: [stateId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_943d589a985354af23c8330abde")
   UserInfo     UserInfo[]
+  Supporter    Supporter[]
 
   @@schema("elections")
 }

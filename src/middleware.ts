@@ -31,6 +31,11 @@ class Middleware {
       additionalArguments: { roles: ["user"] },
     });
 
+    if (!userId) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/login";
+      return NextResponse.redirect(url);
+    }
     const requestHeaders = new Headers(request.headers);
 
     requestHeaders.set("userId", userId);

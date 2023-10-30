@@ -23,11 +23,11 @@ export interface UserType {
   password?: string;
   name: string;
   role: string;
+  phone: string;
   info: InfoType;
 }
 
 export interface InfoType {
-  phone: string;
   Zone?: ZoneType;
   City?: any;
   Section?: SectionType;

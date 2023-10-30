@@ -1,8 +1,8 @@
 "use server";
-import prisma from "@/backend/prisma/prisma";
 import { User } from "@prisma/client";
 import { headers } from "next/headers";
 import { MiddlewareArguments } from "../types/types";
+import prisma from "prisma/prisma";
 
 export async function UserSessionMiddleware<P>({ request }: { request: P }) {
   const userId = headers().get("userId")!;

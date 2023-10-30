@@ -1,8 +1,8 @@
 "use server";
 import { _NextResponse } from "@/(shared)/utils/http/_NextResponse";
-import prisma from "@/backend/prisma/prisma";
 import { User } from "@prisma/client";
 import { cookies } from "next/headers";
+import prisma from "prisma/prisma";
 
 export async function SupporterSessionMiddleware<
   R extends { userSession: Omit<User, "password"> },

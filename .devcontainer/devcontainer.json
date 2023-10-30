@@ -32,7 +32,7 @@
           "source.fixAll.eslint": true
         },
         "material-icon-theme.folders.associations": {
-          "(shared)": "shared"
+          "_shared": "shared"
         },
         "material-icon-theme.activeIconPack": "none",
         "editor.formatOnSave": true,
