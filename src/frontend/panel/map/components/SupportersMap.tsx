@@ -43,8 +43,6 @@ export function SupportersMap() {
     trigger();
   }, []);
 
-  return;
-
   const customIcon = new L.Icon({
     iconUrl: "/urna.png",
     iconSize: new L.Point(55, 55),
