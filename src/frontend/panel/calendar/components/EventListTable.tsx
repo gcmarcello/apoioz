@@ -1,4 +1,3 @@
-"use client";
 import { Date } from "@/frontend/(shared)/components/Date";
 import { contrastingColor } from "@/frontend/(shared)/utils/colors";
 import { Menu, Transition } from "@headlessui/react";
@@ -7,30 +6,49 @@ import {
   MapPinIcon,
   EllipsisHorizontalIcon,
 } from "@heroicons/react/20/solid";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { Event } from "@prisma/client";
 import clsx from "clsx";
 import dayjs from "dayjs";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
+import { EventListActions } from "./EventListActions";
+import { getSupporterByUser } from "@/backend/resources/supporters/supporters.actions";
+import { cookies, headers } from "next/headers";
 
-export default function EventListTable({ events }: { events: Event[] }) {
+export default async function EventListTable({ events }: { events: Event[] }) {
+  const supporter = await getSupporterByUser({
+    userId: headers().get("userId")!,
+    campaignId: cookies().get("activeCampaign")!.value,
+  });
   return (
     <ol className="divide-y divide-gray-100 text-sm leading-6 ">
-      {events.map((meeting) => {
-        const [bgColorStr, textColorStr] = contrastingColor();
+      {events.map((event) => {
+        const [bgColor, letterColor] = contrastingColor();
         return (
-          <li key={meeting.id} className="relative flex space-x-6 py-6 xl:static">
+          <li key={event.id} className="relative flex space-x-6 py-6 xl:static">
             <div
-              style={{ backgroundColor: bgColorStr, color: textColorStr }}
+              style={{
+                backgroundColor: bgColor || "transparent",
+                color: letterColor || "transparent",
+              }}
               className={clsx(
-                `flex h-14 w-14 items-center justify-center rounded-full font-bold `
+                `flex h-14 min-w-[3.5rem] items-center justify-center rounded-full font-bold `
               )}
             >
               {"EV".toLocaleUpperCase()}
             </div>
             <div className="flex-auto">
-              <h3 className="pr-10 font-semibold text-gray-900 xl:pr-0">
-                {meeting.name}
-              </h3>
+              <div className="flex justify-between">
+                <h3 className="pr-10 font-semibold text-gray-900 xl:pr-0">
+                  {event.name}
+                </h3>
+                {event.status !== "active" && supporter.level === 4 && (
+                  <div className="px-2">
+                    <EventListActions event={event} />
+                  </div>
+                )}
+              </div>
+
               <dl className="mt-2 flex flex-col gap-x-5 text-gray-500 xl:flex-row">
                 <div>
                   <div className="flex items-start space-x-3">
@@ -43,22 +61,20 @@ export default function EventListTable({ events }: { events: Event[] }) {
                     </dt>
                     <dd>
                       <div className="flex items-baseline">
-                        <time dateTime={dayjs(meeting.dateStart).toISOString()}>
+                        <time dateTime={dayjs(event.dateStart).toISOString()}>
                           {
                             <Date
-                              value={dayjs(meeting.dateStart)
+                              value={dayjs(event.dateStart)
                                 .locale("pt-br")
                                 .format("DD/MM/YYYY HH:mm")}
                             />
                           }
                         </time>
                         <span className="mx-1"> - </span>
-                        <time dateTime={dayjs(meeting.dateEnd).toISOString()}>
+                        <time dateTime={dayjs(event.dateEnd).toISOString()}>
                           {
                             <Date
-                              value={dayjs(meeting.dateEnd)
-                                .locale("pt-br")
-                                .format("HH:mm")}
+                              value={dayjs(event.dateEnd).locale("pt-br").format("HH:mm")}
                             />
                           }
                         </time>
@@ -72,62 +88,10 @@ export default function EventListTable({ events }: { events: Event[] }) {
                     <span className="sr-only">Location</span>
                     <MapPinIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
                   </dt>
-                  <dd>{meeting.location}</dd>
+                  <dd>{event.location}</dd>
                 </div>
               </dl>
             </div>
-            <Menu
-              as="div"
-              className="absolute right-0 top-6 xl:relative xl:right-auto xl:top-auto xl:self-center"
-            >
-              <div>
-                <Menu.Button className="-m-2 flex items-center rounded-full p-2 text-gray-500 hover:text-gray-600">
-                  <span className="sr-only">Open options</span>
-                  <EllipsisHorizontalIcon className="h-5 w-5" aria-hidden="true" />
-                </Menu.Button>
-              </div>
-
-              <Transition
-                as={Fragment}
-                enter="transition ease-out duration-100"
-                enterFrom="transform opacity-0 scale-95"
-                enterTo="transform opacity-100 scale-100"
-                leave="transition ease-in duration-75"
-                leaveFrom="transform opacity-100 scale-100"
-                leaveTo="transform opacity-0 scale-95"
-              >
-                <Menu.Items className="absolute right-0 z-10 mt-2 w-36 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                  <div className="py-1">
-                    <Menu.Item>
-                      {({ active }) => (
-                        <a
-                          href="#"
-                          className={clsx(
-                            active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                            "block px-4 py-2 text-sm"
-                          )}
-                        >
-                          Edit
-                        </a>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <a
-                          href="#"
-                          className={clsx(
-                            active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                            "block px-4 py-2 text-sm"
-                          )}
-                        >
-                          Cancel
-                        </a>
-                      )}
-                    </Menu.Item>
-                  </div>
-                </Menu.Items>
-              </Transition>
-            </Menu>
           </li>
         );
       })}

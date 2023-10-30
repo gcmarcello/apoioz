@@ -1,8 +1,6 @@
-"use client";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import updateLocale from "dayjs/plugin/updateLocale";
-import { Fragment, useEffect, useState } from "react";
 import EventList from "../components/EventList";
 import { createEvent } from "@/backend/resources/events/events.actions";
 import { Campaign, Event } from "@prisma/client";
@@ -10,6 +8,7 @@ import { mockEvent } from "@/tests/mockEvent";
 import { usePanel } from "../../(shared)/hooks/usePanel";
 import Calendar from "../components/Calendar";
 import { getAvailableTimesByDay } from "@/backend/resources/events/events.actions";
+import { headers } from "next/headers";
 dayjs.extend(customParseFormat);
 dayjs.extend(updateLocale);
 
@@ -30,7 +29,7 @@ export default function CalendarPage({
   events: { active: Event[]; pending: Event[] };
   campaign: Campaign;
 }) {
-  const [calendarData, setCalendarData] = useState(null);
+  const userId = headers().get("userId");
 
   async function createMockEvent() {
     /* createEvent(await mockEvent(campaign.id)); */
@@ -54,7 +53,7 @@ export default function CalendarPage({
       } */}
       <div className="lg:grid lg:grid-cols-12 lg:gap-x-16">
         <div className="lg:col-start-9 lg:col-end-13 lg:row-start-1  xl:col-start-9">
-          <Calendar events={events} campaign={campaign} />
+          <Calendar events={events} campaign={campaign} userId={userId} />
         </div>
         <div className="lg:col-span-8">
           <EventList events={events} />

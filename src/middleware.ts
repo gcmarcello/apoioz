@@ -35,8 +35,6 @@ class Middleware {
 
     requestHeaders.set("userId", userId);
 
-    console.log(requestHeaders);
-
     return NextResponse.next({
       request: {
         headers: requestHeaders,

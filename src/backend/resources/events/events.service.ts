@@ -51,11 +51,12 @@ export async function getEventsByCampaign({
     where: { campaignId },
     orderBy: { dateStart: "asc" },
   });
+  const host = await prisma.supporter.findFirst({ where: { userId, campaignId } });
 
   const allActiveEvents = allEvents.filter((event) => event.status === "active");
   const allPendingEvents = allEvents.filter((event) => event.status === "pending");
-  const userPendingEvents = allPendingEvents.filter((event) => event.hostId === userId);
-  const level = (await prisma.supporter.findFirst({ where: { userId, campaignId } }))?.level;
+  const userPendingEvents = allPendingEvents.filter((event) => event.hostId === host.id);
+  const level = host.level;
 
   if (level === 4) {
     return { active: allActiveEvents, pending: allPendingEvents };
@@ -95,7 +96,9 @@ export async function getAvailableTimesByDay(campaignId: string, day: string) {
       occupiedSlots.push(currentTime.toISOString());
       currentTime = currentTime.add(1, "hour");
     }
-    availableTimeslots = availableTimeslots.filter((slot) => !occupiedSlots.includes(slot));
+    availableTimeslots = availableTimeslots.filter(
+      (slot) => !occupiedSlots.includes(slot)
+    );
   });
 
   return { available: availableTimeslots, events: eventTimestamps };
@@ -104,7 +107,8 @@ export async function getAvailableTimesByDay(campaignId: string, day: string) {
 export async function updateEventStatus(
   request: { eventId: string; status: string } & { supporterSession: Supporter }
 ) {
-  if (request.supporterSession.level !== 4) throw "Você não tem permissão de alterar este evento";
+  if (request.supporterSession.level !== 4)
+    throw "Você não tem permissão de alterar este evento";
   try {
     return await prisma.event.update({
       where: { id: request.eventId },

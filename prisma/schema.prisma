@@ -142,6 +142,7 @@ model Event {
   status      String     @db.VarChar
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
+  observations String?   @db.Text
 
   @@schema("public")
 }

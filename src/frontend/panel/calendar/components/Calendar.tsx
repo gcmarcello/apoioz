@@ -17,9 +17,11 @@ import DayModal from "./DayModal";
 export default function Calendar({
   events,
   campaign,
+  userId,
 }: {
   events: { active: Event[]; pending: Event[] };
   campaign: Campaign;
+  userId: string;
 }) {
   const [today, setToday] = useState(dayjs());
   const [selectedDay, setSelectedDay] = useState<CalendarDay | null>(null);
@@ -185,6 +187,7 @@ export default function Calendar({
         show={show}
         setShow={setShow}
         campaign={campaign}
+        userId={userId}
         selectedDay={
           selectedDay || {
             date: dayjs().format("YYYY-MM-DD"),

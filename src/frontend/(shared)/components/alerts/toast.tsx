@@ -37,7 +37,7 @@ export function showToast(toastElement: ToastType) {
     <div
       className={`${
         t.visible ? "animate-enter" : "animate-leave"
-      } pointer-events-auto flex w-full max-w-md  bg-white shadow-lg ring-opacity-5`}
+      } pointer-events-auto flex w-full max-w-md  bg-transparent shadow-lg ring-opacity-5`}
     >
       <div className={clsx("w-full rounded-lg", toastVariants[toastElement.variant].bg)}>
         <div className="p-4">

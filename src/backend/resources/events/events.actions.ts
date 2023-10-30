@@ -9,6 +9,7 @@ import { UserSessionMiddleware } from "@/middleware/functions/userSession.middle
 import { _NextResponse } from "@/(shared)/utils/http/_NextResponse";
 import type { Supporter, User } from "@prisma/client";
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
+import { revalidatePath } from "next/cache";
 
 export async function createEvent(payload: CreateEventDto) {
   const campaignId = cookies().get("activeCampaign")?.value;
@@ -17,6 +18,8 @@ export async function createEvent(payload: CreateEventDto) {
     userId: payload.userId,
     campaignId: campaignId,
   });
+
+  revalidatePath("/painel/calendario");
 
   return service.createEvent({
     ...payload,
@@ -42,7 +45,7 @@ export async function updateEventStatus(request: { eventId: string; status: stri
   const parsedRequest = await UserSessionMiddleware({ request }).then((request) =>
     SupporterSessionMiddleware({ request })
   );
-
+  revalidatePath("/painel/calendario");
   return await service.updateEventStatus(parsedRequest);
 }
 
