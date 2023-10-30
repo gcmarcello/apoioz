@@ -35,7 +35,7 @@ services:
     ports:
       - 5431:8978
     volumes:
-      - "${PWD}/.devcontainer/cloudbeaver/workspace:/opt/cloudbeaver/workspace/"
+      - "cloudbeaver:/opt/cloudbeaver/workspace/"
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
@@ -58,3 +58,4 @@ services:
 
 volumes:
   postgres-data:
+  cloudbeaver:
