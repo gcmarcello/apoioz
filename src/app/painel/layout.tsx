@@ -4,7 +4,6 @@ import { Inter } from "next/font/google";
 import { cookies, headers } from "next/headers";
 import { getCampaign } from "@/backend/resources/campaign/campaign.actions";
 import ChooseCampaign from "@/frontend/panel/(shared)/components/ChooseCampaign/ChooseCampaign";
-import { Toast } from "@/frontend/(shared)/components/alerts/toast";
 import { PanelSidebarsLayout } from "@/frontend/panel/(shared)/components/Sidebars/PanelSidebarsLayout";
 import prisma from "@/backend/prisma/prisma";
 

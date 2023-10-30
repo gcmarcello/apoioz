@@ -25,26 +25,13 @@ import { toProperCase } from "@/(shared)/utils/format";
 import { generateMapData } from "@/backend/resources/map/map.actions";
 
 export function SupportersMap() {
-  const { data: addresses, trigger } = useSWRMutation("getAddresses", async () => {
-    const addresses = await getAddressesByCampaign();
+  const { data: mapData, trigger } = useSWRMutation("getMapData", async () => {
+    const addresses = await generateMapData();
 
-    console.log(addresses);
+    console.log(addresses.find((a) => a.Section.find((s) => s.UserInfo.length > 0)));
 
-    return addresses.map((a) => ({
-      id: a.id,
-      geocode: [Number(a.lat), Number(a.lng)],
-      location: a.location,
-      address: a.address,
-    }));
+    return addresses;
   });
-
-  useEffect(() => {
-    (async () => {
-      const xd2 = await trigger();
-      await generateMapData()
-      
-    })();
-  }, []);
 
   const center = [51.505, -0.09];
   const rectangle = [
@@ -52,7 +39,11 @@ export function SupportersMap() {
     [51.5, -0.06],
   ];
 
-  if (!addresses) return;
+  useEffect(() => {
+    trigger();
+  }, []);
+
+  return;
 
   const customIcon = new L.Icon({
     iconUrl: "/urna.png",
@@ -62,7 +53,7 @@ export function SupportersMap() {
   function FitBoundsComponent() {
     const map = useMap();
 
-    const markerCoords = addresses!.map((marker) => marker.geocode);
+    const markerCoords = mapData!.map((marker) => marker.geocode);
 
     useEffect(() => {
       map.fitBounds(markerCoords);

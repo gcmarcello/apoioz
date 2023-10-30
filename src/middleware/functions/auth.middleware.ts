@@ -29,11 +29,5 @@ export async function AuthMiddleware({
     return NextResponse.redirect(url);
   }
 
-  const newHeaders = new Headers(request.headers);
-  newHeaders.set("userId", user.id);
-
-  return {
-    ...request,
-    newHeaders: newHeaders,
-  };
+  return user.id;
 }

@@ -26,15 +26,21 @@ class Middleware {
 
   @Path("/painel")
   async painel(request: NextRequest) {
-    const parsedRequest = await AuthMiddleware({
+    const userId = await AuthMiddleware({
       request,
       additionalArguments: { roles: ["user"] },
     });
 
-    if (!("newHeaders" in parsedRequest)) return parsedRequest;
+    const requestHeaders = new Headers(request.headers);
+
+    requestHeaders.set("userId", userId);
+
+    console.log(requestHeaders);
 
     return NextResponse.next({
-      headers: parsedRequest.newHeaders,
+      request: {
+        headers: requestHeaders,
+      },
     });
   }
 
