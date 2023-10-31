@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap, Tooltip } from "react-leaflet";
 import useSWRMutation from "swr/mutation";
-import L from "leaflet";
+import L, { LatLngBoundsExpression, LatLngExpression } from "leaflet";
 import React from "react";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import clsx from "clsx";
@@ -17,7 +17,7 @@ export function SupportersMap() {
 
     const parsed = addresses.map((a) => ({
       address: a.address,
-      geocode: [a.lat, a.lng],
+      geocode: [Number(a.lat), Number(a.lng)],
       location: a.location,
       sectionsCount: a.Section.length,
       supportersCount: a.Section.reduce((accumulator, section) => {
@@ -39,7 +39,7 @@ export function SupportersMap() {
 
   useEffect(() => {
     trigger();
-  }, []);
+  }, [trigger]);
 
   const customIcon = new L.Icon({
     iconUrl: "/urna.png",
@@ -47,6 +47,7 @@ export function SupportersMap() {
   });
 
   if (!mapData) return null;
+  let closeTimeout = null;
 
   function FitBoundsComponent() {
     const map = useMap();
@@ -54,22 +55,26 @@ export function SupportersMap() {
     const markerCoords = mapData!.map((marker) => marker.geocode);
 
     useEffect(() => {
-      map.fitBounds(markerCoords);
-    }, [map]);
+      map.fitBounds(markerCoords as LatLngBoundsExpression);
+    }, [map, markerCoords]);
 
     return null;
   }
 
   return (
     <>
-      <MapContainer className="z-0 h-[600px]" center={center} scrollWheelZoom={true}>
+      <MapContainer
+        className="z-0 h-[600px]"
+        center={center as LatLngExpression}
+        scrollWheelZoom={true}
+      >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <MarkerClusterGroup
           chunkedLoading
-          maxClusterRadius={80}
+          maxClusterRadius={100}
           showCoverageOnHover={false}
         >
           <For each={mapData} fallback={<p>Loading...</p>}>
@@ -77,32 +82,34 @@ export function SupportersMap() {
               <Marker
                 icon={customIcon}
                 key={index}
-                position={geocode}
+                interactive={true}
+                position={geocode as LatLngExpression}
                 title={location!}
                 eventHandlers={{
-                  mouseover: (event) => event.target.openPopup(),
+                  mouseover: (event) => {
+                    if (closeTimeout) clearTimeout(closeTimeout);
+                    event.target.openPopup();
+                  },
+                  mouseout: (event) => {
+                    closeTimeout = setTimeout(() => {
+                      event.target.closePopup();
+                    }, 300);
+                  },
                 }}
               >
-                <Popup autoClose={true} closeButton={false}>
+                <Popup
+                  interactive={true}
+                  offset={[0, -20]}
+                  eventHandlers={{
+                    mouseover: (event) => {
+                      if (closeTimeout) clearTimeout(closeTimeout);
+                    },
+                    mouseout: (event) => {
+                      event.target._source.closePopup();
+                    },
+                  }}
+                >
                   {(() => {
-                    const post = {
-                      id: 1,
-                      title: "Boost your conversion rate",
-                      href: "#",
-                      description:
-                        "Illo sint voluptas. Error voluptates culpa eligendi. Hic vel totam vitae illo. Non aliquid explicabo necessitatibus unde. Sed exercitationem placeat consectetur nulla deserunt vel. Iusto corrupti dicta.",
-                      date: "Mar 16, 2020",
-                      datetime: "2020-03-16",
-                      category: { title: "Marketing", href: "#" },
-                      author: {
-                        name: "Michael Foster",
-                        role: "Co-Founder / CTO",
-                        href: "#",
-                        imageUrl:
-                          "https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-                      },
-                    };
-
                     return (
                       <article className="flex max-w-2xl flex-col items-start  gap-y-3 ">
                         <div className="group relative">
