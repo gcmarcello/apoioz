@@ -4,7 +4,9 @@ import updateLocale from "dayjs/plugin/updateLocale";
 import EventList from "../../../../app/(frontend)/painel/calendario/components/EventList";
 import { Event } from "@prisma/client";
 import Calendar from "../../../../app/(frontend)/painel/calendario/components/Calendar";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
+import { getEventsByCampaign } from "@/app/api/panel/events/actions";
+import { getCampaign } from "@/app/api/panel/campaigns/actions";
 dayjs.extend(customParseFormat);
 dayjs.extend(updateLocale);
 
@@ -18,18 +20,23 @@ export type CalendarDay = {
   events?: Event[];
 };
 
-export default function CalendarPage() {
+export default async function CalendarPage() {
+  const campaignId = cookies().get("activeCampaign")!.value;
   const userId = headers().get("userId");
+  if (!campaignId || !userId) return <div>Erro</div>;
+  const campaign = await getCampaign({ campaignId, userId });
 
-  async function createMockEvent() {
-    /* createEvent(await mockEvent(campaign.id)); */
+  const events = await getEventsByCampaign(campaignId);
+
+  /* async function createMockEvent() {
+    createEvent(await mockEvent(campaign.id));
     console.log(
       await getAvailableTimesByDay({
         campaignId: campaign.id,
         day: dayjs().toISOString(),
       })
     );
-  }
+  } */
 
   return (
     <div>

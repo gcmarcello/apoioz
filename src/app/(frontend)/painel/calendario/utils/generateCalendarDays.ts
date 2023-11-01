@@ -43,16 +43,19 @@ export function generateCalendarDays(
 
   const daysAfter = Array.from(
     { length: 42 - [...daysBefore, ...monthDays].length },
-    (_, i) => ({
-      date: lastDayOfTheMonth.add(i + 1, "day").format("YYYY-MM-DD"),
-      isCurrentMonth: false,
-      isNextMonth: true,
-      isToday: false,
-      isSelected: false,
-      events: events?.active?.filter(
-        (event) => dayjs(event.dateStart).format("YYYY-MM-DD") === generateDay(today, i)
-      ),
-    })
+    (_, i) => {
+      const afterDate = lastDayOfTheMonth.add(i + 1, "day").format("YYYY-MM-DD");
+      return {
+        date: afterDate,
+        isCurrentMonth: false,
+        isNextMonth: true,
+        isToday: false,
+        isSelected: false,
+        events: events?.active?.filter(
+          (event) => dayjs(event.dateStart).format("YYYY-MM-DD") === afterDate
+        ),
+      };
+    }
   );
 
   return [...daysBefore, ...monthDays, ...daysAfter];

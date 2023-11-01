@@ -1,19 +1,20 @@
 import { Transition, Dialog, Menu } from "@headlessui/react";
 import {
   CalendarDaysIcon,
-  CalendarIcon,
-  CheckIcon,
-  EllipsisHorizontalIcon,
-  MapPinIcon,
   XMarkIcon,
+  CalendarIcon,
+  MapPinIcon,
+  EllipsisHorizontalIcon,
+  CheckIcon,
 } from "@heroicons/react/24/solid";
-import { Campaign, Event } from "@prisma/client";
-import dayjs from "dayjs";
-import { Dispatch, Fragment, useEffect, useRef, useState } from "react";
+import { Campaign } from "@prisma/client";
 import clsx from "clsx";
+import dayjs from "dayjs";
+import { Dispatch, useRef, useState, useEffect, Fragment } from "react";
 import { Button } from "../../_shared/components/button";
-import SubmitEventRequest from "./DayModalForm";
 import { CalendarDay } from "../page";
+import SubmitEventRequest from "./DayModalForm";
+
 export default function DayModal({
   show,
   setShow,
