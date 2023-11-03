@@ -9,10 +9,12 @@ export default function SidebarProvider({
   children,
   user,
   campaign,
+  supporter,
 }: {
   children: React.ReactNode;
   user: Omit<Prisma.UserGetPayload<{ include: { info: true } }>, "password">;
   campaign: Campaign;
+  supporter: Supporter;
 }) {
   const [visibility, setVisibility] = useState({
     supporterSidebar: false,
@@ -27,6 +29,7 @@ export default function SidebarProvider({
         setVisibility,
         user,
         campaign,
+        supporter,
       }}
     >
       {children}

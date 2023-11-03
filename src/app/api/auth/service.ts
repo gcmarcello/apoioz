@@ -3,6 +3,8 @@ import { compareHash } from "@/(shared)/utils/bCrypt";
 import jwt from "jsonwebtoken";
 import { LoginDto } from "./dto";
 import { User } from "@prisma/client";
+import prisma from "prisma/prisma";
+import dayjs from "dayjs";
 
 export async function login(request: LoginDto & { user: User; isEmail: boolean }) {
   if (!request.user.password)

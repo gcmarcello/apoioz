@@ -50,20 +50,12 @@ export async function listCampaigns(userId: string) {
   }
 }
 
-export async function getCampaign(request: { userId: string; campaignId: string }) {
-  const campaign = await prisma.supporter
-    .findFirst({
-      where: request,
-      include: {
-        campaign: true,
-      },
-    })
-    .then((supporter) => supporter?.campaign);
-
-  if (!campaign)
-    throw _NextResponse.rawError({
-      message: `Você não tem permissão para acessar os dados dessa campanha.`,
-    });
+export async function getCampaign(request: { campaignId: string }) {
+  const campaign = await prisma.campaign.findFirst({
+    where: {
+      id: request.campaignId,
+    },
+  });
 
   return campaign;
 }

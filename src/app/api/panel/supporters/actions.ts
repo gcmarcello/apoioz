@@ -35,3 +35,9 @@ export async function createSupporter(request: CreateSupportersDto) {
     throw new Error(err);
   }
 }
+
+export async function signUpAsSupporter(request: CreateSupportersDto) {
+  const newSupporter = await supportersService.signUpAsSupporter(request);
+
+  return newSupporter;
+}

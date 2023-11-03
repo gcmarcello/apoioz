@@ -8,14 +8,6 @@ import prisma from "prisma/prisma";
 import { handlePrismaError } from "prisma/prismaError";
 dayjs.extend(customParseFormat);
 
-export async function findUser({ id }: JwtPayload) {
-  const user = await prisma.user.findFirst({
-    where: { id: id || "0" },
-    include: { info: true },
-  });
-  if (user) return user;
-}
-
 export async function findSupporter(userId: string, campaignId: string) {
   const supporter = await prisma.user.findFirst({
     where: { id: userId },
@@ -27,6 +19,8 @@ export async function findSupporter(userId: string, campaignId: string) {
 export async function createUser(data: any) {
   try {
     const { name, email, password, ...info } = data;
+    console.log(data);
+
     const existingUser = await prisma.user.findFirst({
       where: { email: normalizeEmail(email) },
     });
@@ -87,5 +81,11 @@ export async function verifyExistingUser(phone: string) {
     include: {
       info: true,
     },
+  });
+}
+
+export async function getUserFromSupporter(supporterId: string) {
+  return await prisma.user.findFirst({
+    where: { supporter: { some: { id: supporterId } } },
   });
 }

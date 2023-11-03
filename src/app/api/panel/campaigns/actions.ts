@@ -15,7 +15,7 @@ export async function listCampaigns(userId: string) {
   return service.listCampaigns(userId);
 }
 
-export async function getCampaign(request: { userId: string; campaignId: string }) {
+export async function getCampaign(request: { campaignId: string }) {
   return service.getCampaign(request);
 }
 

@@ -18,6 +18,7 @@ import SupporterSideBar from "./Supporter/SupporterSidebars";
 import { usePathname } from "next/navigation";
 import { Campaign, User } from "@prisma/client";
 import { useSidebar } from "../../hooks/useSidebar";
+import Link from "next/link";
 
 const teams = [
   { id: 1, name: "Heroicons", href: "#", initial: "H", current: false },
@@ -110,7 +111,7 @@ export default function PanelSideBar() {
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                   >
-                    <div className="sm:left-13/16 absolute left-full top-0 flex w-16 justify-center pt-5">
+                    <div className="absolute left-full top-0 flex w-16 justify-center pt-5 sm:left-13/16">
                       <button
                         type="button"
                         className="-m-2.5 p-2.5"
@@ -191,8 +192,8 @@ export default function PanelSideBar() {
                           </ul>
                         </li>
                         <li className="mt-auto">
-                          <a
-                            href="#"
+                          <Link
+                            href="/painel/configuracoes"
                             className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-indigo-200 hover:bg-indigo-700 hover:text-white"
                           >
                             <Cog6ToothIcon
@@ -200,7 +201,7 @@ export default function PanelSideBar() {
                               aria-hidden="true"
                             />
                             Configurações
-                          </a>
+                          </Link>
                         </li>
                       </ul>
                     </nav>

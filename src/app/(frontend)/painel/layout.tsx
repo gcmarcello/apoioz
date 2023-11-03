@@ -30,15 +30,18 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   if (activeCampaignId && userId) {
     const campaign = await getCampaign({
-      userId,
       campaignId: activeCampaignId,
+    });
+
+    const supporter = await prisma.supporter.findFirst({
+      where: { userId, campaignId: campaign.id },
     });
 
     if (!campaign) return;
 
     return (
       <main>
-        <PanelSidebarsLayout campaign={campaign} user={user} />
+        <PanelSidebarsLayout campaign={campaign} user={user} supporter={supporter} />
 
         <div className="p-4 lg:ml-64 lg:p-8">{children}</div>
       </main>

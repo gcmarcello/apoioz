@@ -1,7 +1,7 @@
 "use server";
 
-import * as usersService from "./service";
+import * as service from "./service";
 
-export async function findUser(id: string) {
-  return usersService.findUser({ id });
+export async function getUserFromSupporter(supporterId: string) {
+  return service.getUserFromSupporter(supporterId);
 }

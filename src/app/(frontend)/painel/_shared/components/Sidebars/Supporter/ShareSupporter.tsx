@@ -1,8 +1,14 @@
-"use client ";
+"use client";
+import { createInviteCode } from "@/app/api/auth/invites/action";
+import { ArrowPathIcon } from "@heroicons/react/24/solid";
 import { Campaign, Prisma, User } from "@prisma/client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
+import { useSidebar } from "../../../hooks/useSidebar";
+import { set } from "react-hook-form";
+import useSWRMutation from "swr/mutation";
+import { LoadingSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 
 export function ShareSupporter({
   user,
@@ -12,44 +18,71 @@ export function ShareSupporter({
   campaign: Campaign;
 }) {
   const [isMounted, setMounted] = useState(false);
+  const { supporter } = useSidebar();
+
+  const generateNewCode = async () => {
+    const newCode = await createInviteCode({
+      campaignId: campaign.id,
+      referralId: supporter.id,
+    });
+    return newCode;
+  };
+
+  const {
+    data: inviteCode,
+    trigger: generateInviteCode,
+    isMutating: isCreatingCode,
+    reset: resetCode,
+  } = useSWRMutation("generateNewCode", () => generateNewCode());
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    if (!inviteCode && isMounted) generateInviteCode();
+  }, [isMounted]);
+
   if (!isMounted) return <></>;
 
   return (
     <div className="flex flex-col items-center space-y-6 pb-5 pt-8">
-      <QRCode
-        className="h-[250px] w-[250px] rounded-md"
-        value={`${window.location.href}/apoiar/${campaign.id}?referral=${user.id}`}
-      />
+      <div className="flex flex-col gap-3">
+        <button
+          onClick={() => generateInviteCode()}
+          className="flex items-center justify-center gap-1 font-semibold text-indigo-600"
+        >
+          Gerar novo QR code <ArrowPathIcon className="h-4 w-4   opacity-100" />
+        </button>
+        {inviteCode?.id && (
+          <div className="flex justify-center">
+            <QRCode
+              className=" h-[250px] w-[250px] rounded-md"
+              value={`${window.location.origin}/apoiar/${inviteCode.id}`}
+            />
+          </div>
+        )}
+        {isCreatingCode && (
+          <div className="my-4 flex justify-center">
+            <LoadingSpinner />
+          </div>
+        )}
+      </div>
 
       <div className="w-[300px] space-y-4">
         <button
           onClick={(e) => {
             e.preventDefault();
             navigator.clipboard
-              .writeText(
-                `${window.location.href}/apoiar/${campaign.id}?referral=${user.id}`
-              )
+              .writeText(`${window.location.origin}/apoiar/${inviteCode?.id}`)
               .catch((err) => console.log(err));
-            /**
-            *  setShowToast({
-              message: "Link copiado!",
-              show: true,
-              title: "Sucesso",
-              variant: "success",
-            });
-            */
           }}
           className="w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         >
           Copiar Link
         </button>
         <Link
-          href={`https://wa.me/?text=${window.location.href}/apoiar/${campaign.id}?referral=${user.id}`}
+          href={`https://wa.me/?text=${window.location.href}/apoiar/${inviteCode?.id}`}
           target="_blank"
         >
           <div className="my-4 flex justify-center space-x-2 rounded-md bg-green-500 px-3 py-2 text-sm font-semibold text-white hover:bg-green-400">
@@ -64,6 +97,10 @@ export function ShareSupporter({
             <div>Compartilhar no WhatsApp</div>
           </div>
         </Link>
+        <div className="text-center text-sm text-gray-500">
+          O QR Code e links são de uso único e válidos por 10 minutos. Se você
+          compartilhou o código/link, clique no botão acima para gerar novos.
+        </div>
       </div>
     </div>
   );

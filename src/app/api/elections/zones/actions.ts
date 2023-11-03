@@ -8,7 +8,6 @@ export async function getZonesByCity(payload: string) {
 
 export async function getZonesByCampaign(payload: string) {
   const zones = await service.getZonesByCampaign(payload);
-  console.log(zones);
   return zones;
 }
 

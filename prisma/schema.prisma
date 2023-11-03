@@ -23,7 +23,6 @@ model User {
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 
-
   @@schema("public")
 }
 
@@ -85,6 +84,7 @@ model Campaign {
   Event      Event[]
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
+  InviteCode InviteCode[]
 
   @@schema("public")
 }
@@ -103,10 +103,11 @@ model Supporter {
   Event                      Event[]
   createdAt                  DateTime                   @default(now())
   updatedAt                  DateTime                   @updatedAt
-  Section                   Section?                   @relation(fields: [sectionId], references: [id])
+  Section                    Section?                   @relation(fields: [sectionId], references: [id])
   sectionId                  String?                    @db.Uuid
   Zone                       Zone?                      @relation(fields: [zoneId], references: [id])
   zoneId                     String?                    @db.Uuid
+  InviteCode                 InviteCode[]
 
   @@schema("public")
 }
@@ -134,20 +135,35 @@ model SupporterGroupMembership {
 }
 
 model Event {
-  id          String     @id @default(uuid()) @db.Uuid
-  name        String     @db.VarChar
-  description String     @db.Text
-  location    String     @db.VarChar
-  dateStart   DateTime   @db.Timestamptz(3)
-  dateEnd     DateTime   @db.Timestamptz(3)
-  campaignId  String     @db.Uuid
-  Campaign    Campaign   @relation(fields: [campaignId], references: [id])
-  hostId      String     @db.Uuid
-  Supporter   Supporter? @relation(fields: [hostId], references: [id])
-  status      String     @db.VarChar
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  observations String?   @db.Text
+  id           String     @id @default(uuid()) @db.Uuid
+  name         String     @db.VarChar
+  description  String     @db.Text
+  location     String     @db.VarChar
+  dateStart    DateTime   @db.Timestamptz(3)
+  dateEnd      DateTime   @db.Timestamptz(3)
+  campaignId   String     @db.Uuid
+  Campaign     Campaign   @relation(fields: [campaignId], references: [id])
+  hostId       String     @db.Uuid
+  Supporter    Supporter? @relation(fields: [hostId], references: [id])
+  status       String     @db.VarChar
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  observations String?    @db.Text
+
+  @@schema("public")
+}
+
+model InviteCode {
+  id          String    @id @default(uuid()) @db.Uuid
+  campaignId  String    @db.Uuid
+  referralId  String    @db.Uuid
+  expiresAt   DateTime  @db.Timestamptz(3)
+  enteredAt   DateTime? @db.Timestamptz(3)
+  submittedAt DateTime? @db.Timestamptz(3)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  campaign    Campaign  @relation(fields: [campaignId], references: [id])
+  referral    Supporter @relation(fields: [referralId], references: [id])
 
   @@schema("public")
 }
@@ -191,12 +207,12 @@ model City_To_Zone {
 }
 
 model Section {
-  id        String     @id(map: "PK_c4cd691e8a76eaaffa862f0fb25") @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
-  number    Int        @db.Integer
-  addressId String?    @db.Uuid
-  zoneId    String     @db.Uuid
-  Address   Address?   @relation(fields: [addressId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_3ff69a4fa9a649daf3fa869bcbc")
-  Zone      Zone       @relation(fields: [zoneId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_deab69c6c23c07560c03943b6aa")
+  id        String      @id(map: "PK_c4cd691e8a76eaaffa862f0fb25") @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  number    Int         @db.Integer
+  addressId String?     @db.Uuid
+  zoneId    String      @db.Uuid
+  Address   Address?    @relation(fields: [addressId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_3ff69a4fa9a649daf3fa869bcbc")
+  Zone      Zone        @relation(fields: [zoneId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_deab69c6c23c07560c03943b6aa")
   UserInfo  UserInfo[]
   Supporter Supporter[]
 

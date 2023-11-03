@@ -17,6 +17,5 @@ export async function generateMapData(campaignId: string) {
       },
     },
   });
-  console.log(mapData);
   return mapData;
 }

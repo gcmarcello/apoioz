@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction, createContext, useContext, useState } from "react";
 import { Campaign, Prisma, Supporter } from "@prisma/client";
+import { UserWithoutPassword } from "prisma/types/User";
 
 export class SidebarContextProps {
   visibility: {
@@ -14,8 +15,9 @@ export class SidebarContextProps {
       panelSidebar: boolean;
     }>
   >;
-  user: Omit<Prisma.UserGetPayload<{ include: { info: true } }>, "password">;
+  user: UserWithoutPassword;
   campaign: Campaign;
+  supporter: Supporter;
 }
 
 export const SidebarContext = createContext(new SidebarContextProps());
