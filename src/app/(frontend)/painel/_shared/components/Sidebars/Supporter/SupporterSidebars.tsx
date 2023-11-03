@@ -78,9 +78,14 @@ export default function SupporterSideBar() {
                               </button>
                             </div>
                           </div>
+
                           <div className="mt-1">
                             <p className="text-sm text-indigo-300">
-                              Complete os campos e faça parte da transformação.
+                              {option === "start"
+                                ? "Escolha como aumentar sua rede."
+                                : option === "share"
+                                ? "Envie um link de convite para o apoiador."
+                                : "Complete os campos e faça parte da transformação."}
                             </p>
                           </div>
                         </div>

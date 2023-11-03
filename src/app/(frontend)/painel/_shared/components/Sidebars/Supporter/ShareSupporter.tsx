@@ -9,12 +9,13 @@ import { useSidebar } from "../../../hooks/useSidebar";
 import { set } from "react-hook-form";
 import useSWRMutation from "swr/mutation";
 import { LoadingSpinner } from "@/app/(frontend)/_shared/components/Spinners";
+import { UserWithoutPassword } from "prisma/types/User";
 
 export function ShareSupporter({
   user,
   campaign,
 }: {
-  user: Omit<Prisma.UserGetPayload<{ include: { info: true } }>, "password">;
+  user: UserWithoutPassword;
   campaign: Campaign;
 }) {
   const [isMounted, setMounted] = useState(false);
