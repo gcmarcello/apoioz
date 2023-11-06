@@ -25,16 +25,14 @@ export default async function Apoiar({ params }: { params: { inviteCode: string 
 
     return (
       <ErrorBoundary errorComponent={Error}>
-        <>
-          <SupporterSignUpPage
-            referral={referral}
-            campaign={campaign}
-            user={user}
-            zones={zones}
-          />
+        <SupporterSignUpPage
+          referral={referral}
+          campaign={campaign}
+          user={user}
+          zones={zones}
+        />
 
-          <Footer />
-        </>
+        <Footer />
       </ErrorBoundary>
     );
   } catch (error) {

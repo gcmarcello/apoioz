@@ -50,6 +50,18 @@ export async function listCampaigns(userId: string) {
   }
 }
 
+export async function updateCampaign(body: { campaignId: string; data: any }) {
+  try {
+    const updatedCampaign = await prisma.campaign.update({
+      where: { id: body.campaignId },
+      data: body.data,
+    });
+    return updatedCampaign;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export async function getCampaign(request: { campaignId: string }) {
   const campaign = await prisma.campaign.findFirst({
     where: {

@@ -2,6 +2,8 @@
 
 import { cookies, headers } from "next/headers";
 import * as service from "./service";
+import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
+import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 
 export async function deactivateCampaign() {
   return cookies().delete("activeCampaign");
@@ -17,6 +19,17 @@ export async function listCampaigns(userId: string) {
 
 export async function getCampaign(request: { campaignId: string }) {
   return service.getCampaign(request);
+}
+
+export async function updateCampaign(request: { campaignId: string; data: any }) {
+  const parsedRequest = await UserSessionMiddleware({ request }).then((request) =>
+    SupporterSessionMiddleware({ request })
+  );
+
+  if (parsedRequest.supporterSession.level !== 4)
+    throw "Você não tem permissão para alterar esta campanha.";
+
+  return await service.updateCampaign(request);
 }
 
 export async function fetchCampaignTeamMembers() {

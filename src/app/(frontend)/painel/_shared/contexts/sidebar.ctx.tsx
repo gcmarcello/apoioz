@@ -15,6 +15,8 @@ export class SidebarContextProps {
       panelSidebar: boolean;
     }>
   >;
+  primaryColor: string;
+  secondaryColor: string;
   user: UserWithoutPassword;
   campaign: Campaign;
   supporter: Supporter;
