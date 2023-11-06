@@ -5,13 +5,15 @@ import { UserSessionMiddleware } from "@/middleware/functions/userSession.middle
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 import { _NextResponse } from "@/(shared)/utils/http/_NextResponse";
 import { revalidatePath } from "next/cache";
-import { ListSupportersMiddleware } from "./middlewares";
+import { CreateSupportersLevelMiddleware, ListSupportersMiddleware } from "./middlewares";
 import { CreateSupportersDto, ListSupportersDto } from "./dto";
+import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 
 export async function listSupporters(request: ListSupportersDto) {
-  const parsedRequest = await UserSessionMiddleware({ request })
-    .then((request) => SupporterSessionMiddleware({ request }))
-    .then((request) => ListSupportersMiddleware({ request }));
+  const { request: parsedRequest } = await UseMiddlewares()
+    .then(UserSessionMiddleware)
+    .then(SupporterSessionMiddleware)
+    .then(ListSupportersMiddleware);
 
   return supportersService.listSupporters(parsedRequest);
 }
@@ -22,9 +24,10 @@ export async function getSupporterByUser(data: { userId: string; campaignId: str
 
 export async function createSupporter(request: CreateSupportersDto) {
   try {
-    const parsedRequest = await UserSessionMiddleware({ request }).then((request) =>
-      SupporterSessionMiddleware({ request })
-    );
+    const parsedRequest = await UseMiddlewares()
+      .then(UserSessionMiddleware)
+      .then(SupporterSessionMiddleware)
+      .then(CreateSupportersLevelMiddleware);
 
     const newSupporter = await supportersService.createSupporter(parsedRequest);
 
@@ -34,4 +37,12 @@ export async function createSupporter(request: CreateSupportersDto) {
   } catch (err: any) {
     throw new Error(err);
   }
+}
+
+export async function listTreeSuporters() {
+  const { request: parsedRequest } = await UseMiddlewares()
+    .then(UserSessionMiddleware)
+    .then(SupporterSessionMiddleware);
+
+  return supportersService.listTreeSuporters(parsedRequest);
 }

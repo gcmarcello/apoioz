@@ -19,6 +19,7 @@ export const createSupportersDto = z.object({
   email: z.string().email(),
   password: z.string().optional(),
   phone: z.custom(phoneValidator),
+  level: z.number(),
   info: z.object({
     zoneId: z.string(),
     sectionId: z.string(),
