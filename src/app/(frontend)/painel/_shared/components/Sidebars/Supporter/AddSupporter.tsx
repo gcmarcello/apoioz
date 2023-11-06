@@ -66,6 +66,7 @@ export function AddSupporterForm({
     (url: string, { arg }: { arg: CreateSupportersDto }) =>
       createSupporter(arg)
         .then((supporter) => {
+          if (typeof supporter !== "object") return;
           showToast({
             message: `${supporter?.user.name} adicionado a campanha`,
             variant: "success",

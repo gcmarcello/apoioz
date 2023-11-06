@@ -5,8 +5,8 @@ import clsx from "clsx";
 import dayjs from "dayjs";
 import { headers, cookies } from "next/headers";
 import { EventListActions } from "./EventListActions";
-import { Date } from "@/app/(frontend)/_shared/components/Date";
 import { Event } from "@prisma/client";
+import { Date } from "@/app/(frontend)/_shared/components/Date";
 
 export default async function EventListTable({ events }: { events: Event[] }) {
   const supporter = await getSupporterByUser({

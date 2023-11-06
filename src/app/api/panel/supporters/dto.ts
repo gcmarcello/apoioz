@@ -25,6 +25,12 @@ export const createSupportersDto = z.object({
     sectionId: z.string(),
     birthDate: z.string(),
   }),
+  campaign: z
+    .object({
+      referralId: z.string(),
+      campaignId: z.string(),
+    })
+    .optional(),
 });
 
 export type CreateSupportersDto = z.infer<typeof createSupportersDto>;

@@ -1,10 +1,10 @@
 "use server";
-import prisma from "@/backend/prisma/prisma";
-import { getZonesByCampaign } from "@/backend/resources/elections/zones/zones.service";
+
 import { normalizeEmail, normalizePhone } from "@/(shared)/utils/format";
+import { getZonesByCampaign } from "@/app/api/elections/zones/actions";
+import { listSupporters } from "@/app/api/panel/supporters/actions";
 import { fakerPT_BR as faker } from "@faker-js/faker";
 import { cookies } from "next/headers";
-import { listSupporters } from "@/backend/resources/supporters/supporters.actions";
 
 export async function mockSupporter(campaignId?: string, ownerId?: string) {
   if (!campaignId && !cookies().get("activeCampaign")?.value) return;
@@ -28,13 +28,13 @@ export async function mockSupporter(campaignId?: string, ownerId?: string) {
 
   const zoneIndex = Math.floor(Math.random() * zones.length);
   const phone = faker.phone.number();
-  const data = {
+  /* const data = {
     name: faker.person.fullName(),
     email: normalizeEmail(faker.internet.email()),
     phone: normalizePhone(phone),
     zoneId: zones[zoneIndex].id,
     sectionId:
-      zones[zoneIndex].Section[
+      zones[zoneIndex].[
         Math.floor(Math.random() * zones[zoneIndex].Section.length)
       ].id,
     birthDate: faker.date.birthdate(),
@@ -49,7 +49,7 @@ export async function mockSupporter(campaignId?: string, ownerId?: string) {
         )?.id,
       campaignId: campaignId,
     },
-  };
+  }; */
 
-  return data;
+  /* return data; */
 }

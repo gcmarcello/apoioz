@@ -8,6 +8,7 @@ import prisma from "prisma/prisma";
 import { findCampaignById } from "../campaigns/service";
 import { verifyExistingUser } from "../../user/service";
 import { cookies, headers } from "next/headers";
+import { hashInfo } from "@/(shared)/utils/bCrypt";
 
 export async function createSupporter(
   request: CreateSupportersDto & {
@@ -87,7 +88,7 @@ export async function createSupporter(
         },
         data: {
           email: normalizeEmail(request.email),
-          password: request.password,
+          password: await hashInfo(request.password),
           name: request.name,
           role: "user",
           phone: normalizePhone(request.phone),
@@ -170,6 +171,123 @@ export async function listTreeSuporters({
   });
 
   return supporters;
+}
+
+export async function signUpAsSupporter(request: CreateSupportersDto) {
+  const existingUser = await verifyExistingUser(request.phone);
+
+  const campaign = await findCampaignById(request.campaign.campaignId);
+  const referral = await prisma.supporter.findFirst({
+    where: { id: request.campaign.referralId },
+  });
+
+  if (!campaign) throw "Campanha não encontrada";
+
+  if (existingUser) {
+    const conflictingSupporter = await verifyConflictingSupporter(
+      campaign,
+      existingUser.id
+    );
+
+    if (conflictingSupporter?.type === "sameCampaign")
+      throw "Usuário já cadastrado nesta campanha.";
+    if (conflictingSupporter?.type === "otherCampaign") {
+      throw "Usuário já cadastrado em outra campanha do mesmo tipo.";
+    }
+  }
+
+  let referralTree = [referral];
+  if (referralTree[0].level != 4) {
+    while (true) {
+      const referral = await prisma.supporter.findFirst({
+        where: {
+          OR: [
+            {
+              referralId: referralTree[referralTree.length - 1]?.id,
+            },
+            {
+              level: 4,
+            },
+          ],
+        },
+      });
+
+      if (!referral) continue;
+
+      referralTree.push(referral);
+
+      if (referral.level === 4) break;
+    }
+  }
+
+  const ownedSupporterGroupsFromReferralTree =
+    await prisma.supporterGroupMembership.findMany({
+      where: {
+        supporterId: {
+          in: referralTree.map((referral) => referral.id),
+        },
+        isOwner: true,
+      },
+    });
+
+  const createSupporterGroupMembershipQuery = ownedSupporterGroupsFromReferralTree.map(
+    (supporterGroup) => ({
+      isOwner: false,
+      supporterGroup: {
+        connect: {
+          id: supporterGroup.supporterGroupId,
+        },
+      },
+    })
+  );
+
+  const user = existingUser
+    ? existingUser
+    : await prisma.user.create({
+        include: {
+          info: true,
+        },
+        data: {
+          email: normalizeEmail(request.email),
+          password: await hashInfo(request.password),
+          name: request.name,
+          role: "user",
+          phone: normalizePhone(request.phone),
+          info: {
+            create: {
+              ...request.info,
+              birthDate: dayjs(request.info.birthDate, "DD/MM/YYYY", true).toISOString(),
+            },
+          },
+        },
+      });
+
+  const supporter = await prisma.supporter
+    .create({
+      include: { user: true },
+      data: {
+        level: 1,
+        Section: { connect: { id: user.info.sectionId } },
+        Zone: { connect: { id: user.info.zoneId } },
+        campaign: { connect: { id: referral.campaignId } },
+        referral: { connect: { id: referral.id } },
+        user: { connect: { id: user.id } },
+        supporterGroupsMemberships: {
+          create: [
+            {
+              isOwner: true,
+              supporterGroup: {
+                create: {},
+              },
+            },
+            ...createSupporterGroupMembershipQuery,
+          ],
+        },
+      },
+    })
+    .catch((err) => console.log(err));
+
+  return supporter;
 }
 
 export async function listSupporters({

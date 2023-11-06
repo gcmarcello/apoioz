@@ -1,4 +1,4 @@
-import { Button } from "@/frontend/panel/(shared)/components/button";
+import { Button } from "@/app/(frontend)/painel/_shared/components/button";
 import { LockClosedIcon } from "@heroicons/react/24/solid";
 import { UseFormReturn } from "react-hook-form";
 

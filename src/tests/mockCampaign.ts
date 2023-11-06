@@ -1,8 +1,8 @@
 "use server";
-import prisma from "@/backend/prisma/prisma";
-import { listUsers } from "@/backend/resources/users/users.service";
+import { listUsers } from "@/app/api/user/service";
 import { fakerPT_BR as faker } from "@faker-js/faker";
 import dayjs from "dayjs";
+import prisma from "prisma/prisma";
 
 export async function mockCampaign(userId?: string) {
   let user: any = null;

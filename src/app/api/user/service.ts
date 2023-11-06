@@ -8,25 +8,11 @@ import prisma from "prisma/prisma";
 import { handlePrismaError } from "prisma/prismaError";
 dayjs.extend(customParseFormat);
 
-export async function findUser({ id }: JwtPayload) {
-  const user = await prisma.user.findFirst({
-    where: { id: id || "0" },
-    include: { info: true },
-  });
-  if (user) return user;
-}
-
-export async function findSupporter(userId: string, campaignId: string) {
-  const supporter = await prisma.user.findFirst({
-    where: { id: userId },
-    include: { supporter: { where: { campaignId: campaignId } } },
-  });
-  if (supporter) return supporter;
-}
-
 export async function createUser(data: any) {
   try {
     const { name, email, password, ...info } = data;
+    console.log(data);
+
     const existingUser = await prisma.user.findFirst({
       where: { email: normalizeEmail(email) },
     });
@@ -81,6 +67,39 @@ export async function listUsers() {
   }
 }
 
+export async function getUser(userId: string) {
+  try {
+    const users = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { info: true },
+    });
+    return users;
+  } catch (error) {
+    return handlePrismaError("usuário", error);
+  }
+}
+
+export async function updateUser(request) {
+  const { userSession, supporterSession, birthDate, ...data } = request;
+  try {
+    const verifyExistingEmail = await prisma.user.findFirst({
+      where: { email: normalizeEmail(data.email) },
+    });
+    if (verifyExistingEmail && verifyExistingEmail.id !== userSession.id)
+      throw `Usuário com este email já existe.`;
+    const updatedUser = await prisma.user.update({
+      where: { id: userSession.id },
+      data: {
+        ...data,
+        info: { update: { birthDate: dayjs(birthDate, "DD/MM/YYYY").toISOString() } },
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    throw handlePrismaError("email", error);
+  }
+}
+
 export async function verifyExistingUser(phone: string) {
   return await prisma.user.findFirst({
     where: { phone: normalizePhone(phone) },
@@ -88,4 +107,18 @@ export async function verifyExistingUser(phone: string) {
       info: true,
     },
   });
+}
+
+export async function getUserFromSupporter(supporterId: string) {
+  return await prisma.user.findFirst({
+    where: { supporter: { some: { id: supporterId } } },
+  });
+}
+
+export async function findSupporter(userId: string, campaignId: string) {
+  const supporter = await prisma.user.findFirst({
+    where: { id: userId },
+    include: { supporter: { where: { campaignId: campaignId } } },
+  });
+  if (supporter) return supporter;
 }

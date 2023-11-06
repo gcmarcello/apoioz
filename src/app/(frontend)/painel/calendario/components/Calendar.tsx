@@ -8,11 +8,11 @@ import {
 import clsx from "clsx";
 import dayjs from "dayjs";
 import { useState, useEffect, Dispatch } from "react";
+import { generateCalendarDays } from "../utils/generateCalendarDays";
 import { Campaign, Event } from "@prisma/client";
 import DayModal from "./DayModal";
-import Loading from "../../loading";
 import { CalendarDay } from "../page";
-import { generateCalendarDays } from "../utils/generateCalendarDays";
+import Loading from "../../loading";
 
 export default function Calendar({
   events,
@@ -154,6 +154,7 @@ export default function Calendar({
                     day.isToday ? "bg-white" : "bg-indigo-600"
                   )}
                 ></div>
+                <div></div>
               </div>
             ) : null}
             <time

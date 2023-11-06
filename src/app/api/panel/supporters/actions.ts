@@ -46,3 +46,9 @@ export async function listTreeSuporters() {
 
   return supportersService.listTreeSuporters(parsedRequest);
 }
+
+export async function signUpAsSupporter(request: CreateSupportersDto) {
+  const newSupporter = await supportersService.signUpAsSupporter(request);
+
+  return newSupporter;
+}

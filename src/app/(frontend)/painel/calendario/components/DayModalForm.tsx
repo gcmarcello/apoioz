@@ -1,17 +1,17 @@
-import { FieldValues, UseFormReturn, useForm } from "react-hook-form";
-import { Button } from "../../_shared/components/button";
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
-import dayjs from "dayjs";
-import isBetween from "dayjs/plugin/isBetween";
-import { da, fakerPT_BR } from "@faker-js/faker";
-import { XMarkIcon } from "@heroicons/react/20/solid";
 import { Mocker } from "@/app/(frontend)/_shared/components/Mocker";
 import SelectListbox, {
   ListboxOptionType,
 } from "@/app/(frontend)/_shared/components/SelectListbox";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
-import { CalendarDay } from "../page";
+import { getAvailableTimesByDay, createEvent } from "@/app/api/panel/events/actions";
+import { fakerPT_BR } from "@faker-js/faker";
 import { Campaign } from "@prisma/client";
+import dayjs from "dayjs";
+import isBetween from "dayjs/plugin/isBetween";
+import { Dispatch, SetStateAction, useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { Button } from "../../_shared/components/button";
+import { CalendarDay } from "../page";
 
 dayjs.extend(isBetween);
 

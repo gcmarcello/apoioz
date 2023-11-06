@@ -18,7 +18,6 @@ export type FormContext = {
 export default function SupporterSideBar() {
   const { user, campaign, visibility, setVisibility } = useSidebar();
   const [option, setOption] = useState("start");
-
   const { submit, setMetaform } = useMetaForm();
 
   return (
@@ -79,9 +78,14 @@ export default function SupporterSideBar() {
                               </button>
                             </div>
                           </div>
+
                           <div className="mt-1">
                             <p className="text-sm text-indigo-300">
-                              Complete os campos e faça parte da transformação.
+                              {option === "start"
+                                ? "Escolha como aumentar sua rede."
+                                : option === "share"
+                                ? "Envie um link de convite para o apoiador."
+                                : "Complete os campos e faça parte da transformação."}
                             </p>
                           </div>
                         </div>
@@ -119,19 +123,18 @@ export default function SupporterSideBar() {
                           </div>
                         </div>
                       </div>
-                      <div className="flex flex-shrink-0 justify-end px-4 py-4">
+                      <div className="flex flex-shrink-0 justify-end gap-2 px-4 py-4">
                         <button
                           type="button"
                           className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                           onClick={() => {
-                            if (option === "choose") {
+                            if (option === "start") {
                               setVisibility((prev) => ({
                                 ...prev,
                                 supporterSidebar: false,
                               }));
-                            }
-                            if (option === "add") {
-                              setOption("choose");
+                            } else {
+                              setOption("start");
                             }
                           }}
                         >
@@ -139,7 +142,7 @@ export default function SupporterSideBar() {
                         </button>
                         {option === "add" && (
                           <button
-                            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-indigo-500 hover:bg-indigo-500"
                             onClick={submit}
                           >
                             Adicionar

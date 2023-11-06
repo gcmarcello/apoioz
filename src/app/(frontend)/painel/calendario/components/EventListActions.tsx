@@ -9,7 +9,7 @@ import { Fragment, useEffect, useRef, useState } from "react";
 
 export function EventListActions({ event }: { event: Event }) {
   const [open, setOpen] = useState(false);
-  const [counter, setCounter] = useState(4);
+  const [counter, setCounter] = useState(3); // Start from 3 seconds
   const [rejectOptions, setRejectOptions] = useState({
     disableButton: false,
     counting: false,
@@ -27,6 +27,13 @@ export function EventListActions({ event }: { event: Event }) {
         message: "Evento atualizado com sucesso",
         title: "Pronto!",
       });
+      setCounter(3);
+      setRejectOptions({
+        ...rejectOptions,
+        counting: false,
+        enableSubmit: false,
+        disableButton: false,
+      });
     } catch (error) {
       console.log(error);
       showToast({ variant: "error", message: "Erro ao rejeitar evento", title: "Erro!" });
@@ -34,17 +41,22 @@ export function EventListActions({ event }: { event: Event }) {
   }
 
   useEffect(() => {
-    if (counter !== null) {
+    if (rejectOptions.counting) {
       const timer = setTimeout(() => {
-        setCounter(counter - 1);
+        if (counter > 0) {
+          setCounter(counter - 1);
+        } else {
+          setRejectOptions({
+            ...rejectOptions,
+            counting: false,
+            enableSubmit: true,
+            disableButton: false,
+          }); // Re-enable the button here
+        }
       }, 1000);
-      if (counter === 0) {
-        setRejectOptions({ disableButton: false, counting: false, enableSubmit: true });
-
-        setCounter(null);
-      }
+      return () => clearTimeout(timer); // Clear the timeout if component unmounts in between
     }
-  }, [rejectOptions.counting]);
+  }, [counter, rejectOptions.counting]);
 
   return (
     <>
@@ -166,15 +178,21 @@ export function EventListActions({ event }: { event: Event }) {
                       type="button"
                       disabled={rejectOptions.disableButton}
                       className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-40 sm:col-start-1 sm:mt-0"
-                      onClick={() =>
-                        rejectOptions.enableSubmit
-                          ? confirmReject()
-                          : setRejectOptions((prev) => ({ ...prev, counting: true }))
-                      }
+                      onClick={() => {
+                        if (!rejectOptions.counting && !rejectOptions.enableSubmit) {
+                          setRejectOptions({
+                            ...rejectOptions,
+                            counting: true,
+                            disableButton: true,
+                          });
+                        } else if (rejectOptions.enableSubmit) {
+                          confirmReject();
+                        }
+                      }}
                       ref={cancelButtonRef}
                     >
                       <XMarkIcon className="h-5 w-5 text-red-500" aria-hidden="true" />{" "}
-                      {rejectOptions.counting ? "Confirme em..." + counter : "Rejeitar"}
+                      {rejectOptions.counting ? "Confirme em... " + counter : "Rejeitar"}
                     </button>
                   </div>
                 </Dialog.Panel>

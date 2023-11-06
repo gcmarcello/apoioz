@@ -59,5 +59,16 @@ class Middleware {
         headers: parsedRequest.newHeaders,
       });
   }
+
+  @Path("/apoiar")
+  async support(request: NextRequest) {
+    const isAuthenticated = await AuthMiddleware({
+      request,
+      additionalArguments: { roles: ["user"] },
+    });
+
+    if (isAuthenticated)
+      return NextResponse.redirect(new URL("/painel", request.nextUrl).href);
+  }
 }
 export const middleware = middlewareHandler(Middleware);

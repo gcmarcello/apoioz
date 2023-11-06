@@ -8,6 +8,12 @@
   --background-end-rgb: 255, 255, 255;
 }
 
+@media (max-width: 640px) {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;

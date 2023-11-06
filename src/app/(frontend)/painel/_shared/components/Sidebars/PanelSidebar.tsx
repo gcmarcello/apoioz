@@ -18,6 +18,7 @@ import SupporterSideBar from "./Supporter/SupporterSidebars";
 import { usePathname } from "next/navigation";
 import { Campaign, User } from "@prisma/client";
 import { useSidebar } from "../../hooks/useSidebar";
+import Link from "next/link";
 
 const teams = [
   { id: 1, name: "Heroicons", href: "#", initial: "H", current: false },
@@ -26,7 +27,8 @@ const teams = [
 ];
 
 export default function PanelSideBar() {
-  const { user, campaign, visibility, setVisibility } = useSidebar();
+  const { user, campaign, visibility, setVisibility, primaryColor, secondaryColor } =
+    useSidebar();
   const pathname = usePathname();
 
   const navigation = [
@@ -110,7 +112,7 @@ export default function PanelSideBar() {
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                   >
-                    <div className="sm:left-13/16 absolute left-full top-0 flex w-16 justify-center pt-5">
+                    <div className="absolute left-full top-0 flex w-16 justify-center pt-5 sm:left-13/16">
                       <button
                         type="button"
                         className="-m-2.5 p-2.5"
@@ -126,7 +128,12 @@ export default function PanelSideBar() {
                       </button>
                     </div>
                   </Transition.Child>
-                  <div className="fixed flex h-full w-64 grow flex-col gap-y-5 overflow-y-auto bg-indigo-600 px-6 pb-4">
+                  <div
+                    style={{ backgroundColor: primaryColor }}
+                    className={clsx(
+                      "fixed flex h-full w-64 grow flex-col gap-y-5 overflow-y-auto  px-6 pb-4"
+                    )}
+                  >
                     <div className="flex h-16 shrink-0 items-center">
                       <img
                         width={32}
@@ -145,7 +152,7 @@ export default function PanelSideBar() {
                                   href={item.href}
                                   className={clsx(
                                     item.current
-                                      ? "bg-indigo-700 text-white"
+                                      ? `bg-indigo-700 text-white`
                                       : "text-indigo-200 hover:bg-indigo-700 hover:text-white",
                                     "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
                                   )}
@@ -191,8 +198,8 @@ export default function PanelSideBar() {
                           </ul>
                         </li>
                         <li className="mt-auto">
-                          <a
-                            href="#"
+                          <Link
+                            href="/painel/configuracoes"
                             className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-indigo-200 hover:bg-indigo-700 hover:text-white"
                           >
                             <Cog6ToothIcon
@@ -200,7 +207,7 @@ export default function PanelSideBar() {
                               aria-hidden="true"
                             />
                             Configurações
-                          </a>
+                          </Link>
                         </li>
                       </ul>
                     </nav>
@@ -212,7 +219,12 @@ export default function PanelSideBar() {
         </Transition.Root>
 
         <div className="hidden lg:flex lg:h-screen lg:w-64 lg:flex-col">
-          <div className="fixed flex h-full w-64 grow flex-col gap-y-5 overflow-y-auto bg-indigo-600 px-6 pb-4">
+          <div
+            className={clsx(
+              "bg-indigo-600",
+              `fixed flex h-full w-64 grow flex-col gap-y-5 overflow-y-auto px-6 pb-4`
+            )}
+          >
             <div className="flex h-16 shrink-0 items-center">
               <img
                 width={32}
@@ -233,7 +245,7 @@ export default function PanelSideBar() {
                             item.current
                               ? "bg-indigo-700 text-white"
                               : "text-indigo-200 hover:bg-indigo-700 hover:text-white",
-                            "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                            "leading-6, group flex gap-x-3 rounded-md p-2 text-sm font-semibold"
                           )}
                         >
                           <item.icon
@@ -277,8 +289,8 @@ export default function PanelSideBar() {
                   </ul>
                 </li>
                 <li className="mt-auto">
-                  <a
-                    href="#"
+                  <Link
+                    href="/painel/configuracoes"
                     className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-indigo-200 hover:bg-indigo-700 hover:text-white"
                   >
                     <Cog6ToothIcon
@@ -286,7 +298,7 @@ export default function PanelSideBar() {
                       aria-hidden="true"
                     />
                     Configurações
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </nav>
