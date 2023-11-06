@@ -12,7 +12,7 @@ export default async function PanelPage() {
   if (!activeCampaignId || !userId) return <></>;
 
   const user = await prisma.user.findFirst({ where: { id: userId } });
-  const campaign = await getCampaign({ userId, campaignId: activeCampaignId });
+  const campaign = await getCampaign({ campaignId: activeCampaignId });
 
   if (!user || !campaign) return <></>;
 

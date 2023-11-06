@@ -1,5 +1,5 @@
 "use server";
-import { listSupporters } from "@/backend/resources/supporters/supporters.actions";
+import { listSupporters } from "@/app/api/panel/supporters/actions";
 import { fakerPT_BR as faker } from "@faker-js/faker";
 import dayjs from "dayjs";
 
@@ -18,10 +18,9 @@ export async function mockEvent(campaignId: string) {
     description: faker.lorem.paragraph(),
     location: faker.location.streetAddress(),
     status: "pending",
-    hostId: supporters?.supporters.filter((supporter) => supporter.level > 1)[
+    hostId: supporters?.data.filter((supporter) => supporter.level > 1)[
       Math.floor(
-        Math.random() *
-          supporters?.supporters.filter((supporter) => supporter.level > 1).length
+        Math.random() * supporters?.data.filter((supporter) => supporter.level > 1).length
       )
     ].id,
   };

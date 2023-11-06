@@ -1,4 +1,4 @@
-import { Button } from "@/frontend/panel/(shared)/components/button";
+import { Button } from "../../painel/_shared/components/button";
 
 export default function AsaasButton({ children }: { children: React.ReactNode }) {
   return (

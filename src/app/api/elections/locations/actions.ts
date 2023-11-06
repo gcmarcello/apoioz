@@ -8,6 +8,10 @@ export async function getCitiesByState(data: string) {
   return service.getCitiesByState(data);
 }
 
+export async function getStates() {
+  return await service.getStates();
+}
+
 export async function getAddressBySection(sectionId: string) {
   const address = await service.findAddressBySection(sectionId);
   return address;

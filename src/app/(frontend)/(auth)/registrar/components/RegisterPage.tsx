@@ -2,18 +2,19 @@ import SelectListbox, {
   ListboxOptionType,
 } from "@/app/(frontend)/_shared/components/SelectListbox";
 import ErrorAlert from "@/app/(frontend)/_shared/components/alerts/errorAlert";
-import { getCitiesByState } from "@/app/api/elections/locations/action";
+import { Button } from "@/app/(frontend)/painel/_shared/components/button";
+import { getCitiesByState } from "@/app/api/elections/locations/actions";
 import { getSectionsByZone } from "@/app/api/elections/sections/action";
-import { getZonesByCity } from "@/app/api/elections/zones/action";
-import { Button } from "@/frontend/panel/(shared)/components/button";
-import { Party } from "@prisma/client";
+import { getZonesByCity } from "@/app/api/elections/zones/actions";
+import { Party, State } from "@prisma/client";
 import axios from "axios";
 import clsx from "clsx";
 import dayjs from "dayjs";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { State } from "swr";
+import InputMask from "react-input-mask";
 
 export default function RegisterPage({
   parties,
@@ -172,7 +173,7 @@ export default function RegisterPage({
         >
           <div className="mx-auto max-w-2xl px-4 lg:max-w-none lg:px-0">
             <div className="flex items-center ">
-              <Image src={"/logo.svg"} alt="logo" height={80} width={80}></Image>
+              <Image src={"/logo.svg"} alt="logo" height={80} width={80} />
               <span className="ms-2 text-xl font-bold text-white">Cadastro</span>
             </div>
           </div>

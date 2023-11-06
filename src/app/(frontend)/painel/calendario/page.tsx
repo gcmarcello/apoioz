@@ -24,7 +24,7 @@ export default async function CalendarPage() {
   const campaignId = cookies().get("activeCampaign")!.value;
   const userId = headers().get("userId");
   if (!campaignId || !userId) return <div>Erro</div>;
-  const campaign = await getCampaign({ campaignId, userId });
+  const campaign = await getCampaign({ campaignId });
 
   const events = await getEventsByCampaign(campaignId);
 
