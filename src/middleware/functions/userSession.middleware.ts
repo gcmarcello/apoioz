@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { MiddlewareArguments } from "../types/types";
 import prisma from "prisma/prisma";
 
-export async function UserSessionMiddleware<P>({ request }: { request: P }) {
+export async function UserSessionMiddleware<P>({ request }: MiddlewareArguments<P>) {
   const userId = headers().get("userId")!;
 
   const user = await prisma.user
@@ -18,7 +18,9 @@ export async function UserSessionMiddleware<P>({ request }: { request: P }) {
   const { password, ...rest } = user;
 
   return {
-    ...request,
-    userSession: rest,
+    request: {
+      ...request,
+      userSession: rest,
+    },
   };
 }

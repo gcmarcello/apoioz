@@ -1,7 +1,6 @@
 "use client";
 import { toProperCase } from "@/(shared)/utils/format";
 import ComboboxInput from "@/app/(frontend)/_shared/components/Combobox";
-import { TextField, MaskedTextField } from "@/app/(frontend)/_shared/components/Fields";
 import { Mocker } from "@/app/(frontend)/_shared/components/Mocker";
 import ErrorAlert from "@/app/(frontend)/_shared/components/alerts/errorAlert";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
@@ -10,14 +9,19 @@ import { getSectionsByZone } from "@/app/api/elections/sections/action";
 import { getZonesByCampaign } from "@/app/api/elections/zones/actions";
 import { CreateSupportersDto, createSupportersDto } from "@/app/api/panel/supporters/dto";
 import { createSupporter } from "@/app/api/panel/supporters/actions";
-import { da, fakerPT_BR } from "@faker-js/faker";
+import { fakerPT_BR } from "@faker-js/faker";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Campaign, Prisma, Section, Zone } from "@prisma/client";
+import { Campaign, Section, Zone } from "@prisma/client";
 import dayjs from "dayjs";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
-import { useForm, Controller, UseFormReturn } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import useSWRMutation from "swr/mutation";
 import { MetaForm } from "@/app/(frontend)/_shared/components/hooks/useMetaform";
+import {
+  MaskedTextField,
+  TextField,
+} from "@/app/(frontend)/_shared/components/fields/TextField";
+import { SelectField } from "@/app/(frontend)/_shared/components/fields/SelectField";
 
 export function AddSupporterForm({
   campaign,
@@ -167,18 +171,11 @@ export function AddSupporterForm({
 
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-1">
-            <label
-              htmlFor="location"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
-              Zona
-            </label>
-            <select
-              id="zone"
+            <SelectField
+              label="Zona"
+              defaultValue={""}
               {...form.register("info.zoneId")}
               onChange={(event) => fetchSections(event.target.value)}
-              className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
-              defaultValue={""}
             >
               <option disabled value={""}>
                 Selecione
@@ -188,7 +185,7 @@ export function AddSupporterForm({
                   {zone.number.toString()}
                 </option>
               ))}
-            </select>
+            </SelectField>
           </div>
           <div className="col-span-1">
             <label

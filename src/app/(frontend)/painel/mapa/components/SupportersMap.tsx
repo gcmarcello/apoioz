@@ -47,6 +47,7 @@ export function SupportersMap() {
   });
 
   if (!mapData) return null;
+
   let closeTimeout = null;
 
   function FitBoundsComponent() {

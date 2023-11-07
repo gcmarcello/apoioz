@@ -7,6 +7,7 @@ import { CreateSupportersDto, ListSupportersDto } from "./dto";
 import prisma from "prisma/prisma";
 import { findCampaignById } from "../campaigns/service";
 import { verifyExistingUser } from "../../user/service";
+import { cookies, headers } from "next/headers";
 import { hashInfo } from "@/(shared)/utils/bCrypt";
 
 export async function createSupporter(
@@ -126,6 +127,50 @@ export async function createSupporter(
     .catch((err) => console.log(err));
 
   return supporter;
+}
+
+export async function listTreeSuporters({
+  supporterSession,
+}: CreateSupportersDto & {
+  userSession: UserWithoutPassword;
+  supporterSession: Supporter;
+}) {
+  function generateReferredObject(level: any): any {
+    if (level === 1) {
+      return {
+        referral: { include: { user: { include: { info: true } } } },
+        user: { include: { info: { include: { Section: true, Zone: true } } } },
+      };
+    } else {
+      return {
+        referred: {
+          include: {
+            referral: { include: { user: { include: { info: true } } } },
+            user: {
+              include: { info: { include: { Section: true, Zone: true } } },
+            },
+            ...generateReferredObject(level - 1),
+          },
+        },
+      };
+    }
+  }
+
+  const includeReferred = generateReferredObject(supporterSession.level - 1);
+
+  const supporters = await prisma.supporter.findMany({
+    where: {
+      campaignId: supporterSession.campaignId,
+      id: supporterSession.id,
+    },
+    include: {
+      referral: { include: { user: { include: { info: true } } } },
+      user: { include: { info: { include: { Section: true, Zone: true } } } },
+      ...includeReferred,
+    },
+  });
+
+  return supporters;
 }
 
 export async function signUpAsSupporter(request: CreateSupportersDto) {
