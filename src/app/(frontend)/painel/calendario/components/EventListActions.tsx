@@ -1,6 +1,7 @@
 "use client";
 
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
+import { updateEventStatus } from "@/app/api/panel/events/actions";
 import { Transition, Dialog } from "@headlessui/react";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Event } from "@prisma/client";
@@ -18,9 +19,9 @@ export function EventListActions({ event }: { event: Event }) {
 
   const cancelButtonRef = useRef(null);
 
-  function confirmReject() {
+  async function confirmReject() {
     try {
-      /* await updateEventStatus({ eventId: event.id, status: "rejected" }); */
+      await updateEventStatus({ eventId: event.id, status: "rejected" });
       setOpen(false);
       showToast({
         variant: "success",
