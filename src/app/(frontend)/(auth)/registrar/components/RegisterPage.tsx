@@ -1,3 +1,4 @@
+"use client";
 import SelectListbox, {
   ListboxOptionType,
 } from "@/app/(frontend)/_shared/components/SelectListbox";

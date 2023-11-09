@@ -7,6 +7,8 @@ import Calendar from "../../../../app/(frontend)/painel/calendario/components/Ca
 import { cookies, headers } from "next/headers";
 import { getEventsByCampaign } from "@/app/api/panel/events/actions";
 import { getCampaign } from "@/app/api/panel/campaigns/actions";
+import { CalendarContext } from "./contexts/calendar.ctx";
+import CalendarProvider from "./providers/CalendarProvider";
 dayjs.extend(customParseFormat);
 dayjs.extend(updateLocale);
 
@@ -39,8 +41,9 @@ export default async function CalendarPage() {
   } */
 
   return (
-    <div>
-      {/* {
+    <CalendarProvider>
+      <div>
+        {/* {
         <button
           onClick={() => createMockEvent()}
           className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -48,14 +51,15 @@ export default async function CalendarPage() {
           Criar evento
         </button>
       } */}
-      <div className="lg:grid lg:grid-cols-12 lg:gap-x-16">
-        <div className="lg:col-start-9 lg:col-end-13 lg:row-start-1  xl:col-start-9">
-          <Calendar events={events} campaign={campaign} userId={userId} />
-        </div>
-        <div className="lg:col-span-8">
-          <EventList events={events} />
+        <div className="lg:grid lg:grid-cols-12 lg:gap-x-16">
+          <div className="lg:col-start-9 lg:col-end-13 lg:row-start-1  xl:col-start-9">
+            <Calendar events={events} campaign={campaign} userId={userId} />
+          </div>
+          <div className="lg:col-span-8">
+            <EventList events={events} />
+          </div>
         </div>
       </div>
-    </div>
+    </CalendarProvider>
   );
 }

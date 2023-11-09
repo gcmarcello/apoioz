@@ -40,10 +40,11 @@ export async function getAvailableTimesByDay(payload: {
 
 export async function updateEventStatus(request: { eventId: string; status: string }) {
   const parsedRequest = await UserSessionMiddleware({ request }).then((request) =>
-    SupporterSessionMiddleware({ request })
+    SupporterSessionMiddleware(request)
   );
-  revalidatePath("/painel/calendario");
-  return await service.updateEventStatus(parsedRequest);
+
+  await service.updateEventStatus(parsedRequest.request);
+  return revalidatePath("/painel/calendario");
 }
 
 export async function updateEvent(payload: { eventId: string; data: Event }) {

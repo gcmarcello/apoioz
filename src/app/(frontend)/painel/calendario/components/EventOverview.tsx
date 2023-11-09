@@ -1,63 +1,20 @@
 "use client";
-
-import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
-import { updateEventStatus } from "@/app/api/panel/events/actions";
 import { Transition, Dialog } from "@headlessui/react";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Event } from "@prisma/client";
 import dayjs from "dayjs";
 import { Fragment, useEffect, useRef, useState } from "react";
 
-export function EventListActions({ event }: { event: Event }) {
-  const [open, setOpen] = useState(false);
-  const [counter, setCounter] = useState(3); // Start from 3 seconds
-  const [rejectOptions, setRejectOptions] = useState({
-    disableButton: false,
-    counting: false,
-    enableSubmit: false,
-  });
-
+export function EventOverviewModal({
+  event,
+  open,
+  setOpen,
+}: {
+  event: Event;
+  open;
+  setOpen;
+}) {
   const cancelButtonRef = useRef(null);
-
-  async function confirmReject() {
-    try {
-      await updateEventStatus({ eventId: event.id, status: "rejected" });
-      setOpen(false);
-      showToast({
-        variant: "success",
-        message: "Evento atualizado com sucesso",
-        title: "Pronto!",
-      });
-      setCounter(3);
-      setRejectOptions({
-        ...rejectOptions,
-        counting: false,
-        enableSubmit: false,
-        disableButton: false,
-      });
-    } catch (error) {
-      console.log(error);
-      showToast({ variant: "error", message: "Erro ao rejeitar evento", title: "Erro!" });
-    }
-  }
-
-  useEffect(() => {
-    if (rejectOptions.counting) {
-      const timer = setTimeout(() => {
-        if (counter > 0) {
-          setCounter(counter - 1);
-        } else {
-          setRejectOptions({
-            ...rejectOptions,
-            counting: false,
-            enableSubmit: true,
-            disableButton: false,
-          }); // Re-enable the button here
-        }
-      }, 1000);
-      return () => clearTimeout(timer); // Clear the timeout if component unmounts in between
-    }
-  }, [counter, rejectOptions.counting]);
 
   return (
     <>
@@ -166,35 +123,6 @@ export function EventListActions({ event }: { event: Event }) {
                         </dd>
                       </div>
                     </dl>
-                  </div>
-                  <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
-                    <button
-                      type="button"
-                      className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
-                      onClick={() => setOpen(false)}
-                    >
-                      Aceitar
-                    </button>
-                    <button
-                      type="button"
-                      disabled={rejectOptions.disableButton}
-                      className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-40 sm:col-start-1 sm:mt-0"
-                      onClick={() => {
-                        if (!rejectOptions.counting && !rejectOptions.enableSubmit) {
-                          setRejectOptions({
-                            ...rejectOptions,
-                            counting: true,
-                            disableButton: true,
-                          });
-                        } else if (rejectOptions.enableSubmit) {
-                          confirmReject();
-                        }
-                      }}
-                      ref={cancelButtonRef}
-                    >
-                      <XMarkIcon className="h-5 w-5 text-red-500" aria-hidden="true" />{" "}
-                      {rejectOptions.counting ? "Confirme em... " + counter : "Rejeitar"}
-                    </button>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>

@@ -13,6 +13,8 @@ import { Campaign, Event } from "@prisma/client";
 import DayModal from "./DayModal";
 import { CalendarDay } from "../page";
 import Loading from "../../loading";
+import { EventOverviewModal } from "./EventOverview";
+import { useCalendar } from "../hooks/useCalendar";
 
 export default function Calendar({
   events,
@@ -36,6 +38,8 @@ export default function Calendar({
       }[]
     | null
   >(null);
+  const { selectedEvent, setSelectedEvent, setShowEventOverview, showEventOverview } =
+    useCalendar();
 
   useEffect(() => {
     setCalendarDays(generateCalendarDays(today, events));
@@ -201,6 +205,13 @@ export default function Calendar({
           }
         }
       />
+      {selectedEvent && (
+        <EventOverviewModal
+          event={selectedEvent}
+          open={showEventOverview}
+          setOpen={setShowEventOverview}
+        />
+      )}
     </div>
   );
 }

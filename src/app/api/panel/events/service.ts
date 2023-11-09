@@ -103,9 +103,7 @@ export async function getAvailableTimesByDay(campaignId: string, day: string) {
   return { available: availableTimeslots, events: eventTimestamps };
 }
 
-export async function updateEventStatus(
-  request: { eventId: string; status: string } & { supporterSession: Supporter }
-) {
+export async function updateEventStatus(request) {
   if (request.supporterSession.level !== 4)
     throw "Você não tem permissão de alterar este evento";
   try {
