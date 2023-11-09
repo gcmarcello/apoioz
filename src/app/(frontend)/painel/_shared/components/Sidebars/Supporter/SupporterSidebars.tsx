@@ -6,7 +6,7 @@ import { LinkIcon } from "@heroicons/react/20/solid";
 import toast, { Toaster } from "react-hot-toast";
 import { ShareSupporter } from "./ShareSupporter";
 import { AddSupporterForm } from "./AddSupporter";
-import { useSidebar } from "../../../hooks/useSidebar";
+import { useSidebar } from "../lib/useSidebar";
 import { useForm } from "react-hook-form";
 import { useMetaForm } from "@/app/(frontend)/_shared/components/hooks/useMetaform";
 

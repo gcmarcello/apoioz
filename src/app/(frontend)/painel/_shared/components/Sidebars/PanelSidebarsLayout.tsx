@@ -3,7 +3,7 @@ import { Campaign, Prisma, Supporter } from "@prisma/client";
 import PanelSideBar from "./PanelSidebar";
 import SupporterSideBar from "./Supporter/SupporterSidebars";
 import { SupporterTopBar } from "./PanelTopbar";
-import SidebarProvider from "../../providers/SidebarProvider";
+import SidebarProvider from "./lib/SidebarProvider";
 
 export function PanelSidebarsLayout({
   user,

@@ -1,14 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { PanelContext } from "../contexts/panel.ctx";
-import { SidebarContext } from "../contexts/sidebar.ctx";
+import { SidebarContext } from "./sidebar.ctx";
 import { Campaign, Prisma, Supporter, User } from "@prisma/client";
-
-export interface CampaignOptions {
-  primaryColor?: string;
-  secondaryColor?: string;
-}
+import { CampaignOptions } from "prisma/types/Campaign";
 
 export default function SidebarProvider({
   children,

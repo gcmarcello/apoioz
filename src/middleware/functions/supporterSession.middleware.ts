@@ -4,10 +4,11 @@ import { User } from "@prisma/client";
 import { cookies } from "next/headers";
 import prisma from "prisma/prisma";
 import { MiddlewareArguments } from "../types/types";
+import { UserSessionMiddlewareReturnType } from "./userSession.middleware";
 
 export async function SupporterSessionMiddleware({
   request,
-}: MiddlewareArguments<{ userSession: Omit<User, "password"> }>) {
+}: UserSessionMiddlewareReturnType) {
   const campaignId = cookies().get("activeCampaign")!.value;
 
   const supporter = await prisma.supporter.findFirst({
@@ -30,3 +31,7 @@ export async function SupporterSessionMiddleware({
     },
   };
 }
+
+export type SupporterSessionMiddlewareReturnType = Awaited<
+  ReturnType<typeof SupporterSessionMiddleware>
+>;

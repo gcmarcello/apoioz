@@ -6,7 +6,7 @@ import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import Image from "next/image";
 import { useState, Fragment } from "react";
-import { useSidebar } from "../../hooks/useSidebar";
+import { useSidebar } from "./lib/useSidebar";
 import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { deactivateCampaign } from "@/app/api/panel/campaigns/actions";
 

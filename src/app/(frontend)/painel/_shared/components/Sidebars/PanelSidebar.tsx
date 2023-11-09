@@ -17,8 +17,9 @@ import clsx from "clsx";
 import SupporterSideBar from "./Supporter/SupporterSidebars";
 import { usePathname } from "next/navigation";
 import { Campaign, User } from "@prisma/client";
-import { useSidebar } from "../../hooks/useSidebar";
+import { useSidebar } from "./lib/useSidebar";
 import Link from "next/link";
+import WhatsAppIcon from "@/app/(frontend)/_shared/components/icons/WhatsAppIcon";
 
 const teams = [
   { id: 1, name: "Heroicons", href: "#", initial: "H", current: false },
@@ -62,6 +63,12 @@ export default function PanelSideBar() {
       href: `/painel/relatorios`,
       icon: ChartPieIcon,
       current: pathname.includes("/relatorios"),
+    },
+    {
+      name: "Whatsapp",
+      href: `/painel/whatsapp`,
+      icon: WhatsAppIcon,
+      current: pathname.includes("/whatsapp"),
     },
   ];
 

@@ -5,7 +5,7 @@ import { Campaign, Prisma, User } from "@prisma/client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
-import { useSidebar } from "../../../hooks/useSidebar";
+import { useSidebar } from "../lib/useSidebar";
 import { set } from "react-hook-form";
 import useSWRMutation from "swr/mutation";
 import { LoadingSpinner } from "@/app/(frontend)/_shared/components/Spinners";
