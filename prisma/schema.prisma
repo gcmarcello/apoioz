@@ -11,17 +11,18 @@ datasource db {
 }
 
 model User {
-  id        String      @id @default(uuid()) @db.Uuid
-  email     String      @unique
-  phone     String?     @unique
-  name      String?
-  password  String?
-  role      String
-  info      UserInfo?
-  campaign  Campaign[]
-  supporter Supporter[] @relation(name: "UserToSupporter")
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  id               String             @id @default(uuid()) @db.Uuid
+  email            String             @unique
+  phone            String?            @unique
+  name             String?
+  password         String?
+  role             String
+  info             UserInfo?
+  campaign         Campaign[]
+  supporter        Supporter[]        @relation(name: "UserToSupporter")
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  PasswordRecovery PasswordRecovery[]
 
   @@schema("public")
 }
@@ -243,4 +244,15 @@ model Zone {
   Supporter    Supporter[]
 
   @@schema("elections")
+}
+
+model PasswordRecovery {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  expiresAt DateTime @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt
+
+  @@schema("public")
 }

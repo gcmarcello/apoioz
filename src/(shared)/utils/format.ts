@@ -23,3 +23,14 @@ export function toProperCase(input: string): string | undefined {
     })
     .join(" ");
 }
+
+export function maskEmail(email) {
+  let [username, domain] = email.split("@");
+  let [domainName, domainExtension] = domain.split(".");
+
+  let maskedUsername = username.slice(0, 3) + "*".repeat(username.length - 3);
+
+  let maskedDomainName = domainName.slice(0, 3) + "*".repeat(domainName.length - 3);
+
+  return `${maskedUsername}@${maskedDomainName}.${domainExtension}`;
+}

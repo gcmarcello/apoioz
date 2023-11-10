@@ -350,8 +350,8 @@ export async function listSupporters({
       },
 
       orderBy: { supporter: { createdAt: "desc" } },
-      take: pagination.pageSize || undefined,
-      skip: pagination.pageIndex * (pagination.pageSize || 0),
+      take: pagination?.pageSize || undefined,
+      skip: pagination?.pageIndex * (pagination?.pageSize || 0) || undefined,
     });
 
     const parsedList = supporterList.map((item) => item.supporter);
@@ -362,8 +362,8 @@ export async function listSupporters({
     return {
       data: parsedList,
       pagination: {
-        pageIndex: pagination.pageIndex,
-        pageSize: pagination.pageSize,
+        pageIndex: pagination?.pageIndex,
+        pageSize: pagination?.pageSize,
         count,
       },
     };

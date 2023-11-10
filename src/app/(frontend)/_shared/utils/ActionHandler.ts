@@ -7,9 +7,7 @@ export function ActionHandler<T>(action: ActionFunction<T>, ...args: any[]): Pro
     if (res.error) {
       throw res.message?.toString() || "An error occurred";
     }
-    if (res.data === undefined) {
-      throw "No data returned";
-    }
+
     return res.data;
   });
 }
