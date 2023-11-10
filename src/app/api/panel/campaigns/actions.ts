@@ -10,7 +10,7 @@ export async function deactivateCampaign() {
 }
 
 export async function activateCampaign(campaignId: string) {
-  return cookies().set("activeCampaign", campaignId);
+  cookies().set("activeCampaign", campaignId);
 }
 
 export async function listCampaigns(userId: string) {
