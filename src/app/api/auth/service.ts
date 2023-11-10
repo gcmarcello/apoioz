@@ -6,6 +6,7 @@ import { User } from "@prisma/client";
 import prisma from "prisma/prisma";
 import { maskEmail, normalizePhone } from "@/(shared)/utils/format";
 import dayjs from "dayjs";
+import { sendEmail } from "../emails/service";
 
 export async function login(request: LoginDto & { user: User; isEmail: boolean }) {
   if (!request.user.password)
@@ -47,10 +48,20 @@ export async function generatePasswordRecovery(identifier: string) {
 
   if (existingRecovery) throw "Recuperação de senha já solicitada.";
 
-  await prisma.passwordRecovery.create({
+  const recovery = await prisma.passwordRecovery.create({
     data: {
       userId: potentialUser.id,
       expiresAt: dayjs().add(10, "minutes").toISOString(),
+    },
+  });
+
+  await sendEmail({
+    to: potentialUser.email,
+    templateId: "password_recovery",
+    dynamicData: {
+      name: potentialUser.name,
+      recoveryLink: `${process.env.NEXT_PUBLIC_SITE_URL}/recuperar/${recovery.id}`,
+      subject: "Recuperação de Senha - ApoioZ",
     },
   });
   return { email: maskEmail(potentialUser.email) };
@@ -85,5 +96,8 @@ export async function resetPassword(request) {
     where: { id: verifyCode.userId },
   });
 
-  await prisma.passwordRecovery.delete({ where: { id: verifyCode.code } });
+  await prisma.passwordRecovery.update({
+    where: { id: verifyCode.code },
+    data: { expiresAt: dayjs().toISOString() },
+  });
 }
