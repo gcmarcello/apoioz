@@ -35,7 +35,8 @@ export async function createSupporter(request: CreateSupportersDto) {
 
     return newSupporter;
   } catch (err: any) {
-    throw new Error(err);
+    console.log(err);
+    return err;
   }
 }
 

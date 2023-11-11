@@ -89,14 +89,14 @@ export async function createSupporter(
         },
         data: {
           email: normalizeEmail(request.email),
-          password: await hashInfo(request.password),
+          password: request.password ? await hashInfo(request.password) : null,
           name: request.name,
           role: "user",
           phone: normalizePhone(request.phone),
           info: {
             create: {
               ...request.info,
-              birthDate: dayjs(request.info.birthDate, "DD/MM/YYYY", true).toISOString(),
+              birthDate: dayjs(request.info.birthDate, "DD/MM/YYYY").toISOString(),
             },
           },
         },
@@ -330,7 +330,7 @@ export async function signUpAsSupporter(request: CreateSupportersDto) {
 
     return supporter;
   } catch (error) {
-    console.log(error.response.body.errors);
+    console.log(error);
   }
 }
 
