@@ -1,6 +1,6 @@
-export async function UseMiddlewares() {
+export async function UseMiddlewares(request: any = {}, additionalArguments: any = {}) {
   return {
-    request: {},
-    additionalArguments: {},
+    request,
+    additionalArguments,
   };
 }

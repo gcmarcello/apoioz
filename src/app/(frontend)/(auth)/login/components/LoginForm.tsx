@@ -67,20 +67,22 @@ export default function LoginForm() {
             options={{ errorMessage: errors.identifier?.message }}
           />
 
-          <TextField
-            {...register("password")}
-            label="Senha"
-            name="password"
-            type={"password"}
-            placeholder="•••••••••••"
-            options={{ errorMessage: errors.password?.message }}
-          />
+          <div>
+            <TextField
+              {...register("password")}
+              label="Senha"
+              name="password"
+              type={"password"}
+              placeholder="•••••••••••"
+              options={{ errorMessage: errors.password?.message }}
+            />
+          </div>
 
           <div>
             <button
               disabled={isLoading}
               type="submit"
-              className="flex min-h-[36px] w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+              className="flex min-h-[36px] w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm duration-200 hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
             >
               {isLoading ? <ButtonSpinner /> : "Login"}
             </button>

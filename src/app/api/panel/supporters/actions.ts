@@ -10,7 +10,7 @@ import { CreateSupportersDto, ListSupportersDto } from "./dto";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 
 export async function listSupporters(request: ListSupportersDto) {
-  const { request: parsedRequest } = await UseMiddlewares()
+  const { request: parsedRequest } = await UseMiddlewares(request)
     .then(UserSessionMiddleware)
     .then(SupporterSessionMiddleware)
     .then(ListSupportersMiddleware);
@@ -24,7 +24,7 @@ export async function getSupporterByUser(data: { userId: string; campaignId: str
 
 export async function createSupporter(request: CreateSupportersDto) {
   try {
-    const parsedRequest = await UseMiddlewares()
+    const parsedRequest = await UseMiddlewares(request)
       .then(UserSessionMiddleware)
       .then(SupporterSessionMiddleware)
       .then(CreateSupportersLevelMiddleware);
@@ -35,7 +35,8 @@ export async function createSupporter(request: CreateSupportersDto) {
 
     return newSupporter;
   } catch (err: any) {
-    throw new Error(err);
+    console.log(err);
+    return err;
   }
 }
 

@@ -260,6 +260,9 @@ export default function PanelSideBar() {
                               item.current
                                 ? "text-white"
                                 : "text-indigo-200 group-hover:text-white",
+                              item.icon === WhatsAppIcon &&
+                                "me-1 h-[1.3rem] w-[1.3rem] fill-indigo-200",
+
                               "h-6 w-6 shrink-0"
                             )}
                             aria-hidden="true"
