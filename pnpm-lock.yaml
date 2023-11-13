@@ -20,6 +20,9 @@ dependencies:
   '@prisma/client':
     specifier: 5.3.1
     version: 5.3.1(prisma@5.5.2)
+  '@react-leaflet/core':
+    specifier: ^2.1.0
+    version: 2.1.0(leaflet@1.9.4)(react-dom@18.2.0)(react@18.2.0)
   '@sendgrid/mail':
     specifier: ^7.7.0
     version: 7.7.0
@@ -95,6 +98,9 @@ dependencies:
   react-leaflet-cluster:
     specifier: ^2.1.0
     version: 2.1.0(leaflet@1.9.4)(react-dom@18.2.0)(react-leaflet@4.2.1)(react@18.2.0)
+  react-leaflet-fullscreen:
+    specifier: ^4.1.1
+    version: 4.1.1(react-leaflet@4.2.1)
   react-qr-code:
     specifier: ^2.0.12
     version: 2.0.12(react@18.2.0)
@@ -4151,6 +4157,10 @@ packages:
       language-subtag-registry: 0.3.22
     dev: true
 
+  /leaflet.fullscreen@2.4.0:
+    resolution: {integrity: sha512-41O0ikdUR0bVC0QfoFN3W5S+9yoeHqL74i0QQafa/W79+ij/G7IRZwpfwPuxoNwpydoUJ/9Mq/6Hp7WZOnkWzQ==}
+    dev: false
+
   /leaflet.markercluster@1.5.3(leaflet@1.9.4):
     resolution: {integrity: sha512-vPTw/Bndq7eQHjLBVlWpnGeLa3t+3zGiuM7fJwCkiMFq+nmRuG3RI3f7f4N4TDX7T4NpbAXpR2+NTRSEGfCSeA==}
     peerDependencies:
@@ -5119,6 +5129,15 @@ packages:
       leaflet.markercluster: 1.5.3(leaflet@1.9.4)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
+      react-leaflet: 4.2.1(leaflet@1.9.4)(react-dom@18.2.0)(react@18.2.0)
+    dev: false
+
+  /react-leaflet-fullscreen@4.1.1(react-leaflet@4.2.1):
+    resolution: {integrity: sha512-gADhnB+T3kfyG21eKqD5H89GMLU2EhvPsVhJhS5PsSbKQrw33V3Tl83UJoFehGJYZZLUP7/2NJi8LwO2gNBcCQ==}
+    peerDependencies:
+      react-leaflet: ^4.x
+    dependencies:
+      leaflet.fullscreen: 2.4.0
       react-leaflet: 4.2.1(leaflet@1.9.4)(react-dom@18.2.0)(react@18.2.0)
     dev: false
 

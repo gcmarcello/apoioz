@@ -186,14 +186,15 @@ model Address {
 }
 
 model City {
-  id           String         @id(map: "PK_74346041a3332b7880d76c610f3") @db.VarChar
-  name         String         @db.VarChar
-  stateId      String         @db.VarChar
-  Address      Address[]
-  State        State          @relation(fields: [stateId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_e99de556ee56afe72154f3ed04a")
-  City_To_Zone City_To_Zone[]
-  UserInfo     UserInfo[]
-  Campaign     Campaign[]
+  id            String          @id(map: "PK_74346041a3332b7880d76c610f3") @db.VarChar
+  name          String          @db.VarChar
+  stateId       String          @db.VarChar
+  Address       Address[]
+  State         State           @relation(fields: [stateId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_e99de556ee56afe72154f3ed04a")
+  City_To_Zone  City_To_Zone[]
+  UserInfo      UserInfo[]
+  Campaign      Campaign[]
+  Neighborhoods Neighborhoods[]
 
   @@schema("elections")
 }
@@ -242,6 +243,25 @@ model Zone {
   State        State          @relation(fields: [stateId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_943d589a985354af23c8330abde")
   UserInfo     UserInfo[]
   Supporter    Supporter[]
+  ZoneGeoJSON  ZoneGeoJSON?
+
+  @@schema("elections")
+}
+
+model ZoneGeoJSON {
+  zoneId  String @id @unique @default(uuid()) @db.Uuid
+  Zone    Zone   @relation(fields: [zoneId], references: [id])
+  geoJSON Json?  @db.JsonB
+
+  @@schema("elections")
+}
+
+model Neighborhoods {
+  id      String @id @unique @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  name    String @db.VarChar
+  cityId  String @db.VarChar
+  City    City   @relation(fields: [cityId], references: [id])
+  geoJSON Json?  @db.JsonB
 
   @@schema("elections")
 }
