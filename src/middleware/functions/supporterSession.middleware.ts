@@ -1,5 +1,4 @@
 "use server";
-import { _NextResponse } from "@/(shared)/utils/http/_NextResponse";
 import { User } from "@prisma/client";
 import { cookies } from "next/headers";
 import prisma from "prisma/prisma";
@@ -18,11 +17,7 @@ export async function SupporterSessionMiddleware({
     },
   });
 
-  if (!supporter)
-    throw _NextResponse.rawError({
-      message: "Você não tem permissão para acessar os dados dessa campanha.",
-      status: 403,
-    });
+  if (!supporter) throw "Você não tem permissão para acessar os dados dessa campanha.";
 
   return {
     request: {
