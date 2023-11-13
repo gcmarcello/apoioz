@@ -1,4 +1,3 @@
-import { _NextResponse } from "@/(shared)/utils/http/_NextResponse";
 import { MiddlewareArguments } from "../types/types";
 
 export async function ValidatorMiddleware({
@@ -11,9 +10,6 @@ export async function ValidatorMiddleware({
 
   if (!success) {
     console.error(error);
-    return _NextResponse.rawError({
-      message: "Erro ao validar os dados.",
-      status: 400,
-    });
+    return "Erro ao validar os dados.";
   }
 }
