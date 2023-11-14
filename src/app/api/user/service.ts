@@ -1,8 +1,8 @@
 "use server";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import { hashInfo } from "@/(shared)/utils/bCrypt";
-import { normalizePhone, normalizeEmail } from "@/(shared)/utils/format";
+import { hashInfo } from "@/_shared/utils/bCrypt";
+import { normalizePhone, normalizeEmail } from "@/_shared/utils/format";
 import { JwtPayload } from "jsonwebtoken";
 import prisma from "prisma/prisma";
 import { handlePrismaError } from "prisma/prismaError";

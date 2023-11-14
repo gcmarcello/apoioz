@@ -1,13 +1,30 @@
-export interface ResponseObject<T = unknown> {
-  message?: string[] | string;
-  data?: T;
-  error?: boolean;
+export interface SuccessResponse<T> {
+  data: T;
+  message?: string | string[];
 }
 
-export type Error = ResponseObject;
+export interface ErrorResponse {
+  message: string | string[];
+  error: boolean;
+}
 
-export class ActionResponse<T> {
-  constructor({ message, data, error = false }: ResponseObject<T>) {
-    return { message, data, error };
+export class ActionResponse {
+  public static success<T>({
+    data,
+    message = "Operação realizada com sucesso",
+  }: SuccessResponse<T>): SuccessResponse<T> {
+    return { data, message };
+  }
+
+  public static error(message: string | string[] = "Operação falhou"): ErrorResponse {
+    if (typeof message != "string" && !Array.isArray(message)) {
+      message = "Operação falhou";
+    }
+
+    if (Array.isArray(message)) {
+      message = message.join(", ");
+    }
+
+    return { message, error: true };
   }
 }

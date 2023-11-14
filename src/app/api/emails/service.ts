@@ -1,3 +1,4 @@
+import { isProd } from "@/_shared/utils/settings";
 import sgMail from "@sendgrid/mail";
 import fs from "fs/promises";
 import path from "path";
@@ -16,12 +17,10 @@ export async function sendEmail({ to, templateId, dynamicData }) {
     html: template.body,
   };
 
-  try {
-    await sgMail.send(msg);
-  } catch (error) {
-    console.error("Error sending email: ", error);
-    throw new Error("Failed to send email");
-  }
+  isProd &&
+    (await sgMail.send(msg).catch((err) => {
+      throw "Failed to send email";
+    }));
 }
 
 async function getEmailTemplate(templateId, dynamicData) {

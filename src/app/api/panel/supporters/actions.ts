@@ -3,11 +3,11 @@
 import * as supportersService from "./service";
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
-import { _NextResponse } from "@/(shared)/utils/http/_NextResponse";
 import { revalidatePath } from "next/cache";
 import { CreateSupportersLevelMiddleware, ListSupportersMiddleware } from "./middlewares";
 import { CreateSupportersDto, ListSupportersDto } from "./dto";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
+import { ActionResponse } from "../../_shared/utils/ActionResponse";
 
 export async function listSupporters(request: ListSupportersDto) {
   const { request: parsedRequest } = await UseMiddlewares(request)
@@ -31,12 +31,16 @@ export async function createSupporter(request: CreateSupportersDto) {
 
     const newSupporter = await supportersService.createSupporter(parsedRequest);
 
+    if (!newSupporter) throw "Erro ao criar novo apoiador.";
+
     revalidatePath("/painel");
 
-    return newSupporter;
+    return ActionResponse.success({
+      data: newSupporter,
+      message: "Sucesso ao criar novo apoiador!",
+    });
   } catch (err: any) {
-    console.log(err);
-    return err;
+    return ActionResponse.error(err);
   }
 }
 

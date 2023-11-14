@@ -1,25 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Path, middlewareHandler } from "./middleware/decorator";
 import { AuthMiddleware } from "./middleware/functions/auth.middleware";
 
-class Middleware {
-  @Path("/api/panel")
-  async panel(request: NextRequest) {
+export async function middleware(request: NextRequest) {
+  const startsWith = request.nextUrl.pathname.startsWith;
+
+  if (startsWith("/api/panel")) {
     return NextResponse.next();
   }
 
-  @Path("/api/signup")
-  async signup(request: NextRequest) {
+  if (startsWith("/api/signup")) {
     return NextResponse.next();
   }
 
-  @Path("/registrar")
-  async registrar(request: NextRequest) {
+  if (startsWith("/registrar")) {
     return NextResponse.next();
   }
 
-  @Path("/login")
-  async login(request: NextRequest) {
+  if (startsWith("/login")) {
     const isAuthenticated = await AuthMiddleware({
       request,
       additionalArguments: { roles: ["user"] },
@@ -29,8 +26,7 @@ class Middleware {
       return NextResponse.redirect(new URL("/painel", request.nextUrl).href);
   }
 
-  @Path("/painel")
-  async painel(request: NextRequest) {
+  if (startsWith("/painel")) {
     const userId = await AuthMiddleware({
       request,
       additionalArguments: { roles: ["user"] },
@@ -52,8 +48,7 @@ class Middleware {
     });
   }
 
-  @Path("/admin")
-  async admin(request: NextRequest) {
+  if (startsWith("/admin")) {
     const parsedRequest = await AuthMiddleware({
       request,
       additionalArguments: { roles: ["admin"] },
@@ -65,8 +60,7 @@ class Middleware {
       });
   }
 
-  @Path("/apoiar")
-  async support(request: NextRequest) {
+  if (startsWith("/apoiar")) {
     const isAuthenticated = await AuthMiddleware({
       request,
       additionalArguments: { roles: ["user"] },
@@ -76,8 +70,7 @@ class Middleware {
       return NextResponse.redirect(new URL("/painel", request.nextUrl).href);
   }
 
-  @Path("/recuperar")
-  async recover(request: NextRequest) {
+  if (startsWith("/recuperar")) {
     const isAuthenticated = await AuthMiddleware({
       request,
       additionalArguments: { roles: ["user"] },
@@ -87,4 +80,3 @@ class Middleware {
       return NextResponse.redirect(new URL("/painel", request.nextUrl).href);
   }
 }
-export const middleware = middlewareHandler(Middleware);

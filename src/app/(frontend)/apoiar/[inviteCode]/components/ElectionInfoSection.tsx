@@ -3,17 +3,13 @@ import { EyeSlashIcon, EyeIcon, UserPlusIcon } from "@heroicons/react/24/solid";
 import { Zone } from "@prisma/client";
 import { Controller } from "react-hook-form";
 import { Fragment, useRef, useState } from "react";
-import { AddressType, SectionType, ZoneType } from "@/(shared)/types/locationTypes";
+import { AddressType, SectionType, ZoneType } from "@/_shared/types/locationTypes";
 import { getSectionsByZone } from "@/app/api/elections/sections/action";
-import useSWRMutation from "swr/mutation";
 import { getAddressBySection } from "@/app/api/elections/locations/actions";
-import { toProperCase } from "@/(shared)/utils/format";
-import {
-  ChartBarSquareIcon,
-  PresentationChartBarIcon,
-} from "@heroicons/react/24/outline";
-import { Switch } from "@headlessui/react";
+import { toProperCase } from "@/_shared/utils/format";
+import { PresentationChartBarIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
+import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 
 export function ElectionInfoSection({ form, zones }: { form: any; zones: ZoneType[] }) {
   const [displayAddress, setDisplayAddress] = useState<AddressType | null>(null);
@@ -45,9 +41,9 @@ export function ElectionInfoSection({ form, zones }: { form: any; zones: ZoneTyp
     trigger: fetchAddress,
     isMutating: isFetchingAddress,
     reset: resetAddress,
-  } = useSWRMutation("getAddressBySection", (url: string, { arg }: { arg: string }) =>
-    getAddressBySection(arg)
-  );
+  } = useAction({
+    action: getAddressBySection,
+  });
 
   return (
     <>

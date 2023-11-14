@@ -11,12 +11,12 @@ import {
   Squares2X2Icon,
 } from "@heroicons/react/20/solid";
 import clsx from "clsx";
-import useSWRMutation from "swr/mutation";
 import { generateMapData } from "@/app/api/panel/map/actions";
-import { toProperCase } from "@/(shared)/utils/format";
 import { LoadingSpinner } from "../../_shared/components/Spinners";
 import { UserGroupIcon, XCircleIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
+import { toProperCase } from "@/_shared/utils/format";
+import { useAction } from "../../_shared/hooks/useAction";
 
 const WithCustomLoading = dynamic(
   () =>
@@ -46,53 +46,55 @@ export default function MapPage() {
     showEmptyAddresses: false,
   });
 
-  const { data: mapData, trigger } = useSWRMutation("getMapData", async () => {
-    const fetchedData = await generateMapData();
-    const addresses = fetchedData.addresses;
-    const neighborhoodList = new Set();
-    const zoneList = new Set();
-    const parsed = addresses.map((a) => ({
-      address: a.address,
-      geocode: [Number(a.lat), Number(a.lng)],
-      location: a.location,
-      neighborhood: a.neighborhood,
-      zone: a.Section[0].Zone.number,
-      sectionsCount: a.Section.length,
-      supportersCount: a.Section.reduce((accumulator, section) => {
-        return accumulator + section.Supporter.length;
-      }, 0),
-      id: a.id,
-    }));
+  const { data: mapData, trigger } = useAction({
+    action: generateMapData,
+    parser: (data) => {
+      const addresses = data.addresses;
+      console.log(data.neighborhoods);
+      const neighborhoodList = new Set();
+      const zoneList = new Set();
+      const parsed = addresses.map((a) => ({
+        address: a.address,
+        geocode: [Number(a.lat), Number(a.lng)],
+        location: a.location,
+        neighborhood: a.neighborhood,
+        zone: a.Section[0].Zone.number,
+        sectionsCount: a.Section.length,
+        supportersCount: a.Section.reduce((accumulator, section) => {
+          return accumulator + section.Supporter.length;
+        }, 0),
+        id: a.id,
+      }));
 
-    /* parsed.filter((a) => a.supportersCount > 0); */
-    parsed.forEach((a) => neighborhoodList.add(a.neighborhood));
-    parsed.forEach((a) => zoneList.add(a.zone));
+      parsed.forEach((a) => neighborhoodList.add(a.neighborhood));
+      parsed.forEach((a) => zoneList.add(a.zone));
 
-    setNeighborhoods(
-      Array.from(neighborhoodList)
-        .map((n) => ({
-          value: n,
-          label: toProperCase(n as string),
-          zone: parsed.find((a) => a.neighborhood === n).zone,
-          geoJSON: fetchedData.neighborhoods.find((z) => z.name === n)?.geoJSON || null,
-          checked: false,
-        }))
-        .sort((a, b) => a.label.localeCompare(b.label))
-    );
+      setNeighborhoods(
+        Array.from(neighborhoodList)
+          .map((n) => ({
+            value: n,
+            label: toProperCase(n as string),
+            zone: parsed.find((a) => a.neighborhood === n).zone,
+            geoJSON: data.neighborhoods.find((z) => z.name === n)?.geoJSON || null,
+            checked: false,
+          }))
+          .sort((a, b) => a.label.localeCompare(b.label))
+      );
 
-    setZones(
-      Array.from(zoneList)
-        .map((n: number) => ({
-          value: n,
-          label: n,
-          checked: false,
-          geoJSON: fetchedData.zonesInfo.find((z) => z.number === n).ZoneGeoJSON.geoJSON,
-          color: fetchedData.zonesInfo.find((z) => z.number === n)?.color,
-        }))
-        .sort((a, b) => a.value - b.value)
-    );
+      setZones(
+        Array.from(zoneList)
+          .map((n: number) => ({
+            value: n,
+            label: n,
+            checked: false,
+            geoJSON: data.zonesInfo.find((z) => z.number === n).ZoneGeoJSON.geoJSON,
+            color: data.zonesInfo.find((z) => z.number === n)?.color,
+          }))
+          .sort((a, b) => a.value - b.value)
+      );
 
-    return parsed;
+      return parsed;
+    },
   });
 
   const sortOptions = [

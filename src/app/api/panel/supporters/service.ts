@@ -1,6 +1,6 @@
 import type { Campaign, Supporter, User, UserInfo } from "@prisma/client";
 
-import { normalizeEmail, normalizePhone } from "@/(shared)/utils/format";
+import { normalizeEmail, normalizePhone } from "@/_shared/utils/format";
 import dayjs from "dayjs";
 import { UserWithoutPassword } from "prisma/types/User";
 import { CreateSupportersDto, ListSupportersDto } from "./dto";
@@ -8,7 +8,7 @@ import prisma from "prisma/prisma";
 import { findCampaignById } from "../campaigns/service";
 import { verifyExistingUser } from "../../user/service";
 import { cookies, headers } from "next/headers";
-import { hashInfo } from "@/(shared)/utils/bCrypt";
+import { hashInfo } from "@/_shared/utils/bCrypt";
 import { sendEmail } from "../../emails/service";
 
 export async function createSupporter(

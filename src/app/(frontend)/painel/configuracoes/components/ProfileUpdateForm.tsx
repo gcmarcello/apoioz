@@ -1,5 +1,5 @@
 "use client";
-import { formatPhone } from "@/(shared)/utils/format";
+import { formatPhone } from "@/_shared/utils/format";
 import { Date } from "@/app/(frontend)/_shared/components/Date";
 import { updateUser } from "@/app/api/user/actions";
 
@@ -8,8 +8,8 @@ import dayjs from "dayjs";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
-import useSWRMutation from "swr/mutation";
 import ElectionModalForm from "./ElectionModalForm";
+import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 
 export default function ProfileUpdateForm({ user }: { user }) {
   const [showFields, setShowFields] = useState({
@@ -35,21 +35,19 @@ export default function ProfileUpdateForm({ user }: { user }) {
     data: supporter,
     trigger: updateUserTrigger,
     error,
-  } = useSWRMutation("updateUser", (url: string, { arg }: { arg: any }) =>
-    updateUser(form.getValues())
-      .then((user) => {
-        showToast({
-          message: `Informações atualizadas com sucesso!`,
-          variant: "success",
-          title: "Dados atualizados",
-        });
-      })
-      .catch(({ message }) => {
-        console.log(message);
-        showToast({ message, variant: "error", title: "Erro" });
-        form.reset();
-      })
-  );
+  } = useAction({
+    action: updateUser,
+    onError: (err) => {
+      showToast({ message: err, variant: "error", title: "Erro" });
+    },
+    onSuccess: (res) => {
+      showToast({
+        message: `Informações atualizadas com sucesso!`,
+        variant: "success",
+        title: "Dados atualizados",
+      });
+    },
+  });
 
   return (
     <>

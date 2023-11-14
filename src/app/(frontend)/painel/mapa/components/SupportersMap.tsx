@@ -14,7 +14,7 @@ import useSWRMutation from "swr/mutation";
 import L, { LatLngBoundsExpression, LatLngExpression, MarkerCluster } from "leaflet";
 import React from "react";
 import clsx from "clsx";
-import { toProperCase } from "@/(shared)/utils/format";
+import { toProperCase } from "@/_shared/utils/format";
 import { For } from "@/app/(frontend)/_shared/components/For";
 import { generateMapData } from "@/app/api/panel/map/actions";
 import { FullscreenControl } from "react-leaflet-fullscreen";

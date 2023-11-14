@@ -7,9 +7,10 @@ import { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
 import { useSidebar } from "../lib/useSidebar";
 import { set } from "react-hook-form";
-import useSWRMutation from "swr/mutation";
 import { LoadingSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { UserWithoutPassword } from "prisma/types/User";
+import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
+import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 
 export function ShareSupporter({
   user,
@@ -34,7 +35,19 @@ export function ShareSupporter({
     trigger: generateInviteCode,
     isMutating: isCreatingCode,
     reset: resetCode,
-  } = useSWRMutation("generateNewCode", () => generateNewCode());
+  } = useAction({
+    action: createInviteCode,
+    onError: (err) => {
+      showToast({ message: err, variant: "error", title: "Erro" });
+    },
+    onSuccess: (res) => {
+      showToast({
+        message: `Código gerado com sucesso!`,
+        variant: "success",
+        title: "Código gerado",
+      });
+    },
+  });
 
   useEffect(() => {
     setMounted(true);

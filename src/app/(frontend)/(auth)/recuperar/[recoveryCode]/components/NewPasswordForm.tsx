@@ -2,7 +2,7 @@
 
 import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
-import { ActionHandler } from "@/app/(frontend)/_shared/utils/ActionHandler";
+import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 import { generatePasswordRecovery, resetPassword } from "@/app/api/auth/action";
 import { ArrowLeftCircleIcon, EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
@@ -10,7 +10,6 @@ import { redirect, useRouter } from "next/navigation";
 import { Router } from "next/router";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import useSWRMutation from "swr/mutation";
 
 export default function NewPasswordForm({
   resetInfo,
@@ -32,11 +31,13 @@ export default function NewPasswordForm({
     data: newPassword,
     trigger: submitPasswordReset,
     isMutating: loading,
-  } = useSWRMutation("resetPassword", (url: string, { arg }: { arg: any }) =>
-    ActionHandler(() => resetPassword(arg))
-      .then((res) => router.push("/painel"))
-      .catch((err) => showToast({ message: err, title: "Erro", variant: "error" }))
-  );
+  } = useAction({
+    action: resetPassword,
+    onSuccess: (res) => {
+      router.push("/painel");
+    },
+    onError: (err) => showToast({ message: err, title: "Erro", variant: "error" }),
+  });
 
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center bg-white px-6 py-12 lg:px-8">

@@ -1,6 +1,6 @@
 "use server";
 
-import { normalizeEmail, normalizePhone } from "@/(shared)/utils/format";
+import { normalizeEmail, normalizePhone } from "@/_shared/utils/format";
 import { getZonesByCampaign } from "@/app/api/elections/zones/actions";
 import { listSupporters } from "@/app/api/panel/supporters/actions";
 import { fakerPT_BR as faker } from "@faker-js/faker";
