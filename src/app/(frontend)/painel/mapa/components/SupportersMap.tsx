@@ -1,155 +1,224 @@
 "use client";
 
-import { useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap, Tooltip } from "react-leaflet";
-import L, { LatLngBoundsExpression, LatLngExpression } from "leaflet";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  useMap,
+  Tooltip,
+  GeoJSON,
+} from "react-leaflet";
+import useSWRMutation from "swr/mutation";
+import L, { LatLngBoundsExpression, LatLngExpression, map } from "leaflet";
 import React from "react";
-import MarkerClusterGroup from "react-leaflet-cluster";
 import clsx from "clsx";
 import { toProperCase } from "@/_shared/utils/format";
 import { For } from "@/app/(frontend)/_shared/components/For";
 import { generateMapData } from "@/app/api/panel/map/actions";
-import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
+import { FullscreenControl } from "react-leaflet-fullscreen";
+import { ArrowsPointingOutIcon } from "@heroicons/react/24/solid";
+import {
+  contrastingColor,
+  generateRandomHexColor,
+} from "@/app/(frontend)/_shared/utils/colors";
+import MarkerClusterGroup from "react-leaflet-cluster";
+import AddressDetailsModal from "./AddressDetailsModal";
 
-export function SupportersMap() {
-  const { data: mapData, trigger } = useAction({
-    action: generateMapData,
-    parser: (data) => {
-      const parsed = data.map((a) => ({
-        address: a.address,
-        geocode: [Number(a.lat), Number(a.lng)],
-        location: a.location,
-        sectionsCount: a.Section.length,
-        supportersCount: a.Section.reduce((accumulator, section) => {
-          return accumulator + section.Supporter.length;
-        }, 0),
-        id: a.id,
-      }));
+const POSITION_CLASSES = {
+  bottomleft: "leaflet-bottom leaflet-left",
+  bottomright: "leaflet-bottom leaflet-right",
+  topleft: "leaflet-top leaflet-left",
+  topright: "leaflet-top leaflet-right",
+};
 
-      const parsed2 = parsed.filter((a) => a.supportersCount > 0);
-
-      return parsed2;
-    },
-  });
-
+export function SupportersMap({
+  mapData,
+  zones,
+  mapOptions,
+  neighborhoods,
+}: {
+  mapData: any;
+  zones: any;
+  mapOptions: any;
+  neighborhoods: any;
+}) {
+  const [open, setOpen] = useState(false);
+  const [modalInfo, setModalInfo] = useState(null);
   const center = [51.505, -0.09];
   const rectangle = [
     [51.49, -0.08],
     [51.5, -0.06],
   ];
 
-  useEffect(() => {
-    trigger();
-  }, [trigger]);
+  const mapRef = useRef(null);
 
-  const customIcon = new L.Icon({
-    iconUrl: "/urna.png",
-    iconSize: new L.Point(55, 55),
-  });
-
-  if (!mapData) return null;
+  const handleMarkerClick = useCallback(
+    (info) => {
+      setModalInfo(info);
+      setOpen(true);
+    },
+    [setModalInfo, setOpen]
+  );
 
   let closeTimeout = null;
 
   function FitBoundsComponent() {
     const map = useMap();
-
     const markerCoords = mapData!.map((marker) => marker.geocode);
-
     useEffect(() => {
+      if (!mapRef.current) {
+        mapRef.current = map;
+      }
       map.fitBounds(markerCoords as LatLngBoundsExpression);
     }, [map, markerCoords]);
 
     return null;
   }
 
+  if (!mapData) return null;
+
   return (
     <>
       <MapContainer
-        className="z-0 h-[600px]"
+        className="z-0 h-[450px] w-full lg:h-[600px]"
         center={center as LatLngExpression}
         scrollWheelZoom={true}
       >
+        <FullscreenControl
+          content={
+            "<span class='text-lg font-semibold flex justify-center h-full pt-0.5'>\u{2921}</span>"
+          }
+        />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
         />
-        <MarkerClusterGroup
-          chunkedLoading
-          maxClusterRadius={100}
-          showCoverageOnHover={false}
-        >
-          <For each={mapData} fallback={<p>Loading...</p>}>
-            {({ geocode, location, address, supportersCount, sectionsCount }, index) => (
-              <Marker
-                icon={customIcon}
-                key={index}
-                interactive={true}
-                position={geocode as LatLngExpression}
-                title={location!}
-                eventHandlers={{
-                  mouseover: (event) => {
-                    if (closeTimeout) clearTimeout(closeTimeout);
-                    event.target.openPopup();
-                  },
-                  mouseout: (event) => {
-                    closeTimeout = setTimeout(() => {
-                      event.target.closePopup();
-                    }, 300);
-                  },
-                }}
-              >
-                <Popup
-                  interactive={true}
-                  offset={[0, -20]}
-                  eventHandlers={{
-                    mouseover: (event) => {
-                      if (closeTimeout) clearTimeout(closeTimeout);
-                    },
-                    mouseout: (event) => {
-                      event.target._source.closePopup();
-                    },
-                  }}
-                >
-                  {(() => {
-                    return (
-                      <article className="flex max-w-2xl flex-col items-start  gap-y-3 ">
-                        <div className="group relative">
-                          <div className="text-sm font-bold text-gray-900">
-                            {location}
-                            <div className="font mt-0.5 text-xs  text-gray-600">
-                              {toProperCase(address)}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex w-full items-center justify-start">
-                          <div className="font text-lg font-bold  text-gray-700 group-hover:text-gray-600">
-                            {supportersCount} Apoiador
-                          </div>
-                          <div className="relative z-10 ml-1 rounded-full bg-gray-200 px-2 py-1 text-xs font-medium  text-gray-600 hover:bg-gray-100">
-                            {sectionsCount} Seções
-                          </div>
-                        </div>
-
-                        <div
-                          className={clsx(
-                            "bg-indigo-600 text-white shadow-sm hover:bg-indigo-500",
-                            "flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                          )}
-                        >
-                          Detalhes
-                        </div>
-                      </article>
-                    );
-                  })()}
-                </Popup>
-              </Marker>
-            )}
+        {mapOptions.showZones && (
+          <For each={zones}>
+            {({ geoJSON, color, checked, value }, index) =>
+              (zones.every((zone) => !zone.checked) || checked) && (
+                <GeoJSON
+                  key={`zone-${index}`}
+                  data={geoJSON}
+                  style={{ color }}
+                  eventHandlers={{ click: (event) => console.log(value) }}
+                />
+              )
+            }
           </For>
-        </MarkerClusterGroup>
+        )}
+        {mapOptions.showNeighborhoods && (
+          <For each={neighborhoods}>
+            {({ geoJSON, color, checked, value }, index) =>
+              (neighborhoods.every((neighborhood) => !neighborhood.checked) ||
+                checked) && (
+                <GeoJSON
+                  key={`neighborhood-${index}`}
+                  data={geoJSON}
+                  style={{ color: generateRandomHexColor() }}
+                  eventHandlers={{ click: (event) => console.log(value) }}
+                />
+              )
+            }
+          </For>
+        )}
+        {mapOptions.showAddresses && (
+          <MarkerClusterGroup
+            chunkedLoading
+            maxClusterRadius={1}
+            showCoverageOnHover={false}
+          >
+            <For each={mapData} fallback={<p>Loading...</p>}>
+              {({ geocode, location, address, supportersCount, sectionsCount }, index) =>
+                (supportersCount || mapOptions.showEmptyAddresses) && (
+                  <Marker
+                    icon={
+                      new L.Icon({
+                        iconUrl: supportersCount ? "/urna.png" : "/urnaempty.png",
+                        iconSize: new L.Point(55, 55),
+                      })
+                    }
+                    key={index}
+                    interactive={true}
+                    position={geocode as LatLngExpression}
+                    title={location!}
+                    eventHandlers={{
+                      mouseover: (event) => {
+                        if (closeTimeout) clearTimeout(closeTimeout);
+                        event.target.openPopup();
+                      },
+                      mouseout: (event) => {
+                        closeTimeout = setTimeout(() => {
+                          event.target.closePopup();
+                        }, 300);
+                      },
+                    }}
+                  >
+                    <Popup
+                      interactive={true}
+                      offset={[0, 0]}
+                      eventHandlers={{
+                        mouseover: (event) => {
+                          if (closeTimeout) clearTimeout(closeTimeout);
+                        },
+                        mouseout: (event) => {
+                          event.target._source.closePopup();
+                        },
+                      }}
+                    >
+                      {(() => {
+                        return (
+                          <article className="flex max-w-2xl flex-col items-start  gap-y-3 ">
+                            <div className="group relative">
+                              <div className="text-sm font-bold text-gray-900">
+                                {location}
+                                <div className="font mt-0.5 text-xs  text-gray-600">
+                                  {toProperCase(address)}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex w-full items-center justify-start">
+                              <div className="font text-lg font-bold  text-gray-700 group-hover:text-gray-600">
+                                {supportersCount} Apoiador
+                              </div>
+                              <div className="relative z-10 ml-1 rounded-full bg-gray-200 px-2 py-1 text-xs font-medium  text-gray-600 hover:bg-gray-100">
+                                {sectionsCount} Seções
+                              </div>
+                            </div>
+
+                            <div
+                              onClick={() =>
+                                handleMarkerClick({
+                                  geocode,
+                                  location,
+                                  address,
+                                  supportersCount,
+                                  sectionsCount,
+                                })
+                              }
+                              className={clsx(
+                                "bg-indigo-600 text-white shadow-sm hover:bg-indigo-500",
+                                "flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                              )}
+                            >
+                              Detalhes
+                            </div>
+                          </article>
+                        );
+                      })()}
+                    </Popup>
+                  </Marker>
+                )
+              }
+            </For>
+          </MarkerClusterGroup>
+        )}
         <FitBoundsComponent />
       </MapContainer>
+      {/* <AddressDetailsModal open={open} setOpen={setOpen} modalInfo={modalInfo} /> */}
     </>
   );
 }

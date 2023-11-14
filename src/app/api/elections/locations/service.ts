@@ -32,3 +32,16 @@ export async function getAddressesByCampaign(campaignId: string) {
     where: { cityId },
   });
 }
+
+export async function getNeighborhoodsByCampaign(campaignId: string) {
+  const checkForCampaign = await prisma.campaign.findUnique({
+    where: { id: campaignId },
+  });
+
+  if (checkForCampaign.cityId === null)
+    throw "Busca de bairros só é permitida para campanhas municipais.";
+
+  return await prisma.neighborhoods.findMany({
+    where: { cityId: checkForCampaign.cityId },
+  });
+}

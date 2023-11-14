@@ -61,3 +61,17 @@ export function contrastingColor(): [string, string] {
 
   return [bgColorStr, textColorStr];
 }
+
+export function generateRandomHexColor(): string {
+  let color = "#";
+  const maxComponentValue = 200; // Limiting the maximum value to keep the color darker
+
+  for (let i = 0; i < 3; i++) {
+    // Generate a value between 0 and maxComponentValue, then convert to a hex string
+    const component = Math.floor(Math.random() * maxComponentValue).toString(16);
+    // Ensure each component has two digits
+    color += component.length === 1 ? "0" + component : component;
+  }
+
+  return color;
+}
