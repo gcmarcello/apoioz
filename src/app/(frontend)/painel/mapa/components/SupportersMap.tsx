@@ -2,33 +2,34 @@
 
 import { useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap, Tooltip } from "react-leaflet";
-import useSWRMutation from "swr/mutation";
 import L, { LatLngBoundsExpression, LatLngExpression } from "leaflet";
 import React from "react";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import clsx from "clsx";
-import { toProperCase } from "@/(shared)/utils/format";
+import { toProperCase } from "@/_shared/utils/format";
 import { For } from "@/app/(frontend)/_shared/components/For";
 import { generateMapData } from "@/app/api/panel/map/actions";
+import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 
 export function SupportersMap() {
-  const { data: mapData, trigger } = useSWRMutation("getMapData", async () => {
-    const addresses = await generateMapData();
+  const { data: mapData, trigger } = useAction({
+    action: generateMapData,
+    parser: (data) => {
+      const parsed = data.map((a) => ({
+        address: a.address,
+        geocode: [Number(a.lat), Number(a.lng)],
+        location: a.location,
+        sectionsCount: a.Section.length,
+        supportersCount: a.Section.reduce((accumulator, section) => {
+          return accumulator + section.Supporter.length;
+        }, 0),
+        id: a.id,
+      }));
 
-    const parsed = addresses.map((a) => ({
-      address: a.address,
-      geocode: [Number(a.lat), Number(a.lng)],
-      location: a.location,
-      sectionsCount: a.Section.length,
-      supportersCount: a.Section.reduce((accumulator, section) => {
-        return accumulator + section.Supporter.length;
-      }, 0),
-      id: a.id,
-    }));
+      const parsed2 = parsed.filter((a) => a.supportersCount > 0);
 
-    const parsed2 = parsed.filter((a) => a.supportersCount > 0);
-
-    return parsed2;
+      return parsed2;
+    },
   });
 
   const center = [51.505, -0.09];

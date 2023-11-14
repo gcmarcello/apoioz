@@ -1,12 +1,12 @@
-import { TokenGeneratorType } from "@/(shared)/types/authTypes";
-import { compareHash, hashInfo } from "@/(shared)/utils/bCrypt";
 import jwt from "jsonwebtoken";
 import { LoginDto } from "./dto";
 import { User } from "@prisma/client";
 import prisma from "prisma/prisma";
-import { maskEmail, normalizePhone } from "@/(shared)/utils/format";
 import dayjs from "dayjs";
 import { sendEmail } from "../emails/service";
+import { TokenGeneratorType } from "@/_shared/types/authTypes";
+import { compareHash, hashInfo } from "@/_shared/utils/bCrypt";
+import { normalizePhone, maskEmail } from "@/_shared/utils/format";
 
 export async function login(request: LoginDto & { user: User; isEmail: boolean }) {
   if (!request.user.password)

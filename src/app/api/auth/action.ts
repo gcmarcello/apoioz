@@ -2,7 +2,6 @@
 
 import * as authService from "./service";
 import { cookies } from "next/headers";
-import { _NextResponse } from "@/(shared)/utils/http/_NextResponse";
 import { LoginDto } from "./dto";
 import { ExistingUserMiddleware } from "./middlewares";
 import { ActionResponse } from "../_shared/utils/ActionResponse";
@@ -21,40 +20,35 @@ export async function login(request: LoginDto) {
 
     cookies().set("token", token);
 
-    return _NextResponse.raw({
+    return ActionResponse.success({
       data: token,
       message: "Login realizado com sucesso!",
     });
   } catch (err: any) {
-    return _NextResponse.rawError(err);
+    return ActionResponse.error(err);
   }
 }
 
-export async function generatePasswordRecovery(request) {
+export async function generatePasswordRecovery(request: { identifier: string }) {
   try {
-    return new ActionResponse({
+    return ActionResponse.success({
       data: await authService.generatePasswordRecovery(request.identifier),
       message: "Código de recuperação enviado com sucesso!",
     });
-  } catch (error) {
-    console.log(error);
-    return new ActionResponse({ message: error, error: true });
+  } catch (error: any) {
+    return ActionResponse.error(error);
   }
 }
 
 export async function checkRecoveryCode(request) {
   try {
     const verifyCode = await authService.checkRecoveryCode(request.code);
-    return new ActionResponse({
+    return ActionResponse.success({
       data: verifyCode,
       message: "Código de recuperação verificado com sucesso!",
     });
-  } catch (error) {
-    console.log(error);
-    return new ActionResponse({
-      error: true,
-      message: error,
-    });
+  } catch (error: any) {
+    return ActionResponse.error(error);
   }
 }
 
@@ -62,14 +56,11 @@ export async function resetPassword(request) {
   try {
     await authService.resetPassword(request);
     cookies().set("token", authService.generateToken({ id: request.userId }));
-    return new ActionResponse({
+    return ActionResponse.success({
       message: "Senha alterada com sucesso!",
+      data: null,
     });
   } catch (error) {
-    console.log(error);
-    return new ActionResponse({
-      error: true,
-      message: error,
-    });
+    return ActionResponse.error(error);
   }
 }

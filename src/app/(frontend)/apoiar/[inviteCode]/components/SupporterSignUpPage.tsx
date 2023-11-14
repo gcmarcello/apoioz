@@ -6,7 +6,7 @@ import { Controller, useForm } from "react-hook-form";
 import axios from "axios";
 import { EyeIcon, EyeSlashIcon, UserIcon } from "@heroicons/react/24/outline";
 import AddSupporterSuccess from "./AddSupporterSuccess";
-import { normalizeEmail, normalizePhone, toProperCase } from "@/(shared)/utils/format";
+import { normalizeEmail, normalizePhone, toProperCase } from "@/_shared/utils/format";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { BasicInfoSection } from "./BasicInfoSection";

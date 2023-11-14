@@ -1,6 +1,6 @@
-import { _NextResponse } from "@/(shared)/utils/http/_NextResponse";
 import prisma from "@/tests/client";
 import { LoginDto } from "./dto";
+import { NextResponse } from "next/server";
 
 export async function ExistingUserMiddleware({ request }: { request: LoginDto }) {
   const isEmail = request.identifier.includes("@");
@@ -10,7 +10,7 @@ export async function ExistingUserMiddleware({ request }: { request: LoginDto })
   });
 
   if (!user)
-    throw _NextResponse.rawError({
+    throw NextResponse.json({
       message: `Usuário não encontrado`,
       status: 404,
     });

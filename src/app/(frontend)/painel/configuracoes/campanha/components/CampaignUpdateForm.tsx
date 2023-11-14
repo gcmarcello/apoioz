@@ -1,14 +1,10 @@
 "use client";
-import ErrorAlert from "@/app/(frontend)/_shared/components/alerts/errorAlert";
-import SuccessAlert from "@/app/(frontend)/_shared/components/alerts/successAlert";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
-import WarningAlert from "@/app/(frontend)/_shared/components/alerts/warningAlert";
+import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 import { getContrastRatioFromHex } from "@/app/(frontend)/_shared/utils/colors";
 import { updateCampaign } from "@/app/api/panel/campaigns/actions";
-import { UserCircleIcon, PhotoIcon } from "@heroicons/react/24/solid";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import useSWRMutation from "swr/mutation";
 
 export default function CampaignUpdateForm({ campaign }) {
   const form = useForm({
@@ -36,25 +32,16 @@ export default function CampaignUpdateForm({ campaign }) {
     data: supporter,
     trigger: updateCampaignTrigger,
     error,
-  } = useSWRMutation("updateCampaign", (url: string, { arg }: { arg: any }) =>
-    updateCampaign({ campaignId: campaign.id, data: form.getValues() })
-      .then((user) => {
-        showToast({
-          message: `Informações atualizadas com sucesso!`,
-          variant: "success",
-          title: "Dados atualizados",
-        });
-      })
-      .catch(({ message }) => {
-        console.log(message);
-        showToast({
-          message: message.replace("Error: ", ""),
-          variant: "error",
-          title: "Erro",
-        });
-        form.reset();
-      })
-  );
+  } = useAction({
+    action: updateCampaign,
+    onError: (err) => showToast({ message: err, title: "Erro", variant: "error" }),
+    onSuccess: (res) =>
+      showToast({
+        message: `Informações atualizadas com sucesso!`,
+        variant: "success",
+        title: "Dados atualizados",
+      }),
+  });
 
   return (
     <main className="px-4 sm:px-6 lg:flex-auto lg:px-0">

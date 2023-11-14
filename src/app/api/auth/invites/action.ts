@@ -1,8 +1,15 @@
 "use server";
+import { ActionResponse } from "../../_shared/utils/ActionResponse";
 import * as services from "./service";
 
 export async function createInviteCode({ campaignId, referralId }) {
-  return await services.createInviteCode({ campaignId, referralId });
+  try {
+    const inviteCode = await services.createInviteCode({ campaignId, referralId });
+
+    return inviteCode;
+  } catch (err) {
+    return ActionResponse.error(err);
+  }
 }
 
 export async function validateInviteCode(code: string) {

@@ -1,6 +1,6 @@
-import { phoneValidator } from "@/(shared)/utils/validators/phone.validator";
 import { z } from "zod";
-import { paginationDto } from "../../(shared)/dto/pagination";
+import { paginationDto } from "../../_shared/dto/pagination";
+import { phoneValidator } from "@/_shared/utils/validators/phone.validator";
 
 export const listSupportersDto = z.object({
   pagination: paginationDto,

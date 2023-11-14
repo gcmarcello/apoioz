@@ -4,39 +4,33 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 import utc from "dayjs/plugin/utc";
 import { cookies, headers } from "next/headers";
 import { getSupporterByUser } from "../supporters/service";
-import { _NextResponse } from "@/(shared)/utils/http/_NextResponse";
 import { Supporter } from "@prisma/client";
 import prisma from "prisma/prisma";
 dayjs.extend(customParseFormat);
 dayjs.extend(utc);
 
 export async function createEvent(data: any) {
-  try {
-    const supporter = await getSupporterByUser({
-      userId: data.userId,
-      campaignId: data.campaignId,
-    });
+  const supporter = await getSupporterByUser({
+    userId: data.userId,
+    campaignId: data.campaignId,
+  });
 
-    if (!supporter) throw new Error("Usuário não encontrado");
+  if (!supporter) throw new Error("Usuário não encontrado");
 
-    if (!headers().get("userId") || !cookies().get("activeCampaign")?.value)
-      throw new Error("Erro ao criar evento");
-    return await prisma.event.create({
-      data: {
-        name: data.name,
-        campaignId: data.campaignId || cookies().get("activeCampaign")?.value,
-        dateStart: data.dateStart.value,
-        dateEnd: data.dateEnd.value,
-        description: data.description,
-        location: data.location,
-        status: supporter.level === 4 ? "active" : "pending",
-        hostId: supporter?.id,
-      },
-    });
-  } catch (error) {
-    console.log(error);
-    throw _NextResponse.rawError({ message: "Erro ao criar evento evento" });
-  }
+  if (!headers().get("userId") || !cookies().get("activeCampaign")?.value)
+    throw new Error("Erro ao criar evento");
+  return await prisma.event.create({
+    data: {
+      name: data.name,
+      campaignId: data.campaignId || cookies().get("activeCampaign")?.value,
+      dateStart: data.dateStart.value,
+      dateEnd: data.dateEnd.value,
+      description: data.description,
+      location: data.location,
+      status: supporter.level === 4 ? "active" : "pending",
+      hostId: supporter?.id,
+    },
+  });
 }
 
 export async function getEventsByCampaign({
@@ -62,7 +56,7 @@ export async function getEventsByCampaign({
   } else if (level) {
     return { active: allActiveEvents, pending: userPendingEvents };
   } else {
-    throw _NextResponse.rawError({ message: "Erro ao buscar eventos" });
+    throw "Erro ao buscar eventos";
   }
 }
 
@@ -83,10 +77,8 @@ export async function getAvailableTimesByDay(campaignId: string, day: string) {
   let availableTimeslots = [...timeslots];
 
   eventTimestamps.forEach((event) => {
-    // Adjust for the -3 hour timezone offset
     const startTime = dayjs(event.start).subtract(1, "hour");
 
-    // Extend the end time by one hour to ensure a gap between events
     const endTime = dayjs(event.end).add(1, "hour");
 
     const occupiedSlots: any[] = [];
@@ -106,24 +98,15 @@ export async function getAvailableTimesByDay(campaignId: string, day: string) {
 export async function updateEventStatus(request) {
   if (request.supporterSession.level !== 4)
     throw "Você não tem permissão de alterar este evento";
-  try {
-    return await prisma.event.update({
-      where: { id: request.eventId },
-      data: { status: request.status },
-    });
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
+  return await prisma.event.update({
+    where: { id: request.eventId },
+    data: { status: request.status },
+  });
 }
 
 export async function updateEvent({ eventId, data }: { eventId: string; data: any }) {
-  try {
-    return await prisma.event.update({
-      where: { id: eventId },
-      data,
-    });
-  } catch (error) {
-    throw _NextResponse.rawError({ message: "Erro ao atualizar evento" });
-  }
+  return await prisma.event.update({
+    where: { id: eventId },
+    data,
+  });
 }

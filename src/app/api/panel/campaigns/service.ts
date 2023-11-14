@@ -2,7 +2,6 @@ import { Supporter, Zone } from "@prisma/client";
 import dayjs from "dayjs";
 import { NextResponse } from "next/server";
 import crypto from "crypto";
-import { _NextResponse } from "@/(shared)/utils/http/_NextResponse";
 
 import prisma from "prisma/prisma";
 import { getZonesByCity, getZonesByState } from "../../elections/zones/service";

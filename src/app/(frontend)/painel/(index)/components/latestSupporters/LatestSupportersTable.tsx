@@ -2,12 +2,12 @@
 import { createColumnHelper } from "@tanstack/react-table";
 import React from "react";
 import { Prisma } from "@prisma/client";
-import { PaginationObject } from "@/(shared)/types/server.types";
 import dayjs from "dayjs";
 import SupporterOverview from "../SupporterOverview";
 import { Date } from "@/app/(frontend)/_shared/components/Date";
 import { DefaultTable } from "@/app/(frontend)/_shared/components/tables/table";
 import SupporterBall from "../../../time/components/SupporterBall";
+import { PaginationObject } from "@/_shared/types/server.types";
 
 export default function LatestSupportersTable({
   initialData,

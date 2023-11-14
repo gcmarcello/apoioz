@@ -1,5 +1,4 @@
 "use client";
-import { toProperCase } from "@/(shared)/utils/format";
 import ComboboxInput from "@/app/(frontend)/_shared/components/Combobox";
 import { Mocker } from "@/app/(frontend)/_shared/components/Mocker";
 import ErrorAlert from "@/app/(frontend)/_shared/components/alerts/errorAlert";
@@ -15,13 +14,14 @@ import { Campaign, Section, Zone } from "@prisma/client";
 import dayjs from "dayjs";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import useSWRMutation from "swr/mutation";
-import { MetaForm } from "@/app/(frontend)/_shared/components/hooks/useMetaform";
 import {
   MaskedTextField,
   TextField,
 } from "@/app/(frontend)/_shared/components/fields/TextField";
 import { SelectField } from "@/app/(frontend)/_shared/components/fields/SelectField";
+import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
+import { toProperCase } from "@/_shared/utils/format";
+import { MetaForm } from "@/app/(frontend)/_shared/hooks/useMetaform";
 
 export function AddSupporterForm({
   campaign,
@@ -38,44 +38,36 @@ export function AddSupporterForm({
     mode: "onChange",
   });
 
-  const { data: zones, trigger: fetchZones } = useSWRMutation(
-    "getZonesByCampaign",
-    (url: string, { arg }: { arg: string }) => getZonesByCampaign(arg)
-  );
+  const { data: zones, trigger: fetchZones } = useAction({
+    action: getZonesByCampaign,
+  });
 
-  const { data: sections, trigger: fetchSections } = useSWRMutation(
-    "getSectionsByZone",
-    (url: string, { arg }: { arg: string }) => getSectionsByZone(arg)
-  );
+  const { data: sections, trigger: fetchSections } = useAction({
+    action: getSectionsByZone,
+  });
 
   const {
     data: address,
     trigger: fetchAddress,
     isMutating: isFetchingAddress,
     reset: resetAddress,
-  } = useSWRMutation("getAddressBySection", (url: string, { arg }: { arg: string }) =>
-    getAddressBySection(arg)
-  );
+  } = useAction({
+    action: getAddressBySection,
+  });
 
-  const {
-    data: supporter,
-    trigger: addSupporter,
-    error,
-  } = useSWRMutation(
-    "addSupporter",
-    (url: string, { arg }: { arg: CreateSupportersDto }) =>
-      createSupporter(arg)
-        .then((supporter) => {
-          if (typeof supporter !== "object") return;
-          showToast({
-            message: `${supporter?.user.name} adicionado a campanha`,
-            variant: "success",
-            title: "Apoiador Adicionado",
-          });
-          form.reset();
-        })
-        .catch(({ message }) => showToast({ message, variant: "error", title: "Erro" }))
-  );
+  const { data: supporter, trigger: addSupporter } = useAction({
+    action: createSupporter,
+    onError: (err) => showToast({ message: err, variant: "error", title: "Erro" }),
+    onSuccess: (res) => {
+      if (typeof supporter !== "object") return;
+      showToast({
+        message: `${res.data.user.name} adicionado a campanha`,
+        variant: "success",
+        title: "Apoiador Adicionado",
+      });
+      form.reset();
+    },
+  });
 
   useEffect(() => {
     fetchZones(campaign.id);

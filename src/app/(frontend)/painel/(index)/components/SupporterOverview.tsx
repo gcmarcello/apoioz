@@ -1,8 +1,7 @@
 "use client";
+import { formatPhone, toProperCase } from "@/_shared/utils/format";
 import { useFloating, shift, offset } from "@floating-ui/react";
-import { formatPhone, toProperCase } from "@/(shared)/utils/format";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
-import { Prisma } from "@prisma/client";
 import { SupporterWithReferralUser, SupporterWithUserInfo } from "prisma/types/Supporter";
 
 export default function SupporterOverview({

@@ -10,7 +10,7 @@ import {
 import toast from "react-hot-toast";
 
 export interface ToastType {
-  message: string;
+  message: string | string[];
   title: string;
   variant: "success" | "error" | "alert";
 }

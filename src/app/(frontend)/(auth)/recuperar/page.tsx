@@ -2,16 +2,14 @@
 
 import { useForm } from "react-hook-form";
 import InputMask from "react-input-mask";
-import useSWRMutation from "swr/mutation";
 import { ButtonSpinner, LoadingSpinner } from "../../_shared/components/Spinners";
-import { ActionHandler } from "../../_shared/utils/ActionHandler";
 import { generatePasswordRecovery } from "@/app/api/auth/action";
 import { showToast } from "../../_shared/components/alerts/toast";
-import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import { ArrowLeftCircleIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import SuccessAlert from "../../_shared/components/alerts/successAlert";
+import { useAction } from "../../_shared/hooks/useAction";
 
 export default function RecoverPasswordPage() {
   const form = useForm();
@@ -27,15 +25,11 @@ export default function RecoverPasswordPage() {
     return "";
   };
 
-  const {
-    data: inviteCode,
-    trigger: submitPasswordRecovery,
-    isMutating: loading,
-  } = useSWRMutation("submitPasswordRecovery", (url: string, { arg }: { arg: any }) =>
-    ActionHandler(() => generatePasswordRecovery(arg))
-      .then((res: { email: string }) => setShowSuccess({ email: res.email, show: true }))
-      .catch((err) => showToast({ message: err, title: "Erro", variant: "error" }))
-  );
+  const { trigger: submitPasswordRecovery, isMutating: loading } = useAction({
+    action: generatePasswordRecovery,
+    onError: (err) => showToast({ message: err, title: "Erro", variant: "error" }),
+    onSuccess: (res) => setShowSuccess({ email: res, show: true }),
+  });
 
   return (
     <div className="flex min-h-screen flex-1 flex-col justify-center bg-white px-6 py-12 lg:px-8">
