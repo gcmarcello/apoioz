@@ -36,6 +36,7 @@ export default function SupportersTable({ rawData }: { rawData: any }) {
       id: "zone",
       header: "Zona",
       cell: (info) => info.getValue(),
+      filterFn: "arrIncludes",
     }),
     columnHelper.accessor("user.info.Section.number", {
       id: "section",

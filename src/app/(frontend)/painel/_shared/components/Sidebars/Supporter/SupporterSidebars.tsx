@@ -8,7 +8,7 @@ import { ShareSupporter } from "./ShareSupporter";
 import { AddSupporterForm } from "./AddSupporter";
 import { useSidebar } from "../lib/useSidebar";
 import { useForm } from "react-hook-form";
-import { useMetaForm } from "@/app/(frontend)/_shared/components/hooks/useMetaform";
+import { useMetaForm } from "@/app/(frontend)/_shared/hooks/useMetaform";
 
 export type FormContext = {
   form: ReturnType<typeof useForm>;

@@ -16,6 +16,7 @@ import { generateMapData } from "@/app/api/panel/map/actions";
 import { toProperCase } from "@/(shared)/utils/format";
 import { LoadingSpinner } from "../../_shared/components/Spinners";
 import { UserGroupIcon, XCircleIcon } from "@heroicons/react/24/solid";
+import Image from "next/image";
 
 const WithCustomLoading = dynamic(
   () =>
@@ -48,7 +49,6 @@ export default function MapPage() {
   const { data: mapData, trigger } = useSWRMutation("getMapData", async () => {
     const fetchedData = await generateMapData();
     const addresses = fetchedData.addresses;
-    console.log(fetchedData.neighborhoods);
     const neighborhoodList = new Set();
     const zoneList = new Set();
     const parsed = addresses.map((a) => ({
@@ -472,24 +472,30 @@ export default function MapPage() {
 
               <div className="mx-4 hidden space-x-2 divide-x-2 lg:flex ">
                 <div className="flex p-2  ">
-                  <UserGroupIcon
-                    className="me-2 h-5 w-5 text-gray-400 hover:text-gray-500"
-                    aria-hidden="true"
-                  />
-                  <span className="text-sm text-gray-900">
+                  <Image src="/urna.png" alt="urna roxa" height={40} width={50} />
+                  <div className="flex items-center text-sm text-gray-900">
                     {mapData?.filter((data) => data.supportersCount).length || 0} Colégios
                     com apoio
-                  </span>
+                  </div>
                 </div>
                 <div className="flex p-2  ">
-                  <XCircleIcon
-                    className="me-2 h-5 w-5 text-gray-400 hover:text-gray-500"
-                    aria-hidden="true"
-                  />
-                  <span className="text-sm text-gray-900">
+                  <Image src="/urnaempty.png" alt="urna roxa" height={40} width={50} />
+                  <div className="flex items-center text-sm text-gray-900">
                     {mapData?.filter((data) => !data.supportersCount).length || 0}{" "}
                     Colégios sem apoio
-                  </span>
+                  </div>
+                </div>
+                <div className="flex p-2  ">
+                  <div className="relative flex h-12 w-12 items-center justify-center text-white">
+                    <div className="absolute h-10 w-10 rounded-full bg-indigo-300 opacity-70"></div>
+                    <div className="z-10 flex h-8 w-8 items-center justify-center rounded-full bg-indigo-500">
+                      Nº
+                    </div>
+                  </div>
+
+                  <div className="flex items-center text-sm text-gray-900">
+                    Apoiadores na área
+                  </div>
                 </div>
               </div>
             </div>
