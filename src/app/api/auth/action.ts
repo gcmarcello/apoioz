@@ -12,11 +12,7 @@ export async function login(request: LoginDto) {
 
     const token = await authService.login(parsedRequest);
 
-    if (!token)
-      throw {
-        message: `Erro ao efetuar login.`,
-        status: 401,
-      };
+    if (!token) throw `Erro ao efetuar login.`;
 
     cookies().set("token", token);
 

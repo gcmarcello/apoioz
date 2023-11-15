@@ -9,11 +9,7 @@ export async function ExistingUserMiddleware({ request }: { request: LoginDto })
     where: isEmail ? { email: request.identifier } : { name: request.identifier },
   });
 
-  if (!user)
-    throw NextResponse.json({
-      message: `Usuário não encontrado`,
-      status: 404,
-    });
+  if (!user) throw `Usuário não encontrado`;
 
   return {
     ...request,
