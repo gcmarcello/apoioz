@@ -6,7 +6,7 @@ import * as service from "./service";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { ActionResponse } from "../../_shared/utils/ActionResponse";
 
-export async function generateMapData(request = {}) {
+export async function generateMapData() {
   try {
     const { request: parsedRequest } = await UseMiddlewares()
       .then(UserSessionMiddleware)
