@@ -75,7 +75,10 @@ export default function MainStats({
       name: "Total de Apoiadores",
       stat: mainPageStats?.totalSupporters,
       previousStat: mainPageStats?.supportersLastWeek + " na semana passada",
-      change: totalSupportersChange !== Infinity ? totalSupportersChange + "%" : "",
+      change:
+        totalSupportersChange !== Infinity && !Number.isNaN(totalSupportersChange)
+          ? totalSupportersChange + "%"
+          : "",
       changeType: !!(mainPageStats?.totalSupporters - mainPageStats?.supportersLastWeek)
         ? "increase"
         : "decrease",
