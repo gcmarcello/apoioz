@@ -35,11 +35,11 @@ export default function PanelSideBar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const parsedCampaigns = campaigns?.map((campaign, index) => ({
-    id: campaign.id,
-    name: campaign.name,
-    initial: campaign.name[0],
-    current: false,
+  const parsedCampaigns = campaigns?.map((campaignToChoose, index) => ({
+    id: campaignToChoose.id,
+    name: campaignToChoose.name,
+    initial: campaignToChoose.name[0],
+    current: campaign.id === campaignToChoose.id,
   }));
 
   const navigation = [
