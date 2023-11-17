@@ -5,36 +5,16 @@ import {
   generateRandomHexColor,
 } from "@/app/(frontend)/_shared/utils/colors";
 
-export async function generateMapData(campaignId: string) {
+export async function generateMapData(request) {
   const cityId = await prisma.campaign
-    .findUnique({ where: { id: campaignId } })
+    .findUnique({ where: { id: request.supporterSession.campaignId } })
     .then((campaign) => campaign!.cityId);
 
   if (!cityId) throw "City not found";
 
-  /* const supporters = await prisma.supporter.findMany({
-    where: {
-      campaignId,
-    },
-    select: {
-      id: true,
-      sectionId: true,
-    },
+  const supporterGroup = await prisma.supporterGroupMembership.findFirst({
+    where: { supporterId: request.supporterSession.id, isOwner: true },
   });
-
-  const addresses = await prisma.address.findMany({
-    where: { cityId },
-    include: {
-      Section: {
-        include: {
-          Zone: true,
-        },
-      },
-    },
-  });
-
-  console.log(supporters.length);
-  console.log(addresses.length); */
 
   const mapData = await prisma.address.findMany({
     where: { cityId },
@@ -42,19 +22,25 @@ export async function generateMapData(campaignId: string) {
       Section: {
         include: {
           Zone: true,
-          Supporter: true,
+          Supporter: {
+            where: {
+              supporterGroupsMemberships: {
+                some: { supporterGroupId: supporterGroup.supporterGroupId },
+              },
+            },
+          },
         },
       },
     },
   });
 
-  const zones = await getZonesByCampaign(campaignId);
+  const zones = await getZonesByCampaign(request.supporterSession.campaignId);
   const zonesInfo = [];
   for (const zone of zones) {
     zonesInfo.push(await fetchZoneGeoJSON(zone.id));
   }
 
-  const neighborhoods = await prisma.neighborhoods.findMany({
+  const neighborhoods = await prisma.neighborhood.findMany({
     where: { cityId },
   });
 
