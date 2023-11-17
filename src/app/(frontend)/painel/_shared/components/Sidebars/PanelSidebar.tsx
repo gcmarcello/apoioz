@@ -15,22 +15,32 @@ import {
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
 import SupporterSideBar from "./Supporter/SupporterSidebars";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Campaign, User } from "@prisma/client";
 import { useSidebar } from "./lib/useSidebar";
 import Link from "next/link";
 import WhatsAppIcon from "@/app/(frontend)/_shared/components/icons/WhatsAppIcon";
-
-const teams = [
-  { id: 1, name: "Heroicons", href: "#", initial: "H", current: false },
-  { id: 2, name: "Tailwind Labs", href: "#", initial: "T", current: false },
-  { id: 3, name: "Workcation", href: "#", initial: "W", current: false },
-];
+import { activateCampaign } from "@/app/api/panel/campaigns/actions";
 
 export default function PanelSideBar() {
-  const { user, campaign, visibility, setVisibility, primaryColor, secondaryColor } =
-    useSidebar();
+  const {
+    user,
+    campaign,
+    visibility,
+    setVisibility,
+    primaryColor,
+    secondaryColor,
+    campaigns,
+  } = useSidebar();
   const pathname = usePathname();
+  const router = useRouter();
+
+  const parsedCampaigns = campaigns?.map((campaign, index) => ({
+    id: campaign.id,
+    name: campaign.name,
+    initial: campaign.name[0],
+    current: false,
+  }));
 
   const navigation = [
     {
@@ -136,8 +146,8 @@ export default function PanelSideBar() {
                     </div>
                   </Transition.Child>
                   <div
-                    style={{ backgroundColor: primaryColor }}
                     className={clsx(
+                      "bg-indigo-600",
                       "fixed flex h-full w-64 grow flex-col gap-y-5 overflow-y-auto  px-6 pb-4"
                     )}
                   >
@@ -169,6 +179,9 @@ export default function PanelSideBar() {
                                       item.current
                                         ? "text-white"
                                         : "text-indigo-200 group-hover:text-white",
+                                      item.icon === WhatsAppIcon &&
+                                        "me-1 h-[1.3rem] w-[1.3rem] fill-indigo-200",
+
                                       "h-6 w-6 shrink-0"
                                     )}
                                     aria-hidden="true"
@@ -181,28 +194,34 @@ export default function PanelSideBar() {
                         </li>
                         <li>
                           <div className="text-xs font-semibold leading-6 text-indigo-200">
-                            Your teams
+                            Suas Campanhas
                           </div>
-                          <ul role="list" className="-mx-2 mt-2 space-y-1">
-                            {teams.map((team) => (
-                              <li key={team.name}>
-                                <a
-                                  href={team.href}
-                                  className={clsx(
-                                    team.current
-                                      ? "bg-indigo-700 text-white"
-                                      : "text-indigo-200 hover:bg-indigo-700 hover:text-white",
-                                    "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
-                                  )}
-                                >
-                                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-indigo-400 bg-indigo-500 text-[0.625rem] font-medium text-white">
-                                    {team.initial}
-                                  </span>
-                                  <span className="truncate">{team.name}</span>
-                                </a>
-                              </li>
-                            ))}
-                          </ul>
+                          {parsedCampaigns && (
+                            <ul role="list" className="-mx-2 mt-2 space-y-1">
+                              {parsedCampaigns.map((team) => (
+                                <li key={team.name}>
+                                  <div
+                                    role="button"
+                                    onClick={() => {
+                                      activateCampaign(team.id);
+                                      router.push("/painel");
+                                    }}
+                                    className={clsx(
+                                      team.current
+                                        ? "bg-indigo-700 text-white"
+                                        : "text-indigo-200 hover:bg-indigo-700 hover:text-white",
+                                      "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                                    )}
+                                  >
+                                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-indigo-400 bg-indigo-500 text-[0.625rem] font-medium text-white">
+                                      {team.initial}
+                                    </span>
+                                    <span className="truncate">{team.name}</span>
+                                  </div>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
                         </li>
                         <li className="mt-auto">
                           <Link
@@ -275,28 +294,34 @@ export default function PanelSideBar() {
                 </li>
                 <li>
                   <div className="text-xs font-semibold leading-6 text-indigo-200">
-                    Your teams
+                    Suas Campanhas
                   </div>
-                  <ul role="list" className="-mx-2 mt-2 space-y-1">
-                    {teams.map((team) => (
-                      <li key={team.name}>
-                        <a
-                          href={team.href}
-                          className={clsx(
-                            team.current
-                              ? "bg-indigo-700 text-white"
-                              : "text-indigo-200 hover:bg-indigo-700 hover:text-white",
-                            "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
-                          )}
-                        >
-                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-indigo-400 bg-indigo-500 text-[0.625rem] font-medium text-white">
-                            {team.initial}
-                          </span>
-                          <span className="truncate">{team.name}</span>
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
+                  {parsedCampaigns && (
+                    <ul role="list" className="-mx-2 mt-2 space-y-1">
+                      {parsedCampaigns.map((team) => (
+                        <li key={team.name}>
+                          <div
+                            role="button"
+                            onClick={() => {
+                              activateCampaign(team.id);
+                              router.push("/painel");
+                            }}
+                            className={clsx(
+                              team.current
+                                ? "bg-indigo-700 text-white"
+                                : "text-indigo-200 hover:bg-indigo-700 hover:text-white",
+                              "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                            )}
+                          >
+                            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-indigo-400 bg-indigo-500 text-[0.625rem] font-medium text-white">
+                              {team.initial}
+                            </span>
+                            <span className="truncate">{team.name}</span>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </li>
                 <li className="mt-auto">
                   <Link

@@ -13,6 +13,10 @@ export default async function EventListTable({ events }: { events: Event[] }) {
     userId: headers().get("userId")!,
     campaignId: cookies().get("activeCampaign")!.value,
   });
+  function getInitials(name: string) {
+    const letters = name.split("");
+    return (letters[0] + letters[1]).toLocaleUpperCase();
+  }
   return (
     <ol className="divide-y divide-gray-100 text-sm leading-6 ">
       {events.map((event) => {
@@ -28,7 +32,7 @@ export default async function EventListTable({ events }: { events: Event[] }) {
                 `flex h-14 min-w-[3.5rem] items-center justify-center rounded-full font-bold `
               )}
             >
-              {"EV".toLocaleUpperCase()}
+              {getInitials(event.name)}
             </div>
             <div className="flex-auto">
               <div className="flex justify-between">

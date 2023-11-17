@@ -67,10 +67,8 @@ export default function MainStats({
     );
 
   const totalSupportersChange =
-    Math.round(
-      (mainPageStats?.totalSupporters - mainPageStats?.supportersLastWeek) /
-        mainPageStats?.supportersLastWeek
-    ) * 100;
+    mainPageStats?.totalSupporters -
+    mainPageStats?.supportersLastWeek / mainPageStats?.supportersLastWeek;
 
   const stats = [
     {

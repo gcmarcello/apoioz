@@ -12,6 +12,7 @@ import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "../../_shared/components/button";
 import { CalendarDay } from "../page";
+import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 
 dayjs.extend(isBetween);
 
@@ -34,6 +35,7 @@ export default function SubmitEventRequest({
     null
   );
   const [error, setError] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const form = useForm();
 
   useEffect(() => {
@@ -95,12 +97,14 @@ export default function SubmitEventRequest({
 
   const submitEvent = async (data: any) => {
     try {
+      setLoading(true);
       const response = await createEvent({ ...data, userId: userId });
       showToast({
         message: `Evento solicitado com sucesso!`,
         variant: "success",
         title: "Confirmado",
       });
+      setLoading(false);
       setShow(false);
     } catch (error) {
       console.log(error);
@@ -236,8 +240,14 @@ export default function SubmitEventRequest({
           >
             Voltar
           </Button> */}
-          <Button disabled={!form.formState.isValid} type="submit" variant="primary">
-            Solicitar Evento
+          <Button
+            disabled={!form.formState.isValid || loading}
+            type="submit"
+            variant="primary"
+          >
+            <div className="flex items-center gap-x-2">
+              {loading && <ButtonSpinner />} Solicitar Evento
+            </div>
           </Button>
         </div>
       </div>

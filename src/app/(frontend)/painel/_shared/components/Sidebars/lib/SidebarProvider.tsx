@@ -10,11 +10,13 @@ export default function SidebarProvider({
   user,
   campaign,
   supporter,
+  campaigns,
 }: {
   children: React.ReactNode;
   user: Omit<Prisma.UserGetPayload<{ include: { info: true } }>, "password">;
   campaign: Campaign;
   supporter: Supporter;
+  campaigns: Campaign[];
 }) {
   const [visibility, setVisibility] = useState({
     supporterSidebar: false,
@@ -24,8 +26,8 @@ export default function SidebarProvider({
 
   const campaignOptions = campaign.options as CampaignOptions;
 
-  const primaryColor = campaignOptions.primaryColor;
-  const secondaryColor = campaignOptions.secondaryColor;
+  const primaryColor = campaignOptions?.primaryColor;
+  const secondaryColor = campaignOptions?.secondaryColor;
   return (
     <SidebarContext.Provider
       value={{
@@ -36,6 +38,7 @@ export default function SidebarProvider({
         supporter,
         primaryColor,
         secondaryColor,
+        campaigns,
       }}
     >
       {children}

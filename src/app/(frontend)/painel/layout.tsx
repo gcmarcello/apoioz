@@ -1,4 +1,4 @@
-import { getCampaign } from "@/app/api/panel/campaigns/actions";
+import { getCampaign, listCampaigns } from "@/app/api/panel/campaigns/actions";
 import "../globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -37,11 +37,18 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       where: { userId, campaignId: campaign.id },
     });
 
+    const campaigns = await listCampaigns(user.id);
+
     if (!campaign) return;
 
     return (
       <main>
-        <PanelSidebarsLayout campaign={campaign} user={user} supporter={supporter} />
+        <PanelSidebarsLayout
+          campaign={campaign}
+          campaigns={campaigns}
+          user={user}
+          supporter={supporter}
+        />
 
         <div className="h-[calc(100vh-80px-30px)] p-4 lg:ml-64 lg:p-8">{children}</div>
       </main>

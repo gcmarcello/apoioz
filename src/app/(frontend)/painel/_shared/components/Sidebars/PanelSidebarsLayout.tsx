@@ -9,13 +9,20 @@ export function PanelSidebarsLayout({
   user,
   campaign,
   supporter,
+  campaigns,
 }: {
   user: Omit<Prisma.UserGetPayload<{ include: { info: true } }>, "password">;
   campaign: Campaign;
   supporter: Supporter;
+  campaigns: Campaign[];
 }) {
   return (
-    <SidebarProvider user={user} campaign={campaign} supporter={supporter}>
+    <SidebarProvider
+      user={user}
+      campaign={campaign}
+      campaigns={campaigns}
+      supporter={supporter}
+    >
       <PanelSideBar />
       <SupporterTopBar />
       <SupporterSideBar />

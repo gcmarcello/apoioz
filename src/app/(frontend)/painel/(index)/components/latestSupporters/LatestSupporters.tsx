@@ -7,12 +7,8 @@ import { Date } from "@/app/(frontend)/_shared/components/Date";
 import { listSupporters } from "@/app/api/panel/supporters/actions";
 
 export async function LatestSupporters() {
-  const userId = headers().get("userId")!;
   const latestSupporters = await listSupporters({
     pagination: { pageIndex: 0, pageSize: 5 },
-    data: {
-      ownerId: userId,
-    },
   });
 
   if (!latestSupporters) return;

@@ -9,6 +9,7 @@ export async function ListSupportersMiddleware({
 }: MiddlewareArguments<
   ListSupportersDto & { supporterSession: Supporter; userSession: Omit<User, "password"> }
 >) {
+  console.log(request.data);
   if (request.data) {
     const supporterSessionGroup = await prisma.supporterGroupMembership.findFirst({
       where: { AND: [{ supporterId: request.supporterSession.id }, { isOwner: true }] },

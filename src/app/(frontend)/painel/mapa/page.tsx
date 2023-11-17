@@ -90,7 +90,7 @@ export default function MapPage() {
             value: n,
             label: n,
             checked: false,
-            geoJSON: data.zonesInfo.find((z) => z.number === n).ZoneGeoJSON.geoJSON,
+            geoJSON: data.zonesInfo.find((z) => z.number === n).ZoneGeoJSON?.geoJSON,
             color: data.zonesInfo.find((z) => z.number === n)?.color,
           }))
           .sort((a, b) => a.value - b.value)
