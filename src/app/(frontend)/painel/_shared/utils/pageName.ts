@@ -1,5 +1,3 @@
-import { toProperCase } from "@/(shared)/utils/format";
-
 export function getPageName(url: string, mobile: boolean = false): string {
   const pageName = url.split("/").pop();
 
@@ -17,6 +15,10 @@ export function getPageName(url: string, mobile: boolean = false): string {
         return "Relatórios";
       case "whatsapp":
         return "WhatsApp";
+      case "configuracoes":
+        return "Configurações";
+      case "campanha":
+        return "Configurações";
       default:
         break;
     }
@@ -34,6 +36,10 @@ export function getPageName(url: string, mobile: boolean = false): string {
         return "Relatórios de Apoiador";
       case "whatsapp":
         return "WhatsApp";
+      case "configuracoes":
+        return "Configurações";
+      case "campanha":
+        return "Configurações";
       default:
         break;
     }

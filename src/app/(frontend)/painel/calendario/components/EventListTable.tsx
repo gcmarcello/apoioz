@@ -58,7 +58,7 @@ export default async function EventListTable({ events }: { events: Event[] }) {
                           {
                             <Date
                               value={dayjs(event.dateStart)
-                                .locale("pt-br")
+                                .utcOffset(-3)
                                 .format("DD/MM/YYYY HH:mm")}
                             />
                           }
@@ -67,7 +67,10 @@ export default async function EventListTable({ events }: { events: Event[] }) {
                         <time dateTime={dayjs(event.dateEnd).toISOString()}>
                           {
                             <Date
-                              value={dayjs(event.dateEnd).locale("pt-br").format("HH:mm")}
+                              value={dayjs(event.dateEnd)
+                                .utcOffset(-3)
+                                .locale("pt-br")
+                                .format("HH:mm")}
                             />
                           }
                         </time>

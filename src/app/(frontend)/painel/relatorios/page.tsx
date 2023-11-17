@@ -1,53 +1,45 @@
+"use client";
 import { listSupporters } from "@/app/api/panel/supporters/actions";
 import SupportersTable from "./components/SupportersTable";
+import { Bar } from "react-chartjs-2";
+import { faker } from "@faker-js/faker";
+import { SupportersLastMonth } from "./components/SupportersLastMonth";
+import { ReferralRanking } from "./components/ReferralRanking";
+import { InformationCircleIcon } from "@heroicons/react/24/solid";
+import ReportsProvider from "./providers/ReportsProvider";
+import Footer from "../_shared/components/Footer";
+import Modal from "../../_shared/components/Modal";
+import { useState } from "react";
 
-export default async function RelatoriosPage({}) {
-  const supporters = await listSupporters({
-    pagination: {
-      pageIndex: 0,
-      pageSize: 10,
-    },
-  });
-
-  if (!supporters) return;
-  if (typeof supporters === "number") return;
-
+export default function RelatoriosPage({}) {
+  const [open, setOpen] = useState(false);
   return (
     <>
-      <div className="-mt-4 mb-1 md:flex md:items-center md:justify-between">
-        <div className="min-w-0 flex-1">
-          <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-            Relatório de Apoiadores
-          </h2>
-        </div>
-        <div className="mt-4 flex md:ml-4 md:mt-0">
-          <button
-            type="button"
-            className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+      <ReportsProvider>
+        <Modal open={open} setOpen={setOpen} />
+        <div className="mx-4 mb-4 flex text-sm text-gray-600">
+          <InformationCircleIcon className="me-1 h-5 w-5" />
+          Nessa página você tem acesso a todos os apoiadores da sua rede.{" "}
+          <span
+            className="ms-1 font-bold text-indigo-600 hover:text-indigo-400"
+            role="button"
+            onClick={() => setOpen(true)}
           >
-            Edit
-          </button>
-          <button
-            type="button"
-            className="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          >
-            Publish
-          </button>
+            Como funciona?
+          </span>
         </div>
-      </div>
-      <div className="mb-4 text-sm">
-        Nessa página você tem acesso a todos os apoiadores da sua rede.{" "}
-        <span className="font-bold text-indigo-600 hover:text-indigo-400" role="button">
-          Como funciona?
-        </span>
-      </div>
-      {/* <SupporterTable
-        originalData={{
-          supporters: supporters.supporters,
-          count: supporters.count,
-        }}
-      /> */}
-      <SupportersTable rawData={supporters} />
+        <div className="grid grid-cols-1 lg:grid-cols-3 lg:divide-x ">
+          <div className="col-span-1 flex flex-col justify-evenly lg:px-4">
+            <SupportersLastMonth />
+            <ReferralRanking />
+          </div>
+
+          <div className="col-span-2 px-2 lg:px-8">
+            <SupportersTable />
+          </div>
+        </div>
+      </ReportsProvider>
+      <Footer />
     </>
   );
 }

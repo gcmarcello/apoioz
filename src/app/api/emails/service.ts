@@ -38,7 +38,6 @@ async function getEmailTemplate(templateId, dynamicData) {
 }
 
 async function readTemplateFile(templateId: string): Promise<string> {
-  console.log(templatesDir);
   const templatePath = path.join(templatesDir, `${templateId}.html`);
   try {
     const templateContent = await fs.readFile(templatePath, "utf8");

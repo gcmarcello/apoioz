@@ -363,26 +363,31 @@ export async function listSupporters({
         supporter: {
           include: {
             user: {
-              include: {
-                info: { include: { Section: true, Zone: true, City: true } },
+              select: {
+                info: { include: { Section: true, Zone: true } },
+                name: true,
+                email: true,
+                phone: true,
               },
             },
             referral: {
               include: {
                 user: {
-                  include: {
-                    info: {
-                      include: { Section: true, Zone: true, City: true },
-                    },
+                  select: {
+                    info: { include: { Section: true, Zone: true } },
+                    name: true,
+                    email: true,
+                    phone: true,
                   },
                 },
                 referral: {
                   include: {
                     user: {
-                      include: {
-                        info: {
-                          include: { Section: true, Zone: true, City: true },
-                        },
+                      select: {
+                        info: { include: { Section: true, Zone: true } },
+                        name: true,
+                        email: true,
+                        phone: true,
                       },
                     },
                   },

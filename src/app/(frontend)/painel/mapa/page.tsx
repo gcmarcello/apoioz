@@ -50,21 +50,24 @@ export default function MapPage() {
     action: generateMapData,
     parser: (data) => {
       const addresses = data.addresses;
-      console.log(data.neighborhoods);
       const neighborhoodList = new Set();
       const zoneList = new Set();
-      const parsed = addresses.map((a) => ({
-        address: a.address,
-        geocode: [Number(a.lat), Number(a.lng)],
-        location: a.location,
-        neighborhood: a.neighborhood,
-        zone: a.Section[0].Zone.number,
-        sectionsCount: a.Section.length,
-        supportersCount: a.Section.reduce((accumulator, section) => {
+      const parsed = addresses.map((a) => {
+        const sectionsCount = a.Section.length;
+        const supportersCount = a.Section.reduce((accumulator, section) => {
           return accumulator + section.Supporter.length;
-        }, 0),
-        id: a.id,
-      }));
+        }, 0);
+        return {
+          address: a.address,
+          geocode: [Number(a.lat), Number(a.lng)],
+          location: a.location,
+          neighborhood: a.neighborhood,
+          zone: a.Section[0].Zone.number,
+          sectionsCount,
+          supportersCount,
+          id: a.id,
+        };
+      });
 
       parsed.forEach((a) => neighborhoodList.add(a.neighborhood));
       parsed.forEach((a) => zoneList.add(a.zone));

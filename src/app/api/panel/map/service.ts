@@ -10,19 +10,44 @@ export async function generateMapData(campaignId: string) {
     .findUnique({ where: { id: campaignId } })
     .then((campaign) => campaign!.cityId);
 
-  if (!cityId) throw new Error("City not found");
+  if (!cityId) throw "City not found";
+
+  /* const supporters = await prisma.supporter.findMany({
+    where: {
+      campaignId,
+    },
+    select: {
+      id: true,
+      sectionId: true,
+    },
+  });
+
+  const addresses = await prisma.address.findMany({
+    where: { cityId },
+    include: {
+      Section: {
+        include: {
+          Zone: true,
+        },
+      },
+    },
+  });
+
+  console.log(supporters.length);
+  console.log(addresses.length); */
 
   const mapData = await prisma.address.findMany({
     where: { cityId },
     include: {
       Section: {
         include: {
-          Supporter: true,
           Zone: true,
+          Supporter: true,
         },
       },
     },
   });
+
   const zones = await getZonesByCampaign(campaignId);
   const zonesInfo = [];
   for (const zone of zones) {

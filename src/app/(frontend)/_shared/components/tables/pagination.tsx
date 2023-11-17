@@ -15,29 +15,29 @@ export default function PaginationControl({
   count: number;
 }) {
   const pagesArray = Array.from({ length: table.getPageCount() }, (_, i) => i);
-  const visiblePages =
-    pagesArray.length < 3
-      ? pagesArray
-      : pageIndex === 0 || pageIndex > pages.slice(-4)[0]
-      ? [0, 1, 2]
-      : [pageIndex - 1, pageIndex, pageIndex + 1];
+
+  const visiblePages = (() => {
+    const totalVisiblePages = 5; // You can adjust this number based on your design
+    const halfRange = Math.floor(totalVisiblePages / 2);
+
+    // Start and end points of the pagination
+    let start = Math.max(0, pageIndex - halfRange);
+    let end = Math.min(pagesArray.length - 1, pageIndex + halfRange);
+
+    // Adjust the start and end if they are near the beginning or end
+    if (pageIndex < halfRange) {
+      end = Math.min(totalVisiblePages - 1, pagesArray.length - 1);
+    }
+    if (pageIndex > pagesArray.length - 1 - halfRange) {
+      start = Math.max(0, pagesArray.length - totalVisiblePages);
+    }
+
+    // Generate the range of visible pages
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  })();
 
   return (
     <div className="flex w-full items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
-      <div className="flex flex-1 justify-between sm:hidden">
-        <a
-          href="#"
-          className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-        >
-          Previous
-        </a>
-        <a
-          href="#"
-          className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-        >
-          Next
-        </a>
-      </div>
       <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
         <div>
           <p className="text-sm text-gray-700">
@@ -77,7 +77,7 @@ export default function PaginationControl({
                 {page + 1}
               </a>
             ))}
-            {pages.length > 3 && (
+            {pages.length > 6 && (
               <button
                 onClick={() =>
                   table.setPageIndex(
@@ -89,7 +89,7 @@ export default function PaginationControl({
                 ...
               </button>
             )}
-            {pages.length > 3 &&
+            {pages.length > 6 &&
               pages.slice(-3).map((page) => (
                 <a
                   key={`page-${page}`}
