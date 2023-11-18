@@ -143,7 +143,7 @@ export function SupportersMap({
                 <GeoJSON
                   key={`neighborhood-${index}`}
                   data={geoJSON}
-                  style={{ color: generateRandomHexColor() }}
+                  style={{ color }}
                   eventHandlers={{
                     click: (event) => {
                       if (closeTimeout) clearTimeout(closeTimeout);

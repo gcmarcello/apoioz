@@ -80,6 +80,7 @@ export default function MapPage() {
             zone: parsed.find((a) => a.neighborhood === n).zone,
             geoJSON: data.neighborhoods.find((z) => z.name === n)?.geoJSON || null,
             checked: false,
+            color: (data.neighborhoods as any).find((z) => z.name === n)?.color,
           }))
           .sort((a, b) => a.label.localeCompare(b.label))
       );

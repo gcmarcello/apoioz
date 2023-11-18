@@ -43,6 +43,9 @@ export async function generateMapData(request) {
   const neighborhoods = await prisma.neighborhood.findMany({
     where: { cityId },
   });
+  for (const neighborhood of neighborhoods) {
+    (neighborhood as any).color = generateRandomHexColor();
+  }
 
   return { addresses: mapData, zonesInfo, neighborhoods };
 }
