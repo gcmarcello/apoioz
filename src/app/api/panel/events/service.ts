@@ -6,6 +6,7 @@ import { cookies, headers } from "next/headers";
 import { getSupporterByUser } from "../supporters/service";
 import { Supporter } from "@prisma/client";
 import prisma from "prisma/prisma";
+import { sendEmail } from "../../emails/service";
 dayjs.extend(customParseFormat);
 dayjs.extend(utc);
 
@@ -19,7 +20,7 @@ export async function createEvent(data: any) {
 
   if (!headers().get("userId") || !cookies().get("activeCampaign")?.value)
     throw new Error("Erro ao criar evento");
-  return await prisma.event.create({
+  const event = await prisma.event.create({
     data: {
       name: data.name,
       campaignId: data.campaignId || cookies().get("activeCampaign")?.value,
@@ -31,6 +32,64 @@ export async function createEvent(data: any) {
       hostId: supporter?.id,
     },
   });
+  const host = await prisma.supporter.findFirst({
+    where: { id: supporter?.id },
+    include: { user: true },
+  });
+  const leader = await prisma.supporter.findFirst({
+    where: { level: 4 },
+    include: { user: { select: { email: true, name: true } } },
+  });
+
+  if (host.level === 4) {
+    const supporters = await prisma.supporter.findMany({
+      where: { campaignId: event.campaignId },
+      include: { user: { select: { email: true } } },
+    });
+    const campaign = await prisma.campaign.findFirst({ where: { id: event.campaignId } });
+    await sendEmail({
+      to: process.env.SENDGRID_EMAIL,
+      bcc: [
+        ...supporters
+          .map((supporter) => supporter.user.email)
+          .filter((email) => email !== host.user.email),
+      ],
+      dynamicData: {
+        subject: `${event.name} confirmado! - ApoioZ`,
+        eventName: event.name,
+        eventDate: dayjs(event.dateStart).utcOffset(-3).format("DD/MM/YYYY HH:mm"),
+        eventLocation: event.location,
+        campaignName: campaign.name,
+      },
+      templateId: "event_confirmed",
+    });
+  } else {
+    await sendEmail({
+      to: host.user.email,
+      dynamicData: {
+        subject: "Evento enviado para análise! - ApoioZ",
+        eventName: event.name,
+        eventDate: dayjs(event.dateStart).utcOffset(-3).format("DD/MM/YYYY HH:mm"),
+        eventLocation: event.location,
+        eventDescription: event.description,
+        organizerName: host.user.name,
+      },
+      templateId: "event_created",
+    });
+    await sendEmail({
+      to: leader.user.email,
+      dynamicData: {
+        subject: "Evento recebido para sua análise. - ApoioZ",
+        eventName: event.name,
+        eventDate: dayjs(event.dateStart).utcOffset(-3).format("DD/MM/YYYY HH:mm"),
+        eventLocation: event.location,
+        leaderName: leader.user.name,
+        eventObservations: event.observations,
+        eventDescription: event.description,
+      },
+      templateId: "event_created_leader",
+    });
+  }
 }
 
 export async function getEventsByCampaign({
@@ -98,10 +157,49 @@ export async function getAvailableTimesByDay(campaignId: string, day: string) {
 export async function updateEventStatus(request) {
   if (request.supporterSession.level !== 4)
     throw "Você não tem permissão de alterar este evento";
-  return await prisma.event.update({
+  const event = await prisma.event.update({
     where: { id: request.eventId },
     data: { status: request.status },
   });
+  if (request.status === "active") {
+    const host = await prisma.supporter.findFirst({
+      where: { id: event.hostId },
+      include: { user: true },
+    });
+    const supporters = await prisma.supporter.findMany({
+      where: { campaignId: event.campaignId },
+      include: { user: { select: { email: true } } },
+    });
+    const campaign = await prisma.campaign.findFirst({ where: { id: event.campaignId } });
+
+    await sendEmail({
+      to: process.env.SENDGRID_EMAIL,
+      dynamicData: {
+        eventName: event.name,
+        eventDate: dayjs(event.dateStart).utcOffset(-3).format("DD/MM/YYYY HH:mm"),
+        eventLocation: event.location,
+        subject: "Evento confirmado com sucesso! - ApoioZ",
+      },
+      templateId: "event_confirmed_host",
+    });
+    await sendEmail({
+      to: host.user.email,
+      bcc: [
+        ...supporters
+          .map((supporter) => supporter.user.email)
+          .filter((email) => email !== host.user.email),
+      ],
+
+      dynamicData: {
+        subject: `${event.name} confirmado! - ApoioZ`,
+        eventName: event.name,
+        eventDate: dayjs(event.dateStart).utcOffset(-3).format("DD/MM/YYYY HH:mm"),
+        eventLocation: event.location,
+        campaignName: campaign.name,
+      },
+      templateId: "event_confirmed",
+    });
+  }
 }
 
 export async function updateEvent({ eventId, data }: { eventId: string; data: any }) {

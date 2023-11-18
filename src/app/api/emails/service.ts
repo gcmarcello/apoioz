@@ -8,19 +8,34 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const templatesDir = path.join(__dirname, "templates");
 
-export async function sendEmail({ to, templateId, dynamicData }) {
+export async function sendEmail({
+  to,
+  bcc,
+  templateId,
+  dynamicData,
+}: {
+  to?: string | string[];
+  bcc?: string | string[];
+  templateId: string;
+  dynamicData: any;
+}) {
   const template = await getEmailTemplate(templateId, dynamicData);
   const msg = {
     to,
-    from: "contato@apoioz.com.br",
+    bcc,
+    from: process.env.SENDGRID_EMAIL,
     subject: template.subject,
     html: template.body,
   };
 
-  isProd &&
-    (await sgMail.send(msg).catch((err) => {
+  /* isProd && */
+  await sgMail
+    .send(msg)
+    .then(() => console.log("Email sent"))
+    .catch((err) => {
+      console.log(err.response.body.errors);
       throw "Failed to send email";
-    }));
+    });
 }
 
 async function getEmailTemplate(templateId, dynamicData) {
@@ -38,7 +53,6 @@ async function getEmailTemplate(templateId, dynamicData) {
 }
 
 async function readTemplateFile(templateId: string): Promise<string> {
-  console.log(templatesDir);
   const templatePath = path.join(templatesDir, `${templateId}.html`);
   try {
     const templateContent = await fs.readFile(templatePath, "utf8");

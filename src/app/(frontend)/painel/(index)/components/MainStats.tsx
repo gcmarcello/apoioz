@@ -67,17 +67,18 @@ export default function MainStats({
     );
 
   const totalSupportersChange =
-    Math.round(
-      (mainPageStats?.totalSupporters - mainPageStats?.supportersLastWeek) /
-        mainPageStats?.supportersLastWeek
-    ) * 100;
+    mainPageStats?.totalSupporters -
+    mainPageStats?.supportersLastWeek / mainPageStats?.supportersLastWeek;
 
   const stats = [
     {
       name: "Total de Apoiadores",
       stat: mainPageStats?.totalSupporters,
       previousStat: mainPageStats?.supportersLastWeek + " na semana passada",
-      change: totalSupportersChange !== Infinity ? totalSupportersChange + "%" : "",
+      change:
+        totalSupportersChange !== Infinity && !Number.isNaN(totalSupportersChange)
+          ? totalSupportersChange + "%"
+          : "",
       changeType: !!(mainPageStats?.totalSupporters - mainPageStats?.supportersLastWeek)
         ? "increase"
         : "decrease",

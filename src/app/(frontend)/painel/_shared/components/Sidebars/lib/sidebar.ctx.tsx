@@ -20,6 +20,7 @@ export class SidebarContextProps {
   user: UserWithoutPassword;
   campaign: Campaign;
   supporter: Supporter;
+  campaigns: Campaign[];
 }
 
 export const SidebarContext = createContext(new SidebarContextProps());

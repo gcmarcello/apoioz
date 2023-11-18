@@ -11,7 +11,7 @@ import {
   GeoJSON,
 } from "react-leaflet";
 import useSWRMutation from "swr/mutation";
-import L, { LatLngBoundsExpression, LatLngExpression, map } from "leaflet";
+import L, { LatLngBoundsExpression, LatLngExpression, MarkerCluster } from "leaflet";
 import React from "react";
 import clsx from "clsx";
 import { toProperCase } from "@/_shared/utils/format";
@@ -77,6 +77,37 @@ export function SupportersMap({
     return null;
   }
 
+  const createClusterCustomIcon = function (cluster: MarkerCluster) {
+    const supporterCount = cluster
+      .getAllChildMarkers()
+      .reduce((acc, marker) => acc + marker.options.customOptions.supportersCount, 0);
+
+    return L.divIcon({
+      html: `<div class="relative text-white font-bold flex justify-center items-center w-12 h-12">
+      <div class="bg-${
+        supporterCount ? "indigo" : "yellow"
+      }-300 absolute rounded-full opacity-70 h-10 w-10"></div>
+      <div class="bg-${
+        supporterCount ? "indigo" : "yellow"
+      }-500 flex justify-center items-center rounded-full h-8 w-8 z-10">
+          ${supporterCount}
+      </div>
+      </div>`,
+      className: "custom-marker-cluster",
+      iconSize: L.point(44, 44, true),
+    });
+  };
+
+  const createAddressCustomIcon = function (supporterCount?: number) {
+    return L.divIcon({
+      html: `<div class="relative h-14 w-14"><img src="${
+        supporterCount ? "/urna.png" : "/urnaempty.png"
+      }" alt="placeholder" class="h-14 w-14"/><div class="absolute top-4 left-0 right-0 bottom-0 flex items-center justify-center font-bold text-white">${supporterCount}</div></div>`,
+      className: "custom-marker-cluster",
+      iconSize: L.point(44, 44, true),
+    });
+  };
+
   if (!mapData) return null;
 
   return (
@@ -99,12 +130,7 @@ export function SupportersMap({
           <For each={zones}>
             {({ geoJSON, color, checked, value }, index) =>
               (zones.every((zone) => !zone.checked) || checked) && (
-                <GeoJSON
-                  key={`zone-${index}`}
-                  data={geoJSON}
-                  style={{ color }}
-                  eventHandlers={{ click: (event) => console.log(value) }}
-                />
+                <GeoJSON key={`zone-${index}`} data={geoJSON} style={{ color }} />
               )
             }
           </For>
@@ -117,9 +143,44 @@ export function SupportersMap({
                 <GeoJSON
                   key={`neighborhood-${index}`}
                   data={geoJSON}
-                  style={{ color: generateRandomHexColor() }}
-                  eventHandlers={{ click: (event) => console.log(value) }}
-                />
+                  style={{ color }}
+                  eventHandlers={{
+                    click: (event) => {
+                      if (closeTimeout) clearTimeout(closeTimeout);
+                      event.target.openPopup();
+                    },
+                    mouseout: (event) => {
+                      closeTimeout = setTimeout(() => {
+                        event.target.closePopup();
+                      }, 300);
+                    },
+                  }}
+                >
+                  <Popup
+                    interactive={true}
+                    offset={[0, 0]}
+                    eventHandlers={{
+                      mouseover: (event) => {
+                        if (closeTimeout) clearTimeout(closeTimeout);
+                      },
+                      mouseout: (event) => {
+                        event.target._source.closePopup();
+                      },
+                    }}
+                  >
+                    {(() => {
+                      return (
+                        <article className="flex max-w-2xl flex-col items-start  gap-y-3 ">
+                          <div className="group relative">
+                            <div className="text-sm font-bold text-gray-900">
+                              {toProperCase(value)}
+                            </div>
+                          </div>
+                        </article>
+                      );
+                    })()}
+                  </Popup>
+                </GeoJSON>
               )
             }
           </For>
@@ -127,20 +188,19 @@ export function SupportersMap({
         {mapOptions.showAddresses && (
           <MarkerClusterGroup
             chunkedLoading
-            maxClusterRadius={1}
+            maxClusterRadius={100}
             showCoverageOnHover={false}
+            iconCreateFunction={createClusterCustomIcon}
           >
             <For each={mapData} fallback={<p>Loading...</p>}>
               {({ geocode, location, address, supportersCount, sectionsCount }, index) =>
                 (supportersCount || mapOptions.showEmptyAddresses) && (
                   <Marker
-                    icon={
-                      new L.Icon({
-                        iconUrl: supportersCount ? "/urna.png" : "/urnaempty.png",
-                        iconSize: new L.Point(55, 55),
-                      })
-                    }
+                    icon={createAddressCustomIcon(supportersCount)}
                     key={index}
+                    customOptions={{
+                      supportersCount,
+                    }}
                     interactive={true}
                     position={geocode as LatLngExpression}
                     title={location!}

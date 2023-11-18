@@ -14,6 +14,10 @@ import clsx from "clsx";
 import { generateMapData } from "@/app/api/panel/map/actions";
 import { LoadingSpinner } from "../../_shared/components/Spinners";
 import { UserGroupIcon, XCircleIcon } from "@heroicons/react/24/solid";
+<<<<<<< HEAD
+=======
+import Image from "next/image";
+>>>>>>> 0a0c20df90541ccd06c2a125c8d2f5ea899378d5
 import { toProperCase } from "@/_shared/utils/format";
 import { useAction } from "../../_shared/hooks/useAction";
 
@@ -49,6 +53,7 @@ export default function MapPage() {
     action: generateMapData,
     parser: (data) => {
       const addresses = data.addresses;
+<<<<<<< HEAD
       console.log(data.neighborhoods);
       const neighborhoodList = new Set();
       const zoneList = new Set();
@@ -64,6 +69,26 @@ export default function MapPage() {
         }, 0),
         id: a.id,
       }));
+=======
+      const neighborhoodList = new Set();
+      const zoneList = new Set();
+      const parsed = addresses.map((a) => {
+        const sectionsCount = a.Section.length;
+        const supportersCount = a.Section.reduce((accumulator, section) => {
+          return accumulator + section.Supporter.length;
+        }, 0);
+        return {
+          address: a.address,
+          geocode: [Number(a.lat), Number(a.lng)],
+          location: a.location,
+          neighborhood: a.neighborhood,
+          zone: a.Section[0].Zone.number,
+          sectionsCount,
+          supportersCount,
+          id: a.id,
+        };
+      });
+>>>>>>> 0a0c20df90541ccd06c2a125c8d2f5ea899378d5
 
       parsed.forEach((a) => neighborhoodList.add(a.neighborhood));
       parsed.forEach((a) => zoneList.add(a.zone));
@@ -76,6 +101,10 @@ export default function MapPage() {
             zone: parsed.find((a) => a.neighborhood === n).zone,
             geoJSON: data.neighborhoods.find((z) => z.name === n)?.geoJSON || null,
             checked: false,
+<<<<<<< HEAD
+=======
+            color: (data.neighborhoods as any).find((z) => z.name === n)?.color,
+>>>>>>> 0a0c20df90541ccd06c2a125c8d2f5ea899378d5
           }))
           .sort((a, b) => a.label.localeCompare(b.label))
       );
@@ -86,7 +115,11 @@ export default function MapPage() {
             value: n,
             label: n,
             checked: false,
+<<<<<<< HEAD
             geoJSON: data.zonesInfo.find((z) => z.number === n).ZoneGeoJSON.geoJSON,
+=======
+            geoJSON: data.zonesInfo.find((z) => z.number === n).ZoneGeoJSON?.geoJSON,
+>>>>>>> 0a0c20df90541ccd06c2a125c8d2f5ea899378d5
             color: data.zonesInfo.find((z) => z.number === n)?.color,
           }))
           .sort((a, b) => a.value - b.value)
@@ -473,24 +506,30 @@ export default function MapPage() {
 
               <div className="mx-4 hidden space-x-2 divide-x-2 lg:flex ">
                 <div className="flex p-2  ">
-                  <UserGroupIcon
-                    className="me-2 h-5 w-5 text-gray-400 hover:text-gray-500"
-                    aria-hidden="true"
-                  />
-                  <span className="text-sm text-gray-900">
+                  <Image src="/urna.png" alt="urna roxa" height={40} width={50} />
+                  <div className="flex items-center text-sm text-gray-900">
                     {mapData?.filter((data) => data.supportersCount).length || 0} Colégios
                     com apoio
-                  </span>
+                  </div>
                 </div>
                 <div className="flex p-2  ">
-                  <XCircleIcon
-                    className="me-2 h-5 w-5 text-gray-400 hover:text-gray-500"
-                    aria-hidden="true"
-                  />
-                  <span className="text-sm text-gray-900">
+                  <Image src="/urnaempty.png" alt="urna roxa" height={40} width={50} />
+                  <div className="flex items-center text-sm text-gray-900">
                     {mapData?.filter((data) => !data.supportersCount).length || 0}{" "}
                     Colégios sem apoio
-                  </span>
+                  </div>
+                </div>
+                <div className="flex p-2  ">
+                  <div className="relative flex h-12 w-12 items-center justify-center text-white">
+                    <div className="absolute h-10 w-10 rounded-full bg-indigo-300 opacity-70"></div>
+                    <div className="z-10 flex h-8 w-8 items-center justify-center rounded-full bg-indigo-500">
+                      Nº
+                    </div>
+                  </div>
+
+                  <div className="flex items-center text-sm text-gray-900">
+                    Apoiadores na área
+                  </div>
                 </div>
               </div>
             </div>

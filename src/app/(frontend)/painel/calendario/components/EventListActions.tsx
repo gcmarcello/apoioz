@@ -19,9 +19,9 @@ export function EventListActions({ event }: { event: Event }) {
 
   const cancelButtonRef = useRef(null);
 
-  async function confirmReject() {
+  async function processEvent(status: "active" | "rejected") {
     try {
-      await updateEventStatus({ eventId: event.id, status: "rejected" });
+      await updateEventStatus({ eventId: event.id, status });
       setOpen(false);
       showToast({
         variant: "success",
@@ -171,7 +171,10 @@ export function EventListActions({ event }: { event: Event }) {
                     <button
                       type="button"
                       className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
-                      onClick={() => setOpen(false)}
+                      onClick={() => {
+                        processEvent("active");
+                        setOpen(false);
+                      }}
                     >
                       Aceitar
                     </button>
@@ -187,7 +190,7 @@ export function EventListActions({ event }: { event: Event }) {
                             disableButton: true,
                           });
                         } else if (rejectOptions.enableSubmit) {
-                          confirmReject();
+                          processEvent("rejected");
                         }
                       }}
                       ref={cancelButtonRef}

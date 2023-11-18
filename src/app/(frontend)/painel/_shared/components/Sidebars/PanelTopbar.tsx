@@ -9,11 +9,14 @@ import { useState, Fragment } from "react";
 import { useSidebar } from "./lib/useSidebar";
 import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { deactivateCampaign } from "@/app/api/panel/campaigns/actions";
+import { usePathname } from "next/navigation";
+import { getPageName } from "../../utils/pageName";
 
 const userNavigation = [{ name: "Meu Perfil", href: "#" }];
 
 export function SupporterTopBar() {
   const { user, campaign, setVisibility } = useSidebar();
+  const pathname = usePathname();
 
   return (
     <div className="sticky top-0 z-10 flex h-20 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:ml-64 lg:px-8">
@@ -36,7 +39,8 @@ export function SupporterTopBar() {
       <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
         <div className="flex min-w-0 flex-1 pt-[1.65rem] md:pt-5">
           <h2 className="flex text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-            Campanha
+            <span className="block md:hidden">{getPageName(pathname, true)}</span>
+            <span className="hidden md:block">{getPageName(pathname)}</span>
             <span className="ms-1 hidden md:inline-block">- {campaign.name}</span>
           </h2>
         </div>

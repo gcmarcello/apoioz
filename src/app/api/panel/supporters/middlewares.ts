@@ -2,15 +2,30 @@
 import { Supporter, User } from "@prisma/client";
 import { MiddlewareArguments } from "@/middleware/types/types";
 import { CreateSupportersDto, ListSupportersDto } from "./dto";
+import prisma from "prisma/prisma";
 
 export async function ListSupportersMiddleware({
   request,
 }: MiddlewareArguments<
   ListSupportersDto & { supporterSession: Supporter; userSession: Omit<User, "password"> }
 >) {
-  if (request.data && request.supporterSession.level != 4) {
-    request.data.ownerId = "";
-    request.data.campaignOwnerId = "";
+  if (request.data) {
+    const supporterSessionGroup = await prisma.supporterGroupMembership.findFirst({
+      where: { AND: [{ supporterId: request.supporterSession.id }, { isOwner: true }] },
+    });
+    const supporter = await prisma.supporter.findFirst({
+      where: { campaignId: request.data?.campaignOwnerId, userId: request.data?.ownerId },
+    });
+    const ownerIdMembership = await prisma.supporterGroupMembership.findFirst({
+      where: {
+        AND: [
+          { supporterGroupId: supporterSessionGroup?.supporterGroupId },
+          { supporterId: supporter.id },
+        ],
+      },
+    });
+
+    if (!ownerIdMembership) throw "Você não tem permissão para acessar este apoiador.";
   }
 
   return {
@@ -26,15 +41,13 @@ export async function CreateSupportersLevelMiddleware({
     userSession: Omit<User, "password">;
   }
 >) {
-  const { supporterSession, userSession, ...rest } = request;
+  /* const { supporterSession, userSession, ...rest } = request;
 
   const referral = supporterSession;
   const supporter = rest;
 
   if (referral.level <= supporter.level)
-    throw new Error(
-      "Você não pode adicionar um apoiador com o mesmo nível ou superior ao seu."
-    );
+    throw "Você não pode adicionar um apoiador com o mesmo nível ou superior ao seu."; */
 
   return request;
 }

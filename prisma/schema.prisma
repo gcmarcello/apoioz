@@ -7,7 +7,7 @@ datasource db {
   provider   = "postgresql"
   url        = env("DATABASE_URL")
   extensions = [uuid_ossp(map: "uuid-ossp", schema: "extensions")]
-  schemas    = ["public", "elections", "extensions"]
+  schemas    = ["public", "elections", "polls", "extensions"]
 }
 
 model User {
@@ -87,6 +87,7 @@ model Campaign {
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
   InviteCode InviteCode[]
+  Poll       Poll[]
 
   @@schema("public")
 }
@@ -110,6 +111,7 @@ model Supporter {
   Zone                       Zone?                      @relation(fields: [zoneId], references: [id])
   zoneId                     String?                    @db.Uuid
   InviteCode                 InviteCode[]
+  PollAnswer                 PollAnswer[]
 
   @@schema("public")
 }
@@ -186,15 +188,15 @@ model Address {
 }
 
 model City {
-  id            String          @id(map: "PK_74346041a3332b7880d76c610f3") @db.VarChar
-  name          String          @db.VarChar
-  stateId       String          @db.VarChar
-  Address       Address[]
-  State         State           @relation(fields: [stateId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_e99de556ee56afe72154f3ed04a")
-  City_To_Zone  City_To_Zone[]
-  UserInfo      UserInfo[]
-  Campaign      Campaign[]
-  Neighborhoods Neighborhoods[]
+  id           String         @id(map: "PK_74346041a3332b7880d76c610f3") @db.VarChar
+  name         String         @db.VarChar
+  stateId      String         @db.VarChar
+  Address      Address[]
+  State        State          @relation(fields: [stateId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_e99de556ee56afe72154f3ed04a")
+  City_To_Zone City_To_Zone[]
+  UserInfo     UserInfo[]
+  Campaign     Campaign[]
+  Neighborhood Neighborhood[]
 
   @@schema("elections")
 }
@@ -256,7 +258,7 @@ model ZoneGeoJSON {
   @@schema("elections")
 }
 
-model Neighborhoods {
+model Neighborhood {
   id      String @id @unique @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
   name    String @db.VarChar
   cityId  String @db.VarChar
@@ -275,4 +277,53 @@ model PasswordRecovery {
   updatedAt DateTime @updatedAt
 
   @@schema("public")
+}
+
+model Poll {
+  id           String         @id @unique @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  title        String         @db.VarChar
+  campaignId   String         @db.Uuid
+  campaign     Campaign       @relation(fields: [campaignId], references: [id])
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  PollQuestion PollQuestion[]
+
+  @@schema("polls")
+}
+
+model PollQuestion {
+  id         String       @id @unique @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  pollId     String       @db.Uuid
+  poll       Poll         @relation(fields: [pollId], references: [id])
+  question   String       @db.VarChar
+  type       String       @db.VarChar
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  PollOption PollOption[]
+
+  @@schema("polls")
+}
+
+model PollOption {
+  id         String       @id @unique @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  questionId String       @db.Uuid
+  question   PollQuestion @relation(fields: [questionId], references: [id])
+  option     String       @db.VarChar
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  PollAnswer PollAnswer[]
+
+  @@schema("polls")
+}
+
+model PollAnswer {
+  id          String     @id @unique @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  optionId    String     @db.Uuid
+  option      PollOption @relation(fields: [optionId], references: [id])
+  supporterId String     @db.Uuid
+  supporter   Supporter  @relation(fields: [supporterId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@schema("polls")
 }

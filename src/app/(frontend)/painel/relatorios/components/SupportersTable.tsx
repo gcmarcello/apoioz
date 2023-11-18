@@ -2,15 +2,20 @@
 import { Date } from "@/app/(frontend)/_shared/components/Date";
 import SupporterBall from "../../time/components/SupporterBall";
 import { SupporterTableType } from "@/_shared/types/tableTypes";
-import { AtSymbolIcon } from "@heroicons/react/24/solid";
+import { AtSymbolIcon, TvIcon } from "@heroicons/react/24/solid";
 import { createColumnHelper } from "@tanstack/react-table";
 import dayjs from "dayjs";
-import React from "react";
 import WhatsAppIcon from "@/app/(frontend)/_shared/components/icons/WhatsAppIcon";
 import { DefaultTable } from "@/app/(frontend)/_shared/components/tables/table";
+import { EyeIcon } from "@heroicons/react/24/outline";
+import { useReports } from "../hooks/useReports";
+import { LoadingSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 
-export default function SupportersTable({ rawData }: { rawData: any }) {
+export default function SupportersTable() {
   const columnHelper = createColumnHelper<SupporterTableType>();
+
+  const { supporters, openAsSupporter, restoreView, globalFilter, setGlobalFilter } =
+    useReports();
 
   const columns = [
     columnHelper.accessor("user.name", {
@@ -36,6 +41,7 @@ export default function SupportersTable({ rawData }: { rawData: any }) {
       id: "zone",
       header: "Zona",
       cell: (info) => info.getValue(),
+      filterFn: "arrIncludes",
     }),
     columnHelper.accessor("user.info.Section.number", {
       id: "section",
@@ -62,16 +68,32 @@ export default function SupportersTable({ rawData }: { rawData: any }) {
           <a href={`mailto:${info.getValue().email}`} target="_blank">
             <AtSymbolIcon className="h-[1.45rem] w-[1.45rem] text-gray-400 hover:text-gray-500" />
           </a>
+          <EyeIcon
+            role="button"
+            onClick={() =>
+              openAsSupporter(info.row.original.user, info.row.original.campaignId)
+            }
+            className="h-[1.45rem] w-[1.45rem] text-gray-400 hover:text-gray-500"
+          />
         </div>
       ),
     }),
   ];
 
+  if (!supporters?.data)
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+
   return (
     <DefaultTable
-      data={rawData.data}
+      data={supporters?.data}
       columns={columns}
-      count={rawData.pagination.count}
+      count={supporters?.pagination.count}
+      globalFilter={globalFilter}
+      setGlobalFilter={setGlobalFilter}
     />
   );
 }

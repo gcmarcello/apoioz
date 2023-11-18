@@ -70,6 +70,8 @@ interface TableProps {
   dataSetter?: JSX.Element;
   count: number;
   disablePagination?: boolean;
+  globalFilter?: string;
+  setGlobalFilter?: Dispatch<string>;
 }
 
 export function DefaultTable({
@@ -78,8 +80,9 @@ export function DefaultTable({
   dataSetter,
   count,
   disablePagination,
+  globalFilter,
+  setGlobalFilter,
 }: TableProps) {
-  const [globalFilter, setGlobalFilter] = useState("");
   const [isLoading, setIsLoading] = React.useState(false);
 
   const table = useReactTable({
@@ -107,19 +110,21 @@ export function DefaultTable({
 
   return (
     <section className="mx-auto">
-      <div className="relative mt-4 flex w-full items-center justify-between md:mt-0">
-        <span className="absolute">
-          <MagnifyingGlassIcon className="mx-3 h-5 w-5 text-gray-400 dark:text-gray-600" />
-        </span>
-        <DebouncedInput
-          setIsLoading={setIsLoading}
-          value={globalFilter ?? ""}
-          onChange={(value) => setGlobalFilter(String(value))}
-          className="block w-full rounded-lg border border-gray-200 bg-white py-1.5 pl-11 pr-5  placeholder-gray-400/70 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 rtl:pl-5 rtl:pr-11   dark:focus:border-blue-300 md:w-80"
-          placeholder="Procurar"
-        />
-        {dataSetter}
-      </div>
+      {globalFilter !== undefined && (
+        <div className="relative mt-4 flex w-full items-center justify-between md:mt-0">
+          <span className="absolute">
+            <MagnifyingGlassIcon className="mx-3 h-5 w-5 text-gray-400 dark:text-gray-600" />
+          </span>
+          <DebouncedInput
+            setIsLoading={setIsLoading}
+            value={globalFilter ?? ""}
+            onChange={(value) => setGlobalFilter(String(value))}
+            className="block w-full rounded-lg border border-gray-200 bg-white py-1.5 pl-11 pr-5  placeholder-gray-400/70 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 rtl:pl-5 rtl:pr-11   dark:focus:border-blue-300 md:w-80"
+            placeholder="Procurar"
+          />
+          {dataSetter}
+        </div>
+      )}
       <div className="mt-6 flex flex-col">
         <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">

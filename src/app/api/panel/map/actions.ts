@@ -12,12 +12,11 @@ export async function generateMapData() {
       .then(UserSessionMiddleware)
       .then(SupporterSessionMiddleware);
 
-    const mapData = await service.generateMapData(
-      parsedRequest.supporterSession.campaignId
-    );
+    const mapData = await service.generateMapData(parsedRequest);
 
     return ActionResponse.success({ data: mapData });
   } catch (err) {
+    console.log(err);
     return ActionResponse.error(err);
   }
 }
