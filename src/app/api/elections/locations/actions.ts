@@ -7,7 +7,14 @@ import { ActionResponse } from "../../_shared/utils/ActionResponse";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 
 export async function getCitiesByState(data: string) {
-  return service.getCitiesByState(data);
+  try {
+    const cities = await service.getCitiesByState(data);
+    return ActionResponse.success({
+      data: cities,
+    });
+  } catch (err) {
+    ActionResponse.error(err);
+  }
 }
 
 export async function getStates() {

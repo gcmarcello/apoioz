@@ -8,40 +8,34 @@ import { login } from "@/app/api/auth/action";
 import { fakerPT_BR } from "@faker-js/faker";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { TextField } from "@/app/(frontend)/_shared/components/fields/TextField";
+import { TextField } from "@/app/(frontend)/_shared/components/fields/Text";
+import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 
 export default function LoginForm() {
-  const {
-    formState: { errors },
-    register,
-    handleSubmit,
-    ...form
-  } = useForm<LoginDto>({
+  const form = useForm<LoginDto>({
     mode: "onChange",
     resolver: zodResolver(loginDto),
   });
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  async function submit(data: LoginDto) {
-    try {
-      setIsLoading(true);
-      const response = await login(data);
-      if (!response.data) {
-        throw response?.message;
-      }
+  const {
+    formState: { errors },
+    handleSubmit,
+  } = form;
+
+  const { trigger: loginAction, isMutating: isLoading } = useAction({
+    action: login,
+    onSuccess: () => {
       router.push("/painel");
-    } catch (error: any) {
-      ``;
+    },
+    onError: (error) => {
       form.setError("root.serverError", {
         type: "400",
-        message: error || "Erro inesperado",
+        message: (error as string) || "Erro inesperado",
       });
-      setIsLoading(false);
-    }
-  }
+    },
+  });
 
   const generateFakeData = () => {
     form.setValue("identifier", fakerPT_BR.internet.email());
@@ -51,30 +45,34 @@ export default function LoginForm() {
   return (
     <>
       <div className="absolute bottom-0 right-0 p-4">
-        <Mocker mockData={generateFakeData} submit={handleSubmit(submit)} />
+        <Mocker
+          mockData={generateFakeData}
+          submit={handleSubmit((data) => loginAction(data))}
+        />
       </div>
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <form className="mt-4 space-y-6" onSubmit={handleSubmit(submit)}>
+        <form
+          className="mt-4 space-y-6"
+          onSubmit={handleSubmit((data) => loginAction(data))}
+        >
           {errors.root?.serverError.message ? (
             <ErrorAlert errors={[errors.root.serverError.message]} />
           ) : null}
 
           <TextField
-            {...register("identifier")}
+            hform={form}
             label="Email"
             name="identifier"
             placeholder="seu_email@email.com"
-            options={{ errorMessage: errors.identifier?.message }}
           />
 
           <div>
             <TextField
-              {...register("password")}
+              hform={form}
               label="Senha"
               name="password"
               type={"password"}
               placeholder="•••••••••••"
-              options={{ errorMessage: errors.password?.message }}
             />
           </div>
 

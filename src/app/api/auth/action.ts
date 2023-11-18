@@ -5,18 +5,15 @@ import { cookies } from "next/headers";
 import { LoginDto } from "./dto";
 import { ExistingUserMiddleware } from "./middlewares";
 import { ActionResponse } from "../_shared/utils/ActionResponse";
+import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 
 export async function login(request: LoginDto) {
   try {
-    const parsedRequest = await ExistingUserMiddleware({ request });
+    const parsedRequest = await UseMiddlewares(request).then(ExistingUserMiddleware);
 
     const token = await authService.login(parsedRequest);
 
-    if (!token)
-      throw {
-        message: `Erro ao efetuar login.`,
-        status: 401,
-      };
+    if (!token) throw `Erro ao efetuar login.`;
 
     cookies().set("token", token);
 
@@ -25,6 +22,8 @@ export async function login(request: LoginDto) {
       message: "Login realizado com sucesso!",
     });
   } catch (err: any) {
+    console.log(err);
+
     return ActionResponse.error(err);
   }
 }
@@ -58,6 +57,17 @@ export async function resetPassword(request) {
     cookies().set("token", authService.generateToken({ id: request.userId }));
     return ActionResponse.success({
       message: "Senha alterada com sucesso!",
+      data: null,
+    });
+  } catch (error) {
+    return ActionResponse.error(error);
+  }
+}
+
+export async function signUp() {
+  try {
+    return ActionResponse.success({
+      message: "Usuário cadastrado com sucesso!",
       data: null,
     });
   } catch (error) {

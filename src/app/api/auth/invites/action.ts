@@ -6,7 +6,9 @@ export async function createInviteCode({ campaignId, referralId }) {
   try {
     const inviteCode = await services.createInviteCode({ campaignId, referralId });
 
-    return inviteCode;
+    return ActionResponse.success({
+      data: inviteCode,
+    });
   } catch (err) {
     return ActionResponse.error(err);
   }

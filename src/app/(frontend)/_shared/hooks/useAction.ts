@@ -23,7 +23,7 @@ export function useAction<T, U extends ParserReturnType, ParserReturnType = U>({
     action(arg)
       .then((res) => {
         if ("error" in res) {
-          throw new Error(res.message as string);
+          throw res.message;
         }
         const parsedData = parser(res.data);
         onSuccess && onSuccess(parsedData);
@@ -31,7 +31,7 @@ export function useAction<T, U extends ParserReturnType, ParserReturnType = U>({
       })
       .catch((error: any) => {
         onError && onError(error);
-        throw new Error(error);
+        throw error;
       });
 
   return useSWRMutation<ParserReturnType, any, string, T>(id, (url: string, { arg }) =>

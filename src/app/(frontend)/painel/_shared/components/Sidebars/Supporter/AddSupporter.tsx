@@ -1,5 +1,4 @@
 "use client";
-import ComboboxInput from "@/app/(frontend)/_shared/components/Combobox";
 import { Mocker } from "@/app/(frontend)/_shared/components/Mocker";
 import ErrorAlert from "@/app/(frontend)/_shared/components/alerts/errorAlert";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
@@ -10,18 +9,20 @@ import { CreateSupportersDto, createSupportersDto } from "@/app/api/panel/suppor
 import { createSupporter } from "@/app/api/panel/supporters/actions";
 import { fakerPT_BR } from "@faker-js/faker";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Campaign, Section, Zone } from "@prisma/client";
+import { Campaign, Section } from "@prisma/client";
 import dayjs from "dayjs";
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
-import {
-  MaskedTextField,
-  TextField,
-} from "@/app/(frontend)/_shared/components/fields/TextField";
-import { SelectField } from "@/app/(frontend)/_shared/components/fields/SelectField";
+import { Dispatch, SetStateAction, useEffect, useRef } from "react";
+import { useForm } from "react-hook-form";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 import { toProperCase } from "@/_shared/utils/format";
 import { MetaForm } from "@/app/(frontend)/_shared/hooks/useMetaform";
+import ComboboxInput, {
+  ListboxField,
+} from "@/app/(frontend)/_shared/components/fields/Select";
+import {
+  TextField,
+  MaskedTextField,
+} from "@/app/(frontend)/_shared/components/fields/Text";
 
 export function AddSupporterForm({
   campaign,
@@ -58,10 +59,9 @@ export function AddSupporterForm({
   const { data: supporter, trigger: addSupporter } = useAction({
     action: createSupporter,
     onError: (err) => showToast({ message: err, variant: "error", title: "Erro" }),
-    onSuccess: (res) => {
-      if (typeof supporter !== "object") return;
+    onSuccess: (data) => {
       showToast({
-        message: `${res.data.user.name} adicionado a campanha`,
+        message: `${data.user.name} adicionado a campanha`,
         variant: "success",
         title: "Apoiador Adicionado",
       });
@@ -124,87 +124,47 @@ export function AddSupporterForm({
             />
           </div>
         ) : null}
-        <TextField
-          label="Nome do Apoiador"
-          {...form.register("name", { required: true })}
-          options={{
-            errorMessage: form.formState.errors.name?.message as string,
-          }}
-        />
-        <TextField
-          label="Email"
-          {...form.register("email", { required: true })}
-          options={{
-            errorMessage: form.formState.errors.name?.message as string,
-          }}
-        />
+        <TextField label="Nome do Apoiador" hform={form} name={"name"} />
+        <TextField label="Email" hform={form} name={"email"} />
         <MaskedTextField
           label="Celular"
-          options={{
-            errorMessage: form.formState.errors.name?.message as string,
-          }}
-          mask={{
-            control: form.control,
-            fieldName: "phone",
-            value: "(99) 99999-9999",
-          }}
+          hform={form}
+          name={"phone"}
+          mask="(99) 99999-9999"
         />
         <MaskedTextField
+          hform={form}
           label="Data de Nascimento"
-          options={{
-            errorMessage: form.formState.errors.name?.message as string,
-          }}
-          mask={{
-            control: form.control,
-            fieldName: "info.birthDate",
-            value: "99/99/9999",
-          }}
+          mask="99/99/9999"
+          name={"info.birthDate"}
         />
 
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-1">
-            <SelectField
+            <ListboxField
+              hform={form}
+              data={zones}
+              displayValueKey={"number"}
+              name={"info.zoneId"}
               label="Zona"
-              defaultValue={""}
-              {...form.register("info.zoneId")}
-              onChange={(event) => fetchSections(event.target.value)}
-            >
-              <option disabled value={""}>
-                Selecione
-              </option>
-              {zones.map((zone: Zone) => (
-                <option key={zone.id} value={zone.id}>
-                  {zone.number.toString()}
-                </option>
-              ))}
-            </SelectField>
+              onChange={(value) => {
+                fetchSections(value.id);
+              }}
+            />
           </div>
           <div className="col-span-1">
-            <label
-              htmlFor="project-name"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
-              Seção
-            </label>
-            <div className="mt-2">
-              <Controller
-                name="info.sectionId"
-                control={form.control}
-                render={({ field: { onChange, value } }) => (
-                  <ComboboxInput
-                    rawData={sections}
-                    disabled={!sections}
-                    onChange={(value: Section) => {
-                      onChange(value.id);
-                      fetchAddress(value.id);
-                    }}
-                    value={value}
-                    displayValueKey={"number"}
-                    reverseOptions={true}
-                  />
-                )}
-              />
-            </div>
+            <ComboboxInput
+              hform={form}
+              data={sections}
+              label="Seção"
+              name={"info.sectionId"}
+              displayValueKey={"number"}
+              disabled={!sections}
+              onChange={(value) => {
+                fetchAddress(value.id);
+              }}
+              reverseOptions={true}
+            />
           </div>
         </div>
         {address && (

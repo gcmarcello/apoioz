@@ -10,16 +10,10 @@ import { normalizePhone, maskEmail } from "@/_shared/utils/format";
 
 export async function login(request: LoginDto & { user: User; isEmail: boolean }) {
   if (!request.user.password)
-    throw {
-      message: `Seu acesso ao painel está restrito. Clique <a href="/" class="underline text-indigo-400">aqui</a> para finalizar a configuração.`,
-      status: 401,
-    };
+    throw `Seu acesso ao painel está restrito. Clique <a href="/" class="underline text-indigo-400">aqui</a> para finalizar a configuração.`;
 
   if (!(await compareHash(request.password, request.user.password)))
-    throw {
-      message: `${request.isEmail ? "Email" : "Usuário"} ou senha incorretos.`,
-      status: 401,
-    };
+    throw `${request.isEmail ? "Email" : "Usuário"} ou senha incorretos.`;
 
   return generateToken({ id: request.user.id });
 }

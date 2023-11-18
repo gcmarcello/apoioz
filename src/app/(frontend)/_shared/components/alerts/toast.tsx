@@ -33,6 +33,7 @@ export const toastVariants = {
 export type ToastVariantTypes = typeof toastVariants;
 
 export function showToast(toastElement: ToastType) {
+  console.log(toastElement);
   return toast.custom((t) => (
     <div
       className={`${

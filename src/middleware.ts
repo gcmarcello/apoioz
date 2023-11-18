@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { AuthMiddleware } from "./middleware/functions/auth.middleware";
 
 export async function middleware(request: NextRequest) {
-  const startsWith = request.nextUrl.pathname.startsWith;
+  const startsWith = (arg: string) => request.nextUrl.pathname.startsWith(arg);
 
   if (startsWith("/api/panel")) {
     return NextResponse.next();

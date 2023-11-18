@@ -1,4 +1,3 @@
-import ComboboxInput from "@/app/(frontend)/_shared/components/Combobox";
 import { EyeSlashIcon, EyeIcon, UserPlusIcon } from "@heroicons/react/24/solid";
 import { Zone } from "@prisma/client";
 import { Controller } from "react-hook-form";
@@ -10,31 +9,32 @@ import { toProperCase } from "@/_shared/utils/format";
 import { PresentationChartBarIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
+import ComboboxInput from "@/app/(frontend)/_shared/components/fields/Select";
 
 export function ElectionInfoSection({ form, zones }: { form: any; zones: ZoneType[] }) {
   const [displayAddress, setDisplayAddress] = useState<AddressType | null>(null);
-  const [sectionList, setSectionList] = useState<SectionType[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [willAddPassword, setWillAddPassword] = useState(null);
   const ref = useRef<null | HTMLDivElement>(null);
 
-  const fetchSections = async (zoneId: string) => {
-    try {
-      setDisplayAddress(null);
+  const {
+    data: sectionList,
+    isMutating: isLoading,
+    trigger: fetchSections,
+  } = useAction({
+    action: getSectionsByZone,
+    parser: (data) => {
       form.resetField("info.sectionId");
-      setIsLoading(true);
-      const data = await getSectionsByZone(zoneId);
-      setSectionList(data);
-    } catch (error: any) {
+      setDisplayAddress(null);
+      return data;
+    },
+    onError: (error) => {
       form.setError("root.serverError", {
         type: "400",
-        message: error.response.data?.message || "Erro inesperado",
+        message: error || "Erro inesperado",
       });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+  });
 
   const {
     data: address,
@@ -174,32 +174,17 @@ export function ElectionInfoSection({ form, zones }: { form: any; zones: ZoneTyp
             </select>
           </div>
           <div className="col-span-1">
-            <label
-              htmlFor="project-name"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
-              Seção
-            </label>
-            <div className="mt-2">
-              <Controller
-                name="info.sectionId"
-                control={form.control}
-                defaultValue={""}
-                rules={{ required: true }}
-                render={({ field: { onChange, value } }) => (
-                  <ComboboxInput
-                    rawData={sectionList}
-                    disabled={!sectionList.length}
-                    onChange={(value) => {
-                      onChange(value.id);
-                      fetchAddress(value.id);
-                    }}
-                    displayValueKey={"number"}
-                    value={value}
-                  />
-                )}
-              ></Controller>
-            </div>
+            <ComboboxInput
+              hform={form}
+              data={sectionList}
+              disabled={!sectionList.length}
+              onChange={(value) => {
+                fetchAddress(value.id);
+              }}
+              name={"info.sectionId"}
+              label="Seção"
+              displayValueKey={"number"}
+            />
           </div>
         </div>
       )}

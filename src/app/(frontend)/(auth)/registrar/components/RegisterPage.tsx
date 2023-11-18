@@ -1,21 +1,52 @@
 "use client";
-import SelectListbox, {
-  ListboxOptionType,
-} from "@/app/(frontend)/_shared/components/SelectListbox";
+
 import ErrorAlert from "@/app/(frontend)/_shared/components/alerts/errorAlert";
+import ComboboxInput, {
+  ListboxField,
+} from "@/app/(frontend)/_shared/components/fields/Select";
+import {
+  TextField,
+  MaskedTextField,
+} from "@/app/(frontend)/_shared/components/fields/Text";
+import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 import { Button } from "@/app/(frontend)/painel/_shared/components/button";
+import { SignupDto, signupDto } from "@/app/api/auth/dto";
 import { getCitiesByState } from "@/app/api/elections/locations/actions";
 import { getSectionsByZone } from "@/app/api/elections/sections/action";
 import { getZonesByCity } from "@/app/api/elections/zones/actions";
-import { Party, State } from "@prisma/client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Party, Section, State } from "@prisma/client";
 import axios from "axios";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import Image from "next/image";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import InputMask from "react-input-mask";
+import { Controller, useForm } from "react-hook-form";
+
+const campaignTypes = [
+  { id: "1", name: "Conselheiro Tutelar", value: "conselheiro" },
+  { id: "2", name: "Vereador", value: "vereador" },
+  { id: "3", name: "Prefeito", value: "prefeito" },
+  {
+    id: "4",
+    name: "Dep. Estadual (em breve)",
+    value: "depestadual",
+    disabled: true,
+  },
+  {
+    id: "5",
+    name: "Dep. Federal (em breve)",
+    value: "depfederal",
+    disabled: true,
+  },
+  {
+    id: "6",
+    name: "Senador (em breve)",
+    value: "senador",
+    disabled: true,
+  },
+];
 
 export default function RegisterPage({
   parties,
@@ -24,73 +55,22 @@ export default function RegisterPage({
   parties: Party[];
   states: State[];
 }) {
-  const [campaignLevel, setCampaignLevel] = useState<"municipal" | "estadual" | null>(
-    null
-  );
   const errRef = useRef<null | HTMLDivElement>(null);
-  const [cities, setCities] = useState<ListboxOptionType[]>([]);
-  const [zones, setZones] = useState<ListboxOptionType[]>([]);
-  const [sections, setSections] = useState<ListboxOptionType[]>([]);
-  const form = useForm();
-  const actualYear = Number(dayjs().year());
-  const campaignTypes = [
-    { id: "1", name: "Conselheiro Tutelar", value: "conselheiro" },
-    { id: "2", name: "Vereador", value: "vereador" },
-    { id: "3", name: "Prefeito", value: "prefeito" },
-    {
-      id: "4",
-      name: "Dep. Estadual (em breve)",
-      value: "depestadual",
-      disabled: true,
-    },
-    {
-      id: "5",
-      name: "Dep. Federal (em breve)",
-      value: "depfederal",
-      disabled: true,
-    },
-    {
-      id: "6",
-      name: "Senador (em breve)",
-      value: "senador",
-      disabled: true,
-    },
-  ];
-  const parsedParties: ListboxOptionType[] = [
-    { id: "0", name: "Sem Partido", value: "" },
-  ].concat(
-    parties.map((party) => ({
-      id: party.id,
-      name: party.id,
-      value: party.id,
-    }))
-  );
-  const parsedStates: ListboxOptionType[] = states.map((state) => ({
-    id: state.id,
-    name: state.name,
-    value: state.id,
-  }));
+
+  const form = useForm<SignupDto>({
+    resolver: zodResolver(signupDto),
+  });
+
   const router = useRouter();
 
-  const handleSubmit = async (data: any) => {
+  const actualYear = Number(dayjs().year());
+
+  const handleSubmit = async (data: SignupDto) => {
     const body = {
-      user: {
-        name: data.name,
-        email: data.email,
-        phone: data.phone,
-        password: data.password,
-        stateId: data.state.id,
-        cityId: data.city.id,
-        zoneId: data.zone.id,
-        sectionId: data.section.id,
-        birthDate: data.birthDate,
-      },
+      user: data.user,
       campaign: {
-        type: data.campaignType.value,
-        name: `${data.name} ${dayjs().year().toString()}`,
-        partyId: data.party.value,
-        cityId: data.city.id,
-        stateId: data.state.id,
+        ...data.campaign,
+        name: `${data.campaign.name} ${dayjs().year().toString()}`,
         year: dayjs().year().toString(),
       },
     };
@@ -110,56 +90,49 @@ export default function RegisterPage({
     }
   };
 
-  useEffect(() => {
-    if (!form.watch("state")) return;
-    form.resetField("city");
-    getCitiesByState(form.watch("state").id).then((cities) => {
-      setCities(cities.map((city) => ({ id: city.id, name: city.name, value: city.id })));
-    });
-  }, [form.watch("state")]);
+  const { trigger: fetchCities, data: cities } = useAction({
+    action: getCitiesByState,
+    onSuccess: () => {
+      resetZones();
+      resetSections();
+    },
+    parser: (data) =>
+      data.map((city) => ({ id: city.id, name: city.name, value: city.id })),
+  });
 
-  useEffect(() => {
-    if (
-      form.watch("campaignType") === "conselheiro" ||
-      form.watch("campaignType") === "vereador" ||
-      form.watch("campaignType") === "prefeito"
-    ) {
-      setCampaignLevel("municipal");
-    } else {
-      setCampaignLevel("estadual");
-    }
-  }, [form]);
+  const {
+    trigger: fetchZones,
+    data: zones,
+    reset: resetZones,
+  } = useAction({
+    action: getZonesByCity,
+    onSuccess: () => {
+      resetSections();
+    },
+    parser: (data) =>
+      data.zones.map((zone) => ({
+        id: zone.id,
+        name: zone.number,
+        value: zone.id,
+      })),
+  });
 
-  useEffect(() => {
-    if (!form.watch("city")) return;
-    getZonesByCity(form.watch("city")?.id).then((zones) =>
-      setZones(
-        zones.zones.map((zone) => ({
-          id: zone.id,
-          name: zone.number,
-          value: zone.id,
-        }))
-      )
-    );
-  }, [form.watch("city")]);
-
-  useEffect(() => {
-    if (!form.watch("zone")) return;
-    getSectionsByZone(form.watch("zone")?.id).then((sections) => {
-      setSections(
-        sections.map((section) => ({
-          id: section.id,
-          name: section.number,
-          value: section.id,
-        }))
-      );
-    });
-  }, [form.watch("zone")]);
+  const {
+    trigger: fetchSections,
+    data: sections,
+    reset: resetSections,
+  } = useAction({
+    action: getSectionsByZone,
+    parser: (data) =>
+      data.map((section) => ({
+        id: section.id,
+        name: section.number,
+        value: section.id,
+      })),
+  });
 
   return (
     <div className="bg-white">
-      {/* Background color split screen for large screens */}
-
       <div
         className="fixed right-0 top-0 hidden h-full w-1/2 bg-indigo-900 lg:block"
         aria-hidden="true"
@@ -205,177 +178,131 @@ export default function RegisterPage({
                     </h4>
                   </div>
 
-                  <div className="mt-6">
-                    <label
-                      htmlFor="name"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Nome Completo
-                    </label>
-                    <div className="mt-1">
-                      <input
-                        {...form.register("name", { required: true })}
+                  <div>
+                    <TextField
+                      className="mt-6"
+                      hform={form}
+                      name="user.name"
+                      label="Nome Completo"
+                    />
+
+                    <TextField
+                      className="mt-6"
+                      hform={form}
+                      name="user.email"
+                      label="Endereço de Email"
+                    />
+                  </div>
+                  <div className="mt-6 grid grid-cols-4 gap-x-4 gap-y-6">
+                    <div className="col-span-4 sm:col-span-2">
+                      <MaskedTextField
+                        hform={form}
+                        name="user.phone"
+                        autoComplete="phone"
+                        inputMode="numeric"
                         type="text"
-                        id="name"
-                        name="name"
-                        autoComplete="name"
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        label="Número de Telefone"
+                        mask={"(99) 99999-9999"}
                       />
                     </div>
-                  </div>
-                  <div className="mt-6">
-                    <label
-                      htmlFor="email"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Endereço de Email
-                    </label>
-                    <div className="mt-1">
-                      <input
-                        {...form.register("email", { required: true })}
-                        type="email"
-                        id="email"
-                        name="email"
-                        autoComplete="email"
-                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                    <div className="col-span-4 sm:col-span-2">
+                      <MaskedTextField
+                        hform={form}
+                        name="user.birthDate"
+                        autoComplete="birthDate"
+                        inputMode="numeric"
+                        type="text"
+                        label="Data de Nascimento"
+                        mask={"99/99/9999"}
                       />
                     </div>
                   </div>
                   <div className="mt-6 grid grid-cols-4 gap-x-4 gap-y-6">
                     <div className="col-span-4 sm:col-span-2">
-                      <label
-                        htmlFor="phone"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Telefone de Contato
-                      </label>
-                      <div className="mt-1">
-                        <InputMask
-                          type="text"
-                          inputMode="numeric"
-                          autoComplete="phone"
-                          {...form.register("phone", { required: true })}
-                          name="phone"
-                          id="phone"
-                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                          mask={"(99) 99999-9999"}
-                        />
-                      </div>
-                    </div>
-                    <div className="col-span-4 sm:col-span-2">
-                      <label
-                        htmlFor="birthDate"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Data de Nascimento
-                      </label>
-                      <div className="mt-1">
-                        <InputMask
-                          type="text"
-                          inputMode="numeric"
-                          autoComplete="birthDate"
-                          {...form.register("birthDate", { required: true })}
-                          name="birthDate"
-                          id="birthDate"
-                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                          mask={"99/99/9999"}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-6 grid grid-cols-4 gap-x-4 gap-y-6">
-                    <div className="col-span-4 sm:col-span-2">
-                      <label
-                        htmlFor="password"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Senha
-                      </label>
-                      <div className="mt-1">
-                        <input
-                          {...form.register("password", { required: true })}
-                          type="password"
-                          id="password"
-                          name="password"
-                          autoComplete="password"
-                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        />
-                      </div>
+                      <TextField
+                        className="mt-6"
+                        hform={form}
+                        name="user.password"
+                        label="Senha"
+                        type="password"
+                      />
                     </div>
 
                     <div className="col-span-4 sm:col-span-2">
-                      <label
-                        htmlFor="confirmPassword"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Confirmar Senha
-                      </label>
-                      <div className="mt-1">
-                        <input
-                          {...form.register("confirmPassword", {
-                            required: true,
-                            validate: (value) => value === form.watch("password"),
-                          })}
-                          type="password"
-                          id="confirmPassword"
-                          name="confirmPassword"
-                          autoComplete="phone"
-                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        />
-                      </div>
+                      <TextField
+                        className="mt-6"
+                        hform={form}
+                        name="user.confirmPassword"
+                        label="Confirmar Senha"
+                        type="password"
+                      />
                     </div>
                   </div>
 
                   <div className="mt-6 grid grid-cols-4 gap-x-4 gap-y-6">
                     <div className={clsx("col-span-4 sm:col-span-2")}>
                       <div className="mt-1">
-                        <SelectListbox
-                          options={parsedStates}
+                        <ComboboxInput
+                          data={states}
+                          disabled={!states?.length}
+                          hform={form}
                           label={"Estado"}
-                          formLabel={"state"}
-                          form={form}
+                          name={"user.stateId"}
+                          displayValueKey={"name"}
+                          onChange={(value: Section) => {
+                            fetchZones(value);
+                          }}
                         />
                       </div>
                     </div>
 
                     <div className="col-span-4 sm:col-span-2">
                       <div className="mt-1">
-                        <SelectListbox
-                          options={cities}
+                        <ComboboxInput
+                          hform={form}
                           label={"Cidade"}
-                          formLabel={"city"}
-                          form={form}
-                          disabled={!cities.length}
+                          data={cities}
+                          name={"user.cityId"}
+                          displayValueKey={"name"}
+                          disabled={!cities?.length}
+                          onChange={(value: Section) => {
+                            fetchZones(value.id);
+                          }}
                         />
                       </div>
                     </div>
                   </div>
                   <div className="mt-6 grid grid-cols-4 gap-x-4 gap-y-6">
-                    {form.watch("city") && (
+                    {form.watch("user.cityId") && (
                       <div
-                        className={clsx("col-span-4", sections.length && "sm:col-span-2")}
+                        className={clsx(
+                          "col-span-4",
+                          sections?.length && "sm:col-span-2"
+                        )}
                       >
                         <div className="mt-1">
-                          <SelectListbox
-                            options={zones}
-                            label={"Zona"}
-                            formLabel={"zone"}
-                            form={form}
-                            disabled={!zones.length}
+                          <ListboxField
+                            data={zones}
+                            displayValueKey={"name"}
+                            label={"Zona Eleitoral"}
+                            name={"user.zoneId"}
+                            hform={form}
+                            disabled={!zones?.length}
                           />
                         </div>
                       </div>
                     )}
 
-                    {form.watch("zone") && sections.length ? (
+                    {form.watch("user.zoneId") && sections?.length ? (
                       <div className="col-span-4 sm:col-span-2">
                         <div className="mt-1">
-                          <SelectListbox
-                            options={sections}
+                          <ListboxField
+                            data={sections}
+                            displayValueKey={"name"}
                             label={"Seção"}
-                            formLabel={"section"}
-                            form={form}
-                            disabled={!sections.length}
+                            name={"user.sectionId"}
+                            hform={form}
+                            disabled={!sections?.length}
                           />
                         </div>
                       </div>
@@ -393,35 +320,19 @@ export default function RegisterPage({
                     </h4>
                     <div className="mt-6 grid grid-cols-4 gap-x-4 gap-y-6">
                       <div className="col-span-4 sm:col-span-2">
-                        <label
-                          htmlFor="campaignName"
-                          className="block text-sm font-medium text-gray-700"
-                        >
-                          Nome da Campanha
-                        </label>
-                        <div className="mt-1">
-                          <input
-                            {...form.register("campaignName", {
-                              required: true,
-                            })}
-                            type="text"
-                            id="campaignName"
-                            name="campaignName"
-                            defaultValue={`${form.watch("name") || "Campanha"} ${
-                              form.watch("campaignYear")?.value || actualYear
-                            }`}
-                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                          />
-                        </div>
+                        <TextField
+                          hform={form}
+                          label="Nome da Campanha"
+                          name="campaign.name"
+                          defaultValue={`${form.watch("user.name") || "Campanha"} ${
+                            form.watch("campaign.year") || actualYear
+                          }`}
+                        />
                       </div>
 
                       <div className="col-span-4 sm:col-span-2">
-                        <SelectListbox
-                          form={form}
-                          formLabel="campaignYear"
-                          label="Ano"
-                          reverseOptions={true}
-                          options={[
+                        <ListboxField
+                          data={[
                             {
                               id: actualYear,
                               name: actualYear,
@@ -438,6 +349,11 @@ export default function RegisterPage({
                               value: actualYear + 2,
                             },
                           ]}
+                          displayValueKey={"name"}
+                          hform={form}
+                          name="campaign.year"
+                          label="Ano"
+                          reverseOptions={true}
                         />
                       </div>
                     </div>
@@ -445,29 +361,30 @@ export default function RegisterPage({
                       <div
                         className={clsx(
                           "col-span-4",
-                          form.watch("campaignType")?.value !== "conselheiro" &&
-                            "sm:col-span-2"
+                          form.watch("campaign.type") !== "conselheiro" && "sm:col-span-2"
                         )}
                       >
                         <div className="mt-1">
-                          <SelectListbox
-                            options={campaignTypes}
+                          <ListboxField
+                            data={campaignTypes}
+                            displayValueKey={"name"}
+                            hform={form}
+                            name={"campaign.type"}
                             label={"Tipo de Campanha"}
-                            formLabel={"campaignType"}
-                            form={form}
                             reverseOptions={true}
                           />
                         </div>
                       </div>
 
-                      {form.watch("campaignType")?.value !== "conselheiro" && (
+                      {form.watch("campaign.type") !== "conselheiro" && (
                         <div className="col-span-4 sm:col-span-2">
                           <div className="mt-1">
-                            <SelectListbox
-                              options={parsedParties}
+                            <ListboxField
+                              data={parties}
+                              displayValueKey={"name"}
                               label={"Partido Político"}
-                              formLabel={"party"}
-                              form={form}
+                              hform={form}
+                              name={"campaign.partyId"}
                               reverseOptions={true}
                             />
                           </div>
