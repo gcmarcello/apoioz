@@ -14,10 +14,6 @@ import clsx from "clsx";
 import { generateMapData } from "@/app/api/panel/map/actions";
 import { LoadingSpinner } from "../../_shared/components/Spinners";
 import { UserGroupIcon, XCircleIcon } from "@heroicons/react/24/solid";
-<<<<<<< HEAD
-=======
-import Image from "next/image";
->>>>>>> 0a0c20df90541ccd06c2a125c8d2f5ea899378d5
 import { toProperCase } from "@/_shared/utils/format";
 import { useAction } from "../../_shared/hooks/useAction";
 
@@ -53,23 +49,6 @@ export default function MapPage() {
     action: generateMapData,
     parser: (data) => {
       const addresses = data.addresses;
-<<<<<<< HEAD
-      console.log(data.neighborhoods);
-      const neighborhoodList = new Set();
-      const zoneList = new Set();
-      const parsed = addresses.map((a) => ({
-        address: a.address,
-        geocode: [Number(a.lat), Number(a.lng)],
-        location: a.location,
-        neighborhood: a.neighborhood,
-        zone: a.Section[0].Zone.number,
-        sectionsCount: a.Section.length,
-        supportersCount: a.Section.reduce((accumulator, section) => {
-          return accumulator + section.Supporter.length;
-        }, 0),
-        id: a.id,
-      }));
-=======
       const neighborhoodList = new Set();
       const zoneList = new Set();
       const parsed = addresses.map((a) => {
@@ -88,7 +67,6 @@ export default function MapPage() {
           id: a.id,
         };
       });
->>>>>>> 0a0c20df90541ccd06c2a125c8d2f5ea899378d5
 
       parsed.forEach((a) => neighborhoodList.add(a.neighborhood));
       parsed.forEach((a) => zoneList.add(a.zone));
@@ -101,10 +79,7 @@ export default function MapPage() {
             zone: parsed.find((a) => a.neighborhood === n).zone,
             geoJSON: data.neighborhoods.find((z) => z.name === n)?.geoJSON || null,
             checked: false,
-<<<<<<< HEAD
-=======
             color: (data.neighborhoods as any).find((z) => z.name === n)?.color,
->>>>>>> 0a0c20df90541ccd06c2a125c8d2f5ea899378d5
           }))
           .sort((a, b) => a.label.localeCompare(b.label))
       );
@@ -115,11 +90,7 @@ export default function MapPage() {
             value: n,
             label: n,
             checked: false,
-<<<<<<< HEAD
-            geoJSON: data.zonesInfo.find((z) => z.number === n).ZoneGeoJSON.geoJSON,
-=======
             geoJSON: data.zonesInfo.find((z) => z.number === n).ZoneGeoJSON?.geoJSON,
->>>>>>> 0a0c20df90541ccd06c2a125c8d2f5ea899378d5
             color: data.zonesInfo.find((z) => z.number === n)?.color,
           }))
           .sort((a, b) => a.value - b.value)
