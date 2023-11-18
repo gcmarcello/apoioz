@@ -11,6 +11,7 @@ import {
   UsersIcon,
   XMarkIcon,
   CalendarIcon,
+  ClipboardDocumentListIcon,
 } from "@heroicons/react/24/outline";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
@@ -21,17 +22,10 @@ import { useSidebar } from "./lib/useSidebar";
 import Link from "next/link";
 import WhatsAppIcon from "@/app/(frontend)/_shared/components/icons/WhatsAppIcon";
 import { activateCampaign } from "@/app/api/panel/campaigns/actions";
+import Image from "next/image";
 
 export default function PanelSideBar() {
-  const {
-    user,
-    campaign,
-    visibility,
-    setVisibility,
-    primaryColor,
-    secondaryColor,
-    campaigns,
-  } = useSidebar();
+  const { campaign, visibility, setVisibility, campaigns, supporter } = useSidebar();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -50,13 +44,6 @@ export default function PanelSideBar() {
       current: !pathname.includes("painel/"),
     },
     {
-      name: "Time",
-      href: `/painel/time`,
-      icon: UsersIcon,
-      current: pathname.includes("/time"),
-    },
-
-    {
       name: "Mapa",
       href: `/painel/mapa`,
       icon: MapIcon,
@@ -74,11 +61,26 @@ export default function PanelSideBar() {
       icon: ChartPieIcon,
       current: pathname.includes("/relatorios"),
     },
+  ];
+
+  const adminNavigation = [
+    {
+      name: "Time",
+      href: `/painel/time`,
+      icon: UsersIcon,
+      current: pathname.includes("/time"),
+    },
     {
       name: "Whatsapp",
       href: `/painel/whatsapp`,
       icon: WhatsAppIcon,
       current: pathname.includes("/whatsapp"),
+    },
+    {
+      name: "Pesquisas",
+      href: `/painel/pesquisas`,
+      icon: ClipboardDocumentListIcon,
+      current: pathname.includes("/pesquisas"),
     },
   ];
 
@@ -148,16 +150,11 @@ export default function PanelSideBar() {
                   <div
                     className={clsx(
                       "bg-indigo-600",
-                      "fixed flex h-full w-64 grow flex-col gap-y-5 overflow-y-auto  px-6 pb-4"
+                      "fixed  flex h-full w-64 grow flex-col gap-y-5 overflow-y-auto  px-6 pb-4"
                     )}
                   >
-                    <div className="flex h-16 shrink-0 items-center">
-                      <img
-                        width={32}
-                        height={32}
-                        src="https://tailwindui.com/img/logos/mark.svg?color=white"
-                        alt="Your Company"
-                      />
+                    <div className="my-2 flex h-16 shrink-0 items-center">
+                      <Image width={64} height={64} src="/logo.svg" alt="Logo ApoioZ" />
                     </div>
                     <nav className="flex flex-1 flex-col">
                       <ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -192,6 +189,42 @@ export default function PanelSideBar() {
                             ))}
                           </ul>
                         </li>
+                        {supporter.level === 4 && (
+                          <li>
+                            <div className="text-xs font-semibold leading-6 text-indigo-200">
+                              Administrativo
+                            </div>
+                            <ul role="list" className="-mx-2 space-y-1">
+                              {adminNavigation.map((item) => (
+                                <li key={item.name}>
+                                  <a
+                                    href={item.href}
+                                    className={clsx(
+                                      item.current
+                                        ? `bg-indigo-700 text-white`
+                                        : "text-indigo-200 hover:bg-indigo-700 hover:text-white",
+                                      "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                                    )}
+                                  >
+                                    <item.icon
+                                      className={clsx(
+                                        item.current
+                                          ? "text-white"
+                                          : "text-indigo-200 group-hover:text-white",
+                                        item.icon === WhatsAppIcon &&
+                                          "me-1 h-[1.3rem] w-[1.3rem] fill-indigo-200",
+
+                                        "h-6 w-6 shrink-0"
+                                      )}
+                                      aria-hidden="true"
+                                    />
+                                    {item.name}
+                                  </a>
+                                </li>
+                              ))}
+                            </ul>
+                          </li>
+                        )}
                         <li>
                           <div className="text-xs font-semibold leading-6 text-indigo-200">
                             Suas Campanhas
@@ -248,16 +281,11 @@ export default function PanelSideBar() {
           <div
             className={clsx(
               "bg-indigo-600",
-              `fixed flex h-full w-64 grow flex-col gap-y-5 overflow-y-auto px-6 pb-4`
+              `fixed flex h-full  w-64 grow flex-col gap-y-5 overflow-y-auto px-6 pb-4`
             )}
           >
-            <div className="flex h-16 shrink-0 items-center">
-              <img
-                width={32}
-                height={32}
-                src="https://tailwindui.com/img/logos/mark.svg?color=white"
-                alt="Your Company"
-              />
+            <div className="my-2 flex h-16 shrink-0 items-center">
+              <Image width={64} height={64} src="/logo.svg" alt="Logo ApoioZ" />
             </div>
             <nav className="flex flex-1 flex-col">
               <ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -292,6 +320,42 @@ export default function PanelSideBar() {
                     ))}
                   </ul>
                 </li>
+                {supporter.level === 4 && (
+                  <li>
+                    <div className="text-xs font-semibold leading-6 text-indigo-200">
+                      Administrativo
+                    </div>
+                    <ul role="list" className="-mx-2 space-y-1">
+                      {adminNavigation.map((item) => (
+                        <li key={item.name}>
+                          <a
+                            href={item.href}
+                            className={clsx(
+                              item.current
+                                ? "bg-indigo-700 text-white"
+                                : "text-indigo-200 hover:bg-indigo-700 hover:text-white",
+                              "leading-6, group flex gap-x-3 rounded-md p-2 text-sm font-semibold"
+                            )}
+                          >
+                            <item.icon
+                              className={clsx(
+                                item.current
+                                  ? "text-white"
+                                  : "text-indigo-200 group-hover:text-white",
+                                item.icon === WhatsAppIcon &&
+                                  "me-1 h-[1.3rem] w-[1.3rem] fill-indigo-200",
+
+                                "h-6 w-6 shrink-0"
+                              )}
+                              aria-hidden="true"
+                            />
+                            {item.name}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                )}
                 <li>
                   <div className="text-xs font-semibold leading-6 text-indigo-200">
                     Suas Campanhas

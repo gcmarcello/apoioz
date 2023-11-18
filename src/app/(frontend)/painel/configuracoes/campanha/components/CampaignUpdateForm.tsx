@@ -12,8 +12,8 @@ export default function CampaignUpdateForm({ campaign }) {
       name: campaign.name,
       year: campaign.year,
       options: {
-        primaryColor: campaign.options.primaryColor || "#000000",
-        secondaryColor: campaign.options.secondaryColor || "#FFFFFF",
+        primaryColor: campaign?.options?.primaryColor || "#000000",
+        secondaryColor: campaign?.options?.secondaryColor || "#FFFFFF",
       },
     },
   });

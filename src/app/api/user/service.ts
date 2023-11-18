@@ -11,7 +11,6 @@ dayjs.extend(customParseFormat);
 export async function createUser(data: any) {
   try {
     const { name, email, password, ...info } = data;
-    console.log(data);
 
     const existingUser = await prisma.user.findFirst({
       where: { email: normalizeEmail(email) },
