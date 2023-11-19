@@ -9,7 +9,7 @@ import { toProperCase } from "@/_shared/utils/format";
 import { PresentationChartBarIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
-import ComboboxInput from "@/app/(frontend)/_shared/components/fields/Select";
+import ComboboxField from "@/app/(frontend)/_shared/components/fields/Select";
 
 export function ElectionInfoSection({ form, zones }: { form: any; zones: ZoneType[] }) {
   const [displayAddress, setDisplayAddress] = useState<AddressType | null>(null);
@@ -174,7 +174,7 @@ export function ElectionInfoSection({ form, zones }: { form: any; zones: ZoneTyp
             </select>
           </div>
           <div className="col-span-1">
-            <ComboboxInput
+            <ComboboxField
               hform={form}
               data={sectionList}
               disabled={!sectionList.length}

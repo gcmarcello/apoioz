@@ -16,7 +16,7 @@ import { useForm } from "react-hook-form";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 import { toProperCase } from "@/_shared/utils/format";
 import { MetaForm } from "@/app/(frontend)/_shared/hooks/useMetaform";
-import ComboboxInput, {
+import ComboboxField, {
   ListboxField,
 } from "@/app/(frontend)/_shared/components/fields/Select";
 import {
@@ -153,7 +153,7 @@ export function AddSupporterForm({
             />
           </div>
           <div className="col-span-1">
-            <ComboboxInput
+            <ComboboxField
               hform={form}
               data={sections}
               label="Seção"

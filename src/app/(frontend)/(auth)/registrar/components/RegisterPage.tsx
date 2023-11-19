@@ -1,7 +1,7 @@
 "use client";
 
 import ErrorAlert from "@/app/(frontend)/_shared/components/alerts/errorAlert";
-import ComboboxInput, {
+import ComboboxField, {
   ListboxField,
 } from "@/app/(frontend)/_shared/components/fields/Select";
 import {
@@ -242,15 +242,15 @@ export default function RegisterPage({
                   <div className="mt-6 grid grid-cols-4 gap-x-4 gap-y-6">
                     <div className={clsx("col-span-4 sm:col-span-2")}>
                       <div className="mt-1">
-                        <ComboboxInput
+                        <ComboboxField
                           data={states}
                           disabled={!states?.length}
                           hform={form}
                           label={"Estado"}
                           name={"user.stateId"}
                           displayValueKey={"name"}
-                          onChange={(value: Section) => {
-                            fetchZones(value);
+                          onChange={(value) => {
+                            fetchZones(value.id);
                           }}
                         />
                       </div>
@@ -258,14 +258,14 @@ export default function RegisterPage({
 
                     <div className="col-span-4 sm:col-span-2">
                       <div className="mt-1">
-                        <ComboboxInput
+                        <ComboboxField
                           hform={form}
                           label={"Cidade"}
                           data={cities}
                           name={"user.cityId"}
                           displayValueKey={"name"}
                           disabled={!cities?.length}
-                          onChange={(value: Section) => {
+                          onChange={(value) => {
                             fetchZones(value.id);
                           }}
                         />

@@ -179,7 +179,7 @@ export function ListboxField<Fields, Options extends Array<{ [key: string]: any 
   );
 }
 
-export default function ComboboxInput<
+export default function ComboboxField<
   Fields,
   Options extends Array<{ [key: string]: any }>,
 >({ data = [], ...props }: SelectFieldProps<Fields, Options>) {
