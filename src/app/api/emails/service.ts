@@ -66,7 +66,6 @@ async function readTemplateFile(templateId: string): Promise<string> {
 function replaceTemplatePlaceholders(templateString, dynamicData) {
   let populatedTemplate = templateString;
   Object.keys(dynamicData).forEach((key) => {
-    // Replace all occurrences of the placeholder keys with actual data
     populatedTemplate = populatedTemplate.replace(
       new RegExp(`{{${key}}}`, "g"),
       dynamicData[key]

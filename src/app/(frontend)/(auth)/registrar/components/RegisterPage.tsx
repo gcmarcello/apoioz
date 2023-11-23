@@ -1,5 +1,6 @@
 "use client";
 
+import { Logo } from "@/app/(frontend)/_shared/components/Logo";
 import ErrorAlert from "@/app/(frontend)/_shared/components/alerts/errorAlert";
 import ComboboxField, {
   ListboxField,
@@ -147,8 +148,7 @@ export default function RegisterPage({
         >
           <div className="mx-auto max-w-2xl px-4 lg:max-w-none lg:px-0">
             <div className="flex items-center ">
-              <Image src={"/logo.svg"} alt="logo" height={80} width={80} />
-              <span className="ms-2 text-xl font-bold text-white">Cadastro</span>
+              <Logo /> <span className="ms-2 text-xl font-bold text-white">Cadastro</span>
             </div>
           </div>
         </section>

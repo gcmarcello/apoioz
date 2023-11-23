@@ -23,6 +23,7 @@ import Link from "next/link";
 import WhatsAppIcon from "@/app/(frontend)/_shared/components/icons/WhatsAppIcon";
 import { activateCampaign } from "@/app/api/panel/campaigns/actions";
 import Image from "next/image";
+import { Logo } from "@/app/(frontend)/_shared/components/Logo";
 
 export default function PanelSideBar() {
   const { campaign, visibility, setVisibility, campaigns, supporter } = useSidebar();
@@ -154,7 +155,7 @@ export default function PanelSideBar() {
                     )}
                   >
                     <div className="my-2 flex h-16 shrink-0 items-center">
-                      <Image width={64} height={64} src="/logo.svg" alt="Logo ApoioZ" />
+                      <Logo />
                     </div>
                     <nav className="flex flex-1 flex-col">
                       <ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -285,7 +286,7 @@ export default function PanelSideBar() {
             )}
           >
             <div className="my-2 flex h-16 shrink-0 items-center">
-              <Image width={64} height={64} src="/logo.svg" alt="Logo ApoioZ" />
+              <Logo />
             </div>
             <nav className="flex flex-1 flex-col">
               <ul role="list" className="flex flex-1 flex-col gap-y-7">
