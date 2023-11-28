@@ -282,7 +282,7 @@ export default function PanelSideBar() {
           <div
             className={clsx(
               "bg-indigo-600",
-              `lx:gap-y-5 fixed flex h-full  w-64 grow flex-col gap-y-1 overflow-y-hidden px-6 pb-4`
+              `fixed flex h-full w-64  grow flex-col gap-y-1 overflow-y-hidden px-6 pb-4`
             )}
           >
             <div className="my-2 flex h-16 shrink-0 items-center">
