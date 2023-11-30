@@ -12,8 +12,9 @@ export async function AuthMiddleware({
   const token = request.cookies.get("token")?.value;
 
   if (!token) return false;
+  const url = process.env.SITE_URL;
 
-  const user = await fetch(`${request.nextUrl.origin}/api/auth/verify`, {
+  const user = await fetch(`${url}/api/auth/verify`, {
     headers: { Authorization: token },
   }).then((res) => res.json());
 
