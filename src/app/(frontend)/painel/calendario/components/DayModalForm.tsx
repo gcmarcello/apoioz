@@ -10,7 +10,7 @@ import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Button } from "../../_shared/components/button";
+import { Button } from "../../../_shared/components/Button";
 import { CalendarDay } from "../page";
 import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 
