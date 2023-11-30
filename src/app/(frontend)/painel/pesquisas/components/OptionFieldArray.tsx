@@ -1,46 +1,78 @@
 import { TextField } from "@/app/(frontend)/_shared/components/fields/Text";
-import { XCircleIcon } from "@heroicons/react/24/outline";
+import { PlusCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import { ArrowDownIcon, ArrowUpIcon } from "@heroicons/react/24/solid";
 import { useFieldArray } from "react-hook-form";
+import { Button, IconOnlyButton } from "../../../_shared/components/Button";
+import SwitchInput from "@/app/(frontend)/_shared/components/fields/Switch";
 
 export default function OptionFieldArray({ nestIndex, control, form }) {
-  const { fields, remove, append } = useFieldArray({
+  const { fields, remove, append, move } = useFieldArray({
     control,
-    name: `test.${nestIndex}.nestedArray`,
+    name: `questions.${nestIndex}.options`,
   });
 
   return (
     <div>
       {fields.map((item, k) => {
         return (
-          <div className="ml-5 mt-3 flex items-end" key={item.id}>
-            <TextField
-              label={`Opção ${k}`}
-              hform={form}
-              name={`test.${nestIndex}.nestedArray.${k}.field1` as const}
+          <div className="mx-3 mt-3 flex items-end lg:mx-5" key={item.id}>
+            <div className="flex-grow">
+              <TextField
+                label={`Opção ${k + 1}`}
+                hform={form}
+                placeholder="Digite a opção"
+                name={`questions.${nestIndex}.options.${k}.option` as const}
+              />
+            </div>
+            <IconOnlyButton
+              icon={XCircleIcon}
+              onClick={() => {
+                if (fields.length <= 1)
+                  form.setValue(`questions.${nestIndex}.allowMultipleAnswers`, true);
+                remove(k);
+              }}
+              className="mx-2 my-1 h-8 w-8"
+              iconClassName={"text-red-600"}
             />
-            <button
-              type="button"
-              className="relative inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-1.5 text-sm font-semibold text-gray-900"
-              onClick={() => remove(k)}
-            >
-              <XCircleIcon className="h-6 w-6 text-red-600" />
-            </button>
+
+            <IconOnlyButton
+              icon={ArrowUpIcon}
+              disabled={k === 0}
+              onClick={() => move(k, k - 1)}
+              className="my-1.5 h-8 w-8"
+              iconClassName={k === 0 ? "text-gray-300 sw-2" : "text-gray-600 sw-2"}
+            />
+
+            <IconOnlyButton
+              icon={ArrowDownIcon}
+              disabled={k === fields.length - 1}
+              onClick={() => {
+                move(k, k + 1);
+              }}
+              className="my-1.5 h-8 w-8"
+              iconClassName={
+                k === fields.length - 1 ? "text-gray-300 sw-2" : "text-gray-600 sw-2"
+              }
+            />
           </div>
         );
       })}
-
-      <button
-        type="button"
-        onClick={() =>
-          append({
-            field1: "field1",
-          })
-        }
-      >
-        Append Nested
-      </button>
-
-      <hr />
+      <div className="my-3 flex">
+        <Button
+          onClick={() => {
+            append({
+              name: "",
+            });
+          }}
+          className="flex-grow lg:ml-5 lg:flex-grow-0"
+          variant="primary"
+        >
+          <div className="flex items-center justify-center gap-x-2">
+            Adicionar Opção <PlusCircleIcon className="h-6 w-6" />
+          </div>
+        </Button>
+      </div>
+      <hr className="my-4 " />
     </div>
   );
 }
