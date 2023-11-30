@@ -41,7 +41,7 @@ export function TextField<T>(props: TextFieldProps<T>) {
       <input
         id={id}
         type={props.type}
-        {...props.hform.register(props.name)}
+        {...props.hform.register(props.name, props.registeroptions)}
         {...props}
         className={className}
       />
