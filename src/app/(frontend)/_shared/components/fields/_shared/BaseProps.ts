@@ -1,4 +1,4 @@
-import { Path, useForm } from "react-hook-form";
+import { Path, RegisterOptions, useForm } from "react-hook-form";
 
 export interface BaseProps<Fields> {
   label: string;
@@ -6,4 +6,5 @@ export interface BaseProps<Fields> {
   name: Path<Fields>;
   relative?: JSX.Element;
   disabled?: boolean;
+  registeroptions?: RegisterOptions;
 }
