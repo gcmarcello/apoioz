@@ -6,11 +6,7 @@ const defaultValues = {
   test: [
     {
       name: "useFieldArray1",
-      nestedArray: [{ field1: "field1", field2: "field2" }],
-    },
-    {
-      name: "useFieldArray2",
-      nestedArray: [{ field1: "field1", field2: "field2" }],
+      nestedArray: [{ field1: "field1" }],
     },
   ],
 };
