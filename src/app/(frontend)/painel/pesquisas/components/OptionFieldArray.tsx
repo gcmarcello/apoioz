@@ -21,7 +21,8 @@ export default function OptionFieldArray({ nestIndex, control, form }) {
                 label={`Opção ${k + 1}`}
                 hform={form}
                 placeholder="Digite a opção"
-                name={`questions.${nestIndex}.options.${k}.option` as const}
+                registeroptions={{ required: true }}
+                name={`questions.${nestIndex}.options.${k}.name` as const}
               />
             </div>
             <IconOnlyButton

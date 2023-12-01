@@ -10,11 +10,11 @@ export function BottomNavigation(props: BottomNavigationProps) {
   return (
     <nav
       className={clsx(
-        "fixed bottom-0 left-0 right-0 flex items-center justify-end  border-t border-gray-200 bg-white",
+        "w-100 fixed bottom-0 left-0 right-0 items-center border-t border-gray-200 bg-white",
         className
       )}
     >
-      <div className="mx-3 space-x-3">{children}</div>
+      {children}
     </nav>
   );
 }

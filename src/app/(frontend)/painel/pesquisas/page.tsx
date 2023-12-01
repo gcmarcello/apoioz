@@ -21,7 +21,6 @@ export default function PesquisasPage() {
 
   return (
     <>
-      <PageTitle>Nova Pesquisa</PageTitle>
       <QuestionFieldArray form={form} />
     </>
   );
