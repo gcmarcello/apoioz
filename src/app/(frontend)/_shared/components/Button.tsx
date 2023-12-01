@@ -38,7 +38,7 @@ export function Button({
       type={type || "button"}
       onClick={onClick}
       className={clsx(
-        "mx-auto rounded-md px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
+        "rounded-md px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
         className,
         variant && buttonDictionary[variant]
       )}
@@ -64,7 +64,7 @@ export function IconOnlyButton({
       type={type}
       onClick={onClick}
     >
-      <Icon className={iconClassName} />
+      <Icon className={clsx(iconClassName, disabled && "opacity-50")} />
     </button>
   );
 }
