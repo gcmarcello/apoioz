@@ -10,6 +10,7 @@ import { DefaultTable } from "@/app/(frontend)/_shared/components/tables/table";
 import { EyeIcon } from "@heroicons/react/24/outline";
 import { LoadingSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { Poll, PollQuestion } from "@prisma/client";
+import { ParagraphLink } from "@/app/(frontend)/_shared/components/text/ParagraphLink";
 
 export default function PollsTable({ polls }: { polls: Poll[] }) {
   const columnHelper = createColumnHelper<PollsTableType>();
@@ -41,13 +42,20 @@ export default function PollsTable({ polls }: { polls: Poll[] }) {
     }),
     columnHelper.accessor("activeAtSignUp", {
       id: "activeAtSignUp",
-      header: "No cadastro",
+      header: "Principal",
       cell: (info) =>
         info.getValue() ? (
           <div className="flex justify-center">
             <CheckBadgeIcon className="h-6 w-6 text-indigo-600" />
           </div>
         ) : null,
+    }),
+    columnHelper.accessor("id", {
+      id: "edit",
+      header: "",
+      cell: (info) => (
+        <ParagraphLink href={`/pesquisas/${info.getValue()}`}>Editar</ParagraphLink>
+      ),
     }),
   ];
 
@@ -58,12 +66,5 @@ export default function PollsTable({ polls }: { polls: Poll[] }) {
       </div>
     );
 
-  return (
-    <DefaultTable
-      data={polls}
-      columns={columns}
-      count={polls.length}
-      disablePagination={true}
-    />
-  );
+  return <DefaultTable data={polls} columns={columns} count={polls.length} />;
 }
