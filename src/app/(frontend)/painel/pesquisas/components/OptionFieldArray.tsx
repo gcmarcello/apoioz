@@ -29,7 +29,7 @@ export default function OptionFieldArray({ nestIndex, control, form }) {
               icon={XCircleIcon}
               onClick={() => {
                 if (fields.length <= 1)
-                  form.setValue(`questions.${nestIndex}.allowMultipleAnswers`, true);
+                  form.setValue(`questions.${nestIndex}.allowFreeAnswer`, true);
                 remove(k);
               }}
               className="mx-2 my-1 h-8 w-8"

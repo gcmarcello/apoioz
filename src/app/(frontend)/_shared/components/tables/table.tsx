@@ -151,15 +151,26 @@ export function DefaultTable({
                   </For>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white ">
-                  {table.getRowModel().rows.map((row) => (
-                    <tr key={row.id}>
-                      {row.getVisibleCells().map((cell) => (
-                        <td key={cell.id} className="whitespace-nowrap px-4 py-4 text-sm">
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </td>
-                      ))}
+                  {data.length ? (
+                    table.getRowModel().rows.map((row) => (
+                      <tr key={row.id}>
+                        {row.getVisibleCells().map((cell) => (
+                          <td
+                            key={cell.id}
+                            className="whitespace-nowrap px-4 py-4 text-sm"
+                          >
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </td>
+                        ))}
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td className="whitespace-nowrap px-4 py-4 text-sm">
+                        Nenhuma entrada.
+                      </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
                 <tfoot>
                   {/* <For each={table.getFooterGroups()} identifier="tfoot">

@@ -1,27 +1,21 @@
-"use client";
-import { useForm } from "react-hook-form";
-import QuestionFieldArray from "./components/QuestionFieldArray";
-import { PageTitle } from "../../_shared/components/text/PageTitle";
+import prisma from "prisma/prisma";
+import StatsSection from "../../_shared/components/StatsSection";
+import { getCampaign } from "@/app/api/panel/campaigns/service";
+import { cookies, headers } from "next/headers";
+import { listPolls } from "@/app/api/panel/polls/service";
+import PollsTable from "./components/PollsTable";
 
-const defaultValues = {
-  title: "",
-  activeAtSignUp: false,
-  questions: [
-    {
-      name: "",
-      allowMultipleAnswers: false,
-      allowFreeAnswer: false,
-      options: [{ name: "" }],
-    },
-  ],
-};
+export default async function PesquisasPage() {
+  const activeCampaignId = cookies().get("activeCampaign")?.value;
+  const userId = headers().get("userId");
+  const user = await prisma.user.findFirst({ where: { id: userId } });
+  const campaign = await getCampaign({ campaignId: activeCampaignId });
 
-export default function PesquisasPage() {
-  const form = useForm({ defaultValues });
-
+  const polls = await listPolls({ campaignId: activeCampaignId });
   return (
     <>
-      <QuestionFieldArray form={form} />
+      <StatsSection campaign={campaign} user={user} />
+      <PollsTable polls={polls} />
     </>
   );
 }

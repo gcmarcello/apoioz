@@ -1,7 +1,5 @@
 import { Mocker } from "@/app/(frontend)/_shared/components/Mocker";
-import SelectListbox, {
-  ListboxOptionType,
-} from "@/app/(frontend)/_shared/components/SelectListbox";
+
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 import { getAvailableTimesByDay, createEvent } from "@/app/api/panel/events/actions";
 import { fakerPT_BR } from "@faker-js/faker";
@@ -13,6 +11,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "../../../_shared/components/Button";
 import { CalendarDay } from "../page";
 import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
+import { ListboxField } from "@/app/(frontend)/_shared/components/fields/Select";
 
 dayjs.extend(isBetween);
 
@@ -162,11 +161,12 @@ export default function SubmitEventRequest({
         </div>
         <div className="mt-4 grid grid-cols-2 gap-2">
           <div>
-            <SelectListbox
-              form={form}
-              formLabel="dateStart"
+            <ListboxField
+              hform={form}
+              name="dateStart"
               label="Hora de início"
-              options={availableTimes || []}
+              data={availableTimes}
+              displayValueKey={""}
               disabled={!availableTimes?.length}
             />
             {Array.isArray(availableTimes) && !availableTimes.length && (
@@ -177,8 +177,8 @@ export default function SubmitEventRequest({
           </div>
 
           <div>
-            <SelectListbox
-              form={form}
+            <ListboxField
+              hform={form}
               formLabel="dateEnd"
               label="Hora de término"
               options={endingAvailableTimes || []}

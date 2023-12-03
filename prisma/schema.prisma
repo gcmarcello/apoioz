@@ -288,6 +288,7 @@ model Poll {
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
   PollQuestion   PollQuestion[]
+  PollAnswer     PollAnswer[]
 
   @@schema("polls")
 }
@@ -302,6 +303,7 @@ model PollQuestion {
   createdAt            DateTime     @default(now())
   updatedAt            DateTime     @updatedAt
   PollOption           PollOption[]
+  PollAnswer           PollAnswer[]
 
   @@schema("polls")
 }
@@ -319,13 +321,18 @@ model PollOption {
 }
 
 model PollAnswer {
-  id          String     @id @unique @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
-  optionId    String     @db.Uuid
-  option      PollOption @relation(fields: [optionId], references: [id])
-  supporterId String     @db.Uuid
-  supporter   Supporter  @relation(fields: [supporterId], references: [id])
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id           String       @id @unique @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  optionId     String?      @db.Uuid
+  freeAnswer   String?      @db.Text
+  pollId       String       @db.Uuid
+  poll         Poll         @relation(fields: [pollId], references: [id])
+  option       PollOption?  @relation(fields: [optionId], references: [id])
+  questionId   String       @db.Uuid
+  PollQuestion PollQuestion @relation(fields: [questionId], references: [id])
+  supporterId  String       @db.Uuid
+  supporter    Supporter    @relation(fields: [supporterId], references: [id])
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
   @@schema("polls")
 }

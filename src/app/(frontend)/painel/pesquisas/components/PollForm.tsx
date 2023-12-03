@@ -1,27 +1,57 @@
+import { Button } from "@/app/(frontend)/_shared/components/Button";
 import CheckboxInput from "@/app/(frontend)/_shared/components/fields/Checkbox";
 import RadioInput from "@/app/(frontend)/_shared/components/fields/Radio";
+import { TextAreaField } from "@/app/(frontend)/_shared/components/fields/Text";
+import { PageSubtitle } from "@/app/(frontend)/_shared/components/text/PageSubtitle";
 import { PageTitle } from "@/app/(frontend)/_shared/components/text/PageTitle";
 import { SectionTitle } from "@/app/(frontend)/_shared/components/text/SectionTitle";
+import { ArrowLeftCircleIcon } from "@heroicons/react/20/solid";
+import { EyeIcon } from "@heroicons/react/24/solid";
+import Image from "next/image";
+import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 
-interface PollFormProps {
+interface PossibleStates {
+  preview: {
+    setShowPreview: Dispatch<SetStateAction<boolean>>;
+  };
+  external: {};
+  internal: {};
+}
+
+interface PollFormProps<T extends keyof PossibleStates> {
   data: {
     title: string;
     activeAtSignUp: boolean;
     questions: {
-      name: string;
+      question: string;
       allowMultipleAnswers: boolean;
       allowFreeAnswer: boolean;
       options: { name: string }[];
     }[];
   };
-  mode: "preview" | "production";
+  mode: T;
+  states: PossibleStates[T];
 }
 
-export function PollForm({ data, mode }: PollFormProps) {
+const people = [
+  {
+    name: "Lindsay Walton",
+    title: "Front-end Developer",
+    email: "lindsay.walton@example.com",
+    role: "Member",
+  },
+  // More people...
+];
+
+export function PollForm<T extends keyof PossibleStates>({
+  data,
+  mode,
+  states,
+}: PollFormProps<T>) {
   const form = useForm({ defaultValues: data });
   return (
-    <form>
+    <form className="pb-20">
       <div
         className="absolute inset-x-0 -z-10 transform-gpu overflow-hidden blur-3xl lg:top-[-10rem]"
         aria-hidden="true"
@@ -34,29 +64,95 @@ export function PollForm({ data, mode }: PollFormProps) {
           }}
         />
       </div>
-      <PageTitle>{data.title}</PageTitle>
-      {data.questions.map(
-        (question, index) =>
-          question.name && (
-            <div key={index}>
-              <SectionTitle>{question.name}</SectionTitle>
-              {question.options.map((option, index) => (
-                <div key={index}>
-                  <div className="flex items-center">
-                    {question.allowMultipleAnswers ? (
-                      <CheckboxInput />
-                    ) : (
-                      <RadioInput
-                        htmlName={`question-${question.name}`}
-                        name={option.name}
-                      />
-                    )}
-                  </div>
-                </div>
-              ))}
+      <div className="flex space-x-4">
+        {mode === "preview" && (
+          <Button
+            onClick={() =>
+              (states as PossibleStates["preview"]).setShowPreview((prev) => !prev)
+            }
+            variant="secondary"
+            className="my-auto hidden lg:block"
+          >
+            <div className="flex items-center justify-center gap-x-2">
+              <ArrowLeftCircleIcon className="h-5 w-5" /> Voltar
             </div>
-          )
+          </Button>
+        )}
+      </div>
+      {(mode === "preview" || mode === "external") && (
+        <div className="flex flex-col items-center justify-center">
+          <Image
+            width={100}
+            height={100}
+            className="rounded-full bg-gray-50"
+            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+            alt=""
+          />
+          <div className="my-2 flex flex-col items-center">
+            <PageTitle>Silas Barros 2024</PageTitle>
+            <PageSubtitle>
+              Nos ajude a entender mais sobre você e como você pensa!
+            </PageSubtitle>
+          </div>
+        </div>
       )}
+      <div className="my-4">
+        {data.questions.map(
+          (question, index) =>
+            question.question && (
+              <div
+                key={index}
+                className="my-4 overflow-hidden rounded-lg shadow ring-1 ring-black ring-opacity-5"
+              >
+                <table className="min-w-full divide-y divide-gray-300">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th
+                        scope="col"
+                        className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                      >
+                        <div className="font-semibold">{question.question}</div>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 bg-white">
+                    {question.options.map((option, index) => (
+                      <>
+                        <tr key={index}>
+                          <td className="flex items-center whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                            {question.allowMultipleAnswers ? (
+                              <CheckboxInput
+                                hform={form}
+                                label={option.name}
+                                name={option.name}
+                              />
+                            ) : (
+                              <RadioInput
+                                htmlName={`question-${question.question}`}
+                                name={option.name}
+                              />
+                            )}
+                          </td>
+                        </tr>
+                      </>
+                    ))}
+                    {question.allowFreeAnswer && (
+                      <tr>
+                        <td className="p-4">
+                          <TextAreaField
+                            hform={form}
+                            label={question.options.length ? "Comentários:" : "Resposta:"}
+                            name="activeAtSignUp"
+                          />
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )
+        )}
+      </div>
     </form>
   );
 }
