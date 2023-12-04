@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 import SupporterOverview from "../SupporterOverview";
 import { Date } from "@/app/(frontend)/_shared/components/Date";
 import { DefaultTable } from "@/app/(frontend)/_shared/components/tables/table";
-import SupporterBall from "../../../time/components/SupporterBall";
+import SupporterBall from "../../../time/components/SupporterNode";
 import { PaginationObject } from "@/_shared/types/server.types";
 
 export default function LatestSupportersTable({

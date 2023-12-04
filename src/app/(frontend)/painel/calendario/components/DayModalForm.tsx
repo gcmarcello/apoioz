@@ -1,7 +1,4 @@
 import { Mocker } from "@/app/(frontend)/_shared/components/Mocker";
-import SelectListbox, {
-  ListboxOptionType,
-} from "@/app/(frontend)/_shared/components/SelectListbox";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 import { getAvailableTimesByDay, createEvent } from "@/app/api/panel/events/actions";
 import { fakerPT_BR } from "@faker-js/faker";
@@ -13,6 +10,8 @@ import { useForm } from "react-hook-form";
 import { Button } from "../../_shared/components/button";
 import { CalendarDay } from "../page";
 import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
+import { ListboxField } from "@/app/(frontend)/_shared/components/fields/Select";
+import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 
 dayjs.extend(isBetween);
 
@@ -27,16 +26,25 @@ export default function SubmitEventRequest({
   userId: string;
   setShow: Dispatch<SetStateAction<boolean>>;
 }) {
-  const [availableTimes, setAvailableTimes] = useState<ListboxOptionType[] | null>(null);
-  const [endingAvailableTimes, setEndingAvailableTimes] = useState<
-    ListboxOptionType[] | null
-  >(null);
+  const [availableTimes, setAvailableTimes] = useState(null);
+  const [endingAvailableTimes, setEndingAvailableTimes] = useState(null);
   const [dateEvents, setDateEvents] = useState<{ start: string; end: string }[] | null>(
     null
   );
   const [error, setError] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const form = useForm();
+
+  const { data: availableTimes, trigger: fetchAvailableTimes } = useAction({
+    action: getAvailableTimesByDay,
+    parser: (data) => {
+      return data.available.map((string, index) => ({
+        id: index + 1,
+        name: dayjs(string).format("HH:mm"),
+        value: string,
+      }));
+    },
+  });
 
   useEffect(() => {
     async function fetchAvailableTimes() {
@@ -162,7 +170,7 @@ export default function SubmitEventRequest({
         </div>
         <div className="mt-4 grid grid-cols-2 gap-2">
           <div>
-            <SelectListbox
+            <ListboxField
               form={form}
               formLabel="dateStart"
               label="Hora de início"
@@ -177,11 +185,11 @@ export default function SubmitEventRequest({
           </div>
 
           <div>
-            <SelectListbox
-              form={form}
-              formLabel="dateEnd"
+            <ListboxField
+              hform={form}
+              name="dateEnd"
               label="Hora de término"
-              options={endingAvailableTimes || []}
+              data={endingAvailableTimes}
               disabled={!endingAvailableTimes?.length}
             />
           </div>

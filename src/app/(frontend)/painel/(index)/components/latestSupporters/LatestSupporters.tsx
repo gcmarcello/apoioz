@@ -4,11 +4,19 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import LatestSupportersTable from "./LatestSupportersTable";
 import { Date } from "@/app/(frontend)/_shared/components/Date";
-import { listSupporters } from "@/app/api/panel/supporters/actions";
+import { listSupportersFromGroup } from "@/app/api/panel/supporters/service";
+import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
+import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
+import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 
 export async function LatestSupporters() {
-  const latestSupporters = await listSupporters({
+  const {
+    request: { supporterSession },
+  } = await UseMiddlewares().then(UserSessionMiddleware).then(SupporterSessionMiddleware);
+
+  const latestSupporters = await listSupportersFromGroup({
     pagination: { pageIndex: 0, pageSize: 5 },
+    supporterSession,
   });
 
   if (!latestSupporters) return;

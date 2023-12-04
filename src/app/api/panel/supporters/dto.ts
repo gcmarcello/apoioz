@@ -1,18 +1,18 @@
 import { z } from "zod";
-import { paginationDto } from "../../_shared/dto/pagination";
 import { phoneValidator } from "@/_shared/utils/validators/phone.validator";
+import { readDto } from "../../_shared/dto/read";
 
-export const listSupportersDto = z.object({
-  pagination: paginationDto,
-  data: z
-    .object({
-      campaignOwnerId: z.string().optional(),
-      ownerId: z.string().optional(),
-    })
-    .optional(),
+export const readSupportersDto = readDto({
+  user: z.object({
+    name: z.string().optional(),
+    email: z.string().optional(),
+    phone: z.string().optional(),
+  }),
+  campaignOwnerId: z.string().optional(),
+  ownerId: z.string().optional(),
 });
 
-export type ListSupportersDto = z.infer<typeof listSupportersDto>;
+export type ReadSupportersDto = z.infer<typeof readSupportersDto>;
 
 export const createSupportersDto = z.object({
   name: z.string(),
@@ -24,12 +24,8 @@ export const createSupportersDto = z.object({
     sectionId: z.string(),
     birthDate: z.string(),
   }),
-  campaign: z
-    .object({
-      referralId: z.string(),
-      campaignId: z.string(),
-    })
-    .optional(),
+  referralId: z.string().optional(),
+  campaignId: z.string().optional(),
 });
 
 export type CreateSupportersDto = z.infer<typeof createSupportersDto>;

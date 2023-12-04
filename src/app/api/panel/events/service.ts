@@ -4,9 +4,10 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 import utc from "dayjs/plugin/utc";
 import { cookies, headers } from "next/headers";
 import { getSupporterByUser } from "../supporters/service";
-import { Supporter } from "@prisma/client";
+import { Supporter, User } from "@prisma/client";
 import prisma from "prisma/prisma";
 import { sendEmail } from "../../emails/service";
+import { ReadEventsByCampaignDto } from "./dto";
 dayjs.extend(customParseFormat);
 dayjs.extend(utc);
 
@@ -92,40 +93,42 @@ export async function createEvent(data: any) {
   }
 }
 
-export async function getEventsByCampaign({
-  userId,
-  campaignId,
-}: {
-  userId: string;
-  campaignId: string;
+export async function readEventsByCampaign({
+  where,
+  supporterSession: { campaignId, ...host },
+}: ReadEventsByCampaignDto & {
+  supporterSession: Supporter;
 }) {
   const allEvents = await prisma.event.findMany({
-    where: { campaignId },
+    where: { ...where, campaignId },
     orderBy: { dateStart: "asc" },
   });
-  const host = await prisma.supporter.findFirst({ where: { userId, campaignId } });
 
   const allActiveEvents = allEvents.filter((event) => event.status === "active");
   const allPendingEvents = allEvents.filter((event) => event.status === "pending");
   const userPendingEvents = allPendingEvents.filter((event) => event.hostId === host.id);
-  const level = host.level;
 
-  if (level === 4) {
-    return { active: allActiveEvents, pending: allPendingEvents };
-  } else if (level) {
-    return { active: allActiveEvents, pending: userPendingEvents };
-  } else {
-    throw "Erro ao buscar eventos";
-  }
+  const events =
+    host.level === 4
+      ? { active: allActiveEvents, pending: allPendingEvents }
+      : { active: allActiveEvents, pending: userPendingEvents };
+
+  return events;
 }
 
-export async function getAvailableTimesByDay(campaignId: string, day: string) {
+export async function getEventTimestamps(eventId: string) {
   const events = await prisma.event.findMany({ where: { campaignId, status: "active" } });
-  const correctedTimeZoneDay = dayjs(day).add(3, "hour");
+
   const eventTimestamps = events.map((event) => ({
     start: dayjs(event.dateStart).utcOffset(-3).toISOString(),
     end: dayjs(event.dateEnd).utcOffset(-3).toISOString(),
   }));
+  return eventTimestamps;
+}
+
+export async function getAvailableTimesByDay(campaignId: string, day: string) {
+  const correctedTimeZoneDay = dayjs(day).add(3, "hour");
+
   const timeslots = [];
 
   let time = dayjs(correctedTimeZoneDay).utcOffset(-3).startOf("day");
@@ -151,7 +154,7 @@ export async function getAvailableTimesByDay(campaignId: string, day: string) {
     );
   });
 
-  return { available: availableTimeslots, events: eventTimestamps };
+  return availableTimeslots;
 }
 
 export async function updateEventStatus(request) {

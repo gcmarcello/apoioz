@@ -5,8 +5,14 @@ import { UserSessionMiddleware } from "@/middleware/functions/userSession.middle
 import { revalidatePath } from "next/cache";
 import { cookies, headers } from "next/headers";
 import { getSupporterByUser } from "../supporters/service";
-import { CreateEventDto } from "./dto";
+import {
+  CreateEventDto,
+  ReadAvailableTimesByDayDto,
+  ReadEventsByCampaignDto,
+} from "./dto";
 import * as service from "./service";
+import { ActionResponse } from "../../_shared/utils/ActionResponse";
+import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 
 export async function createEvent(payload: CreateEventDto) {
   const campaignId = cookies().get("activeCampaign")?.value;
@@ -31,11 +37,28 @@ export async function getEventsByCampaign(payload: string) {
   return service.getEventsByCampaign({ userId, campaignId: payload });
 }
 
-export async function getAvailableTimesByDay(payload: {
-  campaignId: string;
-  day: string;
-}) {
-  return await service.getAvailableTimesByDay(payload.campaignId, payload.day);
+export async function getEventTimestamps(payload: string) {
+  return service.getEventTimestamps(payload);
+}
+
+export async function readAvailableTimesByDay(request: ReadAvailableTimesByDayDto) {
+  try {
+    const {
+      request: {
+        supporterSession: { campaignId },
+        where: { day },
+      },
+    } = await UseMiddlewares(request)
+      .then((res) => UserSessionMiddleware(res))
+      .then((res) => SupporterSessionMiddleware(res));
+
+    const availableTimes = await service.getAvailableTimesByDay(campaignId, day);
+    return ActionResponse.success({
+      data: availableTimes,
+    });
+  } catch (err) {
+    return ActionResponse.error(err);
+  }
 }
 
 export async function updateEventStatus(request: { eventId: string; status: string }) {
