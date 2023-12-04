@@ -1,6 +1,7 @@
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { ReactNode } from "react";
+import { useForm, Path } from "react-hook-form";
 
 interface FieldProps {
   children: any;
@@ -9,6 +10,17 @@ interface FieldProps {
   id: string;
   relative?: ReactNode;
 }
+
+export interface BaseProps<Fields> {
+  label: string;
+  hform: ReturnType<typeof useForm<Fields>>;
+  name: Path<Fields>;
+  relative?: JSX.Element;
+  disabled?: boolean;
+}
+
+export const fieldClasses =
+  "block w-full appearance-none rounded-md border border-gray-200  px-3 py-1.5 text-gray-900 placeholder-gray-400 focus:outline-none sm:text-sm";
 
 export const ErrorField = ({ message }: { message: string | undefined }) =>
   message ? <p className="mt-1 h-2 w-full text-[11px] text-red-600">{message}</p> : null;

@@ -9,20 +9,22 @@ import { CreateSupportersDto, createSupportersDto } from "@/app/api/panel/suppor
 import { createSupporter } from "@/app/api/panel/supporters/actions";
 import { fakerPT_BR } from "@faker-js/faker";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Campaign, Section } from "@prisma/client";
-import dayjs from "dayjs";
+import { Campaign } from "@prisma/client";
 import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 import { toProperCase } from "@/_shared/utils/format";
 import { MetaForm } from "@/app/(frontend)/_shared/hooks/useMetaform";
-import ComboboxField, {
+import {
+  ComboboxField,
   ListboxField,
 } from "@/app/(frontend)/_shared/components/fields/Select";
 import {
   TextField,
   MaskedTextField,
 } from "@/app/(frontend)/_shared/components/fields/Text";
+import { listSupportersFromGroup } from "@/app/api/panel/supporters/actions";
+import dayjs from "dayjs";
 
 export function AddSupporterForm({
   campaign,
@@ -47,12 +49,7 @@ export function AddSupporterForm({
     action: getSectionsByZone,
   });
 
-  const {
-    data: address,
-    trigger: fetchAddress,
-    isMutating: isFetchingAddress,
-    reset: resetAddress,
-  } = useAction({
+  const { data: address, trigger: fetchAddress } = useAction({
     action: getAddressBySection,
   });
 
@@ -103,7 +100,7 @@ export function AddSupporterForm({
     form.trigger("name");
   }
 
-  if (!zones) return <></>;
+  if (!zones || !form) return <></>;
 
   return (
     <form>
@@ -137,6 +134,13 @@ export function AddSupporterForm({
           label="Data de Nascimento"
           mask="99/99/9999"
           name={"info.birthDate"}
+        />
+        <ComboboxField
+          label="Indicador"
+          hform={form}
+          name={"referralId"}
+          fetcher={listSupportersFromGroup}
+          displayValueKey={"user.name"}
         />
 
         <div className="grid grid-cols-2 gap-3">

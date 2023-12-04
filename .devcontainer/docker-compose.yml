@@ -53,9 +53,6 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-    # Add "forwardPorts": ["5432"] to **devcontainer.json** to forward PostgreSQL locally.
-    # (Adding the "ports" property to this file will not forward from a Codespace.)
-
 volumes:
   postgres-data:
   cloudbeaver:

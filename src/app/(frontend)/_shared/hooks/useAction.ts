@@ -25,16 +25,18 @@ export function useAction<T, U extends ParserReturnType, ParserReturnType = U>({
         if ("error" in res) {
           throw res.message;
         }
-        const parsedData = parser(res.data);
-        onSuccess && onSuccess(parsedData);
-        return parsedData;
+        return parser(res.data);
       })
       .catch((error: any) => {
-        onError && onError(error);
         throw error;
       });
 
-  return useSWRMutation<ParserReturnType, any, string, T>(id, (url: string, { arg }) =>
-    fetcher(arg)
+  return useSWRMutation<ParserReturnType, any, string, T>(
+    id,
+    (url: string, { arg }) => fetcher(arg),
+    {
+      onSuccess: (data) => onSuccess && onSuccess(data),
+      onError: (error) => onError && onError(error),
+    }
   );
 }

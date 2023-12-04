@@ -12,9 +12,11 @@ import { CampaignLeaderMiddleware } from "@/middleware/functions/campaignLeader.
 import { redirect } from "next/navigation";
 
 export default async function TimePage() {
-  await UseMiddlewares()
+  /**
+   * await UseMiddlewares()
     .then(CampaignLeaderMiddleware)
     .catch(() => redirect("/painel"));
+   */
 
   const tree = await listTreeSuporters();
 

@@ -1,5 +1,9 @@
 export interface SuccessResponse<T> {
   data: T;
+  pagination?: {
+    pageSize: number;
+    pageIndex: number;
+  };
   message?: string | string[];
 }
 
