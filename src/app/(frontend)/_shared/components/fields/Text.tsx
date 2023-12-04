@@ -2,10 +2,8 @@
 import clsx from "clsx";
 import React, { forwardRef, useId } from "react";
 import { Controller, Path, useForm } from "react-hook-form";
-import { fieldClasses } from "./_shared/fieldClasses";
-import { Field } from "./_shared/Field";
+import { BaseProps, Field, fieldClasses } from "./Field";
 import InputMask from "react-input-mask";
-import { BaseProps } from "./_shared/BaseProps";
 
 type TextFieldProps<Fields> = Omit<React.ComponentPropsWithoutRef<"input">, "id"> &
   BaseProps<Fields>;

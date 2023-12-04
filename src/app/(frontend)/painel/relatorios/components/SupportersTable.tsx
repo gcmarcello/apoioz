@@ -1,6 +1,6 @@
 "use client";
 import { Date } from "@/app/(frontend)/_shared/components/Date";
-import SupporterBall from "../../time/components/SupporterBall";
+import SupporterBall from "../../time/components/SupporterNode";
 import { SupporterTableType } from "@/_shared/types/tableTypes";
 import { AtSymbolIcon, TvIcon } from "@heroicons/react/24/solid";
 import { createColumnHelper } from "@tanstack/react-table";

@@ -1,6 +1,10 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["postgresqlExtensions", "multiSchema"]
+  previewFeatures = ["postgresqlExtensions", "multiSchema", "fullTextSearch"]
+}
+
+generator zod {
+  provider                 = "zod-prisma"
 }
 
 datasource db {

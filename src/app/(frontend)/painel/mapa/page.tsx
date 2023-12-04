@@ -16,6 +16,7 @@ import { LoadingSpinner } from "../../_shared/components/Spinners";
 import { UserGroupIcon, XCircleIcon } from "@heroicons/react/24/solid";
 import { toProperCase } from "@/_shared/utils/format";
 import { useAction } from "../../_shared/hooks/useAction";
+import Image from "next/image";
 
 const WithCustomLoading = dynamic(
   () =>

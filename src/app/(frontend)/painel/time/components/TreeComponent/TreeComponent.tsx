@@ -1,62 +1,84 @@
-"use client";
+import React from "react";
+import ReactFlow, { Controls, MiniMap } from "reactflow";
+import dagre from "dagre";
+import "reactflow/dist/base.css";
+import SupporterNode from "../SupporterNode";
 
-import { For } from "@/app/(frontend)/_shared/components/For";
-import Tree from "@/app/(frontend)/_shared/components/organizational-charts/Tree";
-import TreeNode from "@/app/(frontend)/_shared/components/organizational-charts/TreeNode";
+const TreeComponent = ({ supportersTree }) => {
+  console.log(supportersTree);
+  const dagreGraph = new dagre.graphlib.Graph();
+  dagreGraph.setDefaultEdgeLabel(() => ({}));
+  dagreGraph.setGraph({ rankdir: "TB" });
 
-type SupporterBallProps = {
-  name: string;
-  role: string;
-  imageUrl: string;
-};
+  const nodeWidth = 270;
+  const nodeHeight = 150;
 
-function Ball({ supporter }: { supporter: SupporterBallProps }) {
+  const processNode = (node) => {
+    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+    node.referred?.forEach((child) => {
+      dagreGraph.setEdge(node.id, child.id);
+      processNode(child);
+    });
+  };
+
+  if (supportersTree && supportersTree.length > 0) {
+    processNode(supportersTree[0]);
+  }
+
+  dagre.layout(dagreGraph);
+
+  let nodes = [];
+  let edges = [];
+
+  const createNode = (node) => {
+    const nodeWithPosition = dagreGraph.node(node.id);
+    return {
+      id: node.id.toString(),
+      type: "supporter",
+      position: {
+        x: nodeWithPosition.x - nodeWidth / 2,
+        y: nodeWithPosition.y - nodeHeight / 2,
+      },
+      data: { label: node.user.name, level: node.level },
+    };
+  };
+
+  const createEdge = (source, target) => ({
+    id: `e${source}-${target}`,
+    source: source.toString(),
+    target: target.toString(),
+    type: "smoothstep",
+  });
+
+  const processSupporter = (supporter) => {
+    nodes.push(createNode(supporter));
+    supporter.referred?.forEach((child) => {
+      edges.push(createEdge(supporter.id, child.id));
+      processSupporter(child);
+    });
+  };
+
+  if (supportersTree && supportersTree.length > 0) {
+    processSupporter(supportersTree[0]);
+  }
+
+  const fitViewOptions = { minZoom: 0.8 };
+  const nodeTypes = { supporter: SupporterNode };
+
   return (
-    <div className="flex flex-col items-center">
-      <img
-        className="h-10 w-10 rounded-full"
-        src={
-          "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-        }
-        alt=""
-      />
-      <h3 className="mt-2 text-center text-base font-semibold leading-7 tracking-tight text-gray-900">
-        {supporter.name}
-      </h3>
-      <p className="text-sm leading-6 text-gray-600">{supporter.role}</p>
+    <div className="h-[calc(100vh-80px-50px)]">
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        fitView
+        fitViewOptions={fitViewOptions}
+        nodeTypes={nodeTypes}
+      >
+        <MiniMap />
+        <Controls fitViewOptions={fitViewOptions} />
+      </ReactFlow>
     </div>
   );
-}
-
-const renderTreeNodes = (supporters) => {
-  console.log(supporters);
-  return supporters.map((supporter) => (
-    <TreeNode
-      label={
-        <Ball
-          supporter={{
-            name: supporter.user.name,
-            role: supporter.role,
-          }}
-        />
-      }
-      key={supporter.id}
-    >
-      {supporter.referred.length > 0 && renderTreeNodes(supporter.referred)}
-    </TreeNode>
-  ));
 };
 
-export default function TreeComponent({ supportersTree }: { supportersTree: any }) {
-  const rootSupporter = supportersTree[0];
-  console.log(rootSupporter);
-  return (
-    <div className="h-full w-full  pb-10">
-      <Tree label={<Ball supporter={rootSupporter} />} nodePadding="5px">
-        {renderTreeNodes([
-          { user: { name: "xd", info: "" }, role: "putao", imageUrl: "piruzord" },
-        ])}
-      </Tree>
-    </div>
-  );
-}
+export default TreeComponent;

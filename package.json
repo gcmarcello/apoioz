@@ -31,6 +31,7 @@
     "bcrypt": "^5.1.1",
     "chart.js": "^4.4.0",
     "clsx": "^2.0.0",
+    "dagre": "^0.8.5",
     "dayjs": "^1.11.10",
     "jsonwebtoken": "^9.0.2",
     "leaflet": "^1.9.4",
@@ -47,11 +48,13 @@
     "react-leaflet-cluster": "^2.1.0",
     "react-leaflet-fullscreen": "^4.1.1",
     "react-qr-code": "^2.0.12",
+    "reactflow": "^11.10.1",
     "reflect-metadata": "0.1.13",
     "swr": "^2.2.4",
     "tailwindcss": "3.3.3",
     "typescript": "5.2.2",
-    "zod": "3.22.4"
+    "zod": "3.22.4",
+    "zod-prisma": "^0.5.4"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.2.0",

@@ -1,28 +1,36 @@
-import { Fragment, useId, useState } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import clsx from "clsx";
-import { fieldClasses } from "./_shared/fieldClasses";
-import { BaseProps } from "./_shared/BaseProps";
 import { Combobox, Listbox, Transition } from "@headlessui/react";
 import {
   MagnifyingGlassIcon,
   CheckIcon,
   ChevronUpDownIcon,
 } from "@heroicons/react/24/solid";
-import { Field } from "./_shared/Field";
-import { Controller } from "react-hook-form";
+import { BaseProps, Field, fieldClasses } from "./Field";
+import { Controller, Path } from "react-hook-form";
+import { useAction } from "../../hooks/useAction";
+import { ErrorResponse, SuccessResponse } from "@/app/api/_shared/utils/ActionResponse";
 
 type SelectFieldProps<
   Fields,
-  Options extends Array<{ [key: string]: any }>,
+  Data extends Array<{ [key: string]: any }>,
 > = BaseProps<Fields> & {
-  data: Options;
-  displayValueKey: keyof Options[0];
+  data?: Data | undefined[];
+  displayValueKey: Path<Data[0]>;
   onChange?: any;
   reverseOptions?: boolean;
 };
 
-export function ListboxField<Fields, Options extends Array<{ [key: string]: any }>>(
-  { hform, name, data = [], ...props }: SelectFieldProps<Fields, Options>,
+export function ListboxField<Fields, Data extends Array<{ [key: string]: any }>>(
+  { hform, name, data = [], ...props }: SelectFieldProps<Fields, Data>,
   ref
 ) {
   const id = useId();
@@ -179,32 +187,87 @@ export function ListboxField<Fields, Options extends Array<{ [key: string]: any 
   );
 }
 
-export default function ComboboxField<
-  Fields,
-  Options extends Array<{ [key: string]: any }>,
->({ data = [], ...props }: SelectFieldProps<Fields, Options>) {
+export function ComboboxField<Fields, Data extends { [key: string]: any }[]>({
+  data = [],
+  fetcher,
+  debounce = 500,
+  ...props
+}: SelectFieldProps<Fields, Data> & {
+  fetcher?: (query: any) => Promise<ErrorResponse | SuccessResponse<Data>>;
+  debounce?: number;
+}) {
   const id = useId();
 
-  const options = data.map((i) => ({
-    id: i.id as string,
-    displayValue: i[props.displayValueKey as string] as string,
-  }));
+  const generateOptions = useCallback(
+    (data) =>
+      data.map((i) => {
+        return {
+          id: i.id as string,
+          displayValue: (props.displayValueKey as string)
+            .split(".")
+            .reduce((acc, part) => acc && acc[part], i),
+        };
+      }),
+    [props.displayValueKey]
+  );
 
-  type DataType = (typeof options)[0];
+  const [initialOptions, setInitialOptions] = useState(generateOptions(data));
+
+  useEffect(() => {
+    const newOptions = generateOptions(data);
+    if (
+      JSON.stringify(newOptions) !== JSON.stringify(initialOptions) ||
+      (newOptions.length === 0 && initialOptions.length !== 0)
+    ) {
+      setInitialOptions(newOptions);
+    }
+  }, [data, initialOptions, generateOptions]);
 
   const [query, setQuery] = useState("");
 
-  const filteredOptions =
-    query === ""
-      ? options
-      : options.filter((option: any) => {
-          return option.displayValue
-            .toString()
-            .toLowerCase()
-            .includes(query.toLowerCase());
-        });
+  const { data: fetchedData, trigger: fetchData } = useAction({
+    action: fetcher,
+    parser: (res: any) => res.data,
+  });
+
+  const options = useMemo(() => {
+    if (fetcher) {
+      if (!fetchedData) return [];
+      const options = generateOptions(fetchedData);
+      if (!initialOptions) setInitialOptions(options);
+      return options;
+    }
+
+    return query === ""
+      ? initialOptions
+      : generateOptions(data).filter((option) =>
+          option.displayValue.toString().toLowerCase().includes(query.toLowerCase())
+        );
+  }, [fetchedData, initialOptions, query]);
+
+  useEffect(() => {
+    if (!fetcher) return;
+
+    if (query === "") {
+      fetchData({
+        pagination: {
+          pageSize: 10,
+          pageIndex: 0,
+        },
+      });
+    } else {
+      const queryObject = props.displayValueKey
+        .split(".")
+        .reduceRight((acc: any, key: any) => ({ [key]: acc }), query);
+      fetchData({
+        query: queryObject,
+      });
+    }
+  }, [query]);
 
   const errorMessage = props.hform.formState.errors[props.name]?.message as string;
+
+  const timeout = useRef(setTimeout(() => {}, 0));
 
   return (
     <Controller
@@ -216,8 +279,8 @@ export default function ComboboxField<
             disabled={props.disabled}
             as={Fragment}
             value={options?.find((o) => o.id === value) || ""}
-            onChange={(data) => {
-              props.onChange(data);
+            onChange={(data: any) => {
+              props.onChange && props.onChange(data);
               onChange(data.id);
             }}
           >
@@ -225,9 +288,17 @@ export default function ComboboxField<
               <Combobox.Input
                 className={fieldClasses}
                 onChange={(event) => {
-                  setQuery(event.target.value);
+                  if (!fetcher) {
+                    setQuery(event.target.value);
+                  } else {
+                    clearTimeout(timeout.current);
+
+                    timeout.current = setTimeout(() => {
+                      setQuery(event.target.value);
+                    }, debounce);
+                  }
                 }}
-                displayValue={(item: DataType) => {
+                displayValue={(item: any) => {
                   return item.displayValue;
                 }}
               />
@@ -245,11 +316,10 @@ export default function ComboboxField<
               {options.length > 0 && (
                 <Combobox.Options
                   className={clsx(
-                    "absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm",
-                    options.length === 1 ? "" : "top-[-15.55rem] "
+                    "absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
                   )}
                 >
-                  {filteredOptions.map((data) => (
+                  {options.map((data) => (
                     <Combobox.Option
                       key={data.id}
                       value={data || {}}

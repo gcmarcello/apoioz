@@ -7,7 +7,6 @@ import { CreateSupportersDto, ListSupportersDto } from "./dto";
 import prisma from "prisma/prisma";
 import { findCampaignById } from "../campaigns/service";
 import { verifyExistingUser } from "../../user/service";
-import { cookies, headers } from "next/headers";
 import { hashInfo } from "@/_shared/utils/bCrypt";
 import { sendEmail } from "../../emails/service";
 
@@ -20,6 +19,15 @@ export async function createSupporter(
   const existingUser = await verifyExistingUser(request.phone);
 
   const campaign = await findCampaignById(request.supporterSession.campaignId);
+
+  if (request.supporterSession.level < 4 && request.referralId)
+    throw "Você não pode cadastrar um apoiador para um apoiador.";
+
+  const referral = request.referralId
+    ? await prisma.supporter.findFirst({
+        where: { id: request.referralId },
+      })
+    : request.supporterSession;
 
   if (!campaign) throw "Campanha não encontrada";
 
@@ -36,7 +44,7 @@ export async function createSupporter(
     }
   }
 
-  let referralTree = [request.supporterSession];
+  let referralTree = [referral];
   if (referralTree[0].level != 4) {
     while (true) {
       const referral = await prisma.supporter.findFirst({
@@ -109,8 +117,8 @@ export async function createSupporter(
         level: 1,
         Section: { connect: { id: user.info.sectionId } },
         Zone: { connect: { id: user.info.zoneId } },
-        campaign: { connect: { id: request.supporterSession.campaignId } },
-        referral: { connect: { id: request.supporterSession.id } },
+        campaign: { connect: { id: referral.campaignId } },
+        referral: { connect: { id: referral.id } },
         user: { connect: { id: user.id } },
         supporterGroupsMemberships: {
           create: [
@@ -127,7 +135,8 @@ export async function createSupporter(
     })
     .catch((err) => console.log(err));
 
-  await sendEmail({
+  /**
+   * await sendEmail({
     to: user.email,
     templateId: "welcome_email",
     dynamicData: {
@@ -137,18 +146,19 @@ export async function createSupporter(
       subject: `Bem Vindo à Campanha ${campaign.name}! - ApoioZ`,
     },
   });
+   */
 
   return supporter;
 }
 
-export async function listTreeSuporters({
+export async function listSupportersAsTree({
   supporterSession,
 }: CreateSupportersDto & {
   userSession: UserWithoutPassword;
   supporterSession: Supporter;
 }) {
   function generateReferredObject(level: any): any {
-    if (level === 1) {
+    if (level <= 1) {
       return {
         referral: { include: { user: { include: { info: true } } } },
         user: { include: { info: { include: { Section: true, Zone: true } } } },
@@ -161,7 +171,7 @@ export async function listTreeSuporters({
             user: {
               include: { info: { include: { Section: true, Zone: true } } },
             },
-            ...generateReferredObject(level - 1),
+            ...generateReferredObject(level - 0.2),
           },
         },
       };
@@ -189,9 +199,9 @@ export async function signUpAsSupporter(request: CreateSupportersDto) {
   try {
     const existingUser = await verifyExistingUser(request.phone);
 
-    const campaign = await findCampaignById(request.campaign.campaignId);
+    const campaign = await findCampaignById(request.campaignId);
     const referral = await prisma.supporter.findFirst({
-      where: { id: request.campaign.referralId },
+      where: { id: request.referralId },
     });
 
     if (!campaign) throw "Campanha não encontrada";
@@ -334,91 +344,89 @@ export async function signUpAsSupporter(request: CreateSupportersDto) {
   }
 }
 
-export async function listSupporters({
+export async function listSupportersFromGroup({
   pagination,
-  data,
+  query,
   supporterSession,
 }: ListSupportersDto & {
-  userSession: Omit<User, "password">;
   supporterSession: Supporter;
 }) {
-  try {
-    const userId = data?.ownerId || supporterSession.userId;
+  const supporterGroup = await prisma.supporterGroupMembership.findFirst({
+    where: { supporterId: supporterSession?.id, isOwner: true },
+  });
 
-    const campaignId = data?.campaignOwnerId || supporterSession.campaignId;
+  if (!supporterGroup) throw "Você não tem permissão para acessar este grupo de apoio.";
 
-    const supporter = await prisma.supporter.findFirst({
-      where: { userId: userId, campaignId: campaignId },
-    });
-
-    const supporterGroup = await prisma.supporterGroupMembership.findFirst({
-      where: { supporterId: supporter?.id, isOwner: true },
-    });
-
-    if (!supporter) return;
-
-    const supporterList = await prisma.supporterGroupMembership.findMany({
-      where: { supporterGroupId: supporterGroup?.supporterGroupId },
-      include: {
-        supporter: {
-          include: {
-            user: {
-              select: {
-                info: { include: { Section: true, Zone: true } },
-                name: true,
-                email: true,
-                phone: true,
-              },
+  const supporterList = await prisma.supporter.findMany({
+    take: pagination?.pageSize,
+    where: {
+      campaignId: supporterSession.campaignId,
+      supporterGroupsMemberships: {
+        some: {
+          supporterGroupId: supporterGroup?.supporterGroupId,
+        },
+      },
+      user: {
+        name: { contains: query?.user.name },
+        email: { contains: query?.user.email },
+        phone: { contains: query?.user.phone },
+      },
+    },
+    include: query?.eager
+      ? {
+          user: {
+            select: {
+              info: { include: { Section: true, Zone: true } },
+              name: true,
+              email: true,
+              phone: true,
             },
-            referral: {
-              include: {
-                user: {
-                  select: {
-                    info: { include: { Section: true, Zone: true } },
-                    name: true,
-                    email: true,
-                    phone: true,
-                  },
+          },
+          referral: {
+            include: {
+              user: {
+                select: {
+                  info: { include: { Section: true, Zone: true } },
+                  name: true,
+                  email: true,
+                  phone: true,
                 },
-                referral: {
-                  include: {
-                    user: {
-                      select: {
-                        info: { include: { Section: true, Zone: true } },
-                        name: true,
-                        email: true,
-                        phone: true,
-                      },
+              },
+              referral: {
+                include: {
+                  user: {
+                    select: {
+                      info: { include: { Section: true, Zone: true } },
+                      name: true,
+                      email: true,
+                      phone: true,
                     },
                   },
                 },
               },
             },
           },
+        }
+      : {
+          user: {
+            select: {
+              info: { include: { Section: true, Zone: true } },
+              name: true,
+              email: true,
+              phone: true,
+            },
+          },
         },
-      },
+  });
 
-      orderBy: { supporter: { createdAt: "desc" } },
-      take: pagination?.pageSize || undefined,
-      skip: pagination?.pageIndex * (pagination?.pageSize || 0) || undefined,
-    });
-
-    const parsedList = supporterList.map((item) => item.supporter);
-    const count = await prisma.supporterGroupMembership.count({
-      where: { supporterGroupId: supporterGroup?.supporterGroupId },
-    });
-
-    return {
-      data: parsedList,
-      pagination: {
-        pageIndex: pagination?.pageIndex,
-        pageSize: pagination?.pageSize,
-        count,
-      },
-    };
-  } catch (error) {
-    console.log(error);
-  }
+  return {
+    data: supporterList,
+    pagination: {
+      pageIndex: pagination?.pageIndex,
+      pageSize: pagination?.pageSize,
+      count: supporterList.length + 1,
+    },
+  };
 }
 
 export async function getSupporterByUser({

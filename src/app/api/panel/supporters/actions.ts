@@ -9,13 +9,23 @@ import { CreateSupportersDto, ListSupportersDto } from "./dto";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { ActionResponse } from "../../_shared/utils/ActionResponse";
 
-export async function listSupporters(request: ListSupportersDto) {
-  const { request: parsedRequest } = await UseMiddlewares(request)
-    .then(UserSessionMiddleware)
-    .then(SupporterSessionMiddleware)
-    .then(ListSupportersMiddleware);
+export async function listSupportersFromGroup(request: ListSupportersDto) {
+  try {
+    const { request: parsedRequest } = await UseMiddlewares(request)
+      .then(UserSessionMiddleware)
+      .then(SupporterSessionMiddleware)
+      .then(ListSupportersMiddleware);
 
-  return supportersService.listSupporters(parsedRequest);
+    const { data, pagination } =
+      await supportersService.listSupportersFromGroup(parsedRequest);
+
+    return ActionResponse.success({
+      data,
+      pagination,
+    });
+  } catch (err) {
+    return ActionResponse.error(err);
+  }
 }
 
 export async function getSupporterByUser(data: { userId: string; campaignId: string }) {
@@ -49,7 +59,7 @@ export async function listTreeSuporters() {
     .then(UserSessionMiddleware)
     .then(SupporterSessionMiddleware);
 
-  return supportersService.listTreeSuporters(parsedRequest);
+  return supportersService.listSupportersAsTree(parsedRequest);
 }
 
 export async function signUpAsSupporter(request: CreateSupportersDto) {

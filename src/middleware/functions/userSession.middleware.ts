@@ -25,6 +25,6 @@ export async function UserSessionMiddleware<P>({ request }: MiddlewareArguments<
   };
 }
 
-export type UserSessionMiddlewareReturnType = Awaited<
-  ReturnType<typeof UserSessionMiddleware>
+export type UserSessionMiddlewareReturnType<T> = Awaited<
+  ReturnType<typeof UserSessionMiddleware<T>>
 >;

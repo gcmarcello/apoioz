@@ -10,21 +10,13 @@ import {
   Tooltip,
   GeoJSON,
 } from "react-leaflet";
-import useSWRMutation from "swr/mutation";
 import L, { LatLngBoundsExpression, LatLngExpression, MarkerCluster } from "leaflet";
 import React from "react";
 import clsx from "clsx";
 import { toProperCase } from "@/_shared/utils/format";
 import { For } from "@/app/(frontend)/_shared/components/For";
-import { generateMapData } from "@/app/api/panel/map/actions";
 import { FullscreenControl } from "react-leaflet-fullscreen";
-import { ArrowsPointingOutIcon } from "@heroicons/react/24/solid";
-import {
-  contrastingColor,
-  generateRandomHexColor,
-} from "@/app/(frontend)/_shared/utils/colors";
 import MarkerClusterGroup from "react-leaflet-cluster";
-import AddressDetailsModal from "./AddressDetailsModal";
 
 const POSITION_CLASSES = {
   bottomleft: "leaflet-bottom leaflet-left",
