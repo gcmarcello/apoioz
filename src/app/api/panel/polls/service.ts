@@ -7,7 +7,13 @@ import { Supporter } from "@prisma/client";
 export async function listPolls(request) {
   const fetchPolls = await prisma.poll.findMany({
     where: { campaignId: request.campaignId },
-    include: { PollQuestion: { include: { PollOption: true } }, PollAnswer: true },
+    include: {
+      PollQuestion: {
+        where: { disabled: false },
+        include: { PollOption: { where: { disabled: false } } },
+      },
+      PollAnswer: true,
+    },
   });
   const polls = fetchPolls.map((poll) => ({
     ...poll,
@@ -20,7 +26,12 @@ export async function listPolls(request) {
 export async function getPoll(request) {
   const poll = await prisma.poll.findUnique({
     where: { id: request.id },
-    include: { PollQuestion: { include: { PollOption: true } } },
+    include: {
+      PollQuestion: {
+        where: { disabled: false },
+        include: { PollOption: { where: { disabled: false } } },
+      },
+    },
   });
 
   return poll;
@@ -32,10 +43,68 @@ export async function deletePoll(request) {
 }
 
 export async function updatePoll(request) {
-  const poll = await prisma.poll.update({
-    where: { id: request.id },
-    data: request,
-  });
+  const { userSession, supporterSession, ...rest } = request;
+  const operations = [];
+
+  // Update the main poll properties
+  operations.push(
+    prisma.poll.update({
+      where: { id: rest.id },
+      data: {
+        activeAtSignUp: rest.activeAtSignUp,
+        title: rest.title,
+      },
+    })
+  );
+
+  for (const question of rest.questions) {
+    let questionOperation;
+    if (question.id) {
+      questionOperation = prisma.pollQuestion.update({
+        where: { id: question.id },
+        data: {
+          allowFreeAnswer: question.allowFreeAnswer,
+          allowMultipleAnswers: question.allowMultipleAnswers,
+          question: question.question,
+        },
+      });
+    } else {
+      questionOperation = prisma.pollQuestion.create({
+        data: {
+          allowFreeAnswer: question.allowFreeAnswer,
+          allowMultipleAnswers: question.allowMultipleAnswers,
+          question: question.question,
+          pollId: rest.id,
+        },
+      });
+    }
+    operations.push(questionOperation);
+
+    for (const option of question.options) {
+      let optionOperation;
+      if (option.id) {
+        optionOperation = prisma.pollOption.update({
+          where: { id: option.id },
+          data: {
+            name: option.name,
+            disabled: option.disabled,
+          },
+        });
+      } else {
+        optionOperation = prisma.pollOption.create({
+          data: {
+            name: option.name,
+            disabled: false,
+            questionId: question.id,
+          },
+        });
+      }
+      operations.push(optionOperation);
+    }
+  }
+
+  // Execute all operations in a transaction
+  const poll = await prisma.$transaction(operations);
   return poll;
 }
 
@@ -61,6 +130,7 @@ export async function createPoll(
           PollOption: {
             create: question.options.map((option) => ({
               name: option.name,
+              disabled: false,
             })),
           },
         })),

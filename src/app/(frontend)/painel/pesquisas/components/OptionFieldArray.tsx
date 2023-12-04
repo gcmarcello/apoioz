@@ -4,21 +4,26 @@ import { ArrowDownIcon, ArrowUpIcon } from "@heroicons/react/24/solid";
 import { useFieldArray } from "react-hook-form";
 import { Button, IconOnlyButton } from "../../../_shared/components/Button";
 import SwitchInput from "@/app/(frontend)/_shared/components/fields/Switch";
+import { PollType } from "@/_shared/types/pollTypes";
 
 export default function OptionFieldArray({ nestIndex, control, form }) {
-  const { fields, remove, append, move } = useFieldArray({
+  const { fields, remove, append, move } = useFieldArray<PollType>({
     control,
     name: `questions.${nestIndex}.options`,
   });
 
+  let pseudoIndex = 0;
+
   return (
     <div>
       {fields.map((item, k) => {
+        if (form.watch(`questions.${nestIndex}.options.${k}.disabled`)) return null;
+        pseudoIndex++;
         return (
           <div className="mx-3 mt-3 flex items-end lg:mx-5" key={item.id}>
             <div className="flex-grow">
               <TextField
-                label={`Opção ${k + 1}`}
+                label={`Opção ${pseudoIndex}`}
                 hform={form}
                 placeholder="Digite a opção"
                 registeroptions={{ required: true }}
@@ -28,9 +33,14 @@ export default function OptionFieldArray({ nestIndex, control, form }) {
             <IconOnlyButton
               icon={XCircleIcon}
               onClick={() => {
-                if (fields.length <= 1)
+                if (fields.length <= 1) {
                   form.setValue(`questions.${nestIndex}.allowFreeAnswer`, true);
-                remove(k);
+                }
+                if (form.getValues(`questions.${nestIndex}.options.${k}.id`)) {
+                  form.setValue(`questions.${nestIndex}.options.${k}.disabled`, true);
+                } else {
+                  remove(k);
+                }
               }}
               className="mx-2 my-1 h-8 w-8"
               iconClassName={"text-red-600"}
@@ -63,6 +73,7 @@ export default function OptionFieldArray({ nestIndex, control, form }) {
           onClick={() => {
             append({
               name: "",
+              disabled: false,
             });
           }}
           className="flex-grow lg:ml-5 lg:flex-grow-0"

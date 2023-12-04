@@ -304,6 +304,7 @@ model PollQuestion {
   updatedAt            DateTime     @updatedAt
   PollOption           PollOption[]
   PollAnswer           PollAnswer[]
+  disabled             Boolean      @default(false)
 
   @@schema("polls")
 }
@@ -316,6 +317,7 @@ model PollOption {
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
   PollAnswer PollAnswer[]
+  disabled   Boolean      @default(false)
 
   @@schema("polls")
 }

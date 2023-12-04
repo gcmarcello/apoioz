@@ -4,6 +4,7 @@ import { getCampaign } from "@/app/api/panel/campaigns/service";
 import { cookies, headers } from "next/headers";
 import { listPolls } from "@/app/api/panel/polls/service";
 import PollsTable from "./components/PollsTable";
+import PageHeader from "../../_shared/components/PageHeader";
 
 export default async function PesquisasPage() {
   const activeCampaignId = cookies().get("activeCampaign")?.value;
@@ -14,6 +15,10 @@ export default async function PesquisasPage() {
   const polls = await listPolls({ campaignId: activeCampaignId });
   return (
     <>
+      <PageHeader
+        title="Painel de Pesquisas"
+        primaryButton={{ href: "./pesquisas/nova", text: "Nova Pesquisa" }}
+      />
       <StatsSection campaign={campaign} user={user} />
       <PollsTable polls={polls} />
     </>

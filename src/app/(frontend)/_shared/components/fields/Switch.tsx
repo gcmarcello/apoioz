@@ -3,7 +3,7 @@ import { Switch } from "@headlessui/react";
 import clsx from "clsx";
 
 interface SwitchInputProps {
-  control: Control;
+  control: any; //TODO: Fix typing
   name: string;
   label: string;
   subLabel?: string;

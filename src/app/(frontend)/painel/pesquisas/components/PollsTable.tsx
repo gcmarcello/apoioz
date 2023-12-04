@@ -54,7 +54,7 @@ export default function PollsTable({ polls }: { polls: Poll[] }) {
       id: "edit",
       header: "",
       cell: (info) => (
-        <ParagraphLink href={`/pesquisas/${info.getValue()}`}>Editar</ParagraphLink>
+        <ParagraphLink href={`./pesquisas/${info.getValue()}`}>Editar</ParagraphLink>
       ),
     }),
   ];
