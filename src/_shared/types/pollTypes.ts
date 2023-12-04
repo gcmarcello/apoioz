@@ -1,7 +1,7 @@
 export interface PollQuestionOptionType {
   id?: string;
   name: string;
-  disabled: boolean;
+  active: boolean;
 }
 
 export interface PollQuestionType {
@@ -9,12 +9,13 @@ export interface PollQuestionType {
   question: string;
   allowMultipleAnswers: boolean;
   allowFreeAnswer: boolean;
-  disabled: boolean;
+  active: boolean;
   options: PollQuestionOptionType[];
 }
 export interface PollType {
   title: string;
   activeAtSignUp: boolean;
   questions: PollQuestionType[];
-  id: string;
+  active: boolean;
+  id?: string;
 }

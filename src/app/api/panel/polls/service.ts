@@ -9,8 +9,8 @@ export async function listPolls(request) {
     where: { campaignId: request.campaignId },
     include: {
       PollQuestion: {
-        where: { disabled: false },
-        include: { PollOption: { where: { disabled: false } } },
+        where: { active: true },
+        include: { PollOption: { where: { active: true } } },
       },
       PollAnswer: true,
     },
@@ -28,8 +28,8 @@ export async function getPoll(request) {
     where: { id: request.id },
     include: {
       PollQuestion: {
-        where: { disabled: false },
-        include: { PollOption: { where: { disabled: false } } },
+        where: { active: true },
+        include: { PollOption: { where: { active: true } } },
       },
     },
   });
@@ -45,21 +45,40 @@ export async function deletePoll(request) {
 export async function updatePoll(request) {
   const { userSession, supporterSession, ...rest } = request;
   const operations = [];
+  let whereCondition: { campaignId: string; id?: { not: string } };
 
-  // Update the main poll properties
+  if (rest.activeAtSignUp) {
+    whereCondition = rest.id
+      ? {
+          campaignId: supporterSession.campaignId,
+          id: { not: rest.id },
+        }
+      : {
+          campaignId: supporterSession.campaignId,
+        };
+  }
+
+  operations.push(
+    prisma.poll.updateMany({
+      where: whereCondition,
+      data: { activeAtSignUp: false },
+    })
+  );
+
   operations.push(
     prisma.poll.update({
       where: { id: rest.id },
       data: {
         activeAtSignUp: rest.activeAtSignUp,
         title: rest.title,
+        active: rest.active,
       },
     })
   );
 
   for (const question of rest.questions) {
-    let questionUUID;
-    let questionOperation;
+    let questionUUID: string | undefined;
+    let questionOperation: any;
     if (question.id) {
       questionOperation = prisma.pollQuestion.update({
         where: { id: question.id },
@@ -67,7 +86,7 @@ export async function updatePoll(request) {
           allowFreeAnswer: question.allowFreeAnswer,
           allowMultipleAnswers: question.allowMultipleAnswers,
           question: question.question,
-          disabled: question.disabled,
+          active: question.active,
         },
       });
     } else {
@@ -78,7 +97,7 @@ export async function updatePoll(request) {
           allowFreeAnswer: question.allowFreeAnswer,
           allowMultipleAnswers: question.allowMultipleAnswers,
           question: question.question,
-          disabled: false,
+          active: true,
           pollId: rest.id,
         },
       });
@@ -92,14 +111,14 @@ export async function updatePoll(request) {
           where: { id: option.id },
           data: {
             name: option.name,
-            disabled: option.disabled,
+            active: option.active,
           },
         });
       } else {
         optionOperation = prisma.pollOption.create({
           data: {
             name: option.name,
-            disabled: false,
+            active: true,
             questionId: questionUUID,
           },
         });
@@ -127,6 +146,7 @@ export async function createPoll(
     data: {
       campaignId: request.supporterSession.campaignId,
       title: request.title,
+      activeAtSignUp: request.activeAtSignUp,
       PollQuestion: {
         create: request.questions.map((question) => ({
           allowFreeAnswer: question.allowFreeAnswer,
@@ -135,7 +155,7 @@ export async function createPoll(
           PollOption: {
             create: question.options.map((option) => ({
               name: option.name,
-              disabled: false,
+              active: false,
             })),
           },
         })),

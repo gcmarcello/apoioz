@@ -6,12 +6,14 @@ import PageHeader from "@/app/(frontend)/_shared/components/PageHeader";
 const defaultValues = {
   title: "",
   activeAtSignUp: false,
+  active: true,
   questions: [
     {
       question: "",
       allowMultipleAnswers: false,
       allowFreeAnswer: false,
-      options: [{ name: "" }],
+      active: true,
+      options: [{ name: "", active: true }],
     },
   ],
 };

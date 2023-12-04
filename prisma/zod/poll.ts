@@ -6,6 +6,7 @@ export const PollModel = z.object({
   title: z.string(),
   campaignId: z.string(),
   activeAtSignUp: z.boolean(),
+  active: z.boolean(),
   createdAt: z.date(),
   updatedAt: z.date(),
 })

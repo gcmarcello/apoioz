@@ -61,8 +61,6 @@ export default function QuestionFieldArray({
     },
   });
 
-  console.log(form.formState.errors);
-
   function handleTogglePreview() {
     setShowPreview((prev) => !prev);
     scrollTo({ top: 0, behavior: "smooth" });
@@ -70,7 +68,7 @@ export default function QuestionFieldArray({
 
   function disableAllOptionsFromQuestion() {
     for (let i = 0; i < fields.length; i++) {
-      form.setValue(`questions.${i}.disabled`, true);
+      form.setValue(`questions.${i}.active`, true);
     }
   }
 
@@ -116,8 +114,8 @@ export default function QuestionFieldArray({
                       question: "",
                       allowMultipleAnswers: false,
                       allowFreeAnswer: false,
-                      disabled: false,
-                      options: [{ name: "", disabled: false }],
+                      active: false,
+                      options: [{ name: "", active: false }],
                     })
                   }
                   variant="secondary"
@@ -133,17 +131,21 @@ export default function QuestionFieldArray({
                 </Button>
               </div>
             </div>
+            {form.getValues("id") && (
+              <SwitchInput control={form.control} label="Ativada" name="active" />
+            )}
             <SwitchInput
               control={form.control}
               label="Pesquisa Principal"
               name="activeAtSignUp"
             />
+
             <InfoAlert>
               Se marcado, essa pesquisa será exibida ao cadastrar um novo apoiador.
             </InfoAlert>
             <hr className="my-4" />
             {fields.map((item, index) => {
-              if (form.watch(`questions.${index}.disabled`)) return null;
+              if (!form.watch(`questions.${index}.active`)) return null;
               pseudoIndex++;
               return (
                 <div key={item.id}>
@@ -160,7 +162,7 @@ export default function QuestionFieldArray({
                       icon={XCircleIcon}
                       onClick={() => {
                         if (form.getValues(`questions.${index}.id`)) {
-                          form.setValue(`questions.${index}.disabled`, true);
+                          form.setValue(`questions.${index}.active`, false);
                         } else {
                           remove(index);
                         }
@@ -217,8 +219,8 @@ export default function QuestionFieldArray({
                   question: "",
                   allowMultipleAnswers: false,
                   allowFreeAnswer: false,
-                  disabled: false,
-                  options: [{ name: "", disabled: false }],
+                  active: true,
+                  options: [{ name: "", active: true }],
                 })
               }
               variant="secondary"

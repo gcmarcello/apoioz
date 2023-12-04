@@ -1,6 +1,7 @@
 import { useForm, Controller, Control } from "react-hook-form";
 import { Switch } from "@headlessui/react";
 import clsx from "clsx";
+import { CheckBadgeIcon } from "@heroicons/react/24/solid";
 
 interface SwitchInputProps {
   control: any; //TODO: Fix typing
@@ -8,6 +9,7 @@ interface SwitchInputProps {
   label: string;
   subLabel?: string;
   disabled?: boolean;
+  children?: React.ReactNode;
 }
 
 export default function SwitchInput({
@@ -16,6 +18,7 @@ export default function SwitchInput({
   label,
   subLabel,
   disabled,
+  children,
 }: SwitchInputProps) {
   return (
     <Controller
@@ -37,9 +40,11 @@ export default function SwitchInput({
               aria-hidden="true"
               className={clsx(
                 value ? "translate-x-5" : "translate-x-0",
-                "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                "pointer-events-none flex h-5 w-5 transform items-center rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
               )}
-            />
+            >
+              {children}
+            </span>
           </Switch>
           <Switch.Label as="span" className="ml-3 text-sm">
             <span className="font-medium text-gray-900">{label}</span>{" "}

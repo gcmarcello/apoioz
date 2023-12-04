@@ -17,7 +17,7 @@ export default function OptionFieldArray({ nestIndex, control, form }) {
   return (
     <div>
       {fields.map((item, k) => {
-        if (form.watch(`questions.${nestIndex}.options.${k}.disabled`)) return null;
+        if (!form.watch(`questions.${nestIndex}.options.${k}.active`)) return null;
         pseudoIndex++;
         return (
           <div className="mx-3 mt-3 flex items-end lg:mx-5" key={item.id}>
@@ -36,7 +36,7 @@ export default function OptionFieldArray({ nestIndex, control, form }) {
                   form.setValue(`questions.${nestIndex}.allowFreeAnswer`, true);
                 }
                 if (form.getValues(`questions.${nestIndex}.options.${k}.id`)) {
-                  form.setValue(`questions.${nestIndex}.options.${k}.disabled`, true);
+                  form.setValue(`questions.${nestIndex}.options.${k}.active`, false);
                 } else {
                   remove(k);
                 }
@@ -72,7 +72,7 @@ export default function OptionFieldArray({ nestIndex, control, form }) {
           onClick={() => {
             append({
               name: "",
-              disabled: false,
+              active: true,
             });
           }}
           className="flex-grow lg:ml-5 lg:flex-grow-0"

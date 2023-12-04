@@ -9,7 +9,7 @@ export const PollQuestionModel = z.object({
   allowFreeAnswer: z.boolean(),
   createdAt: z.date(),
   updatedAt: z.date(),
-  disabled: z.boolean(),
+  active: z.boolean(),
 })
 
 export interface CompletePollQuestion extends z.infer<typeof PollQuestionModel> {

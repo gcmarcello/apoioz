@@ -4,6 +4,7 @@ export const upsertPollDto = z.object({
   title: z.string().min(1, "Nome é obrigatório"),
   activeAtSignUp: z.boolean(),
   id: z.string().optional(),
+  active: z.boolean(),
   questions: z.array(
     z.object({
       id: z.string().optional(),
@@ -12,7 +13,7 @@ export const upsertPollDto = z.object({
         .min(1, "Texto da pergunta é obrigatório. Remova a pergunta para excluir"),
       allowFreeAnswer: z.boolean(),
       allowMultipleAnswers: z.boolean(),
-      disabled: z.boolean(),
+      active: z.boolean(),
       options: z
         .array(
           z.object({
@@ -20,7 +21,7 @@ export const upsertPollDto = z.object({
             name: z
               .string()
               .min(1, "Texto da opção é obrigatório. Remova a opção para excluir"),
-            disabled: z.boolean(),
+            active: z.boolean(),
           })
         )
         .optional(),
