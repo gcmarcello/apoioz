@@ -11,7 +11,7 @@ import { Campaign } from "@prisma/client";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import { Dispatch, useRef, useState, useEffect, Fragment } from "react";
-import { Button } from "../../_shared/components/button";
+import { Button } from "../../../_shared/components/Button";
 import { CalendarDay } from "../page";
 import SubmitEventRequest from "./DayModalForm";
 

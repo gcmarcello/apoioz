@@ -151,15 +151,26 @@ export function DefaultTable({
                   </For>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white ">
-                  {table.getRowModel().rows.map((row) => (
-                    <tr key={row.id}>
-                      {row.getVisibleCells().map((cell) => (
-                        <td key={cell.id} className="whitespace-nowrap px-4 py-4 text-sm">
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </td>
-                      ))}
+                  {data.length ? (
+                    table.getRowModel().rows.map((row) => (
+                      <tr key={row.id}>
+                        {row.getVisibleCells().map((cell) => (
+                          <td
+                            key={cell.id}
+                            className="whitespace-nowrap px-4 py-4 text-sm"
+                          >
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </td>
+                        ))}
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td className="whitespace-nowrap px-4 py-4 text-sm">
+                        Nenhuma entrada.
+                      </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
                 <tfoot>
                   {/* <For each={table.getFooterGroups()} identifier="tfoot">
@@ -194,76 +205,6 @@ export function DefaultTable({
           </div>
         </div>
       </div>
-      {/* <div className="mt-6 text-sm text-gray-500 ">
-        <div className="flex items-center justify-center gap-3 md:justify-between">
-          <div className="flex  items-center gap-2">
-            <div className="flex gap-1">
-              <button
-                className="rounded border p-1"
-                onClick={() => table.setPageIndex(0)}
-                disabled={!table.getCanPreviousPage()}
-              >
-                <ChevronDoubleLeftIcon className="w-3.5" />
-              </button>
-              <button
-                className="rounded border p-1"
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
-              >
-                <ChevronLeftIcon className="w-3.5" />
-              </button>
-              <button
-                className="rounded border p-1"
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
-              >
-                <ChevronRightIcon className="w-3.5" />
-              </button>
-              <button
-                className="rounded border p-1"
-                onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                disabled={!table.getCanNextPage()}
-              >
-                <ChevronDoubleRightIcon className="w-3.5" />
-              </button>
-            </div>
-            <div className="text-xs text-gray-500 dark:text-gray-400">
-              Página{" "}
-              <strong className="font-medium text-gray-700 dark:text-gray-100">
-                {table.getState().pagination.pageIndex + 1} de{" "}
-                {table.getPageCount()}
-              </strong>
-            </div>
-          </div>
-          <div className="hidden md:flex ">
-            <div className="flex items-center gap-1">
-              Ir até:
-              <input
-                type="number"
-                defaultValue={table.getState().pagination.pageIndex + 1}
-                onChange={(e) => {
-                  const page = e.target.value ? Number(e.target.value) - 1 : 0;
-                  table.setPageIndex(page);
-                }}
-                className="w-16 rounded border p-1"
-              />
-            </div>
-            <select
-              value={table.getState().pagination.pageSize}
-              onChange={(e) => {
-                table.setPageSize(Number(e.target.value));
-              }}
-              className="bg-gray-50"
-            >
-              {[10, 20, 30, 40, 50].map((pageSize) => (
-                <option key={pageSize} value={pageSize}>
-                  Mostrar {pageSize}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-      </div> */}
     </section>
   );
 }

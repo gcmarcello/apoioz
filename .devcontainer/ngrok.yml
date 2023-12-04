@@ -1,11 +1,11 @@
 version: "2"
 
-authtoken: 22WlB2rJCCclxkVLHnflWXAA7u7E_6sCAjppztZa744xJ6QKeZ
+authtoken: 2YupN3oVbdtbEt7WJbH7nRXVWS9_4np1T4XihkRU1PM8eKaF6
 tunnels:
   web:
     proto: http
     addr: host.docker.internal:3000
-    domain: robust-suddenly-kodiak.ngrok-free.app
+    domain: bright-obliging-hookworm.ngrok-free.app
   ssh:
     proto: tcp
     addr: 22

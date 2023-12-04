@@ -1,4 +1,4 @@
-import { Section, Zone } from "@prisma/client";
+import { Poll, PollAnswer, PollOption, Section, Zone } from "@prisma/client";
 
 export type SupporterTableType = {
   createdAt: Date;
@@ -31,4 +31,14 @@ export type SupporterTableType = {
   };
   userId: string;
   options: any;
+};
+
+export type PollsTableType = {
+  id: string;
+  title: string;
+  createdAt: Date;
+  campaignId: string;
+  activeAtSignUp: boolean;
+  PollQuestion: number;
+  PollAnswer: number;
 };

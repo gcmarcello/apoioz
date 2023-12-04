@@ -19,6 +19,8 @@ export function getPageName(url: string, mobile: boolean = false): string {
         return "Configurações";
       case "campanha":
         return "Configurações";
+      case "pesquisas":
+        return "Pesquisas";
       default:
         break;
     }
@@ -34,6 +36,8 @@ export function getPageName(url: string, mobile: boolean = false): string {
         return "Calendário de Eventos";
       case "relatorios":
         return "Relatórios de Apoiador";
+      case "pesquisas":
+        return "Painel de Pesquisas";
       case "whatsapp":
         return "WhatsApp";
       case "configuracoes":

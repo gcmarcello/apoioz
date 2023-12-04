@@ -282,14 +282,14 @@ export default function PanelSideBar() {
           <div
             className={clsx(
               "bg-indigo-600",
-              `fixed flex h-full  w-64 grow flex-col gap-y-5 overflow-y-auto px-6 pb-4`
+              `fixed flex h-full w-64  grow flex-col gap-y-1 overflow-y-hidden px-6 pb-4`
             )}
           >
             <div className="my-2 flex h-16 shrink-0 items-center">
               <Logo />
             </div>
             <nav className="flex flex-1 flex-col">
-              <ul role="list" className="flex flex-1 flex-col gap-y-7">
+              <ul role="list" className="flex flex-1 flex-col gap-y-3 xl:gap-y-7">
                 <li>
                   <ul role="list" className="-mx-2 space-y-1">
                     {navigation.map((item) => (

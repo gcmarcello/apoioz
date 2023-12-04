@@ -43,9 +43,11 @@ export default function PaginationControl({
           <p className="text-sm text-gray-700">
             Mostrando{" "}
             <span className="font-medium">
-              {table.options.state.pagination?.pageSize}
+              {table.options.state.pagination?.pageSize > count
+                ? count
+                : table.options.state.pagination?.pageSize}
             </span>{" "}
-            de <span className="font-medium">{count}</span> apoiadores
+            de <span className="font-medium">{count}</span>
           </p>
         </div>
         <div>

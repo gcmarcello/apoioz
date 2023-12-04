@@ -10,7 +10,7 @@ import {
   MaskedTextField,
 } from "@/app/(frontend)/_shared/components/fields/Text";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
-import { Button } from "@/app/(frontend)/painel/_shared/components/button";
+import { Button } from "@/app/(frontend)/_shared/components/Button";
 import { SignupDto, signupDto } from "@/app/api/auth/dto";
 import { getCitiesByState } from "@/app/api/elections/locations/actions";
 import { getSectionsByZone } from "@/app/api/elections/sections/action";

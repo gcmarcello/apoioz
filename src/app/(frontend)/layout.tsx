@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html>
+    <html lang="pt-BR">
       <body>
         {children}
         <Toaster position="bottom-right" />

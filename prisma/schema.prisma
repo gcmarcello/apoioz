@@ -284,26 +284,30 @@ model PasswordRecovery {
 }
 
 model Poll {
-  id           String         @id @unique @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
-  title        String         @db.VarChar
-  campaignId   String         @db.Uuid
-  campaign     Campaign       @relation(fields: [campaignId], references: [id])
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  PollQuestion PollQuestion[]
+  id             String         @id @unique @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  title          String         @db.VarChar
+  campaignId     String         @db.Uuid
+  activeAtSignUp Boolean        @default(false)
+  campaign       Campaign       @relation(fields: [campaignId], references: [id])
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  PollQuestion   PollQuestion[]
+  PollAnswer     PollAnswer[]
 
   @@schema("polls")
 }
 
 model PollQuestion {
-  id         String       @id @unique @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
-  pollId     String       @db.Uuid
-  poll       Poll         @relation(fields: [pollId], references: [id])
-  question   String       @db.VarChar
-  type       String       @db.VarChar
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  PollOption PollOption[]
+  id                   String       @id @unique @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  pollId               String       @db.Uuid
+  poll                 Poll         @relation(fields: [pollId], references: [id])
+  question             String       @db.VarChar
+  allowMultipleAnswers Boolean      @default(false)
+  allowFreeAnswer      Boolean      @default(false)
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+  PollOption           PollOption[]
+  PollAnswer           PollAnswer[]
 
   @@schema("polls")
 }
@@ -312,7 +316,7 @@ model PollOption {
   id         String       @id @unique @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
   questionId String       @db.Uuid
   question   PollQuestion @relation(fields: [questionId], references: [id])
-  option     String       @db.VarChar
+  name       String       @db.VarChar
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
   PollAnswer PollAnswer[]
@@ -321,13 +325,18 @@ model PollOption {
 }
 
 model PollAnswer {
-  id          String     @id @unique @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
-  optionId    String     @db.Uuid
-  option      PollOption @relation(fields: [optionId], references: [id])
-  supporterId String     @db.Uuid
-  supporter   Supporter  @relation(fields: [supporterId], references: [id])
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id           String       @id @unique @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  optionId     String?      @db.Uuid
+  freeAnswer   String?      @db.Text
+  pollId       String       @db.Uuid
+  poll         Poll         @relation(fields: [pollId], references: [id])
+  option       PollOption?  @relation(fields: [optionId], references: [id])
+  questionId   String       @db.Uuid
+  PollQuestion PollQuestion @relation(fields: [questionId], references: [id])
+  supporterId  String       @db.Uuid
+  supporter    Supporter    @relation(fields: [supporterId], references: [id])
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
   @@schema("polls")
 }
