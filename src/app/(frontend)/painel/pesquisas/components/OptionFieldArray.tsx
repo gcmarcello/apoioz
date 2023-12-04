@@ -26,7 +26,6 @@ export default function OptionFieldArray({ nestIndex, control, form }) {
                 label={`Opção ${pseudoIndex}`}
                 hform={form}
                 placeholder="Digite a opção"
-                registeroptions={{ required: true }}
                 name={`questions.${nestIndex}.options.${k}.name` as const}
               />
             </div>

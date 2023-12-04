@@ -1,8 +1,8 @@
 "use server";
 
 import prisma from "prisma/prisma";
-import { CreatePollDto } from "./dto";
-import { Supporter } from "@prisma/client";
+import { Poll, Supporter } from "@prisma/client";
+import { UpsertPollDto } from "./dto";
 
 export async function listPolls(request) {
   const fetchPolls = await prisma.poll.findMany({
@@ -58,6 +58,7 @@ export async function updatePoll(request) {
   );
 
   for (const question of rest.questions) {
+    let questionUUID;
     let questionOperation;
     if (question.id) {
       questionOperation = prisma.pollQuestion.update({
@@ -66,14 +67,18 @@ export async function updatePoll(request) {
           allowFreeAnswer: question.allowFreeAnswer,
           allowMultipleAnswers: question.allowMultipleAnswers,
           question: question.question,
+          disabled: question.disabled,
         },
       });
     } else {
+      questionUUID = crypto.randomUUID();
       questionOperation = prisma.pollQuestion.create({
         data: {
+          id: questionUUID,
           allowFreeAnswer: question.allowFreeAnswer,
           allowMultipleAnswers: question.allowMultipleAnswers,
           question: question.question,
+          disabled: false,
           pollId: rest.id,
         },
       });
@@ -95,7 +100,7 @@ export async function updatePoll(request) {
           data: {
             name: option.name,
             disabled: false,
-            questionId: question.id,
+            questionId: questionUUID,
           },
         });
       }
@@ -104,12 +109,12 @@ export async function updatePoll(request) {
   }
 
   // Execute all operations in a transaction
-  const poll = await prisma.$transaction(operations);
+  const poll = await prisma.$transaction<Poll>(operations as any);
   return poll;
 }
 
 export async function createPoll(
-  request: CreatePollDto & { supporterSession: Supporter }
+  request: UpsertPollDto & { supporterSession: Supporter }
 ) {
   if (request.activeAtSignUp) {
     await prisma.poll.updateMany({

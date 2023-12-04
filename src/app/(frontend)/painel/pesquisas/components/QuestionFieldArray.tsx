@@ -23,13 +23,19 @@ import { useRouter } from "next/navigation";
 import Loading from "@/app/(frontend)/loading";
 import PageHeader from "@/app/(frontend)/_shared/components/PageHeader";
 import { PollType } from "@/_shared/types/pollTypes";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { upsertPollDto } from "@/app/api/panel/polls/dto";
 
 export default function QuestionFieldArray({
   defaultValues,
 }: {
   defaultValues: PollType;
 }) {
-  const form = useForm({ defaultValues });
+  const form = useForm({
+    defaultValues,
+    resolver: zodResolver(upsertPollDto),
+    mode: "onChange",
+  });
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "questions",
@@ -55,10 +61,20 @@ export default function QuestionFieldArray({
     },
   });
 
+  console.log(form.formState.errors);
+
   function handleTogglePreview() {
     setShowPreview((prev) => !prev);
     scrollTo({ top: 0, behavior: "smooth" });
   }
+
+  function disableAllOptionsFromQuestion() {
+    for (let i = 0; i < fields.length; i++) {
+      form.setValue(`questions.${i}.disabled`, true);
+    }
+  }
+
+  let pseudoIndex = 0;
 
   if (isMutating) return <Loading />;
 
@@ -80,7 +96,6 @@ export default function QuestionFieldArray({
                   placeholder="ex. Pesquisa de Opinião"
                   label="Nome"
                   name={"title"}
-                  registeroptions={{ required: true }}
                 />
               </div>
 
@@ -111,11 +126,7 @@ export default function QuestionFieldArray({
                     Adicionar Pergunta <PlusCircleIcon className="h-5 w-5" />
                   </div>
                 </Button>
-                <Button
-                  type="submit"
-                  disabled={!form.formState.isValid}
-                  variant="primary"
-                >
+                <Button type="submit" variant="primary">
                   <div className="flex items-center justify-center gap-x-2">
                     Salvar <CheckCircleIcon className="h-5 w-5" />
                   </div>
@@ -132,7 +143,8 @@ export default function QuestionFieldArray({
             </InfoAlert>
             <hr className="my-4" />
             {fields.map((item, index) => {
-              if (fields[index].disabled) return null;
+              if (form.watch(`questions.${index}.disabled`)) return null;
+              pseudoIndex++;
               return (
                 <div key={item.id}>
                   <div className="flex items-end ">
@@ -141,7 +153,6 @@ export default function QuestionFieldArray({
                         label="Pergunta"
                         hform={form}
                         placeholder="ex. O que falta no seu bairro?"
-                        registeroptions={{ required: true }}
                         name={`questions.${index}.question` as const}
                       />
                     </div>
@@ -217,7 +228,7 @@ export default function QuestionFieldArray({
               </div>
             </Button>
           )}
-          <Button type="submit" variant="primary" disabled={!form.formState.isValid}>
+          <Button type="submit" variant="primary">
             <div className="flex items-center justify-center gap-x-2">
               Salvar <CheckCircleIcon className="h-6 w-6" />
             </div>
