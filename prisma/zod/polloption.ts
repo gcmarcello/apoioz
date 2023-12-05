@@ -7,6 +7,7 @@ export const PollOptionModel = z.object({
   name: z.string(),
   createdAt: z.date(),
   updatedAt: z.date(),
+  active: z.boolean(),
 })
 
 export interface CompletePollOption extends z.infer<typeof PollOptionModel> {

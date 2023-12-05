@@ -18,7 +18,12 @@ type MaskedTextFieldProps<Fields> = TextFieldProps<Fields> & {
 export function TextField<T>(props: TextFieldProps<T>) {
   const id = useId();
 
-  const errorMessage = props.hform.formState.errors[props.name]?.message as string;
+  const path = props.name.split(".");
+
+  const errorMessage = path.reduce(
+    (acc, part) => acc && acc[part],
+    props.hform.formState.errors
+  )?.message as string;
 
   const className = clsx(
     fieldClasses,
@@ -39,7 +44,7 @@ export function TextField<T>(props: TextFieldProps<T>) {
       <input
         id={id}
         type={props.type}
-        {...props.hform.register(props.name, props.registeroptions)}
+        {...props.hform.register(props.name)}
         {...props}
         className={className}
       />

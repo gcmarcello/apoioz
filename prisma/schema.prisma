@@ -4,7 +4,7 @@ generator client {
 }
 
 generator zod {
-  provider                 = "zod-prisma"
+  provider = "zod-prisma"
 }
 
 datasource db {
@@ -15,7 +15,7 @@ datasource db {
 }
 
 model User {
-  id               String             @id @default(uuid()) @db.Uuid
+  id               String             @id @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
   email            String             @unique
   phone            String?            @unique
   name             String?
@@ -289,6 +289,7 @@ model Poll {
   campaignId     String         @db.Uuid
   activeAtSignUp Boolean        @default(false)
   campaign       Campaign       @relation(fields: [campaignId], references: [id])
+  active         Boolean        @default(true)
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
   PollQuestion   PollQuestion[]
@@ -299,8 +300,8 @@ model Poll {
 
 model PollQuestion {
   id                   String       @id @unique @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
-  pollId               String       @db.Uuid
-  poll                 Poll         @relation(fields: [pollId], references: [id])
+  pollId               String?      @db.Uuid
+  poll                 Poll?        @relation(fields: [pollId], references: [id])
   question             String       @db.VarChar
   allowMultipleAnswers Boolean      @default(false)
   allowFreeAnswer      Boolean      @default(false)
@@ -308,6 +309,7 @@ model PollQuestion {
   updatedAt            DateTime     @updatedAt
   PollOption           PollOption[]
   PollAnswer           PollAnswer[]
+  active               Boolean      @default(true)
 
   @@schema("polls")
 }
@@ -320,6 +322,7 @@ model PollOption {
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
   PollAnswer PollAnswer[]
+  active     Boolean      @default(true)
 
   @@schema("polls")
 }

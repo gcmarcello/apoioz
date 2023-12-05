@@ -35,6 +35,7 @@ export type SupporterTableType = {
 
 export type PollsTableType = {
   id: string;
+  active: boolean;
   title: string;
   createdAt: Date;
   campaignId: string;

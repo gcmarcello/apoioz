@@ -9,10 +9,18 @@ import { toProperCase } from "@/_shared/utils/format";
 import { PresentationChartBarIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
-import ComboboxField from "@/app/(frontend)/_shared/components/fields/Select";
+import {
+  ComboboxField,
+  ListboxField,
+} from "@/app/(frontend)/_shared/components/fields/Select";
 
-export function ElectionInfoSection({ form, zones }: { form: any; zones: ZoneType[] }) {
-  const [displayAddress, setDisplayAddress] = useState<AddressType | null>(null);
+export function ElectionInfoSection({
+  form,
+  zones,
+}: {
+  form: any;
+  zones: { data: ZoneType[]; message: string };
+}) {
   const [showPassword, setShowPassword] = useState(false);
   const [willAddPassword, setWillAddPassword] = useState(null);
   const ref = useRef<null | HTMLDivElement>(null);
@@ -24,8 +32,8 @@ export function ElectionInfoSection({ form, zones }: { form: any; zones: ZoneTyp
   } = useAction({
     action: getSectionsByZone,
     parser: (data) => {
+      resetAddress();
       form.resetField("info.sectionId");
-      setDisplayAddress(null);
       return data;
     },
     onError: (error) => {
@@ -149,35 +157,20 @@ export function ElectionInfoSection({ form, zones }: { form: any; zones: ZoneTyp
       {willAddPassword !== null && (
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-1">
-            <label
-              htmlFor="location"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
-              Zona
-            </label>
-            <select
-              id="zone"
-              {...form.register("info.zoneId", {
-                onChange: async (e) => await fetchSections(e.target.value),
-              })}
-              className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
-              defaultValue={""}
-            >
-              <option disabled value={""}>
-                Selecione
-              </option>
-              {zones.map((zone) => (
-                <option key={zone.id} value={zone.id}>
-                  {zone.number.toString()}
-                </option>
-              ))}
-            </select>
+            <ListboxField
+              hform={form}
+              label="Zona"
+              name={"zone"}
+              data={zones.data}
+              displayValueKey="number"
+              onChange={async (e) => await fetchSections(e.id)}
+            />
           </div>
           <div className="col-span-1">
             <ComboboxField
               hform={form}
               data={sectionList}
-              disabled={!sectionList.length}
+              disabled={!sectionList?.length}
               onChange={(value) => {
                 fetchAddress(value.id);
               }}

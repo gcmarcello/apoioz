@@ -13,13 +13,10 @@ import { BasicInfoSection } from "./BasicInfoSection";
 import { ElectionInfoSection } from "./ElectionInfoSection";
 import clsx from "clsx";
 import { Mocker } from "@/app/(frontend)/_shared/components/Mocker";
-import {
-  createSupporter,
-  listSupporters,
-  signUpAsSupporter,
-} from "@/app/api/panel/supporters/actions";
+import { createSupporter, signUpAsSupporter } from "@/app/api/panel/supporters/actions";
 import { faker } from "@faker-js/faker";
 import prisma from "prisma/prisma";
+import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 
 dayjs.extend(customParseFormat);
 
@@ -79,23 +76,30 @@ export default function SupporterSignUpPage({
     return data;
   };
 
-  const addSupporter = async (supporterInfo: any) => {
-    try {
-      if (campaign.cityId) supporterInfo.cityId = campaign.cityId;
-      if (campaign.stateId) supporterInfo.stateId = campaign.stateId;
-      supporterInfo.phone = normalizePhone(supporterInfo.phone);
-      const response = await signUpAsSupporter(supporterInfo);
-      setSuccess(true);
+  const {
+    data: signUpData,
+    trigger: signUp,
+    isMutating: isSigningUp,
+    reset: resetSignUp,
+  } = useAction({
+    formatter: (data) => {
+      data.phone = normalizePhone(data.phone);
+      return data;
+    },
+    action: signUpAsSupporter,
+    onSuccess: (res) => {
       setTimeout(() => {
         scrollTo({ top: 0, behavior: "smooth" });
       }, 350);
-    } catch (error: any) {
+      setSuccess(true);
+    },
+    onError: (err) => {
       form.setError("root.serverError", {
         type: "400",
-        message: error.response.data?.message || "Erro inesperado",
+        message: err.toString() || "Erro inesperado",
       });
-    }
-  };
+    },
+  });
 
   if (success) return <AddSupporterSuccess campaign={campaign} />;
 
@@ -127,7 +131,7 @@ export default function SupporterSignUpPage({
         )}
         <form
           className="flex h-full flex-col  divide-gray-200  text-left"
-          onSubmit={form.handleSubmit(addSupporter)}
+          onSubmit={form.handleSubmit((data) => signUp(data))}
         >
           <div className={clsx("mb-4 space-y-2 pb-5")}>
             {stage === "basicInfo" && <BasicInfoSection form={form} />}
@@ -179,7 +183,7 @@ export default function SupporterSignUpPage({
           </div>
         </form>
       </div>
-      <Mocker mockData={mockData} submit={form.handleSubmit(addSupporter)} />
+      <Mocker mockData={mockData} submit={form.handleSubmit((data) => signUp(data))} />
     </div>
   );
 }

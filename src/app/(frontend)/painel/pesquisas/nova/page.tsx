@@ -1,27 +1,27 @@
-"use client";
 import { useForm } from "react-hook-form";
 import QuestionFieldArray from "../components/QuestionFieldArray";
 import { PageTitle } from "../../../_shared/components/text/PageTitle";
+import PageHeader from "@/app/(frontend)/_shared/components/PageHeader";
 
 const defaultValues = {
   title: "",
   activeAtSignUp: false,
+  active: true,
   questions: [
     {
       question: "",
       allowMultipleAnswers: false,
       allowFreeAnswer: false,
-      options: [{ name: "" }],
+      active: true,
+      options: [{ name: "", active: true }],
     },
   ],
 };
 
 export default function NovaPesquisaPage() {
-  const form = useForm({ defaultValues });
-
   return (
     <>
-      <QuestionFieldArray form={form} />
+      <QuestionFieldArray defaultValues={defaultValues} />
     </>
   );
 }

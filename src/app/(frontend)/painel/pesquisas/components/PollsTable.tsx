@@ -1,8 +1,13 @@
 "use client";
 import { Date } from "@/app/(frontend)/_shared/components/Date";
-import SupporterBall from "../../time/components/SupporterBall";
 import { PollsTableType } from "@/_shared/types/tableTypes";
-import { AtSymbolIcon, CheckBadgeIcon, TvIcon } from "@heroicons/react/24/solid";
+import {
+  AtSymbolIcon,
+  CheckBadgeIcon,
+  CheckCircleIcon,
+  TvIcon,
+  XCircleIcon,
+} from "@heroicons/react/24/solid";
 import { createColumnHelper } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import WhatsAppIcon from "@/app/(frontend)/_shared/components/icons/WhatsAppIcon";
@@ -45,16 +50,26 @@ export default function PollsTable({ polls }: { polls: Poll[] }) {
       header: "Principal",
       cell: (info) =>
         info.getValue() ? (
-          <div className="flex justify-center">
+          <div className="flex">
             <CheckBadgeIcon className="h-6 w-6 text-indigo-600" />
           </div>
         ) : null,
+    }),
+    columnHelper.accessor("active", {
+      id: "active",
+      header: "Ativa",
+      cell: (info) =>
+        info.getValue() ? (
+          <CheckCircleIcon className="h-6 w-6 text-green-600" />
+        ) : (
+          <XCircleIcon className="h-6 w-6 text-red-600" />
+        ),
     }),
     columnHelper.accessor("id", {
       id: "edit",
       header: "",
       cell: (info) => (
-        <ParagraphLink href={`/pesquisas/${info.getValue()}`}>Editar</ParagraphLink>
+        <ParagraphLink href={`./pesquisas/${info.getValue()}`}>Editar</ParagraphLink>
       ),
     }),
   ];

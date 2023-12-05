@@ -66,7 +66,14 @@ export async function readSupportersAsTree() {
 }
 
 export async function signUpAsSupporter(request: CreateSupportersDto) {
-  const newSupporter = await supportersService.signUpAsSupporter(request);
+  try {
+    const newSupporter = await supportersService.signUpAsSupporter(request);
 
-  return newSupporter;
+    return ActionResponse.success({
+      data: newSupporter,
+      message: "Sucesso ao criar novo apoiador!",
+    });
+  } catch (error) {
+    return ActionResponse.error(error);
+  }
 }

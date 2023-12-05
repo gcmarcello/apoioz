@@ -28,14 +28,14 @@ export async function sendEmail({
     html: template.body,
   };
 
-  /* isProd && */
-  await sgMail
-    .send(msg)
-    .then(() => console.log("Email sent"))
-    .catch((err) => {
-      console.log(err.response.body.errors);
-      throw "Failed to send email";
-    });
+  isProd &&
+    (await sgMail
+      .send(msg)
+      .then(() => console.log("Email sent"))
+      .catch((err) => {
+        console.log(err.response.body.errors);
+        throw "Failed to send email";
+      }));
 }
 
 async function readEmailTemplate(templateId, dynamicData) {
