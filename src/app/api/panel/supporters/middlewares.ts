@@ -1,22 +1,22 @@
 "use server";
 import { Supporter, User } from "@prisma/client";
 import { MiddlewareArguments } from "@/middleware/types/types";
-import { CreateSupportersDto, ListSupportersDto } from "./dto";
+import { CreateSupportersDto, ReadSupportersDto } from "./dto";
 import prisma from "prisma/prisma";
 
-export async function ListSupportersMiddleware({
+export async function ReadSupportersMiddleware({
   request,
 }: MiddlewareArguments<
-  ListSupportersDto & { supporterSession: Supporter; userSession: Omit<User, "password"> }
+  ReadSupportersDto & { supporterSession: Supporter; userSession: Omit<User, "password"> }
 >) {
-  if (request.query) {
+  if (request.where) {
     const supporterSessionGroup = await prisma.supporterGroupMembership.findFirst({
       where: { AND: [{ supporterId: request.supporterSession.id }, { isOwner: true }] },
     });
     const supporter = await prisma.supporter.findFirst({
       where: {
-        campaignId: request.query?.campaignOwnerId,
-        userId: request.query?.ownerId,
+        campaignId: request.supporterSession.campaignId,
+        userId: request.where?.user.id,
       },
     });
     const ownerIdMembership = await prisma.supporterGroupMembership.findFirst({

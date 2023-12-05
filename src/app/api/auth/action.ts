@@ -28,10 +28,10 @@ export async function login(request: LoginDto) {
   }
 }
 
-export async function generatePasswordRecovery(request: { identifier: string }) {
+export async function createPasswordRecovery(request: { identifier: string }) {
   try {
     return ActionResponse.success({
-      data: await authService.generatePasswordRecovery(request.identifier),
+      data: await authService.createPasswordRecovery(request.identifier),
       message: "Código de recuperação enviado com sucesso!",
     });
   } catch (error: any) {
@@ -54,7 +54,7 @@ export async function checkRecoveryCode(request) {
 export async function resetPassword(request) {
   try {
     await authService.resetPassword(request);
-    cookies().set("token", authService.generateToken({ id: request.userId }));
+    cookies().set("token", authService.createToken({ id: request.userId }));
     return ActionResponse.success({
       message: "Senha alterada com sucesso!",
       data: null,

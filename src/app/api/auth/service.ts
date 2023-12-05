@@ -15,16 +15,16 @@ export async function login(request: LoginDto & { user: User; isEmail: boolean }
   if (!(await compareHash(request.password, request.user.password)))
     throw `${request.isEmail ? "Email" : "Usuário"} ou senha incorretos.`;
 
-  return generateToken({ id: request.user.id });
+  return createToken({ id: request.user.id });
 }
 
-export function generateToken(data: TokenGeneratorType) {
+export function createToken(data: TokenGeneratorType) {
   if (!process.env.JWT_KEY)
     throw "O serviço de autenticação se encontra fora do ar. ERROR: MISSING JWTKEY";
   return jwt.sign({ id: data.id }, process.env.JWT_KEY, { expiresIn: "10h" });
 }
 
-export async function generatePasswordRecovery(identifier: string) {
+export async function createPasswordRecovery(identifier: string) {
   const identifierType = identifier.includes("@") ? "email" : "phone";
   const potentialUser = await prisma.user.findFirst({
     where: {

@@ -4,7 +4,7 @@ import prisma from "prisma/prisma";
 import { CreatePollDto } from "./dto";
 import { Supporter } from "@prisma/client";
 
-export async function listPolls(request) {
+export async function readPolls(request) {
   const fetchPolls = await prisma.poll.findMany({
     where: { campaignId: request.campaignId },
     include: { PollQuestion: { include: { PollOption: true } }, PollAnswer: true },
@@ -17,7 +17,7 @@ export async function listPolls(request) {
   return polls;
 }
 
-export async function getPoll(request) {
+export async function readPoll(request) {
   const poll = await prisma.poll.findUnique({
     where: { id: request.id },
     include: { PollQuestion: { include: { PollOption: true } } },

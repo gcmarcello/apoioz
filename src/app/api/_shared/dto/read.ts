@@ -1,10 +1,10 @@
-import { ZodRawShape, z } from "zod";
+import { ZodTypeAny, z } from "zod";
 
-export const readDto = <W extends ZodRawShape>(where: W) =>
+export const readDto = <W extends ZodTypeAny>(where: W) =>
   z.object({
     pagination: z.object({
       pageSize: z.number(),
       pageIndex: z.number(),
     }),
-    where: z.object(where),
+    where: where,
   });

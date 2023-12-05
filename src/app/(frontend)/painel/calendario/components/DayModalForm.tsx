@@ -1,8 +1,7 @@
 import { Mocker } from "@/app/(frontend)/_shared/components/Mocker";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
-import { getAvailableTimesByDay, createEvent } from "@/app/api/panel/events/actions";
+import { readEventsAvailability, createEvent } from "@/app/api/panel/events/actions";
 import { fakerPT_BR } from "@faker-js/faker";
-import { Campaign } from "@prisma/client";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
@@ -11,60 +10,68 @@ import { Button } from "../../../_shared/components/Button";
 import { CalendarDay } from "../page";
 import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { ListboxField } from "@/app/(frontend)/_shared/components/fields/Select";
+import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 
 dayjs.extend(isBetween);
 
 export default function SubmitEventRequest({
   day,
-  campaign,
-  userId,
   setShow,
 }: {
   day: CalendarDay;
-  campaign: Campaign;
-  userId: string;
   setShow: Dispatch<SetStateAction<boolean>>;
 }) {
-  const [availableTimes, setAvailableTimes] = useState(null);
-  const [endingAvailableTimes, setEndingAvailableTimes] = useState(null);
-  const [dateEvents, setDateEvents] = useState<{ start: string; end: string }[] | null>(
-    null
-  );
-  const [error, setError] = useState<any>(null);
-  const [loading, setLoading] = useState<boolean>(false);
   const form = useForm();
 
-  const { data: availableTimes, trigger: fetchAvailableTimes } = useAction({
-    action: getAvailableTimesByDay,
+  const {
+    data: { dateEvents, availableTimes },
+    trigger: fetchEventsAvailability,
+  } = useAction({
+    action: readEventsAvailability,
     parser: (data) => {
-      return data.available.map((string, index) => ({
-        id: index + 1,
-        name: dayjs(string).format("HH:mm"),
-        value: string,
-      }));
-    },
-  });
-
-  useEffect(() => {
-    async function fetchAvailableTimes() {
-      try {
-        const serverTimes = await getAvailableTimesByDay({
-          campaignId: campaign.id,
-          day: day.date,
-        });
-        setDateEvents(serverTimes.events);
-        return serverTimes.available.map((string, index) => ({
+      return {
+        dateEvents: data.eventsTimestamps,
+        availableTimes: data.availableTimes.map((string, index) => ({
           id: index + 1,
           name: dayjs(string).format("HH:mm"),
           value: string,
-        }));
-      } catch (error) {
-        setError(error);
-      }
-    }
-    fetchAvailableTimes()
-      .then((times: any) => setAvailableTimes(times))
-      .catch((err) => console.log(err));
+        })),
+      };
+    },
+  });
+
+  const { trigger: submitEvent, isMutating: loading } = useAction({
+    action: createEvent,
+    onSuccess: () => {
+      showToast({
+        message: `Evento solicitado com sucesso!`,
+        variant: "success",
+        title: "Confirmado",
+      });
+      setShow(false);
+    },
+    onError: (error) => {
+      showToast({
+        message: `${error}`,
+        variant: "error",
+        title: "Erro ao solicitar evento",
+      });
+
+      form.setError("root.serverError", {
+        type: "400",
+        message: "Erro inesperado",
+      });
+    },
+  });
+
+  const [endingAvailableTimes, setEndingAvailableTimes] = useState(null);
+
+  useEffect(() => {
+    fetchEventsAvailability({
+      where: {
+        day: day.date,
+      },
+    });
   }, []);
 
   useEffect(() => {
@@ -85,10 +92,10 @@ export default function SubmitEventRequest({
               selectedTime.isBefore(eventEndTime) &&
               selectedEndTime.isAfter(eventStartTime)
             ) {
-              return false; // Overlapping time slot found, exclude it from the list
+              return false;
             }
           }
-          return true; // No overlap found, include this time slot
+          return true;
         });
       }
       setEndingAvailableTimes(times || []);
@@ -102,36 +109,13 @@ export default function SubmitEventRequest({
     form.setValue("observations", fakerPT_BR.lorem.paragraph());
   };
 
-  const submitEvent = async (data: any) => {
-    try {
-      setLoading(true);
-      const response = await createEvent({ ...data, userId: userId });
-      showToast({
-        message: `Evento solicitado com sucesso!`,
-        variant: "success",
-        title: "Confirmado",
-      });
-      setLoading(false);
-      setShow(false);
-    } catch (error) {
-      console.log(error);
-      showToast({
-        message: `${error}`,
-        variant: "error",
-        title: "Erro ao solicitar evento",
-      });
-
-      form.setError("root.serverError", {
-        type: "400",
-        message: "Erro inesperado",
-      });
-    }
-  };
-
   return (
-    <form onSubmit={form.handleSubmit(submitEvent)}>
+    <form onSubmit={form.handleSubmit((data) => submitEvent(data))}>
       <div className="my-2">
-        <Mocker mockData={generateFakeData} submit={form.handleSubmit(submitEvent)} />
+        <Mocker
+          mockData={generateFakeData}
+          submit={form.handleSubmit((data) => submitEvent(data))}
+        />
 
         <div className="mt-4">
           <label
@@ -174,7 +158,7 @@ export default function SubmitEventRequest({
               name="dateStart"
               label="Hora de início"
               data={availableTimes}
-              displayValueKey={""}
+              displayValueKey={"value.startOf"}
               disabled={!availableTimes?.length}
             />
             {Array.isArray(availableTimes) && !availableTimes.length && (
@@ -187,9 +171,10 @@ export default function SubmitEventRequest({
           <div>
             <ListboxField
               hform={form}
-              formLabel="dateEnd"
+              name="dateEnd"
               label="Hora de término"
               data={endingAvailableTimes}
+              displayValueKey=""
               disabled={!endingAvailableTimes?.length}
             />
           </div>

@@ -4,7 +4,7 @@ import { CompletePollQuestion, RelatedPollQuestionModel, CompletePollAnswer, Rel
 export const PollOptionModel = z.object({
   id: z.string(),
   questionId: z.string(),
-  option: z.string(),
+  name: z.string(),
   createdAt: z.date(),
   updatedAt: z.date(),
 })

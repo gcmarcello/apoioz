@@ -7,12 +7,12 @@ import { revalidatePath } from "next/cache";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { ActionResponse } from "../_shared/utils/ActionResponse";
 
-export async function getUser(userId: string) {
-  return service.getUser(userId);
+export async function readUser(userId: string) {
+  return service.readUser(userId);
 }
 
-export async function getUserFromSupporter(supporterId: string) {
-  return service.getUserFromSupporter(supporterId);
+export async function readUserFromSupporter(supporterId: string) {
+  return service.readUserFromSupporter(supporterId);
 }
 
 export async function updateUser(request) {

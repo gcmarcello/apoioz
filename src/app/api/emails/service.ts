@@ -19,7 +19,7 @@ export async function sendEmail({
   templateId: string;
   dynamicData: any;
 }) {
-  const template = await getEmailTemplate(templateId, dynamicData);
+  const template = await readEmailTemplate(templateId, dynamicData);
   const msg = {
     to,
     bcc,
@@ -38,7 +38,7 @@ export async function sendEmail({
     });
 }
 
-async function getEmailTemplate(templateId, dynamicData) {
+async function readEmailTemplate(templateId, dynamicData) {
   try {
     const templateString = await readTemplateFile(templateId);
     const populatedTemplate = replaceTemplatePlaceholders(templateString, dynamicData);

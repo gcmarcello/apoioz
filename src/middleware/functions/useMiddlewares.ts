@@ -1,6 +1,9 @@
-export async function UseMiddlewares<R, A>(request?: R, additionalArguments?: A) {
+export async function UseMiddlewares<R extends object = {}, A extends object = {}>(
+  request: R = {} as R,
+  additionalArguments: A = {} as A
+) {
   return {
-    request: request ?? {},
-    additionalArguments: additionalArguments ?? {},
+    request,
+    additionalArguments,
   };
 }

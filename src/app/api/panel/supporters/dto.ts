@@ -2,15 +2,17 @@ import { z } from "zod";
 import { phoneValidator } from "@/_shared/utils/validators/phone.validator";
 import { readDto } from "../../_shared/dto/read";
 
-export const readSupportersDto = readDto({
-  user: z.object({
-    name: z.string().optional(),
-    email: z.string().optional(),
-    phone: z.string().optional(),
-  }),
-  campaignOwnerId: z.string().optional(),
-  ownerId: z.string().optional(),
-});
+export const readSupportersDto = readDto(
+  z.object({
+    user: z.object({
+      id: z.string().optional(),
+      name: z.string().optional(),
+      email: z.string().optional(),
+      phone: z.string().optional(),
+    }),
+    eager: z.boolean().optional(),
+  })
+);
 
 export type ReadSupportersDto = z.infer<typeof readSupportersDto>;
 

@@ -1,9 +1,8 @@
 import type { Campaign, Supporter, User, UserInfo } from "@prisma/client";
-
 import { normalizeEmail, normalizePhone } from "@/_shared/utils/format";
 import dayjs from "dayjs";
 import { UserWithoutPassword } from "prisma/types/User";
-import { CreateSupportersDto, ListSupportersDto } from "./dto";
+import { CreateSupportersDto, ReadSupportersDto } from "./dto";
 import prisma from "prisma/prisma";
 import { findCampaignById } from "../campaigns/service";
 import { verifyExistingUser } from "../../user/service";
@@ -151,7 +150,7 @@ export async function createSupporter(
   return supporter;
 }
 
-export async function listSupportersAsTree({
+export async function readSupportersAsTree({
   supporterSession,
 }: CreateSupportersDto & {
   userSession: UserWithoutPassword;
@@ -344,11 +343,11 @@ export async function signUpAsSupporter(request: CreateSupportersDto) {
   }
 }
 
-export async function listSupportersFromGroup({
+export async function readSupportersFromGroup({
   pagination,
-  query,
+  where,
   supporterSession,
-}: ListSupportersDto & {
+}: ReadSupportersDto & {
   supporterSession: Supporter;
 }) {
   const supporterGroup = await prisma.supporterGroupMembership.findFirst({
@@ -367,12 +366,12 @@ export async function listSupportersFromGroup({
         },
       },
       user: {
-        name: { contains: query?.user.name },
-        email: { contains: query?.user.email },
-        phone: { contains: query?.user.phone },
+        name: { contains: where?.user.name },
+        email: { contains: where?.user.email },
+        phone: { contains: where?.user.phone },
       },
     },
-    include: query?.eager
+    include: where?.eager
       ? {
           user: {
             select: {
@@ -429,7 +428,7 @@ export async function listSupportersFromGroup({
   };
 }
 
-export async function getSupporterByUser({
+export async function readSupporterFromUser({
   userId,
   campaignId,
 }: {
@@ -467,7 +466,7 @@ export async function verifyConflictingSupporter(campaign: Campaign, userId: str
   return null;
 }
 
-export async function findCampaignLeader(campaignId: string) {
+export async function readCampaignLeader(campaignId: string) {
   return await prisma.supporter.findFirst({
     where: { level: 4 },
   });
