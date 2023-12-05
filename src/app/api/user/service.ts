@@ -3,7 +3,6 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { hashInfo } from "@/_shared/utils/bCrypt";
 import { normalizePhone, normalizeEmail } from "@/_shared/utils/format";
-import { JwtPayload } from "jsonwebtoken";
 import prisma from "prisma/prisma";
 import { handlePrismaError } from "prisma/prismaError";
 dayjs.extend(customParseFormat);
@@ -57,7 +56,7 @@ export async function createUser(data: any) {
   }
 }
 
-export async function listUsers() {
+export async function readUsers() {
   try {
     const users = await prisma.user.findMany({ include: { info: true } });
     return users;
@@ -66,7 +65,7 @@ export async function listUsers() {
   }
 }
 
-export async function getUser(userId: string) {
+export async function readUser(userId: string) {
   try {
     const users = await prisma.user.findUnique({
       where: { id: userId },
@@ -108,7 +107,7 @@ export async function verifyExistingUser(phone: string, email: string) {
   });
 }
 
-export async function getUserFromSupporter(supporterId: string) {
+export async function readUserFromSupporter(supporterId: string) {
   return await prisma.user.findFirst({
     where: { supporter: { some: { id: supporterId } } },
   });

@@ -4,57 +4,47 @@ import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSess
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
 import { revalidatePath } from "next/cache";
 import { cookies, headers } from "next/headers";
-import { getSupporterByUser } from "../supporters/service";
-import {
-  CreateEventDto,
-  ReadAvailableTimesByDayDto,
-  ReadEventsByCampaignDto,
-} from "./dto";
+import { readSupporterFromUser } from "../supporters/service";
+import { CreateEventDto, ReadEventsAvailability, ReadEventsByCampaignDto } from "./dto";
 import * as service from "./service";
 import { ActionResponse } from "../../_shared/utils/ActionResponse";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 
-export async function createEvent(payload: CreateEventDto) {
-  const campaignId = cookies().get("activeCampaign")?.value;
-  if (!campaignId) throw new Error("Erro ao criar evento");
-  const supporter = await getSupporterByUser({
-    userId: payload.userId,
-    campaignId: campaignId,
-  });
-
-  revalidatePath("/painel/calendario");
-
-  return service.createEvent({
-    ...payload,
-    hostId: supporter?.id,
-    campaignId,
-  });
-}
-
-export async function getEventsByCampaign(payload: string) {
-  const userId = headers().get("userId");
-  if (!userId) throw new Error("Usuário não encontrado");
-  return service.getEventsByCampaign({ userId, campaignId: payload });
-}
-
-export async function getEventTimestamps(payload: string) {
-  return service.getEventTimestamps(payload);
-}
-
-export async function readAvailableTimesByDay(request: ReadAvailableTimesByDayDto) {
+export async function createEvent(request: CreateEventDto) {
   try {
-    const {
-      request: {
-        supporterSession: { campaignId },
-        where: { day },
-      },
-    } = await UseMiddlewares(request)
+    const { request: parsedRequest } = await UseMiddlewares(request)
+      .then(UserSessionMiddleware)
+      .then(SupporterSessionMiddleware);
+
+    revalidatePath("/painel/calendario");
+
+    const event = await service.createEvent(parsedRequest);
+
+    return ActionResponse.success({
+      data: event,
+    });
+  } catch (err) {
+    ActionResponse.error(err);
+  }
+}
+
+export async function readEventsByCampaign(payload: string) {
+  return service.readEventsByCampaign();
+}
+
+export async function readEventTimestamps(payload: string) {
+  return service.readEventTimestamps(payload);
+}
+
+export async function readEventsAvailability(request: ReadEventsAvailability) {
+  try {
+    const { request: parsedRequest } = await UseMiddlewares(request)
       .then((res) => UserSessionMiddleware(res))
       .then((res) => SupporterSessionMiddleware(res));
 
-    const availableTimes = await service.getAvailableTimesByDay(campaignId, day);
+    const eventsAvailability = await service.readEventsAvailability(parsedRequest);
     return ActionResponse.success({
-      data: availableTimes,
+      data: eventsAvailability,
     });
   } catch (err) {
     return ActionResponse.error(err);

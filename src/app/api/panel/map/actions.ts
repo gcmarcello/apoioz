@@ -6,13 +6,13 @@ import * as service from "./service";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { ActionResponse } from "../../_shared/utils/ActionResponse";
 
-export async function generateMapData() {
+export async function createMapData() {
   try {
     const { request: parsedRequest } = await UseMiddlewares()
       .then(UserSessionMiddleware)
       .then(SupporterSessionMiddleware);
 
-    const mapData = await service.generateMapData(parsedRequest);
+    const mapData = await service.createMapData(parsedRequest);
 
     return ActionResponse.success({ data: mapData });
   } catch (err) {

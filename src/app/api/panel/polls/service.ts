@@ -4,7 +4,7 @@ import prisma from "prisma/prisma";
 import { Poll, Supporter } from "@prisma/client";
 import { UpsertPollDto } from "./dto";
 
-export async function listPolls(request) {
+export async function readPolls(request) {
   const fetchPolls = await prisma.poll.findMany({
     where: { campaignId: request.campaignId },
     include: {
@@ -23,7 +23,7 @@ export async function listPolls(request) {
   return polls;
 }
 
-export async function getPoll(request) {
+export async function readPoll(request) {
   const poll = await prisma.poll.findUnique({
     where: { id: request.id },
     include: {

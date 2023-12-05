@@ -1,6 +1,5 @@
 import prisma from "@/tests/client";
 import { LoginDto } from "./dto";
-import { NextResponse } from "next/server";
 
 export async function ExistingUserMiddleware({ request }: { request: LoginDto }) {
   const isEmail = request.identifier.includes("@");

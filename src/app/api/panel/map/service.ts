@@ -1,11 +1,11 @@
 import prisma from "prisma/prisma";
-import { getZonesByCampaign } from "../../elections/zones/service";
+import { readZonesByCampaign } from "../../elections/zones/service";
 import {
   contrastingColor,
   generateRandomHexColor,
 } from "@/app/(frontend)/_shared/utils/colors";
 
-export async function generateMapData(request) {
+export async function createMapData(request) {
   const cityId = await prisma.campaign
     .findUnique({ where: { id: request.supporterSession.campaignId } })
     .then((campaign) => campaign!.cityId);
@@ -34,10 +34,10 @@ export async function generateMapData(request) {
     },
   });
 
-  const zones = await getZonesByCampaign(request.supporterSession.campaignId);
+  const zones = await readZonesByCampaign(request.supporterSession.campaignId);
   const zonesInfo = [];
   for (const zone of zones) {
-    zonesInfo.push(await fetchZoneGeoJSON(zone.id));
+    zonesInfo.push(await readZoneGeoJSON(zone.id));
   }
 
   const neighborhoods = await prisma.neighborhood.findMany({
@@ -50,7 +50,7 @@ export async function generateMapData(request) {
   return { addresses: mapData, zonesInfo, neighborhoods };
 }
 
-export async function fetchZoneGeoJSON(zoneId: string) {
+export async function readZoneGeoJSON(zoneId: string) {
   const json = await prisma.zone.findFirst({
     where: { id: zoneId },
     include: { ZoneGeoJSON: { select: { geoJSON: true } } },

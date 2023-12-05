@@ -6,9 +6,9 @@ import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSess
 import { ActionResponse } from "../../_shared/utils/ActionResponse";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 
-export async function getCitiesByState(data: string) {
+export async function readCitiesByState(data: string) {
   try {
-    const cities = await service.getCitiesByState(data);
+    const cities = await service.readCitiesByState(data);
     return ActionResponse.success({
       data: cities,
     });
@@ -17,26 +17,26 @@ export async function getCitiesByState(data: string) {
   }
 }
 
-export async function getStates() {
-  return await service.getStates();
+export async function readStates() {
+  return await service.readStates();
 }
 
-export async function getAddressBySection(sectionId: string) {
+export async function readAddressBySection(sectionId: string) {
   try {
-    const addressFromSection = await service.findAddressBySection(sectionId);
+    const addressFromSection = await service.readAddressBySection(sectionId);
     return ActionResponse.success({ data: addressFromSection });
   } catch (err) {
     return ActionResponse.error(err);
   }
 }
 
-export async function getAddressesByCampaign() {
+export async function readAddressesByCampaign() {
   try {
     const { request: parsedRequest } = await UseMiddlewares()
       .then(UserSessionMiddleware)
       .then(SupporterSessionMiddleware);
 
-    const addressesFromCampaign = await service.getAddressesByCampaign(
+    const addressesFromCampaign = await service.readAddressesByCampaign(
       parsedRequest.supporterSession.campaignId
     );
 

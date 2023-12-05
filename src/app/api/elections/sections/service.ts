@@ -1,22 +1,22 @@
 import prisma from "prisma/prisma";
-import { getZonesByState } from "../zones/service";
+import { readZonesByState } from "../zones/service";
 
-export async function getSectionsByState(stateId: string) {
-  const zones = await getZonesByState(stateId);
+export async function readSectionsByState(stateId: string) {
+  const zones = await readZonesByState(stateId);
   const sections = await prisma.section.findMany({
     where: { zoneId: { in: zones.zones.map((zone) => zone.id) } },
   });
   return { state: zones.state, sections, count: sections.length };
 }
 
-export async function getSectionsByZone(zoneId: string) {
+export async function readSectionsByZone(zoneId: string) {
   return await prisma.section.findMany({
     where: { zoneId },
     orderBy: { number: "asc" },
   });
 }
 
-export async function getSectionsByCity(cityId: string) {
+export async function readSectionsByCity(cityId: string) {
   const addresses = await prisma.address.findMany({
     where: { cityId },
     include: { City: true },
@@ -32,7 +32,7 @@ export async function getSectionsByCity(cityId: string) {
   };
 }
 
-export async function getSectionsByCampaign(campaignId: string) {
+export async function readSectionsByCampaign(campaignId: string) {
   try {
     const campaign = await prisma.campaign.findUnique({
       where: { id: campaignId },

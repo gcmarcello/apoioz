@@ -3,40 +3,29 @@ import dayjs, { Dayjs } from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import utc from "dayjs/plugin/utc";
 import { cookies, headers } from "next/headers";
-import { getSupporterByUser } from "../supporters/service";
 import { Supporter, User } from "@prisma/client";
 import prisma from "prisma/prisma";
 import { sendEmail } from "../../emails/service";
-import { ReadEventsByCampaignDto } from "./dto";
+import { CreateEventDto, ReadEventsAvailability, ReadEventsByCampaignDto } from "./dto";
 dayjs.extend(customParseFormat);
 dayjs.extend(utc);
 
-export async function createEvent(data: any) {
-  const supporter = await getSupporterByUser({
-    userId: data.userId,
-    campaignId: data.campaignId,
-  });
-
-  if (!supporter) throw new Error("Usuário não encontrado");
-
-  if (!headers().get("userId") || !cookies().get("activeCampaign")?.value)
-    throw new Error("Erro ao criar evento");
+export async function createEvent(
+  request: CreateEventDto & { supporterSession: Supporter }
+) {
   const event = await prisma.event.create({
     data: {
-      name: data.name,
-      campaignId: data.campaignId || cookies().get("activeCampaign")?.value,
-      dateStart: data.dateStart.value,
-      dateEnd: data.dateEnd.value,
-      description: data.description,
-      location: data.location,
-      status: supporter.level === 4 ? "active" : "pending",
-      hostId: supporter?.id,
+      name: request.name,
+      campaignId: request.supporterSession.campaignId,
+      dateStart: request.dateStart.value,
+      dateEnd: request.dateEnd.value,
+      description: request.description,
+      location: request.location,
+      status: request.supporterSession.level === 4 ? "active" : "pending",
+      hostId: request.supporterSession.id,
     },
   });
-  const host = await prisma.supporter.findFirst({
-    where: { id: supporter?.id },
-    include: { user: true },
-  });
+
   const leader = await prisma.supporter.findFirst({
     where: { level: 4 },
     include: { user: { select: { email: true, name: true } } },
@@ -116,18 +105,21 @@ export async function readEventsByCampaign({
   return events;
 }
 
-export async function getEventTimestamps(eventId: string) {
+export async function readEventTimestamps(campaignId: string) {
   const events = await prisma.event.findMany({ where: { campaignId, status: "active" } });
 
   const eventTimestamps = events.map((event) => ({
     start: dayjs(event.dateStart).utcOffset(-3).toISOString(),
     end: dayjs(event.dateEnd).utcOffset(-3).toISOString(),
   }));
+
   return eventTimestamps;
 }
 
-export async function getAvailableTimesByDay(campaignId: string, day: string) {
-  const correctedTimeZoneDay = dayjs(day).add(3, "hour");
+export async function readEventsAvailability(
+  request: ReadEventsAvailability & { supporterSession: Supporter }
+) {
+  const correctedTimeZoneDay = dayjs(request.where.day).add(3, "hour");
 
   const timeslots = [];
 
@@ -136,7 +128,9 @@ export async function getAvailableTimesByDay(campaignId: string, day: string) {
     timeslots.push(time.toISOString());
     time = time.add(1, "hour");
   }
-  let availableTimeslots = [...timeslots];
+  let availableTimeslots: dayjs.Dayjs[] = [...timeslots];
+
+  const eventTimestamps = await readEventTimestamps(request.supporterSession.campaignId);
 
   eventTimestamps.forEach((event) => {
     const startTime = dayjs(event.start).subtract(1, "hour");
@@ -154,7 +148,10 @@ export async function getAvailableTimesByDay(campaignId: string, day: string) {
     );
   });
 
-  return availableTimeslots;
+  return {
+    availableTimes: availableTimeslots,
+    eventsTimestamps: eventTimestamps,
+  };
 }
 
 export async function updateEventStatus(request) {

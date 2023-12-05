@@ -10,12 +10,10 @@ const timeSlotValidator = z.object({
 
 export const createEventDto = z.object({
   name: z.string(),
-  campaignId: z.string().optional(),
   dateStart: timeSlotValidator,
   dateEnd: timeSlotValidator,
   description: z.string(),
   location: z.string(),
-  userId: z.string(),
 });
 
 export type CreateEventDto = z.infer<typeof createEventDto>;
@@ -24,6 +22,6 @@ export const readEventsByCampaign = readDto(EventModel);
 
 export type ReadEventsByCampaignDto = z.infer<typeof readEventsByCampaign>;
 
-export const readAvailableTimesByDay = readDto(z.object({ day: z.string() }));
+export const readEventsAvailability = readDto(z.object({ day: z.string() }));
 
-export type ReadAvailableTimesByDayDto = z.infer<typeof readAvailableTimesByDay>;
+export type ReadEventsAvailability = z.infer<typeof readEventsAvailability>;
