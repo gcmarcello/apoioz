@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import prisma from "prisma/prisma";
 
 export async function createInviteCode({ campaignId, referralId }) {
+  console.log({ campaignId, referralId });
   if (!campaignId || !referralId) throw "Missing campaignId or referralId";
 
   const code = await prisma.inviteCode.create({

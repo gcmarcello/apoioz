@@ -99,9 +99,9 @@ export async function updateUser(request) {
   }
 }
 
-export async function verifyExistingUser(phone: string) {
+export async function verifyExistingUser(phone: string, email: string) {
   return await prisma.user.findFirst({
-    where: { phone: normalizePhone(phone) },
+    where: { phone, email },
     include: {
       info: true,
     },
