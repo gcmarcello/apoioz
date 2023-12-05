@@ -58,7 +58,7 @@ export async function generatePasswordRecovery(identifier: string) {
       subject: "Recuperação de Senha - ApoioZ",
     },
   });
-  return { email: maskEmail(potentialUser.email) };
+  return maskEmail(potentialUser.email);
 }
 
 export async function checkRecoveryCode(code: string) {

@@ -101,7 +101,7 @@ export default function SupporterSignUpPage({
     },
   });
 
-  if (success) return <AddSupporterSuccess campaign={campaign} />;
+  if (!success) return <AddSupporterSuccess campaign={campaign} />;
 
   return (
     <div className=" isolate bg-white px-6 pt-8 lg:px-8">
