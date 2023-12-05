@@ -18,7 +18,7 @@ import WhatsAppIcon from "../icons/WhatsAppIcon";
 import { AtSymbolIcon } from "@heroicons/react/24/outline";
 import { Date } from "../Date";
 import PaginationControl from "./pagination";
-import SupporterBall from "@/app/(frontend)/painel/time/components/SupporterBall";
+import SupporterBall from "../SupporterBall";
 import { SupporterTableType } from "@/_shared/types/tableTypes";
 
 export default function SupporterTable({

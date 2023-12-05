@@ -2,11 +2,11 @@
 import { Mocker } from "@/app/(frontend)/_shared/components/Mocker";
 import ErrorAlert from "@/app/(frontend)/_shared/components/alerts/errorAlert";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
-import { getAddressBySection } from "@/app/api/elections/locations/actions";
-import { getSectionsByZone } from "@/app/api/elections/sections/action";
-import { getZonesByCampaign } from "@/app/api/elections/zones/actions";
 import { CreateSupportersDto, createSupportersDto } from "@/app/api/panel/supporters/dto";
-import { createSupporter } from "@/app/api/panel/supporters/actions";
+import {
+  createSupporter,
+  readSupportersFromGroup,
+} from "@/app/api/panel/supporters/actions";
 import { fakerPT_BR } from "@faker-js/faker";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Campaign } from "@prisma/client";
@@ -23,8 +23,10 @@ import {
   TextField,
   MaskedTextField,
 } from "@/app/(frontend)/_shared/components/fields/Text";
-import { listSupportersFromGroup } from "@/app/api/panel/supporters/actions";
 import dayjs from "dayjs";
+import { readZonesByCampaign } from "@/app/api/elections/zones/actions";
+import { readSectionsByZone } from "@/app/api/elections/sections/action";
+import { readAddressBySection } from "@/app/api/elections/locations/actions";
 
 export function AddSupporterForm({
   campaign,
@@ -42,15 +44,15 @@ export function AddSupporterForm({
   });
 
   const { data: zones, trigger: fetchZones } = useAction({
-    action: getZonesByCampaign,
+    action: readZonesByCampaign,
   });
 
   const { data: sections, trigger: fetchSections } = useAction({
-    action: getSectionsByZone,
+    action: readSectionsByZone,
   });
 
   const { data: address, trigger: fetchAddress } = useAction({
-    action: getAddressBySection,
+    action: readAddressBySection,
   });
 
   const { data: supporter, trigger: addSupporter } = useAction({
@@ -139,7 +141,7 @@ export function AddSupporterForm({
           label="Indicador"
           hform={form}
           name={"referralId"}
-          fetcher={listSupportersFromGroup}
+          fetcher={readSupportersFromGroup}
           displayValueKey={"user.name"}
         />
 
