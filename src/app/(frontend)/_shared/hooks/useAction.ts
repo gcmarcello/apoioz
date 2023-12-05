@@ -7,6 +7,7 @@ interface UseActionParams<T, U, ParserReturnType> {
   onSuccess?: (res: ParserReturnType) => void;
   action: (arg: T) => Promise<SuccessResponse<U> | ErrorResponse>;
   parser?: (arg: U) => ParserReturnType;
+  formatter?: (arg: T) => T;
 }
 
 export function useAction<T, U extends ParserReturnType, ParserReturnType = U>({
@@ -14,13 +15,14 @@ export function useAction<T, U extends ParserReturnType, ParserReturnType = U>({
   onSuccess,
   onError,
   parser = (arg) => arg,
+  formatter,
 }: UseActionParams<T, U, ParserReturnType>) {
   const id = useId();
 
-  parser = parser || ((arg) => arg);
+  const fetcher = (arg: T) => {
+    const processedArg = formatter ? formatter(arg) : arg;
 
-  const fetcher = (arg: T) =>
-    action(arg)
+    return action(processedArg)
       .then((res) => {
         if ("error" in res) {
           throw res.message;
@@ -30,6 +32,7 @@ export function useAction<T, U extends ParserReturnType, ParserReturnType = U>({
       .catch((error: any) => {
         throw error;
       });
+  };
 
   return useSWRMutation<ParserReturnType, any, string, T>(
     id,
