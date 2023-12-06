@@ -1,19 +1,19 @@
 "use server";
 
 import { normalizeEmail, normalizePhone } from "@/_shared/utils/format";
-import { getZonesByCampaign } from "@/app/api/elections/zones/actions";
-import { listSupporters } from "@/app/api/panel/supporters/actions";
+import { readZonesByCampaign } from "@/app/api/elections/zones/actions";
+import { readSupportersFromGroup } from "@/app/api/panel/supporters/actions";
 import { fakerPT_BR as faker } from "@faker-js/faker";
 import { cookies } from "next/headers";
 
 export async function mockSupporter(campaignId?: string, ownerId?: string) {
   if (!campaignId && !cookies().get("activeCampaign")?.value) return;
 
-  const zones = await getZonesByCampaign(
+  const zones = await readZonesByCampaign(
     campaignId || cookies().get("activeCampaign")!.value
   );
 
-  const supporters = await listSupporters({
+  const supporters = await readSupportersFromGroup({
     data: {
       campaignOwnerId: campaignId,
       ownerId: ownerId,

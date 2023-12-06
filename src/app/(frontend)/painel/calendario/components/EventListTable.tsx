@@ -1,5 +1,5 @@
 import { contrastingColor } from "@/app/(frontend)/_shared/utils/colors";
-import { getSupporterByUser } from "@/app/api/panel/supporters/actions";
+import { readSupporterFromUser } from "@/app/api/panel/supporters/actions";
 import { CalendarIcon, MapPinIcon } from "@heroicons/react/24/solid";
 import clsx from "clsx";
 import dayjs from "dayjs";
@@ -9,7 +9,7 @@ import { Event } from "@prisma/client";
 import { Date } from "@/app/(frontend)/_shared/components/Date";
 
 export default async function EventListTable({ events }: { events: Event[] }) {
-  const supporter = await getSupporterByUser({
+  const supporter = await readSupporterFromUser({
     userId: headers().get("userId")!,
     campaignId: cookies().get("activeCampaign")!.value,
   });

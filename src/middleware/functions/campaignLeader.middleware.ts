@@ -5,9 +5,9 @@ import prisma from "prisma/prisma";
 import { MiddlewareArguments } from "../types/types";
 import { UserSessionMiddlewareReturnType } from "./userSession.middleware";
 
-export async function CampaignLeaderMiddleware({
+export async function CampaignLeaderMiddleware<T>({
   request,
-}: UserSessionMiddlewareReturnType) {
+}: UserSessionMiddlewareReturnType<T>) {
   const campaignId = cookies().get("activeCampaign")!.value;
 
   const supporter = await prisma.supporter.findFirst({

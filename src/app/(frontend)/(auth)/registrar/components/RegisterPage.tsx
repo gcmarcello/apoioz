@@ -2,8 +2,9 @@
 
 import { Logo } from "@/app/(frontend)/_shared/components/Logo";
 import ErrorAlert from "@/app/(frontend)/_shared/components/alerts/errorAlert";
-import ComboboxField, {
+import {
   ListboxField,
+  ComboboxField,
 } from "@/app/(frontend)/_shared/components/fields/Select";
 import {
   TextField,
@@ -12,9 +13,9 @@ import {
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 import { Button } from "@/app/(frontend)/_shared/components/Button";
 import { SignupDto, signupDto } from "@/app/api/auth/dto";
-import { getCitiesByState } from "@/app/api/elections/locations/actions";
-import { getSectionsByZone } from "@/app/api/elections/sections/action";
-import { getZonesByCity } from "@/app/api/elections/zones/actions";
+import { readCitiesByState } from "@/app/api/elections/locations/actions";
+import { readSectionsByZone } from "@/app/api/elections/sections/action";
+import { readZonesByCity } from "@/app/api/elections/zones/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Party, Section, State } from "@prisma/client";
 import axios from "axios";
@@ -92,7 +93,7 @@ export default function RegisterPage({
   };
 
   const { trigger: fetchCities, data: cities } = useAction({
-    action: getCitiesByState,
+    action: readCitiesByState,
     onSuccess: () => {
       resetZones();
       resetSections();
@@ -106,7 +107,7 @@ export default function RegisterPage({
     data: zones,
     reset: resetZones,
   } = useAction({
-    action: getZonesByCity,
+    action: readZonesByCity,
     onSuccess: () => {
       resetSections();
     },
@@ -123,7 +124,7 @@ export default function RegisterPage({
     data: sections,
     reset: resetSections,
   } = useAction({
-    action: getSectionsByZone,
+    action: readSectionsByZone,
     parser: (data) =>
       data.map((section) => ({
         id: section.id,

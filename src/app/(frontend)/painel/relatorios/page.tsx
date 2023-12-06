@@ -1,5 +1,5 @@
 "use client";
-import { listSupporters } from "@/app/api/panel/supporters/actions";
+import { readSupportersFromGroup } from "@/app/api/panel/supporters/actions";
 import SupportersTable from "./components/SupportersTable";
 import { Bar } from "react-chartjs-2";
 import { faker } from "@faker-js/faker";

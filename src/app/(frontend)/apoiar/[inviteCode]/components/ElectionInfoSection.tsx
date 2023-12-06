@@ -3,8 +3,8 @@ import { Zone } from "@prisma/client";
 import { Controller } from "react-hook-form";
 import { Fragment, useRef, useState } from "react";
 import { AddressType, SectionType, ZoneType } from "@/_shared/types/locationTypes";
-import { getSectionsByZone } from "@/app/api/elections/sections/action";
-import { getAddressBySection } from "@/app/api/elections/locations/actions";
+import { readSectionsByZone } from "@/app/api/elections/sections/action";
+import { readAddressBySection } from "@/app/api/elections/locations/actions";
 import { toProperCase } from "@/_shared/utils/format";
 import { PresentationChartBarIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
@@ -30,7 +30,7 @@ export function ElectionInfoSection({
     isMutating: isLoading,
     trigger: fetchSections,
   } = useAction({
-    action: getSectionsByZone,
+    action: readSectionsByZone,
     parser: (data) => {
       resetAddress();
       form.resetField("info.sectionId");
@@ -50,7 +50,7 @@ export function ElectionInfoSection({
     isMutating: isFetchingAddress,
     reset: resetAddress,
   } = useAction({
-    action: getAddressBySection,
+    action: readAddressBySection,
   });
 
   return (

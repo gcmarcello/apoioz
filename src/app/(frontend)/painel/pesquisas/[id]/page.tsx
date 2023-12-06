@@ -4,7 +4,7 @@ import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { CampaignLeaderMiddleware } from "@/middleware/functions/campaignLeader.middleware";
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
-import { getPoll } from "@/app/api/panel/polls/service";
+import { readPoll } from "@/app/api/panel/polls/service";
 import PageHeader from "@/app/(frontend)/_shared/components/PageHeader";
 import { redirect } from "next/navigation";
 
@@ -14,7 +14,7 @@ export default async function EditarPesquisaPage({ params }: { params: { id: str
     .then(SupporterSessionMiddleware)
     .then(CampaignLeaderMiddleware);
 
-  const poll = await getPoll({ ...parsedRequest, id: params.id });
+  const poll = await readPoll({ ...parsedRequest, id: params.id });
 
   if (!poll) {
     return redirect("/404");
