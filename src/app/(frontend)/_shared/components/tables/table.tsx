@@ -128,7 +128,7 @@ export function DefaultTable({
           </>
         )}
 
-        <Xlsx />
+        <Xlsx data={data} columns={columns} fileName="file" />
       </div>
 
       <div className="mt-6 flex flex-col">
