@@ -1,9 +1,8 @@
+import { Pagination } from "../dto/read";
+
 export interface SuccessResponse<T> {
   data: T;
-  pagination?: {
-    pageSize: number;
-    pageIndex: number;
-  };
+  pagination?: Pagination;
   message?: string | string[];
 }
 
@@ -11,6 +10,8 @@ export interface ErrorResponse {
   message: string | string[];
   error: boolean;
 }
+
+export type ActionResponseType<T> = SuccessResponse<T> | ErrorResponse;
 
 export class ActionResponse {
   public static success<T>({

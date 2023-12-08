@@ -1,25 +1,34 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Event, User } from "@prisma/client";
+import { Event, Supporter, User } from "@prisma/client";
 import { ReportsContext } from "../contexts/reports.ctx";
 import { readSupportersFromGroup } from "@/app/api/panel/supporters/actions";
 import clsx from "clsx";
 import { ArrowLeftIcon, EyeIcon } from "@heroicons/react/24/outline";
+import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 
-export default function ReportsProvider({ children }) {
-  const [supporters, setSupporters] = useState(null);
+export default function ReportsProvider({
+  supporters: defaultSupporters,
+  children,
+}: {
+  supporters: Supporter[];
+  children: any;
+}) {
   const [viewingAs, setViewingAs] = useState<User>(null);
   const [globalFilter, setGlobalFilter] = useState("");
 
-  const openAsSupporter = async (user: any, campaignId: string) => {
+  const {
+    trigger: fetchSupporters,
+    data: supporters,
+    pagination,
+  } = useAction({
+    action: readSupportersFromGroup,
+    defaultData: defaultSupporters,
+  });
+
+  const openAsSupporter = async (user: any) => {
     try {
-      const newData = await readSupportersFromGroup({
-        pagination: {
-          pageIndex: 0,
-          pageSize: 10000000,
-        },
-      });
-      setSupporters(newData);
+      await fetchSupporters();
       setViewingAs(user);
       setGlobalFilter("");
     } catch (error) {
@@ -28,13 +37,7 @@ export default function ReportsProvider({ children }) {
   };
 
   const restoreView = async () => {
-    const newData = await readSupportersFromGroup({
-      pagination: {
-        pageIndex: 0,
-        pageSize: 10000000,
-      },
-    });
-    setSupporters(newData);
+    await fetchSupporters();
     setViewingAs(null);
   };
 
@@ -45,8 +48,10 @@ export default function ReportsProvider({ children }) {
   return (
     <ReportsContext.Provider
       value={{
-        supporters,
-        setSupporters,
+        supporters: {
+          data: supporters,
+          pagination,
+        },
         openAsSupporter,
         restoreView,
         setViewingAs,

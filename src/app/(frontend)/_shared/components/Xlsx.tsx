@@ -17,7 +17,6 @@ export default function Xlsx({ data, columns, dataFormatter }: XlsxProps) {
     writeOptions: {}, // Style options from https://docs.sheetjs.com/docs/api/write-options
     RTL: false, // Display the columns from right-to-left (the default value is false)
   };
-  const parsedColumns = columns.map((column) => {});
   const formattedData = dataFormatter ? data.map(dataFormatter) : data;
 
   return (

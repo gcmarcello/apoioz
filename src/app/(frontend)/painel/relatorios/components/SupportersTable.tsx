@@ -16,8 +16,6 @@ export default function SupportersTable() {
 
   const { supporters, openAsSupporter, globalFilter, setGlobalFilter } = useReports();
 
-  console.log(supporters);
-
   const columns = [
     columnHelper.accessor("user.name", {
       id: "name",

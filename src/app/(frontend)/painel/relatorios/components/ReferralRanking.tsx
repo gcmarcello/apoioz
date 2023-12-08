@@ -1,7 +1,5 @@
 "use client";
-import { LoadingSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { generateRandomHexColor } from "@/app/(frontend)/_shared/utils/colors";
-import { faker } from "@faker-js/faker";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -12,8 +10,6 @@ import {
   Legend,
   ChartOptions,
 } from "chart.js";
-import { Chart } from "chart.js/dist";
-import { useEffect, useMemo, useRef, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import { useReports } from "../hooks/useReports";
 

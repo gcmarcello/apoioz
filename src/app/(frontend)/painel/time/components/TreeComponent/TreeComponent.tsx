@@ -1,6 +1,6 @@
 import React from "react";
 import ReactFlow, { Controls, MiniMap } from "reactflow";
-import dagre from "dagre";
+import dagre from "@dagrejs/dagre";
 import "reactflow/dist/base.css";
 import SupporterNode from "../SupporterNode";
 
@@ -71,6 +71,9 @@ const TreeComponent = ({ supportersTree }) => {
         nodes={nodes}
         edges={edges}
         fitView
+        proOptions={{
+          hideAttribution: true,
+        }}
         fitViewOptions={fitViewOptions}
         nodeTypes={nodeTypes}
       >

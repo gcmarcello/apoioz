@@ -3,7 +3,6 @@ import { Dispatch, createContext } from "react";
 
 export class ReportsContextProps {
   supporters: { pagination: any; data: Supporter[] };
-  setSupporters: Dispatch<{ pagination: any; data: Supporter[] }> | null;
   openAsSupporter: (user: any, campaignId: string) => void;
   restoreView: () => void;
   viewingAs: User;

@@ -4,7 +4,10 @@ generator client {
 }
 
 generator zod {
-  provider = "zod-prisma"
+  provider                  = "zod-prisma-types"
+  output                    = "./zod"
+  createInputTypes          = false
+  createRelationValuesTypes = true
 }
 
 datasource db {
