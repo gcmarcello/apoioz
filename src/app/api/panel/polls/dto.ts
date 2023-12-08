@@ -1,15 +1,5 @@
 import { z } from "zod";
 
-export const pollAnswerDto = z.object({
-  pollId: z.string(),
-  supporterId: z.string().optional(),
-  questionId: z.string().uuid({ message: "ID da pergunta é obrigatório" }),
-  answers: z.object({
-    options: z.array(z.string().uuid()).optional(),
-    freeAnswer: z.string().optional(),
-  }),
-});
-
 export const upsertPollDto = z.object({
   title: z.string().min(1, "Nome é obrigatório"),
   activeAtSignUp: z.boolean(),
@@ -61,6 +51,16 @@ export const readPollsStats = z.array(
     changeText: z.string(),
   })
 );
+
+export const pollAnswerDto = z.object({
+  pollId: z.string(),
+  supporterId: z.string().optional(),
+  questionId: z.string().uuid({ message: "ID da pergunta é obrigatório" }),
+  answers: z.object({
+    options: z.array(z.string().uuid()).optional(),
+    freeAnswer: z.string().optional(),
+  }),
+});
 
 export type UpsertPollDto = z.infer<typeof upsertPollDto>;
 export type PollAnswerDto = z.infer<typeof pollAnswerDto>;

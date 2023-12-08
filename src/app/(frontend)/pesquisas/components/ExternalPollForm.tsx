@@ -12,6 +12,9 @@ import { Campaign } from "@prisma/client";
 import Image from "next/image";
 import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
+import { useAction } from "../../_shared/hooks/useAction";
+import { showToast } from "../../_shared/components/alerts/toast";
+import { answerPoll } from "@/app/api/panel/polls/service";
 
 interface PossibleStates {
   preview: {
@@ -45,17 +48,48 @@ export function ExternalPollForm<T extends keyof PossibleStates>({
   mode,
   states,
 }: PollFormProps<T>) {
+  const pollId = data.id;
   const form = useForm({
-    defaultValues: data.PollQuestion?.map((question) => ({
-      questionId: question.id,
-      answer: { options: [], freeAnswer: "" },
-    })),
+    defaultValues: {
+      pollId,
+    },
   });
+
+  const {
+    data: signUpData,
+    trigger: vote,
+    isMutating: isSigningUp,
+    reset: resetSignUp,
+  } = useAction({
+    formatter: (data) => {
+      return Object.entries(data.questions).map(([questionId, answer]) => ({
+        pollId: pollId,
+        supporterId: null,
+        questionId: questionId,
+        answers: answer.answer,
+      }));
+    },
+    action: answerPoll,
+    onSuccess: (res) => {
+      setTimeout(() => {
+        scrollTo({ top: 0, behavior: "smooth" });
+      }, 350);
+      showToast({
+        message: "Pesquisa respondida com sucesso.",
+        title: "Sucesso!",
+        variant: "success",
+      });
+    },
+    onError: (err) => {
+      form.setError("root.serverError", {
+        type: "400",
+        message: err.toString() || "Erro inesperado",
+      });
+    },
+  });
+
   return (
-    <form
-      className="px-4 pb-20 pt-10"
-      onSubmit={form.handleSubmit((data) => console.log(data))}
-    >
+    <form className="px-4 pb-20 pt-10" onSubmit={form.handleSubmit((data) => vote(data))}>
       <div
         className="absolute inset-x-0 -z-10 transform-gpu overflow-hidden blur-3xl lg:top-[-10rem]"
         aria-hidden="true"
@@ -127,15 +161,15 @@ export function ExternalPollForm<T extends keyof PossibleStates>({
                             <CheckboxInput
                               hform={form}
                               label={option.name}
-                              name={option.name}
+                              name={`questions.${question.id}.answer.options.${option.id}`}
                             />
                           ) : (
                             <RadioInput
                               hform={form}
                               label={option.name}
-                              group={`questions.${question.id}.answers.options`}
+                              group={`questions.${question.id}.answer.options`}
                               data={option.id}
-                              name={`questions.${question.id}.answers.options.${option.id}`}
+                              name={`questions.${question.id}.answer.options.${option.id}`}
                             />
                           )}
                         </td>
@@ -149,7 +183,7 @@ export function ExternalPollForm<T extends keyof PossibleStates>({
                             label={
                               question.PollOption.length ? "Comentários:" : "Resposta:"
                             }
-                            name={`questions.${question.id}.answers.freeAnswer`}
+                            name={`questions.${question.id}.answer.freeAnswer`}
                           />
                         </td>
                       </tr>

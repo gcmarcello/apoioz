@@ -8,7 +8,7 @@ export interface SuccessResponse<T> {
 
 export interface ErrorResponse {
   message: string | string[];
-  error: boolean;
+  error: true;
 }
 
 export type ActionResponseType<T> = SuccessResponse<T> | ErrorResponse;

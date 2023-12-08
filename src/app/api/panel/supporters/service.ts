@@ -322,8 +322,8 @@ export async function signUpAsSupporter(request: CreateSupportersDto) {
     for (const question of request.questions) {
       question.supporterId = supporter.id;
       question.pollId = poll.id;
-      await answerPoll(question);
     }
+    await answerPoll(request.questions);
   }
 
   await sendEmail({
