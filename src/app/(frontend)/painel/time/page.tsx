@@ -1,4 +1,4 @@
-import { listTreeSuporters } from "@/app/api/panel/supporters/actions";
+import { readSupportersAsTree } from "@/app/api/panel/supporters/actions";
 import Image from "next/image";
 import clsx from "clsx";
 import { AtSymbolIcon } from "@heroicons/react/24/outline";
@@ -18,7 +18,7 @@ export default async function TimePage() {
     .catch(() => redirect("/painel"));
    */
 
-  const tree = await listTreeSuporters();
+  const tree = await readSupportersAsTree();
 
   if (!tree) return;
 

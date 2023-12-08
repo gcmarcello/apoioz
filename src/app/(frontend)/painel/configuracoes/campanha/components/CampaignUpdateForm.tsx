@@ -46,7 +46,7 @@ export default function CampaignUpdateForm({ campaign }) {
   return (
     <main className="px-4 sm:px-6 lg:flex-auto lg:px-0">
       <div className="mt-14 max-w-2xl space-y-16 sm:space-y-20 lg:mx-4 lg:max-w-none">
-        <form onSubmit={form.handleSubmit(() => updateCampaignTrigger())}>
+        <form onSubmit={form.handleSubmit((data) => updateCampaignTrigger(data))}>
           <div className="space-y-12">
             <div className="border-b border-gray-900/10 pb-12">
               <h2 className="text-base font-semibold leading-7 text-gray-900">

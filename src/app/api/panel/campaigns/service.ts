@@ -5,6 +5,7 @@ import crypto from "crypto";
 
 import prisma from "prisma/prisma";
 import { readZonesByCity, readZonesByState } from "../../elections/zones/service";
+import { data } from "autoprefixer";
 
 export async function verifyPermission(
   userId: string | null,
@@ -49,11 +50,12 @@ export async function listCampaigns(userId: string) {
   }
 }
 
-export async function updateCampaign(body: { campaignId: string; data: any }) {
+export async function updateCampaign(request: any) {
   try {
+    const { userSession, supporterSession, ...data } = request;
     const updatedCampaign = await prisma.campaign.update({
-      where: { id: body.campaignId },
-      data: body.data,
+      where: { id: supporterSession.campaignId },
+      data,
     });
     return updatedCampaign;
   } catch (error) {

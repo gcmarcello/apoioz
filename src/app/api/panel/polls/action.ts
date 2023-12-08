@@ -39,3 +39,7 @@ export async function updatePoll(request) {
     return ActionResponse.error(error);
   }
 }
+
+export async function readActivePoll(request) {
+  const poll = await service.readActivePoll(request);
+}

@@ -13,13 +13,20 @@ import {
   ComboboxField,
   ListboxField,
 } from "@/app/(frontend)/_shared/components/fields/Select";
+import CheckboxInput from "@/app/(frontend)/_shared/components/fields/Checkbox";
+import RadioInput from "@/app/(frontend)/_shared/components/fields/Radio";
+import { TextAreaField } from "@/app/(frontend)/_shared/components/fields/Text";
+import { PollQuestions } from "./PollQuestions";
+import { SectionTitle } from "@/app/(frontend)/_shared/components/text/SectionTitle";
 
 export function ElectionInfoSection({
   form,
   zones,
+  poll,
 }: {
   form: any;
   zones: { data: ZoneType[]; message: string };
+  poll: any;
 }) {
   const [showPassword, setShowPassword] = useState(false);
   const [willAddPassword, setWillAddPassword] = useState(null);
@@ -178,6 +185,10 @@ export function ElectionInfoSection({
               label="Seção"
               displayValueKey={"number"}
             />
+          </div>
+          <div className="col-span-2">
+            <SectionTitle>{poll.title}</SectionTitle>
+            <PollQuestions form={form} poll={poll} />
           </div>
         </div>
       )}

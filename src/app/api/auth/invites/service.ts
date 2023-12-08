@@ -1,3 +1,4 @@
+import { isProd } from "@/_shared/utils/settings";
 import dayjs from "dayjs";
 import prisma from "prisma/prisma";
 
@@ -6,7 +7,13 @@ export async function createInviteCode({ campaignId, referralId }) {
   if (!campaignId || !referralId) throw "Missing campaignId or referralId";
 
   const code = await prisma.inviteCode.create({
-    data: { campaignId, referralId, expiresAt: dayjs().add(10, "minutes").toISOString() },
+    data: {
+      campaignId,
+      referralId,
+      expiresAt: dayjs()
+        .add(isProd ? 10 : 200, "minutes")
+        .toISOString(),
+    },
   });
 
   return code;

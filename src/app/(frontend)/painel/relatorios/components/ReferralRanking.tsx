@@ -40,13 +40,13 @@ export function ReferralRanking() {
   };
 
   const labels = [];
-  supporterData?.data.forEach((a) => {
+  supporterData?.data?.forEach((a) => {
     if (a.referralId && labels.find((ref) => ref.id === a.referralId)) {
       labels.find((ref) => ref.id === a.referralId).count += 1;
     } else if (a.referralId) {
       labels.push({
         id: a.referralId,
-        name: a.referral.user.name,
+        name: a.referral?.user.name,
         count: 1,
         color: generateRandomHexColor(),
       });
