@@ -5,7 +5,7 @@ interface ButtonProps {
   children?: React.ReactNode;
   onClick?: () => void;
   className?: string;
-  variant?: "primary" | "secondary" | "danger";
+  variant?: "primary" | "secondary" | "danger" | "excel";
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
 }
@@ -22,6 +22,8 @@ const buttonDictionary = {
     "bg-white hover:bg-gray-50 disabled:opacity-50 text-gray-900 focus-visible:outline-white ring-gray-300",
   danger:
     "bg-red-400 hover:bg-red-200 disabled:opacity-70 text-white focus-visible:outline-white ring-red-200",
+  excel:
+    "bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50 text-white focus-visible:outline-white ring-emerald-500",
 };
 
 export function Button({

@@ -18,14 +18,14 @@ export default async function PesquisaPage({ params }: { params: { id: string } 
       />
       <div className="grid grid-cols-1 lg:grid-cols-3 lg:divide-x ">
         <div className="col-span-1 flex flex-col justify-evenly">
-          <div className="mx-4">
+          <div className="me-4">
             {poll.questions.map((question, index) => (
               <QuestionGraph key={index} question={question} />
             ))}
           </div>
         </div>
         <div className="col-span-2 ">
-          <div className="mx-4">
+          <div className="ms-4">
             <PollTable answers={answers} poll={poll} />
           </div>
         </div>
