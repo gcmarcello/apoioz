@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 export const loginDto = z.object({
-  identifier: z.string().email(),
-  password: z.string().min(6),
+  identifier: z.string(),
+  password: z.string().min(6, { message: "A senha tem no mínimo 6 caracteres" }),
 });
 
 export type LoginDto = z.infer<typeof loginDto>;
@@ -12,7 +12,7 @@ export const signupDto = z.object({
     name: z.string(),
     email: z.string().email(),
     password: z.string().min(6),
-    confirmPassword: z.string().min(6),
+    confirmPassword: z.string(),
     phone: z.string().min(10),
     stateId: z.string(),
     cityId: z.string(),
