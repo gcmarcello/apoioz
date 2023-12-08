@@ -51,5 +51,17 @@ export const readPollDto = z.object({
   }),
 });
 
+export const readPollsStats = z.array(
+  z.object({
+    name: z.string(),
+    stat: z.number(),
+    previousStat: z.number(),
+    change: z.number().or(z.string()),
+    changeType: z.string().or(z.boolean()),
+    changeText: z.string(),
+  })
+);
+
 export type UpsertPollDto = z.infer<typeof upsertPollDto>;
 export type PollAnswerDto = z.infer<typeof pollAnswerDto>;
+export type ReadPollsStats = z.infer<typeof readPollsStats>;

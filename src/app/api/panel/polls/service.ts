@@ -2,7 +2,11 @@
 
 import prisma from "prisma/prisma";
 import { Poll, Supporter } from "@prisma/client";
-import { PollAnswerDto, UpsertPollDto } from "./dto";
+import { PollAnswerDto, ReadPollsStats, UpsertPollDto } from "./dto";
+import dayjs from "dayjs";
+import isBetween from "dayjs/plugin/isBetween";
+
+dayjs.extend(isBetween);
 
 export async function readPolls(request) {
   const fetchPolls = await prisma.poll.findMany({
@@ -308,4 +312,85 @@ export async function answerPoll(request: PollAnswerDto) {
   });
 
   return pollAnswer;
+}
+
+export async function readPollsStats(request: {
+  campaignId: string;
+}): Promise<ReadPollsStats> {
+  const polls = await prisma.poll.findMany({
+    where: { campaignId: request.campaignId },
+    include: {
+      PollAnswer: true,
+      PollQuestion: true,
+    },
+  });
+
+  const pollsVotes =
+    polls.flatMap((poll) => poll.PollAnswer).length /
+    polls.flatMap((poll) => poll.PollQuestion).length;
+  const pollsVotesLastWeek =
+    polls.flatMap((poll) =>
+      poll.PollAnswer.filter((answer) =>
+        dayjs(answer.createdAt).isBetween(dayjs().subtract(1, "week"), dayjs())
+      )
+    ).length / polls.flatMap((poll) => poll.PollQuestion).length;
+  const pollsVotesChange = Math.round(
+    ((pollsVotes - pollsVotesLastWeek) / pollsVotesLastWeek) * 100
+  );
+  const pollVotesChangeDirection = pollsVotesChange > 0 ? "increase" : "decrease";
+
+  const pollNumber = polls.length;
+  const pollsLastWeek = polls.filter((poll) =>
+    dayjs(poll.createdAt).isBetween(dayjs().subtract(1, "week"), dayjs())
+  ).length;
+  const pollsChange = Math.round(((pollNumber - pollsLastWeek) / pollsLastWeek) * 100);
+  const pollsChangeDirection =
+    pollsChange > 0 ? "increase" : pollsChange < 0 ? "decrease" : false;
+
+  const commentsInPolls = polls
+    .flatMap((poll) => poll.PollAnswer)
+    .filter((answer) => (answer.answer as any).freeAnswer).length;
+  const commentsInPollsLastWeek = polls
+    .flatMap((poll) =>
+      poll.PollAnswer.filter((answer) =>
+        dayjs(answer.createdAt).isBetween(dayjs().subtract(1, "week"), dayjs())
+      )
+    )
+    .filter((answer) => (answer.answer as any).freeAnswer).length;
+  const commentsInPollsChange = Math.round(
+    ((commentsInPolls - commentsInPollsLastWeek) / commentsInPollsLastWeek) * 100
+  );
+  const commentsInPollsChangeDirection =
+    commentsInPollsChange > 0
+      ? "increase"
+      : commentsInPollsChange < 0
+      ? "decrease"
+      : false;
+
+  return [
+    {
+      name: "Votos",
+      stat: pollsVotes,
+      previousStat: pollsVotesLastWeek,
+      change: pollsVotesChange,
+      changeType: pollVotesChangeDirection,
+      changeText: "na última semana",
+    },
+    {
+      name: "Pesquisas",
+      stat: pollNumber,
+      previousStat: pollsLastWeek,
+      change: pollsChange,
+      changeType: pollsChangeDirection,
+      changeText: "na última semana",
+    },
+    {
+      name: "Comentários",
+      stat: commentsInPolls,
+      previousStat: commentsInPollsLastWeek,
+      change: commentsInPollsChange,
+      changeType: commentsInPollsChangeDirection,
+      changeText: "na última semana",
+    },
+  ];
 }
