@@ -18,7 +18,9 @@ export default async function PesquisasPage() {
         primaryButton={{ href: "./pesquisas/nova", text: "Nova Pesquisa" }}
       />
       <StatsSection stats={stats} />
-      <PollsTable polls={polls} />
+      <div className="mt-4">
+        <PollsTable polls={polls} />
+      </div>
     </>
   );
 }

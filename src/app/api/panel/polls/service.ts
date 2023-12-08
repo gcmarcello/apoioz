@@ -27,7 +27,7 @@ export async function readPolls(request) {
   return polls;
 }
 
-export async function readPoll(request: { id: string }) {
+export async function readPollAdmin(request: { id: string }) {
   const poll = await prisma.poll.findUnique({
     where: { id: request.id },
     include: {
@@ -73,6 +73,7 @@ export async function readPoll(request: { id: string }) {
 
   return {
     title: poll.title,
+
     questions: questionAnswers,
   };
 }
@@ -152,6 +153,23 @@ export async function readPollToUpdate(request: { id: string }) {
       },
     },
   });
+  return poll;
+}
+
+export async function readPoll(request: { id: string }) {
+  const poll = await prisma.poll.findFirst({
+    where: {
+      id: request.id,
+      active: true,
+    },
+    include: {
+      PollQuestion: {
+        where: { active: true },
+        include: { PollOption: { where: { active: true } } },
+      },
+    },
+  });
+
   return poll;
 }
 

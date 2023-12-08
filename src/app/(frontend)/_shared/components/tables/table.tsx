@@ -108,7 +108,7 @@ export function DefaultTable({
 
   return (
     <section className="mx-auto">
-      <div className="relative mt-4 flex w-full items-center justify-between gap-2 md:mt-0">
+      <div className="relative mt-4 flex w-full items-center justify-end gap-2 md:mt-0">
         {globalFilter !== undefined && (
           <>
             <span className="absolute">
@@ -125,7 +125,7 @@ export function DefaultTable({
           </>
         )}
 
-        <Xlsx />
+        <Xlsx data={data} columns={columns} fileName="file" />
       </div>
 
       <div className="mt-6 flex flex-col">
