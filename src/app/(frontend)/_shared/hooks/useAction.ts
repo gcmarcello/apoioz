@@ -73,8 +73,8 @@ export function useAction<
 
   const actionResult = {
     ...mutation,
-    data: mutation.data.data || defaultData,
-    pagination: mutation.data.pagination,
+    data: mutation?.data?.data || defaultData,
+    pagination: mutation?.data?.pagination,
   };
 
   return actionResult;
