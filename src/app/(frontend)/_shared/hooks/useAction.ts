@@ -1,13 +1,10 @@
 import { Pagination } from "@/app/api/_shared/dto/read";
-import {
-  ActionResponseType,
-  ErrorResponse,
-  SuccessResponse,
-} from "@/app/api/_shared/utils/ActionResponse";
-import { type } from "os";
+import { ErrorResponse, SuccessResponse } from "@/app/api/_shared/utils/ActionResponse";
 import { useId } from "react";
 import useSWRMutation from "swr/mutation";
-import { ParseReturnType } from "zod";
+
+// Define the FetcherResponse type if not already defined
+type FetcherResponse<T> = Promise<T>;
 
 interface UseActionParams<
   ArgumentType,
@@ -16,13 +13,13 @@ interface UseActionParams<
   ParserReturnType,
 > {
   defaultData?: ParserReturnType;
-  onError?: (error: string | string[]) => void;
+  onError?: (error: ErrorResponse) => void;
   onSuccess?: (res: SuccessResponse<ParserReturnType>) => void;
   parser?: (arg: DataReturnType) => ParserReturnType;
   formatter?: (arg: ArgumentType) => FormatterReturnType;
   action: (
-    arg: FormatterReturnType
-  ) => Promise<SuccessResponse<ParserReturnType> | ErrorResponse>;
+    arg: FormatterReturnType | ArgumentType
+  ) => Promise<SuccessResponse<DataReturnType> | ErrorResponse>;
 }
 
 export function useAction<
@@ -40,10 +37,10 @@ export function useAction<
 }: UseActionParams<ArgumentType, DataReturnType, FormatterReturnType, ParserReturnType>) {
   const id = useId();
 
-  const fetcher = (arg: ArgumentType) => {
-    if (!action) throw "Action is not defined";
-
-    const formattedArg = formatter(arg);
+  const fetcher = (
+    arg: ArgumentType
+  ): FetcherResponse<SuccessResponse<ParserReturnType>> => {
+    const formattedArg = formatter ? formatter(arg) : arg;
 
     return action(formattedArg)
       .then((res) => {
@@ -51,19 +48,19 @@ export function useAction<
           throw res.message;
         }
         return {
-          data: parser ? parser(res.data) : res.data,
+          data: parser ? parser(res.data) : (res.data as ParserReturnType), // Ensure the type matches
           pagination: res.pagination,
           message: res.message,
         };
       })
-      .catch((error: any) => {
+      .catch((error: ErrorResponse) => {
         throw error;
       });
   };
 
   const mutation = useSWRMutation<
     SuccessResponse<ParserReturnType>,
-    any,
+    ErrorResponse,
     string,
     ArgumentType
   >(id, (url: string, { arg }) => fetcher(arg), {
@@ -73,8 +70,8 @@ export function useAction<
 
   const actionResult = {
     ...mutation,
-    data: mutation.data.data || defaultData,
-    pagination: mutation.data.pagination,
+    data: (mutation?.data?.data || defaultData) as ParserReturnType,
+    pagination: mutation?.data?.pagination,
   };
 
   return actionResult;
