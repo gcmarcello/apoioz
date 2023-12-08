@@ -1,9 +1,7 @@
-import { Pagination } from "@/app/api/_shared/dto/read";
 import { ErrorResponse, SuccessResponse } from "@/app/api/_shared/utils/ActionResponse";
 import { useId } from "react";
 import useSWRMutation from "swr/mutation";
 
-// Define the FetcherResponse type if not already defined
 type FetcherResponse<T> = Promise<T>;
 
 interface UseActionParams<
@@ -70,7 +68,7 @@ export function useAction<
 
   const actionResult = {
     ...mutation,
-    data: (mutation?.data?.data || defaultData) as ParserReturnType,
+    data: mutation?.data?.data || defaultData,
     pagination: mutation?.data?.pagination,
   };
 
