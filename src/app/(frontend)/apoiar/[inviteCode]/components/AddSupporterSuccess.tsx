@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CheckCircleIcon } from "@heroicons/react/20/solid";
+import { BottomNavigation } from "@/app/(frontend)/_shared/components/navigation/BottomNavigation";
 
 export default function AddSupporterSuccess({ campaign }: { campaign: any }) {
   return (
@@ -67,22 +68,24 @@ export default function AddSupporterSuccess({ campaign }: { campaign: any }) {
               sobre eventos, reuniões e outras atividades de nossa campanha. Se você
               cadastrou uma senha, clique abaixo para acessar o painel.
             </p>
-            <div className="fixed bottom-0 left-0 mt-8 flex w-full items-center justify-between gap-2 divide-x bg-indigo-600 lg:static lg:divide-x-0 lg:bg-transparent">
-              <Link href={"/login"}>
-                <button
-                  type="button"
-                  className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                >
-                  Acessar o Painel de Controle
-                </button>
-              </Link>
+            <BottomNavigation className="py-4">
+              <div className="flex items-center justify-end">
+                <Link href={"/login"}>
+                  <button
+                    type="button"
+                    className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  >
+                    Acessar o Painel de Controle
+                  </button>
+                </Link>
 
-              <Link href={"/recuperar"}>
-                <p className="block text-sm text-white hover:text-indigo-400 lg:text-indigo-600">
-                  Configurar senha
-                </p>
-              </Link>
-            </div>
+                <Link href={"/recuperar"}>
+                  <p className="mx-4 block text-sm text-indigo-700 hover:text-indigo-400 lg:text-indigo-600">
+                    Configurar senha
+                  </p>
+                </Link>
+              </div>
+            </BottomNavigation>
           </div>
         </div>
       </div>

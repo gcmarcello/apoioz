@@ -26,7 +26,11 @@ export default function PollsTable({ polls }: { polls: Poll[] }) {
       header: "Nome",
       enableSorting: true,
       enableGlobalFilter: true,
-      cell: (info) => info.getValue(),
+      cell: (info) => (
+        <ParagraphLink href={`./pesquisas/${info.row.original.id}`}>
+          {info.getValue()}
+        </ParagraphLink>
+      ),
     }),
 
     columnHelper.accessor("createdAt", {
@@ -69,7 +73,9 @@ export default function PollsTable({ polls }: { polls: Poll[] }) {
       id: "edit",
       header: "",
       cell: (info) => (
-        <ParagraphLink href={`./pesquisas/${info.getValue()}`}>Editar</ParagraphLink>
+        <ParagraphLink href={`./pesquisas/${info.getValue()}/editar`}>
+          Editar
+        </ParagraphLink>
       ),
     }),
   ];

@@ -73,7 +73,12 @@ export function TextAreaField<T>(props: TextAreaFieldProps<T>) {
       id={id}
       label={props.label}
     >
-      <textarea id={id} {...props} className={className} />
+      <textarea
+        id={id}
+        {...props}
+        {...props.hform.register(props.name)}
+        className={className}
+      />
     </Field>
   );
 }

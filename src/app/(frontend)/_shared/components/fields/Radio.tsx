@@ -1,8 +1,10 @@
 interface OptionProps {
+  hform: any;
   name: string;
-  htmlName: string;
+  group: string;
   description?: string;
   data?: any;
+  label: string;
 }
 export default function RadioInput(props: OptionProps) {
   return (
@@ -12,7 +14,8 @@ export default function RadioInput(props: OptionProps) {
           <input
             id={`option-${props.name}`}
             aria-describedby={`option-${props.name}-description`}
-            name={props.htmlName}
+            {...props.hform.register(props.group)}
+            value={props.data}
             type="radio"
             className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
           />
@@ -22,7 +25,7 @@ export default function RadioInput(props: OptionProps) {
             htmlFor={`option-${props.name}`}
             className="flex font-medium text-gray-900"
           >
-            <div className="flex-grow">{props.name}</div>
+            <div className="flex-grow">{props.label}</div>
           </label>{" "}
           {props.description && (
             <span id={`${props.name}-description`} className=" text-gray-500">

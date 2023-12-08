@@ -108,7 +108,7 @@ export function SupportersMap({
         />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png?api_key=9ddf4173-ad16-4435-bc38-bf5b2f95367b"
+          url="https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
         />
         {mapOptions.showZones && (
           <For each={zones}>

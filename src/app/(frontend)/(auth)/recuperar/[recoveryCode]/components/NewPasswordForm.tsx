@@ -3,7 +3,7 @@
 import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
-import { generatePasswordRecovery, resetPassword } from "@/app/api/auth/action";
+import { createPasswordRecovery, resetPassword } from "@/app/api/auth/action";
 import { ArrowLeftCircleIcon, EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 import { redirect, useRouter } from "next/navigation";

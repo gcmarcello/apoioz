@@ -1,9 +1,9 @@
-import { getUser } from "@/app/api/user/actions";
+import { readUser } from "@/app/api/user/actions";
 import { headers } from "next/headers";
 import ProfileUpdateForm from "./components/ProfileUpdateForm";
 
 export default async function SettingsPage() {
-  const user = await getUser(headers().get("userId"));
+  const user = await readUser(headers().get("userId"));
 
   return (
     <>

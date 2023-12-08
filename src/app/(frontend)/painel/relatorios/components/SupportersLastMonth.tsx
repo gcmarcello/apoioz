@@ -57,7 +57,7 @@ export function SupportersLastMonth() {
       {
         label: "Apoiadores",
         data: labels.map((arg) => {
-          return supporterData?.data.filter((supporter) =>
+          return supporterData?.data?.filter((supporter) =>
             dayjs(supporter.createdAt).isBefore(
               dayjs(arg, "MMMM D").set("year", dayjs().year())
             )

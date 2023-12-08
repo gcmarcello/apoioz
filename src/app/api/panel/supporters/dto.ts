@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { phoneValidator } from "@/_shared/utils/validators/phone.validator";
 import { readDto } from "../../_shared/dto/read";
+import { pollAnswerDto } from "../polls/dto";
 
 export const readSupportersDto = readDto(
   z.object({
@@ -28,6 +29,7 @@ export const createSupportersDto = z.object({
   }),
   referralId: z.string().optional(),
   campaignId: z.string().optional(),
+  questions: pollAnswerDto.array().optional(),
 });
 
 export type CreateSupportersDto = z.infer<typeof createSupportersDto>;

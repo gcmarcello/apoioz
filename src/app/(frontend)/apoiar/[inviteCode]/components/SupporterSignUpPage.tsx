@@ -17,6 +17,7 @@ import { createSupporter, signUpAsSupporter } from "@/app/api/panel/supporters/a
 import { faker } from "@faker-js/faker";
 import prisma from "prisma/prisma";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
+import Loading from "@/app/(frontend)/loading";
 
 dayjs.extend(customParseFormat);
 
@@ -25,11 +26,13 @@ export default function SupporterSignUpPage({
   campaign,
   user,
   zones,
+  poll,
 }: {
   referral: any;
   campaign: any;
   user: any;
   zones: any;
+  poll: any;
 }) {
   const [success, setSuccess] = useState(false);
   const [stage, setStage] = useState("basicInfo");
@@ -48,6 +51,10 @@ export default function SupporterSignUpPage({
         referralId: referral.id,
         campaignId: campaign.id,
       },
+      questions: poll?.questions?.map((question) => ({
+        questionId: question.id,
+        answer: { options: [], freeAnswer: "" },
+      })),
     },
   });
 
@@ -76,6 +83,16 @@ export default function SupporterSignUpPage({
     return data;
   };
 
+  const transformQuestionObjectIntoArray = (questions) => {
+    const arr = Object.keys(questions).map((questionId) => {
+      return {
+        questionId: questionId,
+        answers: questions[questionId].answers,
+      };
+    });
+    return arr;
+  };
+
   const {
     data: signUpData,
     trigger: signUp,
@@ -84,6 +101,7 @@ export default function SupporterSignUpPage({
   } = useAction({
     formatter: (data) => {
       data.phone = normalizePhone(data.phone);
+      data.questions = transformQuestionObjectIntoArray(data.questions);
       return data;
     },
     action: signUpAsSupporter,
@@ -101,6 +119,7 @@ export default function SupporterSignUpPage({
     },
   });
 
+  if (isSigningUp) return <Loading />;
   if (success) return <AddSupporterSuccess campaign={campaign} />;
 
   return (
@@ -133,14 +152,13 @@ export default function SupporterSignUpPage({
           className="flex h-full flex-col  divide-gray-200  text-left"
           onSubmit={form.handleSubmit((data) => signUp(data))}
         >
-          <div className={clsx("mb-4 space-y-2 pb-5")}>
+          <div className={clsx("mb-4 space-y-2 pb-2")}>
             {stage === "basicInfo" && <BasicInfoSection form={form} />}
 
             {stage === "electionInfo" && (
-              <ElectionInfoSection form={form} zones={zones} />
+              <ElectionInfoSection form={form} zones={zones} poll={poll} />
             )}
           </div>
-
           <div className="flex justify-between">
             {stage === "electionInfo" && (
               <button

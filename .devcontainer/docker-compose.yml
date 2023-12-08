@@ -8,6 +8,11 @@ services:
 
     volumes:
       - ../..:/workspaces:cached
+      - type: bind
+        source: ${SSH_AUTH_SOCK}
+        target: /ssh-agent
+    environment:
+      SSH_AUTH_SOCK: /ssh-agent
 
     command: sleep infinity
 

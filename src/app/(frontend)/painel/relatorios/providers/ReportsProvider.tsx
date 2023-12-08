@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Event, User } from "@prisma/client";
 import { ReportsContext } from "../contexts/reports.ctx";
-import { listSupporters } from "@/app/api/panel/supporters/actions";
+import { readSupportersFromGroup } from "@/app/api/panel/supporters/actions";
 import clsx from "clsx";
 import { ArrowLeftIcon, EyeIcon } from "@heroicons/react/24/outline";
 
@@ -13,14 +13,10 @@ export default function ReportsProvider({ children }) {
 
   const openAsSupporter = async (user: any, campaignId: string) => {
     try {
-      const newData = await listSupporters({
+      const newData = await readSupportersFromGroup({
         pagination: {
           pageIndex: 0,
           pageSize: 10000000,
-        },
-        data: {
-          campaignOwnerId: campaignId,
-          ownerId: user.info.userId,
         },
       });
       setSupporters(newData);
@@ -32,7 +28,7 @@ export default function ReportsProvider({ children }) {
   };
 
   const restoreView = async () => {
-    const newData = await listSupporters({
+    const newData = await readSupportersFromGroup({
       pagination: {
         pageIndex: 0,
         pageSize: 10000000,

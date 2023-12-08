@@ -8,6 +8,7 @@ import { findCampaignById } from "../campaigns/service";
 import { verifyExistingUser } from "../../user/service";
 import { hashInfo } from "@/_shared/utils/bCrypt";
 import { sendEmail } from "../../emails/service";
+import { answerPoll, readActivePoll } from "../polls/service";
 
 export async function createSupporter(
   request: CreateSupportersDto & {
@@ -307,6 +308,15 @@ export async function signUpAsSupporter(request: CreateSupportersDto) {
       },
     })
     .catch((err) => console.log(err));
+
+  if (supporter && request.questions) {
+    const poll = await readActivePoll(supporter.campaignId);
+    for (const question of request.questions) {
+      question.supporterId = supporter.id;
+      question.pollId = poll.id;
+      await answerPoll(question);
+    }
+  }
 
   await sendEmail({
     to: user.email,

@@ -6,6 +6,8 @@ import { UserSessionMiddleware } from "@/middleware/functions/userSession.middle
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { ActionResponse } from "../../_shared/utils/ActionResponse";
+import { CampaignLeaderMiddleware } from "@/middleware/functions/campaignLeader.middleware";
+import { revalidatePath } from "next/cache";
 
 export async function deactivateCampaign() {
   return cookies().delete("activeCampaign");
@@ -25,20 +27,20 @@ export async function getCampaign(request: { campaignId: string }) {
 
 export async function updateCampaign(request: { campaignId: string; data: any }) {
   try {
-    const { request: parsedRequest } = await UseMiddlewares()
+    const { request: parsedRequest } = await UseMiddlewares(request)
       .then(UserSessionMiddleware)
-      .then(SupporterSessionMiddleware);
+      .then(SupporterSessionMiddleware)
+      .then(CampaignLeaderMiddleware);
 
-    if (parsedRequest.supporterSession.level !== 4)
-      throw "Você não tem permissão para alterar esta campanha.";
-
-    const updatedCampaign = await service.updateCampaign(request);
+    const updatedCampaign = await service.updateCampaign(parsedRequest);
+    revalidatePath("/painel/configuracoes");
 
     return ActionResponse.success({
       data: updatedCampaign,
       message: "Campanha atualizada com sucesso!",
     });
   } catch (err) {
+    console.log(err);
     return ActionResponse.error(err);
   }
 }

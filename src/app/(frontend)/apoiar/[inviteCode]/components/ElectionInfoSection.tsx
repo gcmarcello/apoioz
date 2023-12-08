@@ -3,8 +3,8 @@ import { Zone } from "@prisma/client";
 import { Controller } from "react-hook-form";
 import { Fragment, useRef, useState } from "react";
 import { AddressType, SectionType, ZoneType } from "@/_shared/types/locationTypes";
-import { getSectionsByZone } from "@/app/api/elections/sections/action";
-import { getAddressBySection } from "@/app/api/elections/locations/actions";
+import { readSectionsByZone } from "@/app/api/elections/sections/action";
+import { readAddressBySection } from "@/app/api/elections/locations/actions";
 import { toProperCase } from "@/_shared/utils/format";
 import { PresentationChartBarIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
@@ -13,13 +13,20 @@ import {
   ComboboxField,
   ListboxField,
 } from "@/app/(frontend)/_shared/components/fields/Select";
+import CheckboxInput from "@/app/(frontend)/_shared/components/fields/Checkbox";
+import RadioInput from "@/app/(frontend)/_shared/components/fields/Radio";
+import { TextAreaField } from "@/app/(frontend)/_shared/components/fields/Text";
+import { PollQuestions } from "./PollQuestions";
+import { SectionTitle } from "@/app/(frontend)/_shared/components/text/SectionTitle";
 
 export function ElectionInfoSection({
   form,
   zones,
+  poll,
 }: {
   form: any;
   zones: { data: ZoneType[]; message: string };
+  poll: any;
 }) {
   const [showPassword, setShowPassword] = useState(false);
   const [willAddPassword, setWillAddPassword] = useState(null);
@@ -30,7 +37,7 @@ export function ElectionInfoSection({
     isMutating: isLoading,
     trigger: fetchSections,
   } = useAction({
-    action: getSectionsByZone,
+    action: readSectionsByZone,
     parser: (data) => {
       resetAddress();
       form.resetField("info.sectionId");
@@ -50,7 +57,7 @@ export function ElectionInfoSection({
     isMutating: isFetchingAddress,
     reset: resetAddress,
   } = useAction({
-    action: getAddressBySection,
+    action: readAddressBySection,
   });
 
   return (
@@ -132,7 +139,7 @@ export function ElectionInfoSection({
               <input
                 type={showPassword ? "text" : "password"}
                 autoComplete="password"
-                {...form.register("password", { required: true })}
+                {...form.register("password", { required: true, minLength: 6 })}
                 id="password"
                 className="block w-full rounded-none rounded-l-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
@@ -178,6 +185,10 @@ export function ElectionInfoSection({
               label="Seção"
               displayValueKey={"number"}
             />
+          </div>
+          <div className="col-span-2">
+            <SectionTitle>{poll.title}</SectionTitle>
+            <PollQuestions form={form} poll={poll} />
           </div>
         </div>
       )}

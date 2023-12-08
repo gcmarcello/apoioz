@@ -46,7 +46,6 @@ export default function QuestionFieldArray({
   const [showPreview, setShowPreview] = useState(false);
   const { trigger, isMutating } = useAction({
     action: (data) => {
-      router.prefetch("/painel/pesquisas");
       return defaultValues.id ? updatePoll(data) : createPoll(data);
     },
     onSuccess: (res) => {
@@ -57,6 +56,14 @@ export default function QuestionFieldArray({
           : "Pesquisa atualizada com sucesso!",
         title: "Sucesso",
         variant: "success",
+      });
+    },
+    onError: (error) => {
+      console.log(error);
+      showToast({
+        message: error || "Erro inesperado",
+        title: "Erro",
+        variant: "error",
       });
     },
   });
@@ -84,7 +91,7 @@ export default function QuestionFieldArray({
         <form onSubmit={form.handleSubmit((data) => trigger(data))}>
           <PageHeader
             title={defaultValues.id ? "Editar Pesquisa" : "Nova Pesquisa"}
-            secondaryButton={{ href: "../pesquisas", text: "Voltar" }}
+            secondaryButton={{ href: "../", text: "Voltar" }}
           />
           <div className="space-y-4 pb-20">
             <div className="flex space-x-4">
@@ -114,7 +121,7 @@ export default function QuestionFieldArray({
                       question: "",
                       allowMultipleAnswers: false,
                       allowFreeAnswer: false,
-                      active: false,
+                      active: true,
                       options: [{ name: "", active: false }],
                     })
                   }

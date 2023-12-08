@@ -1,47 +1,36 @@
-import { useForm } from "react-hook-form";
-import QuestionFieldArray from "../components/QuestionFieldArray";
-import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
-import { CampaignLeaderMiddleware } from "@/middleware/functions/campaignLeader.middleware";
-import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
-import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
-import { getPoll } from "@/app/api/panel/polls/service";
+import { readPoll, readPollAnswers } from "@/app/api/panel/polls/service";
+import QuestionGraph from "./components/pollGraph";
+import { PageTitle } from "@/app/(frontend)/_shared/components/text/PageTitle";
 import PageHeader from "@/app/(frontend)/_shared/components/PageHeader";
-import { redirect } from "next/navigation";
+import Footer from "../../_shared/components/Footer";
+import PollTable from "./components/pollTable";
 
-export default async function EditarPesquisaPage({ params }: { params: { id: string } }) {
-  const { request: parsedRequest } = await UseMiddlewares()
-    .then(UserSessionMiddleware)
-    .then(SupporterSessionMiddleware)
-    .then(CampaignLeaderMiddleware);
-
-  const poll = await getPoll({ ...parsedRequest, id: params.id });
-
-  if (!poll) {
-    return redirect("/404");
-  }
-
-  const defaultValues = {
-    title: poll.title,
-    activeAtSignUp: poll.activeAtSignUp,
-    active: poll.active,
-    questions: poll.PollQuestion.map((question) => ({
-      id: question.id,
-      question: question.question,
-      allowMultipleAnswers: question.allowMultipleAnswers,
-      allowFreeAnswer: question.allowFreeAnswer,
-      active: question.active,
-      options: question.PollOption.map((option) => ({
-        name: option.name,
-        id: option.id,
-        active: option.active,
-      })),
-    })),
-    id: poll.id,
-  };
+export default async function PesquisaPage({ params }: { params: { id: string } }) {
+  const poll = await readPoll({ id: params.id });
+  const answers = await readPollAnswers({ id: params.id });
 
   return (
     <>
-      <QuestionFieldArray defaultValues={defaultValues} />
+      <PageHeader
+        title={`${poll.title} - Relatório`}
+        primaryButton={{ href: `./${params.id}/editar`, text: "Editar" }}
+        secondaryButton={{ href: "../pesquisas/", text: "Voltar" }}
+      />
+      <div className="grid grid-cols-1 lg:grid-cols-3 lg:divide-x ">
+        <div className="col-span-1 flex flex-col justify-evenly">
+          <div className="mx-4">
+            {poll.questions.map((question, index) => (
+              <QuestionGraph key={index} question={question} />
+            ))}
+          </div>
+        </div>
+        <div className="col-span-2 ">
+          <div className="mx-4">
+            <PollTable answers={answers} poll={poll} />
+          </div>
+        </div>
+      </div>
+      <Footer />
     </>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 import { Date } from "@/app/(frontend)/_shared/components/Date";
-import SupporterBall from "../../time/components/SupporterNode";
+import SupporterBall from "@/app/(frontend)/_shared/components/SupporterBall";
 import { SupporterTableType } from "@/_shared/types/tableTypes";
 import { AtSymbolIcon, TvIcon } from "@heroicons/react/24/solid";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -14,8 +14,9 @@ import { LoadingSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 export default function SupportersTable() {
   const columnHelper = createColumnHelper<SupporterTableType>();
 
-  const { supporters, openAsSupporter, restoreView, globalFilter, setGlobalFilter } =
-    useReports();
+  const { supporters, openAsSupporter, globalFilter, setGlobalFilter } = useReports();
+
+  console.log(supporters);
 
   const columns = [
     columnHelper.accessor("user.name", {
@@ -91,7 +92,7 @@ export default function SupportersTable() {
     <DefaultTable
       data={supporters?.data}
       columns={columns}
-      count={supporters?.pagination.count}
+      count={supporters?.pagination?.count}
       globalFilter={globalFilter}
       setGlobalFilter={setGlobalFilter}
     />

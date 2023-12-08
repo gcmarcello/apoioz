@@ -24,8 +24,8 @@ import {
   MaskedTextField,
 } from "@/app/(frontend)/_shared/components/fields/Text";
 import dayjs from "dayjs";
-import { readSectionsByZone } from "@/app/api/elections/sections/action";
 import { readZonesByCampaign } from "@/app/api/elections/zones/actions";
+import { readSectionsByZone } from "@/app/api/elections/sections/action";
 import { readAddressBySection } from "@/app/api/elections/locations/actions";
 
 export function AddSupporterForm({

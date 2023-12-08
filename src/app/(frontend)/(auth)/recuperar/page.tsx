@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import InputMask from "react-input-mask";
 import { ButtonSpinner, LoadingSpinner } from "../../_shared/components/Spinners";
-import { generatePasswordRecovery } from "@/app/api/auth/action";
+import { createPasswordRecovery } from "@/app/api/auth/action";
 import { showToast } from "../../_shared/components/alerts/toast";
 import Link from "next/link";
 import { ArrowLeftCircleIcon } from "@heroicons/react/24/outline";
@@ -26,7 +26,7 @@ export default function RecoverPasswordPage() {
   };
 
   const { trigger: submitPasswordRecovery, isMutating: loading } = useAction({
-    action: generatePasswordRecovery,
+    action: createPasswordRecovery,
     onError: (err) => showToast({ message: err, title: "Erro", variant: "error" }),
     onSuccess: (res) => setShowSuccess({ email: res, show: true }),
   });

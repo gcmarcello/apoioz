@@ -5,7 +5,7 @@ import EventList from "../../../../app/(frontend)/painel/calendario/components/E
 import { Event } from "@prisma/client";
 import Calendar from "../../../../app/(frontend)/painel/calendario/components/Calendar";
 import { cookies, headers } from "next/headers";
-import { getEventsByCampaign } from "@/app/api/panel/events/actions";
+import { readEventsByCampaign } from "@/app/api/panel/events/actions";
 import { getCampaign } from "@/app/api/panel/campaigns/actions";
 import { CalendarContext } from "./contexts/calendar.ctx";
 import CalendarProvider from "./providers/CalendarProvider";
@@ -28,7 +28,7 @@ export default async function CalendarPage() {
   if (!campaignId || !userId) return <div>Erro</div>;
   const campaign = await getCampaign({ campaignId });
 
-  const events = await getEventsByCampaign(campaignId);
+  const events = await readEventsByCampaign(campaignId);
 
   /* async function createMockEvent() {
     createEvent(await mockEvent(campaign.id));
