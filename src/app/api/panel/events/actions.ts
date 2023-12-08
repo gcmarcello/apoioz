@@ -5,7 +5,7 @@ import { UserSessionMiddleware } from "@/middleware/functions/userSession.middle
 import { revalidatePath } from "next/cache";
 import { cookies, headers } from "next/headers";
 import { readSupporterFromUser } from "../supporters/service";
-import { CreateEventDto, ReadEventsAvailability, ReadEventsByCampaignDto } from "./dto";
+import { CreateEventDto, ReadEventsAvailability, ReadEventsDto } from "./dto";
 import * as service from "./service";
 import { ActionResponse } from "../../_shared/utils/ActionResponse";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
@@ -28,8 +28,12 @@ export async function createEvent(request: CreateEventDto) {
   }
 }
 
-export async function readEventsByCampaign(payload: string) {
-  return service.readEventsByCampaign();
+export async function readEventsByCampaign(request: ReadEventsDto) {
+  const { request: parsedRequest } = await UseMiddlewares(request)
+    .then(UserSessionMiddleware)
+    .then(SupporterSessionMiddleware);
+
+  return service.readEventsByCampaign(parsedRequest);
 }
 
 export async function readEventTimestamps(payload: string) {

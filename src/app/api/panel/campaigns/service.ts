@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import crypto from "crypto";
 
 import prisma from "prisma/prisma";
-import { getZonesByCity, getZonesByState } from "../../elections/zones/service";
+import { readZonesByCity, readZonesByState } from "../../elections/zones/actions";
 
 export async function verifyPermission(
   userId: string | null,
@@ -80,11 +80,11 @@ export async function getCampaignBasicInfo(campaignId: string) {
     let zones;
 
     if (campaign?.cityId) {
-      zones = await getZonesByCity(campaign?.cityId);
+      zones = await readZonesByCity(campaign?.cityId);
     }
 
     if (campaign?.stateId) {
-      zones = await getZonesByState(campaign?.stateId);
+      zones = await readZonesByState(campaign?.stateId);
     }
 
     if (!campaign)

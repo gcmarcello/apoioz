@@ -11,12 +11,12 @@ import {
   Squares2X2Icon,
 } from "@heroicons/react/20/solid";
 import clsx from "clsx";
-import { generateMapData } from "@/app/api/panel/map/actions";
-import { LoadingSpinner } from "../../_shared/components/Spinners";
 import { UserGroupIcon, XCircleIcon } from "@heroicons/react/24/solid";
 import { toProperCase } from "@/_shared/utils/format";
 import { useAction } from "../../_shared/hooks/useAction";
 import Image from "next/image";
+import { LoadingSpinner } from "../../_shared/components/Spinners";
+import { createMapData } from "@/app/api/panel/map/actions";
 
 const WithCustomLoading = dynamic(
   () =>
@@ -47,7 +47,7 @@ export default function MapPage() {
   });
 
   const { data: mapData, trigger } = useAction({
-    action: generateMapData,
+    action: createMapData,
     parser: (data) => {
       const addresses = data.addresses;
       const neighborhoodList = new Set();

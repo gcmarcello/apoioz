@@ -20,6 +20,8 @@ export function useAction<T, U extends ParserReturnType, ParserReturnType = U>({
   const id = useId();
 
   const fetcher = (arg: T) => {
+    if (!action) throw "Action is not defined";
+
     const processedArg = formatter ? formatter(arg) : arg;
 
     return action(processedArg)

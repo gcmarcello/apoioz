@@ -227,7 +227,6 @@ export function ComboboxField<Fields, Data extends { [key: string]: any }[]>({
 
   const { data: fetchedData, trigger: fetchData } = useAction({
     action: fetcher,
-    parser: (res: any) => res.data,
   });
 
   const options = useMemo(() => {
@@ -247,8 +246,9 @@ export function ComboboxField<Fields, Data extends { [key: string]: any }[]>({
 
   useEffect(() => {
     if (!fetcher) return;
-
     if (query === "") {
+      console.log(1, "fetching...");
+
       fetchData({
         pagination: {
           pageSize: 10,
@@ -259,8 +259,9 @@ export function ComboboxField<Fields, Data extends { [key: string]: any }[]>({
       const queryObject = props.displayValueKey
         .split(".")
         .reduceRight((acc: any, key: any) => ({ [key]: acc }), query);
+
       fetchData({
-        query: queryObject,
+        where: queryObject,
       });
     }
   }, [query]);

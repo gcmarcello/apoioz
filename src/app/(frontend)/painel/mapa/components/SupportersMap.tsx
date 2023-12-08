@@ -1,15 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-  useMap,
-  Tooltip,
-  GeoJSON,
-} from "react-leaflet";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap, GeoJSON } from "react-leaflet";
 import L, { LatLngBoundsExpression, LatLngExpression, MarkerCluster } from "leaflet";
 import React from "react";
 import clsx from "clsx";
@@ -116,7 +108,7 @@ export function SupportersMap({
         />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png"
+          url="https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png?api_key=9ddf4173-ad16-4435-bc38-bf5b2f95367b"
         />
         {mapOptions.showZones && (
           <For each={zones}>

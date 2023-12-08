@@ -6,12 +6,13 @@ import { cookies, headers } from "next/headers";
 import { Supporter, User } from "@prisma/client";
 import prisma from "prisma/prisma";
 import { sendEmail } from "../../emails/service";
-import { CreateEventDto, ReadEventsAvailability, ReadEventsByCampaignDto } from "./dto";
+import { CreateEventDto, ReadEventsAvailability, ReadEventsDto } from "./dto";
+import { SupporterSession } from "@/middleware/functions/supporterSession.middleware";
 dayjs.extend(customParseFormat);
 dayjs.extend(utc);
 
 export async function createEvent(
-  request: CreateEventDto & { supporterSession: Supporter }
+  request: CreateEventDto & { supporterSession: SupporterSession }
 ) {
   const event = await prisma.event.create({
     data: {
@@ -25,6 +26,8 @@ export async function createEvent(
       hostId: request.supporterSession.id,
     },
   });
+
+  const host = request.supporterSession;
 
   const leader = await prisma.supporter.findFirst({
     where: { level: 4 },
@@ -85,7 +88,7 @@ export async function createEvent(
 export async function readEventsByCampaign({
   where,
   supporterSession: { campaignId, ...host },
-}: ReadEventsByCampaignDto & {
+}: ReadEventsDto & {
   supporterSession: Supporter;
 }) {
   const allEvents = await prisma.event.findMany({

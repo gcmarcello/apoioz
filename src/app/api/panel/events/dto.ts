@@ -18,9 +18,9 @@ export const createEventDto = z.object({
 
 export type CreateEventDto = z.infer<typeof createEventDto>;
 
-export const readEventsByCampaign = readDto(EventModel);
+export const readEventsDto = readDto(EventModel);
 
-export type ReadEventsByCampaignDto = z.infer<typeof readEventsByCampaign>;
+export type ReadEventsDto = z.infer<typeof readEventsDto>;
 
 export const readEventsAvailability = readDto(z.object({ day: z.string() }));
 
