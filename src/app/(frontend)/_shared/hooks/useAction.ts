@@ -68,7 +68,7 @@ export function useAction<
 
   const actionResult = {
     ...mutation,
-    data: mutation?.data?.data || defaultData,
+    data: (mutation?.data?.data || defaultData) as ParserReturnType,
     pagination: mutation?.data?.pagination,
   };
 
