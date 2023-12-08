@@ -23,10 +23,9 @@ import { useRouter } from "next/navigation";
 import Loading from "@/app/(frontend)/loading";
 import PageHeader from "@/app/(frontend)/_shared/components/PageHeader";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { upsertPollDto } from "@/app/api/panel/polls/dto";
-import { Poll } from "@prisma/client";
+import { UpsertPollDto, upsertPollDto } from "@/app/api/panel/polls/dto";
 
-export default function QuestionFieldArray({ defaultValues }: { defaultValues: Poll }) {
+export default function QuestionFieldArray({ defaultValues }: { defaultValues: any }) {
   const form = useForm({
     defaultValues,
     resolver: zodResolver(upsertPollDto),
@@ -34,14 +33,14 @@ export default function QuestionFieldArray({ defaultValues }: { defaultValues: P
   });
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: "PollQuestion",
+    name: "questions",
     rules: { minLength: 1, required: true },
   });
   const router = useRouter();
 
   const [showPreview, setShowPreview] = useState(false);
   const { trigger, isMutating } = useAction({
-    action: (data) => {
+    action: (data: UpsertPollDto) => {
       return defaultValues.id ? updatePoll(data) : createPoll(data);
     },
     onSuccess: (res) => {
@@ -55,9 +54,8 @@ export default function QuestionFieldArray({ defaultValues }: { defaultValues: P
       });
     },
     onError: (error) => {
-      console.log(error);
       showToast({
-        message: error || "Erro inesperado",
+        message: error.message || "Erro inesperado",
         title: "Erro",
         variant: "error",
       });

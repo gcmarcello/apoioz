@@ -21,6 +21,7 @@ import { For } from "../For";
 import PaginationControl from "./pagination";
 import PlaceholderTable from "./PlaceholderTable";
 import Xlsx from "../Xlsx";
+import clsx from "clsx";
 
 function DebouncedInput({
   value: initialValue,
@@ -108,7 +109,12 @@ export function DefaultTable({
 
   return (
     <section className="mx-auto">
-      <div className="relative mt-4 flex w-full items-center justify-end gap-2 md:mt-0">
+      <div
+        className={clsx(
+          "relative mt-4 flex w-full items-center justify-between gap-2 md:mt-0",
+          globalFilter !== undefined ? "justify-between" : "justify-end"
+        )}
+      >
         {globalFilter !== undefined && (
           <>
             <span className="absolute">
