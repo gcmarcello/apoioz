@@ -337,11 +337,13 @@ export async function readPollsStats(request: {
   const pollsVotesChange = Math.round(
     ((pollsVotes - pollsVotesLastWeek) / pollsVotesLastWeek) * 100
   );
-  const pollVotesChangeDirection = pollsVotesChange > 0 ? "increase" : "decrease";
+  const pollVotesChangeDirection =
+    pollsVotesChange > 0 ? "increase" : pollsVotesChange < 0 ? "decrease" : false;
 
-  const pollNumber = polls.length;
-  const pollsLastWeek = polls.filter((poll) =>
-    dayjs(poll.createdAt).isBetween(dayjs().subtract(1, "week"), dayjs())
+  const pollNumber = polls.filter((poll) => poll.active).length;
+  const pollsLastWeek = polls.filter(
+    (poll) =>
+      dayjs(poll.createdAt).isBetween(dayjs().subtract(1, "week"), dayjs()) && poll.active
   ).length;
   const pollsChange = Math.round(((pollNumber - pollsLastWeek) / pollsLastWeek) * 100);
   const pollsChangeDirection =
@@ -377,7 +379,7 @@ export async function readPollsStats(request: {
       changeText: "na última semana",
     },
     {
-      name: "Pesquisas",
+      name: "Pesquisas Ativas",
       stat: pollNumber,
       previousStat: pollsLastWeek,
       change: pollsChange,
