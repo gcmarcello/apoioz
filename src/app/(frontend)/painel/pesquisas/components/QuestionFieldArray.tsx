@@ -22,15 +22,11 @@ import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 import { useRouter } from "next/navigation";
 import Loading from "@/app/(frontend)/loading";
 import PageHeader from "@/app/(frontend)/_shared/components/PageHeader";
-import { PollType } from "@/_shared/types/pollTypes";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { upsertPollDto } from "@/app/api/panel/polls/dto";
+import { Poll } from "@prisma/client";
 
-export default function QuestionFieldArray({
-  defaultValues,
-}: {
-  defaultValues: PollType;
-}) {
+export default function QuestionFieldArray({ defaultValues }: { defaultValues: Poll }) {
   const form = useForm({
     defaultValues,
     resolver: zodResolver(upsertPollDto),
@@ -38,7 +34,7 @@ export default function QuestionFieldArray({
   });
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: "questions",
+    name: "PollQuestion",
     rules: { minLength: 1, required: true },
   });
   const router = useRouter();

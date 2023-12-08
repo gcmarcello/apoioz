@@ -11,7 +11,6 @@ export const readSupportersDto = readDto(
       email: z.string().optional(),
       phone: z.string().optional(),
     }),
-    eager: z.boolean().optional(),
   })
 );
 
@@ -28,7 +27,7 @@ export const createSupportersDto = z.object({
     birthDate: z.string(),
   }),
   referralId: z.string().optional(),
-  campaignId: z.string().optional(),
+  campaignId: z.string(),
   questions: pollAnswerDto.array().optional(),
 });
 

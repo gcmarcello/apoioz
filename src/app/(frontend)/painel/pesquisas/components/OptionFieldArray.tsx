@@ -4,10 +4,10 @@ import { ArrowDownIcon, ArrowUpIcon } from "@heroicons/react/24/solid";
 import { useFieldArray } from "react-hook-form";
 import { Button, IconOnlyButton } from "../../../_shared/components/Button";
 import SwitchInput from "@/app/(frontend)/_shared/components/fields/Switch";
-import { PollType } from "@/_shared/types/pollTypes";
+import { Poll } from "@prisma/client";
 
 export default function OptionFieldArray({ nestIndex, control, form }) {
-  const { fields, remove, append, move } = useFieldArray<PollType>({
+  const { fields, remove, append, move } = useFieldArray<Poll>({
     control,
     name: `questions.${nestIndex}.options`,
   });

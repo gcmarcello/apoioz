@@ -5,7 +5,7 @@ export class ReportsContextProps {
   supporters: { pagination: any; data: Supporter[] };
   openAsSupporter: (user: any, campaignId: string) => void;
   restoreView: () => void;
-  viewingAs: User;
+  viewingAs: User | undefined;
   setViewingAs: Dispatch<User>;
   globalFilter: string;
   setGlobalFilter: Dispatch<string>;

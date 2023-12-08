@@ -9,7 +9,26 @@ import { CreateSupportersDto, ReadSupportersDto } from "./dto";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { ActionResponse } from "../../_shared/utils/ActionResponse";
 
-export async function readSupportersFromGroup(request: ReadSupportersDto) {
+export async function readSupportersFromGroup(request?: ReadSupportersDto) {
+  try {
+    const { request: parsedRequest } = await UseMiddlewares(request)
+      .then(UserSessionMiddleware)
+      .then(SupporterSessionMiddleware)
+      .then(ReadSupportersMiddleware);
+
+    const { data, pagination } =
+      await supportersService.readSupportersFromGroup(parsedRequest);
+
+    return ActionResponse.success({
+      data,
+      pagination,
+    });
+  } catch (err) {
+    return ActionResponse.error(err);
+  }
+}
+
+export async function readSupportersFromGroupWithRelations(request: ReadSupportersDto) {
   try {
     const { request: parsedRequest } = await UseMiddlewares(request)
       .then(UserSessionMiddleware)
@@ -74,7 +93,6 @@ export async function signUpAsSupporter(request: CreateSupportersDto) {
       message: "Sucesso ao criar novo apoiador!",
     });
   } catch (error) {
-    console.log(error);
     return ActionResponse.error(error);
   }
 }

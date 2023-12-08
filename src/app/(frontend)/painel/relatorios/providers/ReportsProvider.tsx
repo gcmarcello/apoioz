@@ -14,7 +14,7 @@ export default function ReportsProvider({
   supporters: Supporter[];
   children: any;
 }) {
-  const [viewingAs, setViewingAs] = useState<User>(null);
+  const [viewingAs, setViewingAs] = useState<User | undefined>(undefined);
   const [globalFilter, setGlobalFilter] = useState("");
 
   const {
@@ -27,18 +27,14 @@ export default function ReportsProvider({
   });
 
   const openAsSupporter = async (user: any) => {
-    try {
-      await fetchSupporters();
-      setViewingAs(user);
-      setGlobalFilter("");
-    } catch (error) {
-      console.log(error);
-    }
+    await fetchSupporters();
+    setViewingAs(user);
+    setGlobalFilter("");
   };
 
   const restoreView = async () => {
     await fetchSupporters();
-    setViewingAs(null);
+    setViewingAs(undefined);
   };
 
   useEffect(() => {

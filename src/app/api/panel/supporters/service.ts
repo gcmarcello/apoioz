@@ -29,6 +29,8 @@ export async function createSupporter(
       })
     : request.supporterSession;
 
+  if (!referral) throw "Apoiador não encontrado";
+
   if (!campaign) throw "Campanha não encontrada";
 
   if (existingUser) {
@@ -110,6 +112,8 @@ export async function createSupporter(
         },
       });
 
+  if (!user || !user.info?.sectionId || !user.info?.zoneId) throw "Erro ao criar usuário";
+
   const supporter = await prisma.supporter
     .create({
       include: { user: true },
@@ -153,7 +157,7 @@ export async function createSupporter(
 
 export async function readSupportersAsTree({
   supporterSession,
-}: CreateSupportersDto & {
+}: {
   userSession: UserWithoutPassword;
   supporterSession: Supporter;
 }) {
@@ -202,6 +206,8 @@ export async function signUpAsSupporter(request: CreateSupportersDto) {
   const referral = await prisma.supporter.findFirst({
     where: { id: request.referralId },
   });
+
+  if (!referral) throw "Referral não encontrado";
 
   if (!campaign) throw "Campanha não encontrada";
 
@@ -271,7 +277,7 @@ export async function signUpAsSupporter(request: CreateSupportersDto) {
         },
         data: {
           email: normalizeEmail(request.email),
-          password: await hashInfo(request.password),
+          password: request.password ? await hashInfo(request.password) : null,
           name: request.name,
           role: "user",
           phone: normalizePhone(request.phone),
@@ -283,6 +289,8 @@ export async function signUpAsSupporter(request: CreateSupportersDto) {
           },
         },
       });
+
+  if (!user || !user.info?.sectionId || !user.info?.zoneId) throw "Erro ao criar usuário";
 
   const supporter = await prisma.supporter
     .create({
@@ -377,8 +385,57 @@ export async function readSupportersFromGroup({
         phone: { contains: where?.user.phone },
       },
     },
-    include: where?.eager
-      ? {
+  });
+
+  return {
+    data: supporterList,
+    pagination: {
+      pageIndex: pagination?.pageIndex,
+      pageSize: pagination?.pageSize,
+      count: supporterList.length + 1,
+    },
+  };
+}
+
+export async function readSupportersFromGroupWithRelations({
+  pagination,
+  where,
+  supporterSession,
+}: ReadSupportersDto & {
+  supporterSession: Supporter;
+}) {
+  const supporterGroup = await prisma.supporterGroupMembership.findFirst({
+    where: { supporterId: supporterSession?.id, isOwner: true },
+  });
+
+  if (!supporterGroup) throw "Você não tem permissão para acessar este grupo de apoio.";
+
+  const supporterList = await prisma.supporter.findMany({
+    take: pagination?.pageSize,
+    where: {
+      campaignId: supporterSession.campaignId,
+      supporterGroupsMemberships: {
+        some: {
+          supporterGroupId: supporterGroup?.supporterGroupId,
+        },
+      },
+      user: {
+        name: { contains: where?.user.name },
+        email: { contains: where?.user.email },
+        phone: { contains: where?.user.phone },
+      },
+    },
+    include: {
+      user: {
+        select: {
+          info: { include: { Section: true, Zone: true } },
+          name: true,
+          email: true,
+          phone: true,
+        },
+      },
+      referral: {
+        include: {
           user: {
             select: {
               info: { include: { Section: true, Zone: true } },
@@ -397,31 +454,11 @@ export async function readSupportersFromGroup({
                   phone: true,
                 },
               },
-              referral: {
-                include: {
-                  user: {
-                    select: {
-                      info: { include: { Section: true, Zone: true } },
-                      name: true,
-                      email: true,
-                      phone: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        }
-      : {
-          user: {
-            select: {
-              info: { include: { Section: true, Zone: true } },
-              name: true,
-              email: true,
-              phone: true,
             },
           },
         },
+      },
+    },
   });
 
   return {
