@@ -8,6 +8,7 @@ import { PageTitle } from "@/app/(frontend)/_shared/components/text/PageTitle";
 import { SectionTitle } from "@/app/(frontend)/_shared/components/text/SectionTitle";
 import { ArrowLeftCircleIcon } from "@heroicons/react/20/solid";
 import { EyeIcon } from "@heroicons/react/24/solid";
+import { Campaign } from "@prisma/client";
 import Image from "next/image";
 import { Dispatch, SetStateAction } from "react";
 import { useForm } from "react-hook-form";
@@ -25,26 +26,36 @@ interface PollFormProps<T extends keyof PossibleStates> {
     id: string;
     title: string;
     activeAtSignUp: boolean;
-    questions: {
+    PollQuestion: {
       question: string;
       id: string;
       allowMultipleAnswers: boolean;
       allowFreeAnswer: boolean;
-      options: { name: string; active: boolean; id: string }[];
+      PollOption: { name: string; active: boolean; id: string }[];
     }[];
   };
   mode: T;
   states?: PossibleStates[T];
+  campaign: Campaign;
 }
 
-export function PollForm<T extends keyof PossibleStates>({
+export function ExternalPollForm<T extends keyof PossibleStates>({
   data,
+  campaign,
   mode,
   states,
 }: PollFormProps<T>) {
-  const form = useForm({ defaultValues: data });
+  const form = useForm({
+    defaultValues: data.PollQuestion?.map((question) => ({
+      questionId: question.id,
+      answer: { options: [], freeAnswer: "" },
+    })),
+  });
   return (
-    <form className="pb-20">
+    <form
+      className="px-4 pb-20 pt-10"
+      onSubmit={form.handleSubmit((data) => console.log(data))}
+    >
       <div
         className="absolute inset-x-0 -z-10 transform-gpu overflow-hidden blur-3xl lg:top-[-10rem]"
         aria-hidden="true"
@@ -82,7 +93,7 @@ export function PollForm<T extends keyof PossibleStates>({
             alt=""
           />
           <div className="my-2 flex flex-col items-center">
-            <PageTitle>Silas Barros 2024</PageTitle>
+            <PageTitle>{campaign.name}</PageTitle>
             <PageSubtitle>
               Nos ajude a entender mais sobre você e como você pensa!
             </PageSubtitle>
@@ -90,7 +101,7 @@ export function PollForm<T extends keyof PossibleStates>({
         </div>
       )}
       <div className="my-4">
-        {data.questions.map(
+        {data.PollQuestion.map(
           (question, index) =>
             question.question && (
               <div
@@ -109,36 +120,36 @@ export function PollForm<T extends keyof PossibleStates>({
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 bg-white">
-                    {question.options.map((option, index) => (
-                      <>
-                        <tr key={index}>
-                          <td className="flex items-center whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                            {question.allowMultipleAnswers ? (
-                              <CheckboxInput
-                                hform={form}
-                                label={option.name}
-                                name={option.name}
-                              />
-                            ) : (
-                              <RadioInput
-                                hform={form}
-                                label={option.name}
-                                group={`questions.${question.id}.answers.options`}
-                                data={option.id}
-                                name={`questions.${question.id}.answers.options.${option.id}`}
-                              />
-                            )}
-                          </td>
-                        </tr>
-                      </>
+                    {question.PollOption.map((option) => (
+                      <tr key={`option-${option.id}`}>
+                        <td className="flex items-center whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                          {question.allowMultipleAnswers ? (
+                            <CheckboxInput
+                              hform={form}
+                              label={option.name}
+                              name={option.name}
+                            />
+                          ) : (
+                            <RadioInput
+                              hform={form}
+                              label={option.name}
+                              group={`questions.${question.id}.answers.options`}
+                              data={option.id}
+                              name={`questions.${question.id}.answers.options.${option.id}`}
+                            />
+                          )}
+                        </td>
+                      </tr>
                     ))}
                     {question.allowFreeAnswer && (
                       <tr>
                         <td className="p-4">
                           <TextAreaField
                             hform={form}
-                            label={question.options.length ? "Comentários:" : "Resposta:"}
-                            name="activeAtSignUp"
+                            label={
+                              question.PollOption.length ? "Comentários:" : "Resposta:"
+                            }
+                            name={`questions.${question.id}.answers.freeAnswer`}
                           />
                         </td>
                       </tr>
@@ -149,6 +160,7 @@ export function PollForm<T extends keyof PossibleStates>({
             )
         )}
       </div>
+      <button type="submit">aaa</button>
     </form>
   );
 }

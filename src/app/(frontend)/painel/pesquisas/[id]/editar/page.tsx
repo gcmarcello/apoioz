@@ -4,8 +4,7 @@ import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { CampaignLeaderMiddleware } from "@/middleware/functions/campaignLeader.middleware";
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
-import { readPoll, readPollToUpdate } from "@/app/api/panel/polls/service";
-import PageHeader from "@/app/(frontend)/_shared/components/PageHeader";
+import { readPollToUpdate } from "@/app/api/panel/polls/service";
 import { redirect } from "next/navigation";
 
 export default async function EditarPesquisaPage({ params }: { params: { id: string } }) {

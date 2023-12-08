@@ -1,4 +1,4 @@
-import { readPoll, readPollAnswers } from "@/app/api/panel/polls/service";
+import { readPollAdmin, readPollAnswers } from "@/app/api/panel/polls/service";
 import QuestionGraph from "./components/pollGraph";
 import { PageTitle } from "@/app/(frontend)/_shared/components/text/PageTitle";
 import PageHeader from "@/app/(frontend)/_shared/components/PageHeader";
@@ -6,7 +6,7 @@ import Footer from "../../_shared/components/Footer";
 import PollTable from "./components/pollTable";
 
 export default async function PesquisaPage({ params }: { params: { id: string } }) {
-  const poll = await readPoll({ id: params.id });
+  const poll = await readPollAdmin({ id: params.id });
   const answers = await readPollAnswers({ id: params.id });
 
   return (
@@ -25,7 +25,7 @@ export default async function PesquisaPage({ params }: { params: { id: string } 
           </div>
         </div>
         <div className="col-span-2 ">
-          <div className="ms-4">
+          <div className="ms-4 ">
             <PollTable answers={answers} poll={poll} />
           </div>
         </div>
