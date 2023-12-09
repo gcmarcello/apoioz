@@ -54,12 +54,16 @@ export const readPollsStats = z.array(
 
 export const pollAnswerDto = z.object({
   pollId: z.string(),
-  supporterId: z.string().optional(),
-  questionId: z.string().uuid({ message: "ID da pergunta é obrigatório" }),
-  answers: z.object({
-    options: z.array(z.string().uuid()).optional(),
-    freeAnswer: z.string().optional(),
-  }),
+  questions: z.array(
+    z.object({
+      supporterId: z.string().optional(),
+      questionId: z.string().uuid({ message: "ID da pergunta é obrigatório" }),
+      answers: z.object({
+        options: z.object({ selected: z.array(z.string().uuid()) }).optional(),
+        freeAnswer: z.string().optional(),
+      }),
+    })
+  ),
 });
 
 export type UpsertPollDto = z.infer<typeof upsertPollDto>;

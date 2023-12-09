@@ -11,10 +11,13 @@ import { EyeIcon } from "@heroicons/react/24/solid";
 import { Campaign } from "@prisma/client";
 import Image from "next/image";
 import { Dispatch, SetStateAction } from "react";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { useAction } from "../../_shared/hooks/useAction";
 import { showToast } from "../../_shared/components/alerts/toast";
-import { answerPoll } from "@/app/api/panel/polls/service";
+import { BottomNavigation } from "../../_shared/components/navigation/BottomNavigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { pollAnswerDto } from "@/app/api/panel/polls/dto";
+import ExternalPollSubFieldArray from "./ExternalPollSubFieldArray";
 
 interface PossibleStates {
   preview: {
@@ -48,27 +51,34 @@ export function ExternalPollForm<T extends keyof PossibleStates>({
   mode,
   states,
 }: PollFormProps<T>) {
+  console.log(data);
   const pollId = data.id;
   const form = useForm({
     defaultValues: {
       pollId,
+      questions: data.PollQuestion.map((question) => ({
+        questionId: question.id,
+        answers: question.PollOption.map((option) => ({
+          optionId: option.id,
+          freeAnswer: "",
+        })),
+      })),
     },
+    resolver: zodResolver(pollAnswerDto),
+  });
+  const { fields } = useFieldArray({
+    control: form.control, // control props comes from useForm (optional: if you are using FormContext)
+    name: "questions", // unique name for your Field Array
   });
 
-  const {
+  console.log(fields);
+
+  /* const {
     data: signUpData,
     trigger: vote,
     isMutating: isSigningUp,
     reset: resetSignUp,
   } = useAction({
-    formatter: (data) => {
-      return Object.entries(data.questions).map(([questionId, answer]) => ({
-        pollId: pollId,
-        supporterId: null,
-        questionId: questionId,
-        answers: answer.answer,
-      }));
-    },
     action: answerPoll,
     onSuccess: (res) => {
       setTimeout(() => {
@@ -86,10 +96,13 @@ export function ExternalPollForm<T extends keyof PossibleStates>({
         message: err.toString() || "Erro inesperado",
       });
     },
-  });
+  }); */
 
   return (
-    <form className="px-4 pb-20 pt-10" onSubmit={form.handleSubmit((data) => vote(data))}>
+    <form
+      className="px-4 pb-20 pt-10"
+      onSubmit={form.handleSubmit((data) => console.log(data))}
+    >
       <div
         className="absolute inset-x-0 -z-10 transform-gpu overflow-hidden blur-3xl lg:top-[-10rem]"
         aria-hidden="true"
@@ -135,9 +148,9 @@ export function ExternalPollForm<T extends keyof PossibleStates>({
         </div>
       )}
       <div className="my-4">
-        {data.PollQuestion.map(
+        {fields.map(
           (question, index) =>
-            question.question && (
+            question.questionId && (
               <div
                 key={index}
                 className="my-4 overflow-hidden rounded-lg shadow ring-1 ring-black ring-opacity-5"
@@ -149,33 +162,24 @@ export function ExternalPollForm<T extends keyof PossibleStates>({
                         scope="col"
                         className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
                       >
-                        <div className="font-semibold">{question.question}</div>
+                        <div className="font-semibold">
+                          {
+                            data.PollQuestion.find((q) => q.id === question.questionId)
+                              ?.question
+                          }
+                        </div>
                       </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 bg-white">
-                    {question.PollOption.map((option) => (
-                      <tr key={`option-${option.id}`}>
-                        <td className="flex items-center whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                          {question.allowMultipleAnswers ? (
-                            <CheckboxInput
-                              hform={form}
-                              label={option.name}
-                              name={`questions.${question.id}.answer.options.${option.id}`}
-                            />
-                          ) : (
-                            <RadioInput
-                              hform={form}
-                              label={option.name}
-                              group={`questions.${question.id}.answer.options`}
-                              data={option.id}
-                              name={`questions.${question.id}.answer.options.${option.id}`}
-                            />
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                    {question.allowFreeAnswer && (
+                    <ExternalPollSubFieldArray
+                      hform={form}
+                      nestIndex={index}
+                      question={data.PollQuestion.find(
+                        (q) => q.id === question.questionId
+                      )}
+                    />
+                    {/* {question.allowFreeAnswer && (
                       <tr>
                         <td className="p-4">
                           <TextAreaField
@@ -183,18 +187,23 @@ export function ExternalPollForm<T extends keyof PossibleStates>({
                             label={
                               question.PollOption.length ? "Comentários:" : "Resposta:"
                             }
-                            name={`questions.${question.id}.answer.freeAnswer`}
+                            name={`answers.${question.id}.answer.freeAnswer`}
                           />
                         </td>
                       </tr>
-                    )}
+                    )} */}
                   </tbody>
                 </table>
               </div>
             )
         )}
+
+        <button type="submit">Enviar</button>
+        <Button type="submit" variant="primary"></Button>
       </div>
-      <button type="submit">aaa</button>
+      <BottomNavigation className="flex justify-end gap-3 py-3 lg:hidden">
+        <div className="mx-3"></div>
+      </BottomNavigation>
     </form>
   );
 }
