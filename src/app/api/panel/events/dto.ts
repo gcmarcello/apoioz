@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { readDto } from "../../_shared/dto/read";
-import { EventModel } from "prisma/zod";
-
+import { EventSchema } from "prisma/generated/zod/index";
 const timeSlotValidator = z.object({
   id: z.number(),
   name: z.string(),
@@ -18,7 +17,7 @@ export const createEventDto = z.object({
 
 export type CreateEventDto = z.infer<typeof createEventDto>;
 
-export const readEventsDto = readDto(EventModel);
+export const readEventsDto = readDto(EventSchema);
 
 export type ReadEventsDto = z.infer<typeof readEventsDto>;
 

@@ -1,4 +1,3 @@
-import prisma from "@/tests/client";
 import { LoginDto } from "./dto";
 
 export async function ExistingUserMiddleware({ request }: { request: LoginDto }) {

@@ -1,7 +1,7 @@
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { ReactNode } from "react";
-import { useForm, Path } from "react-hook-form";
+import { useForm, Path, FieldValues } from "react-hook-form";
 
 interface FieldProps {
   children: any;
@@ -11,7 +11,7 @@ interface FieldProps {
   relative?: ReactNode;
 }
 
-export interface BaseProps<Fields> {
+export interface BaseProps<Fields extends FieldValues> {
   label: string;
   hform: ReturnType<typeof useForm<Fields>>;
   name: Path<Fields>;

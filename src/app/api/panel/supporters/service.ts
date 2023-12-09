@@ -385,6 +385,13 @@ export async function readSupportersFromGroup({
         phone: { contains: where?.user.phone },
       },
     },
+    include: {
+      user: {
+        include: {
+          info: true,
+        },
+      },
+    },
   });
 
   return {

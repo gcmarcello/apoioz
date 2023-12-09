@@ -1,5 +1,4 @@
 import { cookies, headers } from "next/headers";
-import prisma from "@/tests/client";
 import { getCampaign } from "@/app/api/panel/campaigns/actions";
 import MainStats from "./(index)/components/MainStats";
 import Footer from "./_shared/components/Footer";

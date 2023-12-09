@@ -17,14 +17,12 @@ export default function PaginationControl({
   const pagesArray = Array.from({ length: table.getPageCount() }, (_, i) => i);
 
   const visiblePages = (() => {
-    const totalVisiblePages = 5; // You can adjust this number based on your design
+    const totalVisiblePages = 5;
     const halfRange = Math.floor(totalVisiblePages / 2);
 
-    // Start and end points of the pagination
     let start = Math.max(0, pageIndex - halfRange);
     let end = Math.min(pagesArray.length - 1, pageIndex + halfRange);
 
-    // Adjust the start and end if they are near the beginning or end
     if (pageIndex < halfRange) {
       end = Math.min(totalVisiblePages - 1, pagesArray.length - 1);
     }
@@ -32,7 +30,6 @@ export default function PaginationControl({
       start = Math.max(0, pagesArray.length - totalVisiblePages);
     }
 
-    // Generate the range of visible pages
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   })();
 

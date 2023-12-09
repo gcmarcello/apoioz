@@ -58,7 +58,7 @@ export function AddSupporterForm({
   const { data: supporter, trigger: addSupporter } = useAction({
     action: createSupporter,
     onError: (err) => showToast({ message: err, variant: "error", title: "Erro" }),
-    onSuccess: (data) => {
+    onSuccess: ({ data }) => {
       showToast({
         message: `${data.user.name} adicionado a campanha`,
         variant: "success",
@@ -84,7 +84,7 @@ export function AddSupporterForm({
     if (!zones) return;
     const zone = zones[Math.floor(Math.random() * zones.length)];
 
-    const sections = await fetchSections(zone.id);
+    const { data: sections } = await fetchSections(zone.id);
     if (!sections) return;
 
     form.setValue("name", fakerPT_BR.person.fullName());

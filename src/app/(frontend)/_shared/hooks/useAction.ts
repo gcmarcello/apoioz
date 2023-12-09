@@ -11,7 +11,7 @@ interface UseActionParams<
   ParserReturnType,
 > {
   defaultData?: ParserReturnType;
-  onError?: (error: ErrorResponse) => void;
+  onError?: (error: string) => void;
   onSuccess?: (res: SuccessResponse<ParserReturnType>) => void;
   parser?: (arg: DataReturnType) => ParserReturnType;
   formatter?: (arg: ArgumentType) => FormatterReturnType;
@@ -23,8 +23,8 @@ interface UseActionParams<
 export function useAction<
   ArgumentType,
   DataReturnType,
-  FormatterReturnType,
-  ParserReturnType extends DataReturnType,
+  FormatterReturnType = ArgumentType,
+  ParserReturnType = DataReturnType,
 >({
   defaultData,
   action,
@@ -46,19 +46,19 @@ export function useAction<
           throw res.message;
         }
         return {
-          data: parser ? parser(res.data) : (res.data as ParserReturnType), // Ensure the type matches
+          data: (parser ? parser(res.data) : res.data) as ParserReturnType,
           pagination: res.pagination,
           message: res.message,
         };
       })
-      .catch((error: ErrorResponse) => {
+      .catch((error) => {
         throw error;
       });
   };
 
   const mutation = useSWRMutation<
     SuccessResponse<ParserReturnType>,
-    ErrorResponse,
+    string,
     string,
     ArgumentType
   >(id, (url: string, { arg }) => fetcher(arg), {
