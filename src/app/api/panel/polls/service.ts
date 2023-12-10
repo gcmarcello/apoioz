@@ -6,6 +6,7 @@ import { PollAnswerDto, ReadPollsStats, UpsertPollDto } from "./dto";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import { ActionResponse } from "../../_shared/utils/ActionResponse";
+import { headers } from "next/headers";
 
 dayjs.extend(isBetween);
 
@@ -32,7 +33,7 @@ export async function createPoll(
           PollOption: {
             create: question.options.map((option) => ({
               name: option.name,
-              active: false,
+              active: true,
             })),
           },
         })),
@@ -307,40 +308,61 @@ export async function deletePoll(request) {
   return poll;
 }
 
-export async function answerPoll(request: PollAnswerDto[]) {
-  try {
-    const poll = await prisma.poll.findUnique({
-      where: { id: request[0].pollId },
-      include: { PollQuestion: true },
-    });
+export async function answerPoll(request: PollAnswerDto & { ip: string }) {
+  const poll = await prisma.poll.findUnique({
+    where: { id: request.pollId },
+    include: { PollQuestion: true },
+  });
 
-    if (!poll) {
-      throw new Error("Pesquisa não encontrada");
+  if (await verifyIp({ ip: headers().get("X-Forwarded-For"), pollId: request.pollId })) {
+    throw new Error("Você já respondeu esta pesquisa!");
+  }
+
+  if (!poll) {
+    throw new Error("Pesquisa não encontrada");
+  }
+
+  const parsedAnswers = request.questions.map((question) => {
+    const questionInfo = poll.PollQuestion.find(
+      (item) => item.id === question.questionId
+    );
+
+    if (!questionInfo) {
+      throw new Error("Pergunta não encontrada");
     }
 
-    const parseAnswer = request.map((item) => {
-      const options = item.answers.options;
-      if (!options) {
-        return [];
+    if (typeof question.answers.options === "object") {
+      const filteredAnswers = Object.keys(question.answers.options).filter(
+        (key) => question.answers.options[key]
+      );
+      if (filteredAnswers.length > 1 && !questionInfo.allowMultipleAnswers) {
+        throw new Error("Você só pode selecionar uma opção para essa pergunta");
       }
-      return typeof options === "string"
-        ? [options]
-        : Object.keys(options).filter((key) => options[key]);
-    });
+      question.answers.options = filteredAnswers;
+    } else {
+      question.answers.options = [question.answers.options];
+    }
 
-    const pollAnswer = await prisma.pollAnswer.createMany({
-      data: request.map((item, index) => ({
-        pollId: item.pollId,
-        questionId: item.questionId,
-        supporterId: item.supporterId,
-        answer: { ...item.answers, options: parseAnswer[index] },
-      })),
-    });
+    return {
+      pollId: request.pollId,
+      questionId: question.questionId,
+      supporterId: question.supporterId,
+      answer: question.answers,
+      ip: request.ip,
+    };
+  });
 
-    return ActionResponse.success({
-      data: pollAnswer,
-    });
-  } catch (err) {
-    return ActionResponse.error(err);
-  }
+  const pollAnswer = await prisma.pollAnswer.createMany({
+    data: parsedAnswers,
+  });
+
+  return pollAnswer;
+}
+
+export async function verifyIp(request: { ip: string; pollId: string }) {
+  const ip = await prisma.pollAnswer.findFirst({
+    where: { AND: [{ ip: request.ip }, { pollId: request.pollId }] },
+  });
+
+  return ip;
 }

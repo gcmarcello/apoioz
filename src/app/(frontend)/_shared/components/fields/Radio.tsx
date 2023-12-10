@@ -1,6 +1,6 @@
 interface OptionProps {
   hform: any;
-  name: string;
+  name?: string;
   group: string;
   description?: string;
   data?: any;

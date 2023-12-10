@@ -80,6 +80,9 @@ dependencies:
   leaflet.markercluster:
     specifier: ^1.5.3
     version: 1.5.3(leaflet@1.9.4)
+  lodash:
+    specifier: ^4.17.21
+    version: 4.17.21
   next:
     specifier: 14.0.1-canary.2
     version: 14.0.1-canary.2(@babel/core@7.23.2)(react-dom@18.2.0)(react@18.2.0)

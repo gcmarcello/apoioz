@@ -59,7 +59,7 @@ export const pollAnswerDto = z.object({
       supporterId: z.string().optional(),
       questionId: z.string().uuid({ message: "ID da pergunta é obrigatório" }),
       answers: z.object({
-        options: z.object({ selected: z.array(z.string().uuid()) }).optional(),
+        options: z.record(z.boolean()).or(z.string()).or(z.array(z.string())).optional(),
         freeAnswer: z.string().optional(),
       }),
     })

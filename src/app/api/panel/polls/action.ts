@@ -1,4 +1,5 @@
 "use server";
+import { cookies, headers } from "next/headers";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { ActionResponse } from "../../_shared/utils/ActionResponse";
 import * as service from "./service";
@@ -6,7 +7,10 @@ import { UserSessionMiddleware } from "@/middleware/functions/userSession.middle
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 import { CampaignLeaderMiddleware } from "@/middleware/functions/campaignLeader.middleware";
 import { revalidatePath } from "next/cache";
-import { UpsertPollDto } from "./dto";
+import { PollAnswerDto, UpsertPollDto } from "./dto";
+import { IpMiddleware } from "@/middleware/functions/ip.middleware";
+import { AuthMiddleware } from "@/middleware/functions/auth.middleware";
+import { readSupporterFromUser } from "../supporters/service";
 
 export async function createPoll(request: UpsertPollDto) {
   try {
@@ -41,4 +45,37 @@ export async function updatePoll(request) {
 
 export async function readActivePoll(request) {
   const poll = await service.readActivePoll(request);
+}
+
+export async function answerPoll(request: PollAnswerDto) {
+  const { request: parsedRequest } = await UseMiddlewares(request).then(IpMiddleware);
+
+  const token = cookies().get("token")?.value;
+  if (!token) return false;
+  const url = process.env.SITE_URL;
+  const user = await fetch(`${url}/api/auth/verify`, {
+    headers: { Authorization: token },
+  }).then((res) => res.json());
+
+  if (user) {
+    const poll = await service.readPoll({ id: parsedRequest.pollId });
+    if (!poll) throw new Error("Pesquisa não encontrada");
+    const supporter = await readSupporterFromUser({
+      userId: user.id,
+      campaignId: poll.campaignId,
+    });
+
+    if (supporter) {
+      for (const question of parsedRequest.questions) {
+        question.supporterId = supporter.id;
+      }
+    }
+  }
+  try {
+    const pollAnswer = await service.answerPoll(parsedRequest);
+    return ActionResponse.success({ data: pollAnswer });
+  } catch (error) {
+    console.log(error);
+    return ActionResponse.error(error);
+  }
 }

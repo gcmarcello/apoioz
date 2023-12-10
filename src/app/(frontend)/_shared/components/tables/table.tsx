@@ -18,7 +18,7 @@ import {
   Pagination,
 } from "@tanstack/react-table";
 import { For } from "../For";
-import PaginationControl from "./pagination";
+import PaginationControl from "./Pagination";
 import PlaceholderTable from "./PlaceholderTable";
 import Xlsx from "../Xlsx";
 import clsx from "clsx";

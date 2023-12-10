@@ -1,7 +1,6 @@
 interface CheckboxProps {
-  name: string;
+  name?: string;
   hform: any;
-  registeroptions?: any;
   label: string;
   description?: string;
   data?: any;
@@ -15,7 +14,7 @@ export default function CheckboxInput(props: CheckboxProps) {
           <input
             id={`checkbox-${props.name}`}
             aria-describedby={`checkbox-${props.name}-label`}
-            {...props.hform.register(props.name, props.registeroptions)}
+            {...props.hform.register(props.name)}
             type="checkbox"
             className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
           />
