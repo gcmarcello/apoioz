@@ -1,20 +1,23 @@
 "use client";
 import { Button } from "@/app/(frontend)/_shared/components/Button";
-import CheckboxInput from "@/app/(frontend)/_shared/components/fields/Checkbox";
-import RadioInput from "@/app/(frontend)/_shared/components/fields/Radio";
-import { TextAreaField } from "@/app/(frontend)/_shared/components/fields/Text";
 import { PageSubtitle } from "@/app/(frontend)/_shared/components/text/PageSubtitle";
 import { PageTitle } from "@/app/(frontend)/_shared/components/text/PageTitle";
-import { SectionTitle } from "@/app/(frontend)/_shared/components/text/SectionTitle";
 import { ArrowLeftCircleIcon } from "@heroicons/react/20/solid";
-import { EyeIcon } from "@heroicons/react/24/solid";
-import { Campaign } from "@prisma/client";
+import { Campaign, PollQuestion, Prisma } from "@prisma/client";
 import Image from "next/image";
-import { Dispatch, SetStateAction } from "react";
-import { useForm } from "react-hook-form";
+import { Dispatch, SetStateAction, useRef, useState } from "react";
+import { set, useFieldArray, useForm } from "react-hook-form";
+import { BottomNavigation } from "../../_shared/components/navigation/BottomNavigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { pollAnswerDto } from "@/app/api/panel/polls/dto";
+import CheckboxInput from "../../_shared/components/fields/Checkbox";
+import RadioInput from "../../_shared/components/fields/Radio";
 import { useAction } from "../../_shared/hooks/useAction";
+import { answerPoll } from "@/app/api/panel/polls/action";
 import { showToast } from "../../_shared/components/alerts/toast";
-import { answerPoll } from "@/app/api/panel/polls/service";
+import { TextAreaField } from "../../_shared/components/fields/Text";
+import { scrollToElement } from "../../_shared/utils/scroll";
+import { PollHeader } from "./PollHeader";
 
 interface PossibleStates {
   preview: {
@@ -29,13 +32,11 @@ interface PollFormProps<T extends keyof PossibleStates> {
     id: string;
     title: string;
     activeAtSignUp: boolean;
-    PollQuestion: {
-      question: string;
-      id: string;
-      allowMultipleAnswers: boolean;
-      allowFreeAnswer: boolean;
-      PollOption: { name: string; active: boolean; id: string }[];
-    }[];
+    PollQuestion: Prisma.PollQuestionGetPayload<{
+      include: {
+        PollOption: true;
+      };
+    }>[];
   };
   mode: T;
   states?: PossibleStates[T];
@@ -52,25 +53,31 @@ export function ExternalPollForm<T extends keyof PossibleStates>({
   const form = useForm({
     defaultValues: {
       pollId,
+      questions: data.PollQuestion.map((question) => ({
+        questionId: question.id,
+        answers: {
+          freeAnswer: "",
+        },
+      })),
     },
+    resolver: zodResolver(pollAnswerDto),
   });
+  const { fields } = useFieldArray({
+    control: form.control, // control props comes from useForm (optional: if you are using FormContext)
+    name: "questions", // unique name for your Field Array
+  });
+  const [success, setSuccess] = useState(false);
 
-  const {
-    data: signUpData,
-    trigger: vote,
-    isMutating: isSigningUp,
-    reset: resetSignUp,
-  } = useAction({
-    formatter: (data) => {
-      return Object.entries(data.questions).map(([questionId, answer]) => ({
-        pollId: pollId,
-        supporterId: null,
-        questionId: questionId,
-        answers: answer.answer,
-      }));
-    },
+  const refs = useRef([]);
+
+  function findQuestionById(id: string) {
+    return data.PollQuestion.find((q) => q.id === id);
+  }
+
+  const { trigger: vote } = useAction({
     action: answerPoll,
     onSuccess: (res) => {
+      setSuccess(true);
       setTimeout(() => {
         scrollTo({ top: 0, behavior: "smooth" });
       }, 350);
@@ -90,111 +97,103 @@ export function ExternalPollForm<T extends keyof PossibleStates>({
 
   return (
     <form className="px-4 pb-20 pt-10" onSubmit={form.handleSubmit((data) => vote(data))}>
-      <div
-        className="absolute inset-x-0 -z-10 transform-gpu overflow-hidden blur-3xl lg:top-[-10rem]"
-        aria-hidden="true"
-      >
-        <div
-          className="relative left-1/2 -z-10 aspect-[1155/678] w-[36.125rem] max-w-none  rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-40rem)] sm:w-[72.1875rem]"
-          style={{
-            clipPath:
-              "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
-          }}
-        />
-      </div>
-      <div className="flex space-x-4">
-        {mode === "preview" && (
-          <Button
-            onClick={() =>
-              (states as PossibleStates["preview"]).setShowPreview((prev) => !prev)
-            }
-            variant="secondary"
-            className="my-auto hidden lg:block"
-          >
-            <div className="flex items-center justify-center gap-x-2">
-              <ArrowLeftCircleIcon className="h-5 w-5" /> Voltar
-            </div>
-          </Button>
-        )}
-      </div>
-      {(mode === "preview" || mode === "external") && (
-        <div className="flex flex-col items-center justify-center">
-          <Image
-            width={100}
-            height={100}
-            className="rounded-full bg-gray-50"
-            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-            alt=""
-          />
-          <div className="my-2 flex flex-col items-center">
-            <PageTitle>{campaign.name}</PageTitle>
-            <PageSubtitle>
-              Nos ajude a entender mais sobre você e como você pensa!
-            </PageSubtitle>
+      <PollHeader campaign={campaign} success={success} alreadyVoted={false} />
+
+      {!success && (
+        <>
+          <div className="my-4">
+            {fields.map(
+              (question, index) =>
+                question.questionId && (
+                  <div
+                    key={index}
+                    id={`question-${index}`}
+                    className="my-4 overflow-hidden rounded-lg shadow ring-1 ring-black ring-opacity-5"
+                  >
+                    <table className="min-w-full divide-y divide-gray-300">
+                      <thead className="cursor-pointer bg-gray-50 hover:bg-gray-100">
+                        <tr>
+                          <th
+                            scope="col"
+                            className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                            ref={(el) => (refs.current[index] = el)}
+                            onClick={() => scrollToElement(refs.current[index])}
+                          >
+                            <div className="font-semibold">
+                              {
+                                data.PollQuestion.find(
+                                  (q) => q.id === question.questionId
+                                )?.question
+                              }
+                            </div>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200 bg-white">
+                        {findQuestionById(question.questionId).PollOption.map(
+                          (option, k) => {
+                            const optionName = option.name;
+                            return (
+                              <tr key={`question-${index}-option-${k}`}>
+                                <td className="flex items-center whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                                  {data.PollQuestion.find(
+                                    (q) => q.id === question.questionId
+                                  ).allowMultipleAnswers ? (
+                                    <CheckboxInput
+                                      hform={form}
+                                      label={optionName}
+                                      name={`questions.${index}.answers.options.${option.id}`}
+                                    />
+                                  ) : (
+                                    <RadioInput
+                                      hform={form}
+                                      label={optionName}
+                                      group={`questions.${index}.answers.options`}
+                                      name={`questions.${index}.answers.options.${option.id}`}
+                                      data={option.id}
+                                    />
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          }
+                        )}
+
+                        {findQuestionById(question.questionId).allowFreeAnswer && (
+                          <tr>
+                            <td className="p-4">
+                              <TextAreaField
+                                hform={form}
+                                label={
+                                  findQuestionById(question.questionId).PollOption.length
+                                    ? "Comentários:"
+                                    : "Resposta:"
+                                }
+                                name={`questions.${index}.answers.freeAnswer`}
+                              />
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                )
+            )}
           </div>
-        </div>
+          <BottomNavigation className="flex justify-end gap-3 py-3 lg:hidden">
+            <div className="mx-3 flex items-center gap-2">
+              {!form.formState.isValid && (
+                <p className="text-xs text-red-500">
+                  Responda todas as perguntas para enviar
+                </p>
+              )}
+              <Button variant="primary" type="submit" disabled={!form.formState.isValid}>
+                Enviar
+              </Button>
+            </div>
+          </BottomNavigation>
+        </>
       )}
-      <div className="my-4">
-        {data.PollQuestion.map(
-          (question, index) =>
-            question.question && (
-              <div
-                key={index}
-                className="my-4 overflow-hidden rounded-lg shadow ring-1 ring-black ring-opacity-5"
-              >
-                <table className="min-w-full divide-y divide-gray-300">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th
-                        scope="col"
-                        className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
-                      >
-                        <div className="font-semibold">{question.question}</div>
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200 bg-white">
-                    {question.PollOption.map((option) => (
-                      <tr key={`option-${option.id}`}>
-                        <td className="flex items-center whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                          {question.allowMultipleAnswers ? (
-                            <CheckboxInput
-                              hform={form}
-                              label={option.name}
-                              name={`questions.${question.id}.answer.options.${option.id}`}
-                            />
-                          ) : (
-                            <RadioInput
-                              hform={form}
-                              label={option.name}
-                              group={`questions.${question.id}.answer.options`}
-                              data={option.id}
-                              name={`questions.${question.id}.answer.options.${option.id}`}
-                            />
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                    {question.allowFreeAnswer && (
-                      <tr>
-                        <td className="p-4">
-                          <TextAreaField
-                            hform={form}
-                            label={
-                              question.PollOption.length ? "Comentários:" : "Resposta:"
-                            }
-                            name={`questions.${question.id}.answer.freeAnswer`}
-                          />
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            )
-        )}
-      </div>
-      <button type="submit">aaa</button>
     </form>
   );
 }

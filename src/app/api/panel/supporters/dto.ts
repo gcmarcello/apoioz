@@ -2,6 +2,7 @@ import { z } from "zod";
 import { phoneValidator } from "@/_shared/utils/validators/phone.validator";
 import { readDto } from "../../_shared/dto/read";
 import { pollAnswerDto } from "../polls/dto";
+import { birthDateValidator } from "@/_shared/utils/validators/birthDate.validator";
 
 export const readSupportersDto = readDto(
   z.object({
@@ -17,18 +18,18 @@ export const readSupportersDto = readDto(
 export type ReadSupportersDto = z.infer<typeof readSupportersDto>;
 
 export const createSupportersDto = z.object({
-  name: z.string(),
-  email: z.string().email(),
+  name: z.string().min(3, { message: "Nome deve ter no mínimo 3 caracteres" }),
+  email: z.string().email({ message: "Email inválido" }).min(3),
   password: z.string().optional(),
-  phone: z.custom(phoneValidator),
+  phone: z.custom(phoneValidator, { message: "Telefone inválido" }),
   info: z.object({
     zoneId: z.string(),
     sectionId: z.string(),
-    birthDate: z.string(),
+    birthDate: z.custom(birthDateValidator, { message: "Data de nascimento inválida" }),
   }),
   referralId: z.string().optional(),
-  campaignId: z.string().optional(),
-  questions: pollAnswerDto.array().optional(),
+  campaignId: z.string(),
+  poll: pollAnswerDto,
 });
 
 export type CreateSupportersDto = z.infer<typeof createSupportersDto>;

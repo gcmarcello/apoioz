@@ -86,9 +86,12 @@ dependencies:
   leaflet.markercluster:
     specifier: ^1.5.3
     version: 1.5.3(leaflet@1.9.4)
+<<<<<<< HEAD
   leva:
     specifier: ^0.9.35
     version: 0.9.35(@types/react-dom@18.2.7)(@types/react@18.2.21)(react-dom@18.2.0)(react@18.2.0)
+=======
+>>>>>>> 9668ff5ceeea037ec8a23ad0782981d3921ed9fb
   lodash:
     specifier: ^4.17.21
     version: 4.17.21

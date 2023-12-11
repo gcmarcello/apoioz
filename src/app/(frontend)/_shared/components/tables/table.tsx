@@ -22,6 +22,8 @@ import PaginationControl from "./Pagination";
 import PlaceholderTable from "./PlaceholderTable";
 import Xlsx from "../Xlsx";
 import clsx from "clsx";
+import dayjs from "dayjs";
+import { ParagraphLink } from "../text/ParagraphLink";
 
 function DebouncedInput({
   value: initialValue,
@@ -71,6 +73,7 @@ interface TableProps {
   disablePagination?: boolean;
   globalFilter?: string;
   setGlobalFilter?: Dispatch<string>;
+  TableHeader?: React.ElementType;
 }
 
 export function DefaultTable({
@@ -81,6 +84,7 @@ export function DefaultTable({
   disablePagination,
   globalFilter,
   setGlobalFilter,
+  TableHeader,
 }: TableProps) {
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -109,12 +113,14 @@ export function DefaultTable({
 
   return (
     <section className="mx-auto">
+      {globalFilter !== undefined && TableHeader && <TableHeader />}
       <div
         className={clsx(
-          "relative mt-4 flex w-full items-center justify-between gap-2 md:mt-0",
+          "relative mt-4 flex w-full items-center gap-2 md:mt-0",
           globalFilter !== undefined ? "justify-between" : "justify-end"
         )}
       >
+        {setGlobalFilter === undefined && <TableHeader />}
         {globalFilter !== undefined && (
           <>
             <span className="absolute">
@@ -131,10 +137,15 @@ export function DefaultTable({
           </>
         )}
 
-        <Xlsx data={data} columns={columns} fileName="file" />
+        <Xlsx
+          data={data}
+          columns={columns}
+          fileName={`ApoioZ ${dayjs().format("DD-MM-YYYY")} - Apoiadores`}
+          sheetName={"Apoiadores"}
+        />
       </div>
 
-      <div className="mt-6 flex flex-col">
+      <div className="mt-4 flex flex-col">
         <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
             <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">

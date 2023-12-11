@@ -1,6 +1,6 @@
 import { EyeSlashIcon, EyeIcon, UserPlusIcon } from "@heroicons/react/24/solid";
 import { Zone } from "@prisma/client";
-import { Controller } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { Fragment, useRef, useState } from "react";
 import { readSectionsByZone } from "@/app/api/elections/sections/action";
 import { readAddressBySection } from "@/app/api/elections/locations/actions";
@@ -12,18 +12,16 @@ import {
   ComboboxField,
   ListboxField,
 } from "@/app/(frontend)/_shared/components/fields/Select";
-import CheckboxInput from "@/app/(frontend)/_shared/components/fields/Checkbox";
-import RadioInput from "@/app/(frontend)/_shared/components/fields/Radio";
-import { TextAreaField } from "@/app/(frontend)/_shared/components/fields/Text";
 import { PollQuestions } from "./PollQuestions";
 import { SectionTitle } from "@/app/(frontend)/_shared/components/text/SectionTitle";
+import { CreateSupportersDto } from "@/app/api/panel/supporters/dto";
 
 export function ElectionInfoSection({
   form,
   zones,
   poll,
 }: {
-  form: any;
+  form: ReturnType<typeof useForm<CreateSupportersDto>>;
   zones: { data: Zone[]; message: string };
   poll: any;
 }) {
@@ -166,7 +164,7 @@ export function ElectionInfoSection({
             <ListboxField
               hform={form}
               label="Zona"
-              name={"zone"}
+              name={"info.zoneId"}
               data={zones.data}
               displayValueKey="number"
               onChange={async (e) => await fetchSections(e.id)}

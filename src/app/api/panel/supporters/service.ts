@@ -9,6 +9,7 @@ import { verifyExistingUser } from "../../user/service";
 import { hashInfo } from "@/_shared/utils/bCrypt";
 import { sendEmail } from "../../emails/service";
 import { answerPoll, readActivePoll } from "../polls/service";
+import { getEnv, isProd } from "@/_shared/utils/settings";
 
 export async function createSupporter(
   request: CreateSupportersDto & {
@@ -139,18 +140,18 @@ export async function createSupporter(
     })
     .catch((err) => console.log(err));
 
-  /**
-   * await sendEmail({
-    to: user.email,
-    templateId: "welcome_email",
-    dynamicData: {
-      name: user.name,
-      siteLink: `${process.env.NEXT_PUBLIC_SITE_URL}/painel`,
-      campaignName: campaign.name,
-      subject: `Bem Vindo à Campanha ${campaign.name}! - ApoioZ`,
-    },
-  });
-   */
+  if (isProd) {
+    await sendEmail({
+      to: user.email,
+      templateId: "welcome_email",
+      dynamicData: {
+        name: user.name,
+        siteLink: `${getEnv("NEXT_PUBLIC_SITE_URL")}/painel`,
+        campaignName: campaign.name,
+        subject: `Bem Vindo à Campanha ${campaign.name}! - ApoioZ`,
+      },
+    });
+  }
 
   return supporter;
 }
@@ -306,38 +307,34 @@ export async function signUpAsSupporter(request: CreateSupportersDto) {
 
   if (!user || !user.info?.sectionId || !user.info?.zoneId) throw "Erro ao criar usuário";
 
-  const supporter = await prisma.supporter
-    .create({
-      include: { user: true },
-      data: {
-        level: 1,
-        Section: { connect: { id: user.info.sectionId } },
-        Zone: { connect: { id: user.info.zoneId } },
-        campaign: { connect: { id: referral.campaignId } },
-        referral: { connect: { id: referral.id } },
-        user: { connect: { id: user.id } },
-        supporterGroupsMemberships: {
-          create: [
-            {
-              isOwner: true,
-              supporterGroup: {
-                create: {},
-              },
+  const supporter = await prisma.supporter.create({
+    include: { user: true },
+    data: {
+      level: 1,
+      Section: { connect: { id: user.info.sectionId } },
+      Zone: { connect: { id: user.info.zoneId } },
+      campaign: { connect: { id: referral.campaignId } },
+      referral: { connect: { id: referral.id } },
+      user: { connect: { id: user.id } },
+      supporterGroupsMemberships: {
+        create: [
+          {
+            isOwner: true,
+            supporterGroup: {
+              create: {},
             },
-            ...createSupporterGroupMembershipQuery,
-          ],
-        },
+          },
+          ...createSupporterGroupMembershipQuery,
+        ],
       },
-    })
-    .catch((err) => console.log(err));
+    },
+  });
 
-  if (supporter && request.questions) {
-    const poll = await readActivePoll(supporter.campaignId);
-    for (const question of request.questions) {
+  if (supporter && request.poll.questions) {
+    for (const question of request.poll.questions) {
       question.supporterId = supporter.id;
-      question.pollId = poll.id;
     }
-    await answerPoll(request.questions);
+    await answerPoll(request.poll);
   }
 
   await sendEmail({
@@ -345,7 +342,7 @@ export async function signUpAsSupporter(request: CreateSupportersDto) {
     templateId: "welcome_email",
     dynamicData: {
       name: user.name,
-      siteLink: `${process.env.NEXT_PUBLIC_SITE_URL}/painel`,
+      siteLink: `${getEnv("NEXT_PUBLIC_SITE_URL")}/painel`,
       campaignName: campaign.name,
       subject: `Bem Vindo à Campanha ${campaign.name}! - ApoioZ`,
     },
@@ -361,7 +358,7 @@ export async function signUpAsSupporter(request: CreateSupportersDto) {
     templateId: "invite_notification",
     dynamicData: {
       name: referralInfo.user.name,
-      siteLink: `${process.env.NEXT_PUBLIC_SITE_URL}/painel`,
+      siteLink: `${getEnv("NEXT_PUBLIC_SITE_URL")}/painel`,
       campaignName: campaign.name,
       supporterName: user.name,
       subject: `Novo apoiador convidado na campanha ${campaign.name}! - ApoioZ`,
@@ -406,6 +403,7 @@ export async function readSupportersFromGroup({
         },
       },
     },
+    orderBy: { createdAt: "desc" },
   });
 
   return {
@@ -480,6 +478,7 @@ export async function readSupportersFromGroupWithRelations({
         },
       },
     },
+    orderBy: { createdAt: "desc" },
   });
 
   return {

@@ -1,11 +1,13 @@
 "use server";
 
 import prisma from "prisma/prisma";
-import { Poll, Supporter } from "@prisma/client";
+import { Poll, PollAnswer, Supporter } from "@prisma/client";
 import { PollAnswerDto, ReadPollsStats, UpsertPollDto } from "./dto";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import { ActionResponse } from "../../_shared/utils/ActionResponse";
+import { cookies, headers } from "next/headers";
+import { readSupporterFromUser } from "../supporters/service";
 
 dayjs.extend(isBetween);
 
@@ -32,7 +34,7 @@ export async function createPoll(
           PollOption: {
             create: question.options.map((option) => ({
               name: option.name,
-              active: false,
+              active: true,
             })),
           },
         })),
@@ -71,18 +73,17 @@ export async function readPollsStats(request: {
     },
   });
 
-  const pollsVotes =
-    polls.flatMap((poll) => poll.PollAnswer).length /
-    polls.flatMap((poll) => poll.PollQuestion).length;
-  const pollsVotesLastWeek =
+  const pollsVotes = joinPollVotes(polls.flatMap((poll) => poll.PollAnswer)).length;
+  const pollsVotesLastWeek = joinPollVotes(
     polls.flatMap((poll) =>
       poll.PollAnswer.filter((answer) =>
         dayjs(answer.createdAt).isBetween(dayjs().subtract(1, "week"), dayjs())
       )
-    ).length / polls.flatMap((poll) => poll.PollQuestion).length;
-  const pollsVotesChange = Math.round(
-    ((pollsVotes - pollsVotesLastWeek) / pollsVotesLastWeek) * 100
-  );
+    )
+  ).length;
+
+  const pollsVotesChange =
+    Math.round(((pollsVotes - pollsVotesLastWeek) / pollsVotesLastWeek) * 100) || 0;
   const pollVotesChangeDirection =
     pollsVotesChange > 0 ? "increase" : pollsVotesChange < 0 ? "decrease" : false;
 
@@ -91,7 +92,8 @@ export async function readPollsStats(request: {
     (poll) =>
       dayjs(poll.createdAt).isBetween(dayjs().subtract(1, "week"), dayjs()) && poll.active
   ).length;
-  const pollsChange = Math.round(((pollNumber - pollsLastWeek) / pollsLastWeek) * 100);
+  const pollsChange =
+    Math.round(((pollNumber - pollsLastWeek) / pollsLastWeek) * 100) || 0;
   const pollsChangeDirection =
     pollsChange > 0 ? "increase" : pollsChange < 0 ? "decrease" : false;
 
@@ -105,9 +107,10 @@ export async function readPollsStats(request: {
       )
     )
     .filter((answer) => (answer.answer as any).freeAnswer).length;
-  const commentsInPollsChange = Math.round(
-    ((commentsInPolls - commentsInPollsLastWeek) / commentsInPollsLastWeek) * 100
-  );
+  const commentsInPollsChange =
+    Math.round(
+      ((commentsInPolls - commentsInPollsLastWeek) / commentsInPollsLastWeek) * 100
+    ) || 0;
   const commentsInPollsChangeDirection =
     commentsInPollsChange > 0
       ? "increase"
@@ -166,6 +169,7 @@ export async function readPollWithAnswers(request: { id: string }) {
 
   const answers = await prisma.pollAnswer.findMany({
     where: { pollId: request.id },
+    orderBy: { createdAt: "desc" },
     include: {
       PollQuestion: { select: { question: true } },
       supporter: {
@@ -224,7 +228,7 @@ export async function readPolls(request) {
   const polls = fetchPolls.map((poll) => ({
     ...poll,
     PollQuestion: poll.PollQuestion.length,
-    PollAnswer: poll.PollAnswer.length / poll.PollQuestion.length,
+    PollAnswer: joinPollVotes(poll.PollAnswer).length,
   }));
   return polls;
 }
@@ -276,6 +280,7 @@ export async function updatePoll(request) {
     operations.push(questionOperation);
 
     for (const option of question.options) {
+      console.log(question.options);
       let optionOperation;
       if (option.id) {
         optionOperation = prisma.pollOption.update({
@@ -307,40 +312,112 @@ export async function deletePoll(request) {
   return poll;
 }
 
-export async function answerPoll(request: PollAnswerDto[]) {
-  try {
-    const poll = await prisma.poll.findUnique({
-      where: { id: request[0].pollId },
-      include: { PollQuestion: true },
-    });
+export async function answerPoll(request: PollAnswerDto & { ip?: string }) {
+  const poll = await prisma.poll.findUnique({
+    where: { id: request.pollId },
+    include: { PollQuestion: true },
+  });
 
-    if (!poll) {
-      throw new Error("Pesquisa não encontrada");
+  if (
+    await verifyExistingVote({
+      ip: headers().get("X-Forwarded-For"),
+      pollId: request.pollId,
+    })
+  ) {
+    throw new Error("Você já respondeu esta pesquisa!");
+  }
+
+  if (!poll) {
+    throw new Error("Pesquisa não encontrada");
+  }
+
+  const parsedAnswers = request.questions.map((question) => {
+    const questionInfo = poll.PollQuestion.find(
+      (item) => item.id === question.questionId
+    );
+
+    if (!questionInfo) {
+      throw new Error("Pergunta não encontrada");
     }
 
-    const parseAnswer = request.map((item) => {
-      const options = item.answers.options;
-      if (!options) {
-        return [];
+    if (typeof question.answers.options === "object") {
+      const filteredAnswers = Object.keys(question.answers.options).filter(
+        (key) => question.answers.options[key]
+      );
+      if (filteredAnswers.length > 1 && !questionInfo.allowMultipleAnswers) {
+        throw new Error("Você só pode selecionar uma opção para essa pergunta");
       }
-      return typeof options === "string"
-        ? [options]
-        : Object.keys(options).filter((key) => options[key]);
+      question.answers.options = filteredAnswers;
+    } else {
+      question.answers.options = [question.answers.options];
+    }
+
+    return {
+      pollId: request.pollId,
+      questionId: question.questionId,
+      supporterId: question.supporterId,
+      answer: question.answers,
+      ip: request.ip,
+    };
+  });
+
+  const pollAnswer = await prisma.pollAnswer.createMany({
+    data: parsedAnswers,
+  });
+
+  return pollAnswer;
+}
+
+export async function verifyExistingVote(request: {
+  ip: string;
+  pollId: string;
+}): Promise<boolean> {
+  const ipUsedToVote = await prisma.pollAnswer.findFirst({
+    where: { AND: [{ ip: request.ip }, { pollId: request.pollId }] },
+  });
+  let supporterVote: undefined | PollAnswer;
+  let supporter: undefined | Supporter;
+
+  const token = cookies().get("token")?.value;
+  const url = process.env.NEXT_PUBLIC_SITE_URL;
+  const user = await fetch(`${url}/api/auth/verify`, {
+    headers: { Authorization: token },
+  }).then((res) => res.json());
+
+  if (user.id) {
+    const poll = await readPoll({ id: request.pollId });
+    if (!poll) throw new Error("Pesquisa não encontrada");
+    supporter = await readSupporterFromUser({
+      userId: user.id,
+      campaignId: poll.campaignId,
     });
 
-    const pollAnswer = await prisma.pollAnswer.createMany({
-      data: request.map((item, index) => ({
-        pollId: item.pollId,
-        questionId: item.questionId,
-        supporterId: item.supporterId,
-        answer: { ...item.answers, options: parseAnswer[index] },
-      })),
-    });
-
-    return ActionResponse.success({
-      data: pollAnswer,
-    });
-  } catch (err) {
-    return ActionResponse.error(err);
+    if (supporter) {
+      supporterVote = await prisma.pollAnswer.findFirst({
+        where: { AND: [{ supporterId: supporter.id }, { pollId: request.pollId }] },
+      });
+    }
   }
+
+  if ((!supporter && ipUsedToVote) || (supporter && supporterVote)) {
+    return true;
+  }
+
+  return false;
+}
+
+function joinPollVotes(pollAnswers: PollAnswer[]): PollAnswer[] {
+  return pollAnswers.reduce((acc, curr) => {
+    const existingAnswer = acc.find(
+      (answer) =>
+        answer.pollId === curr.pollId &&
+        (answer.supporterId === curr.supporterId || answer.ip === curr.ip)
+    );
+    if (existingAnswer) {
+      existingAnswer.answer += curr.answer;
+    } else {
+      acc.push(curr);
+    }
+    return acc;
+  }, []);
 }

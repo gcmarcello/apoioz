@@ -337,6 +337,7 @@ model PollAnswer {
   PollQuestion PollQuestion @relation(fields: [questionId], references: [id])
   supporterId  String?      @db.Uuid
   supporter    Supporter?   @relation(fields: [supporterId], references: [id])
+  ip           String?      @db.VarChar
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 

@@ -30,8 +30,8 @@ export default async function PesquisaPage({ params }: { params: { id: string } 
     };
   });
 
-  const answers = poll.answers.reduce((acc, answer) => {
-    const supporterId = answer.supporter?.id;
+  const answers = poll.answers.reduce((acc, answer, index) => {
+    const supporterId = answer.supporter?.id || answer.ip;
     const questionId = answer.questionId;
     if (!acc[supporterId]) {
       acc[supporterId] = {
@@ -55,8 +55,9 @@ export default async function PesquisaPage({ params }: { params: { id: string } 
       )
       .join(", ");
     acc[supporterId].parsedAnswers[questionId] = answerString;
-    acc[supporterId].parsedAnswers[`${questionId}_freeAnswer`] =
-      (answer.answer as any).freeAnswer || "";
+    acc[supporterId].parsedAnswers[`${questionId}_freeAnswer`] = (
+      answer.answer as any
+    ).freeAnswer;
     return acc;
   }, {});
 

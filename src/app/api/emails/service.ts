@@ -1,10 +1,10 @@
-import { isProd } from "@/_shared/utils/settings";
+import { getEnv, isProd } from "@/_shared/utils/settings";
 import sgMail from "@sendgrid/mail";
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+sgMail.setApiKey(getEnv("SENDGRID_API_KEY"));
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const templatesDir = path.join(__dirname, "templates");
 
@@ -23,7 +23,7 @@ export async function sendEmail({
   const msg = {
     to,
     bcc,
-    from: process.env.SENDGRID_EMAIL,
+    from: getEnv("SENDGRID_EMAIL"),
     subject: template.subject,
     html: template.body,
   };

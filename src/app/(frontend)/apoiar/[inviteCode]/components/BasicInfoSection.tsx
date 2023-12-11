@@ -1,87 +1,59 @@
-import dayjs from "dayjs";
-import InputMask from "react-input-mask";
+import { normalizePhone } from "@/_shared/utils/format";
+import {
+  MaskedTextField,
+  TextField,
+} from "@/app/(frontend)/_shared/components/fields/Text";
+import { CreateSupportersDto } from "@/app/api/panel/supporters/dto";
+import { useForm } from "react-hook-form";
 
-export function BasicInfoSection({ form }: { form: any }) {
+export function BasicInfoSection({
+  form,
+}: {
+  form: ReturnType<typeof useForm<CreateSupportersDto>>;
+}) {
   return (
     <>
-      <div>
-        <label
-          htmlFor="name"
-          className="block text-sm font-medium leading-6 text-gray-900"
-        >
-          Nome do Apoiador
-        </label>
-        <div className="mt-2">
-          <input
-            type="text"
-            autoComplete="name"
-            placeholder="ex. João Silva"
-            {...form.register("name", { required: true })}
-            id="name"
-            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-          />
-        </div>
+      <div className="mt-2">
+        <TextField
+          hform={form}
+          label="Nome do Apoiador"
+          name={"name"}
+          autoComplete="name"
+          placeholder="ex. João Silva"
+        />
       </div>
-      <div>
-        <label
-          htmlFor="email"
-          className="block text-sm font-medium leading-6 text-gray-900"
-        >
-          Email
-        </label>
-        <div className="mt-2">
-          <input
-            type="text"
-            autoComplete="email"
-            placeholder="ex. joao@silva.com"
-            {...form.register("email", { required: true })}
-            id="email"
-            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-          />
-        </div>
+      <div className="mt-2">
+        <TextField
+          hform={form}
+          label="Email"
+          name={"email"}
+          autoComplete="email"
+          placeholder="ex. joao@silva.com"
+        />
       </div>
-      <div>
-        <label
-          htmlFor="phone"
-          className="block text-sm font-medium leading-6 text-gray-900"
-        >
-          Celular
-        </label>
-        <div className="mt-2">
-          <InputMask
-            type="text"
-            inputMode="numeric"
-            autoComplete="tel"
-            placeholder="ex. 999999999"
-            {...form.register("phone", {
-              required: true,
-            })}
-            name="phone"
-            id="phone"
-            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            mask="(99) 99999-9999"
-          />
-        </div>
-      </div>
-      <div>
-        <label
-          htmlFor="birthDate"
-          className="block text-sm font-medium leading-6 text-gray-900"
-        >
-          Data de Nascimento
-        </label>
-        <InputMask
-          type="text"
+      <div className="mt-2">
+        <MaskedTextField
+          hform={form}
+          label="Celular"
           inputMode="numeric"
-          autoComplete="date"
-          {...form.register("info.birthDate", {
-            required: true,
-            validate: (value) =>
-              dayjs(value, "DD/MM/YYYY").isBefore(dayjs().subtract(16, "year")),
-          })}
+          autoComplete="tel"
+          placeholder="ex. 999999999"
+          name="phone"
+          mask={
+            normalizePhone(form.watch("phone"))?.length < 11
+              ? "(99) 9999-99999"
+              : "(99) 99999-9999"
+          }
+        />
+      </div>
+      <div className="mt-2">
+        <MaskedTextField
+          hform={form}
+          label="Data de Nascimento"
+          inputMode="numeric"
+          autoComplete="birthDate"
+          placeholder="ex. 01/01/1990"
           name="info.birthDate"
-          id="birthDate"
-          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           mask="99/99/9999"
         />
       </div>

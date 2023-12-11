@@ -8,6 +8,7 @@ import prisma from "prisma/prisma";
 import { sendEmail } from "../../emails/service";
 import { CreateEventDto, ReadEventsAvailability, ReadEventsDto } from "./dto";
 import { SupporterSession } from "@/middleware/functions/supporterSession.middleware";
+import { getEnv } from "@/_shared/utils/settings";
 dayjs.extend(customParseFormat);
 dayjs.extend(utc);
 
@@ -41,7 +42,7 @@ export async function createEvent(
     });
     const campaign = await prisma.campaign.findFirst({ where: { id: event.campaignId } });
     await sendEmail({
-      to: process.env.SENDGRID_EMAIL,
+      to: getEnv("SENDGRID_EMAIL"),
       bcc: [
         ...supporters
           .map((supporter) => supporter.user.email)
@@ -176,7 +177,7 @@ export async function updateEventStatus(request) {
     const campaign = await prisma.campaign.findFirst({ where: { id: event.campaignId } });
 
     await sendEmail({
-      to: process.env.SENDGRID_EMAIL,
+      to: getEnv("SENDGRID_EMAIL"),
       dynamicData: {
         eventName: event.name,
         eventDate: dayjs(event.dateStart).utcOffset(-3).format("DD/MM/YYYY HH:mm"),
