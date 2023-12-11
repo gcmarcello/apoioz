@@ -95,8 +95,6 @@ export function MaskedTextField<T>(_props: MaskedTextFieldProps<T>) {
     props.hform.formState.errors
   )?.message as string;
 
-  console.log(errorMessage);
-
   const className = clsx(
     fieldClasses,
     props.className,
