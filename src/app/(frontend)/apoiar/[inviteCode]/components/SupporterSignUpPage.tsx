@@ -19,7 +19,7 @@ import prisma from "prisma/prisma";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 import Loading from "@/app/(frontend)/loading";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createSupportersDto } from "@/app/api/panel/supporters/dto";
+import { CreateSupportersDto, createSupportersDto } from "@/app/api/panel/supporters/dto";
 
 dayjs.extend(customParseFormat);
 
@@ -38,7 +38,7 @@ export default function SupporterSignUpPage({
 }) {
   const [success, setSuccess] = useState(false);
   const [stage, setStage] = useState("basicInfo");
-  const form = useForm({
+  const form = useForm<CreateSupportersDto>({
     defaultValues: {
       name: "",
       email: "",
@@ -62,6 +62,7 @@ export default function SupporterSignUpPage({
       },
     },
     resolver: zodResolver(createSupportersDto),
+    mode: "onChange",
   });
 
   const mockData = async () => {

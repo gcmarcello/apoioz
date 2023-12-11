@@ -30,7 +30,7 @@ export function TextField<T>(props: TextFieldProps<T>) {
     props.className,
     errorMessage
       ? "border-red-500 ring-red-500"
-      : "focus:border-indigo-500 focus:ring-indigo-500",
+      : "focus:border-indigo-500 focus:ring-indigo-500 ",
     "pr-8"
   );
 
@@ -88,7 +88,14 @@ export function MaskedTextField<T>(_props: MaskedTextFieldProps<T>) {
 
   const { mask, onChange, onBlur, ...props } = _props;
 
-  const errorMessage = props.hform.formState.errors[props.name]?.message as string;
+  const path = props.name.split(".");
+
+  const errorMessage = path.reduce(
+    (acc, part) => acc && acc[part],
+    props.hform.formState.errors
+  )?.message as string;
+
+  console.log(errorMessage);
 
   const className = clsx(
     fieldClasses,
@@ -119,6 +126,7 @@ export function MaskedTextField<T>(_props: MaskedTextFieldProps<T>) {
             type={props.type}
             {...props}
             className={className}
+            maskPlaceholder=""
           />
         )}
       />

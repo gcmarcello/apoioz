@@ -8,6 +8,7 @@ export function PollQuestions({ poll, form }: { poll: any; form: any }) {
     control: form.control, // control props comes from useForm (optional: if you are using FormContext)
     name: "poll.questions", // unique name for your Field Array
   });
+
   return (
     <div className="my-4">
       {poll.PollQuestion.map(

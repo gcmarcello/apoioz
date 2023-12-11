@@ -22,6 +22,7 @@ import PaginationControl from "./Pagination";
 import PlaceholderTable from "./PlaceholderTable";
 import Xlsx from "../Xlsx";
 import clsx from "clsx";
+import dayjs from "dayjs";
 
 function DebouncedInput({
   value: initialValue,
@@ -131,7 +132,12 @@ export function DefaultTable({
           </>
         )}
 
-        <Xlsx data={data} columns={columns} fileName="file" />
+        <Xlsx
+          data={data}
+          columns={columns}
+          fileName={`ApoioZ ${dayjs().format("DD-MM-YYYY")} - Apoiadores`}
+          sheetName={"Apoiadores"}
+        />
       </div>
 
       <div className="mt-6 flex flex-col">

@@ -2,14 +2,16 @@ import { TableCellsIcon } from "@heroicons/react/24/solid";
 import { Button } from "./Button";
 import xlsx from "json-as-xlsx";
 import { get } from "http";
+import dayjs from "dayjs";
 
 export interface XlsxProps {
   data: any[];
   columns: any[];
   fileName: string;
+  sheetName: string;
 }
 
-export default function Xlsx({ data, columns, fileName }: XlsxProps) {
+export default function Xlsx({ data, columns, fileName, sheetName }: XlsxProps) {
   let settings = {
     fileName: fileName,
     extraLength: 3,
@@ -50,8 +52,13 @@ export default function Xlsx({ data, columns, fileName }: XlsxProps) {
   }
 
   function excelObjectBuilder(data, columns) {
-    console.log([{ sheet: "test", columns, content: dataFormatter(data) }]);
-    return [{ sheet: "test", columns, content: dataFormatter(data) }];
+    return [
+      {
+        sheet: sheetName || `ApoioZ ${dayjs().format("DD-MM-YYYY")}`,
+        columns,
+        content: dataFormatter(data),
+      },
+    ];
   }
 
   return (
