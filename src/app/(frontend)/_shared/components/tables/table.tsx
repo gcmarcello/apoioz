@@ -113,7 +113,7 @@ export function DefaultTable({
 
   return (
     <section className="mx-auto">
-      {globalFilter !== undefined && <TableHeader />}
+      {globalFilter !== undefined && TableHeader && <TableHeader />}
       <div
         className={clsx(
           "relative mt-4 flex w-full items-center gap-2 md:mt-0",
