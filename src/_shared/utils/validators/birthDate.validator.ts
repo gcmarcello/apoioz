@@ -6,7 +6,7 @@ dayjs.extend(isBetween);
 dayjs.extend(customParseFormat);
 
 export function birthDateValidator(data: string) {
-  const dateRegex = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/\d{4}$/;
+  const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/;
   const isValid = dateRegex.test(data as string);
 
   if (!isValid) return false;
