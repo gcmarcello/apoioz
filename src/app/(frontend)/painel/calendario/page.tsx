@@ -7,7 +7,6 @@ import Calendar from "../../../../app/(frontend)/painel/calendario/components/Ca
 import { cookies, headers } from "next/headers";
 import { readEventsByCampaign } from "@/app/api/panel/events/actions";
 import { getCampaign } from "@/app/api/panel/campaigns/actions";
-import { CalendarContext } from "./contexts/calendar.ctx";
 import CalendarProvider from "./providers/CalendarProvider";
 dayjs.extend(customParseFormat);
 dayjs.extend(updateLocale);
@@ -28,7 +27,11 @@ export default async function CalendarPage() {
   if (!campaignId || !userId) return <div>Erro</div>;
   const campaign = await getCampaign({ campaignId });
 
-  const events = await readEventsByCampaign(campaignId);
+  const events = await readEventsByCampaign({
+    where: {
+      campaignId,
+    },
+  });
 
   /* async function createMockEvent() {
     createEvent(await mockEvent(campaign.id));

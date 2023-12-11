@@ -27,8 +27,17 @@ export const createSupportersDto = z.object({
     birthDate: z.string(),
   }),
   referralId: z.string().optional(),
-  campaignId: z.string(),
+  campaignId: z.string().optional(),
   questions: pollAnswerDto.array().optional(),
 });
 
 export type CreateSupportersDto = z.infer<typeof createSupportersDto>;
+
+export const readSupportersAsTreeDto = readDto(
+  z.object({
+    supporterId: z.string().optional(),
+    nestLevel: z.number().optional(),
+  })
+);
+
+export type ReadSupportersAsTreeDto = z.infer<typeof readSupportersAsTreeDto>;

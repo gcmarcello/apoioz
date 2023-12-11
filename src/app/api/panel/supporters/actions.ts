@@ -5,7 +5,7 @@ import { UserSessionMiddleware } from "@/middleware/functions/userSession.middle
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 import { revalidatePath } from "next/cache";
 import { CreateSupportersLevelMiddleware, ReadSupportersMiddleware } from "./middlewares";
-import { CreateSupportersDto, ReadSupportersDto } from "./dto";
+import { CreateSupportersDto, ReadSupportersAsTreeDto, ReadSupportersDto } from "./dto";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { ActionResponse } from "../../_shared/utils/ActionResponse";
 
@@ -76,12 +76,20 @@ export async function createSupporter(request: CreateSupportersDto) {
   }
 }
 
-export async function readSupportersAsTree() {
-  const { request: parsedRequest } = await UseMiddlewares()
-    .then(UserSessionMiddleware)
-    .then(SupporterSessionMiddleware);
+export async function readSupportersAsTree(request?: ReadSupportersAsTreeDto) {
+  try {
+    const { request: parsedRequest } = await UseMiddlewares(request)
+      .then(UserSessionMiddleware)
+      .then(SupporterSessionMiddleware);
 
-  return supportersService.readSupportersAsTree(parsedRequest);
+    const supporters = await supportersService.readSupportersAsTree(parsedRequest);
+
+    return ActionResponse.success({
+      data: supporters,
+    });
+  } catch (err) {
+    ActionResponse.error(err);
+  }
 }
 
 export async function signUpAsSupporter(request: CreateSupportersDto) {

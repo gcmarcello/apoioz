@@ -2,7 +2,7 @@ import type { Campaign, Supporter, User, UserInfo } from "@prisma/client";
 import { normalizeEmail, normalizePhone } from "@/_shared/utils/format";
 import dayjs from "dayjs";
 import { UserWithoutPassword } from "prisma/types/User";
-import { CreateSupportersDto, ReadSupportersDto } from "./dto";
+import { CreateSupportersDto, ReadSupportersAsTreeDto, ReadSupportersDto } from "./dto";
 import prisma from "prisma/prisma";
 import { findCampaignById } from "../campaigns/service";
 import { verifyExistingUser } from "../../user/service";
@@ -157,12 +157,13 @@ export async function createSupporter(
 
 export async function readSupportersAsTree({
   supporterSession,
-}: {
+  where: { nestLevel, supporterId } = { nestLevel: 2, supporterId: null },
+}: ReadSupportersAsTreeDto & {
   userSession: UserWithoutPassword;
   supporterSession: Supporter;
 }) {
-  function generateReferredObject(level: any): any {
-    if (level <= 1) {
+  function generateReferredObject(nestLevel: any): any {
+    if (nestLevel < 1) {
       return {
         referral: { include: { user: { include: { info: true } } } },
         user: { include: { info: { include: { Section: true, Zone: true } } } },
@@ -175,14 +176,27 @@ export async function readSupportersAsTree({
             user: {
               include: { info: { include: { Section: true, Zone: true } } },
             },
-            ...generateReferredObject(level - 0.2),
+            ...generateReferredObject(nestLevel - 1),
           },
         },
       };
     }
   }
 
-  const includeReferred = generateReferredObject(supporterSession.level - 1);
+  const supporter = supporterId
+    ? await prisma.supporterGroupMembership
+        .findFirst({
+          where: { supporterId: supporterId },
+          include: {
+            supporter: true,
+          },
+        })
+        .then((m) => m.supporter)
+    : supporterSession;
+
+  if (!supporter) throw "Você não tem permissão para acessar este apoiador";
+
+  const includeReferred = generateReferredObject(nestLevel - 1);
 
   const supporters = await prisma.supporter.findMany({
     where: {

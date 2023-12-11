@@ -1,4 +1,3 @@
-"use client";
 import { Mocker } from "@/app/(frontend)/_shared/components/Mocker";
 import ErrorAlert from "@/app/(frontend)/_shared/components/alerts/errorAlert";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
