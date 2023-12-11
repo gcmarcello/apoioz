@@ -18,7 +18,6 @@ import useExpandCollapse from "./lib/useExpandCollapse";
 
 import "reactflow/dist/base.css";
 import styles from "./styles/styles.module.css";
-import { useControls } from "leva";
 
 const proOptions = { account: "paid-pro", hideAttribution: true };
 
@@ -106,19 +105,9 @@ function ReactFlowPro({
 }
 
 export default function TreeComponent({ initialNodes, initialEdges }) {
-  const levaProps = useControls({
-    "Nome do Apoiador": {
-      value: "Apoiador",
-    },
-  });
-
   return (
     <ReactFlowProvider>
-      <ReactFlowPro
-        initialNodes={initialNodes}
-        initialEdges={initialEdges}
-        {...levaProps}
-      />
+      <ReactFlowPro initialNodes={initialNodes} initialEdges={initialEdges} />
     </ReactFlowProvider>
   );
 }

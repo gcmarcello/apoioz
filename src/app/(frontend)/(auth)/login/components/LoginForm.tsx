@@ -44,12 +44,12 @@ export default function LoginForm() {
 
   return (
     <>
-      <div className="absolute bottom-0 right-0 p-4">
+      {/*  <div className="absolute bottom-0 right-0 p-4">
         <Mocker
           mockData={generateFakeData}
           submit={handleSubmit((data) => loginAction(data))}
         />
-      </div>
+      </div> */}
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <form
           className="mt-4 space-y-6"
@@ -66,15 +66,13 @@ export default function LoginForm() {
             placeholder="seu_email@email.com"
           />
 
-          <div>
-            <TextField
-              hform={form}
-              label="Senha"
-              name="password"
-              type={"password"}
-              placeholder="•••••••••••"
-            />
-          </div>
+          <TextField
+            hform={form}
+            label="Senha"
+            name="password"
+            type={"password"}
+            placeholder="•••••••••••"
+          />
 
           <div>
             <button
