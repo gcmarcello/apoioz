@@ -5,6 +5,7 @@ import { hashInfo } from "@/_shared/utils/bCrypt";
 import { normalizePhone, normalizeEmail } from "@/_shared/utils/format";
 import prisma from "prisma/prisma";
 import { handlePrismaError } from "prisma/prismaError";
+import { validateUUID } from "@/_shared/utils/validators/uuid.validator";
 dayjs.extend(customParseFormat);
 
 export async function createUser(data: any) {
@@ -67,6 +68,7 @@ export async function readUsers() {
 
 export async function readUser(userId: string) {
   try {
+    if (!validateUUID(userId)) return null;
     const users = await prisma.user.findUnique({
       where: { id: userId },
       include: { info: true },
@@ -100,7 +102,7 @@ export async function updateUser(request) {
 
 export async function verifyExistingUser(phone: string, email: string) {
   return await prisma.user.findFirst({
-    where: { phone, email },
+    where: { OR: [{ phone }, { email }] },
     include: {
       info: true,
     },

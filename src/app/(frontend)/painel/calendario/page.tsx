@@ -6,7 +6,7 @@ import { Event } from "@prisma/client";
 import Calendar from "../../../../app/(frontend)/painel/calendario/components/Calendar";
 import { cookies, headers } from "next/headers";
 import { readEventsByCampaign } from "@/app/api/panel/events/actions";
-import { getCampaign } from "@/app/api/panel/campaigns/actions";
+import { readCampaign } from "@/app/api/panel/campaigns/actions";
 import { CalendarContext } from "./contexts/calendar.ctx";
 import CalendarProvider from "./providers/CalendarProvider";
 dayjs.extend(customParseFormat);
@@ -26,7 +26,7 @@ export default async function CalendarPage() {
   const campaignId = cookies().get("activeCampaign")!.value;
   const userId = headers().get("userId");
   if (!campaignId || !userId) return <div>Erro</div>;
-  const campaign = await getCampaign({ campaignId });
+  const campaign = await readCampaign({ campaignId });
 
   const events = await readEventsByCampaign(campaignId);
 

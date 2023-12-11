@@ -20,6 +20,9 @@ import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 import Loading from "@/app/(frontend)/loading";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateSupportersDto, createSupportersDto } from "@/app/api/panel/supporters/dto";
+import { BottomNavigation } from "@/app/(frontend)/_shared/components/navigation/BottomNavigation";
+import { Button } from "@/app/(frontend)/_shared/components/Button";
+import ErrorAlert from "@/app/(frontend)/_shared/components/alerts/errorAlert";
 
 dayjs.extend(customParseFormat);
 
@@ -51,7 +54,7 @@ export default function SupporterSignUpPage({
       },
       referralId: referral.id,
       campaignId: campaign.id,
-      poll: {
+      poll: poll && {
         pollId: poll.id,
         questions: poll.PollQuestion.map((question) => ({
           questionId: question.id,
@@ -144,6 +147,9 @@ export default function SupporterSignUpPage({
             <UserIcon className="me-2 h-6 w-6" /> <p>Convidado por {user.name}</p>
           </div>
         )}
+        {form.formState.errors?.root?.serverError?.message && (
+          <ErrorAlert errors={[form.formState.errors?.root?.serverError?.message]} />
+        )}
         <form
           className="flex h-full flex-col  divide-gray-200  text-left"
           onSubmit={form.handleSubmit((data) => signUp(data))}
@@ -155,7 +161,7 @@ export default function SupporterSignUpPage({
               <ElectionInfoSection form={form} zones={zones} poll={poll} />
             )}
           </div>
-          <div className="flex justify-between">
+          <div className="hidden justify-between lg:flex">
             {stage === "electionInfo" && (
               <button
                 role="button"
@@ -195,6 +201,36 @@ export default function SupporterSignUpPage({
               </button>
             )}
           </div>
+          <BottomNavigation className="block p-2 lg:hidden">
+            <div className="flex justify-between">
+              {stage === "electionInfo" && (
+                <Button variant="secondary" onClick={() => setStage("basicInfo")}>
+                  Voltar
+                </Button>
+              )}
+
+              {stage === "basicInfo" ? (
+                <Button
+                  onClick={() => setStage("electionInfo")}
+                  variant="primary"
+                  className="w-full"
+                >
+                  Inscrever
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => {
+                    setStage("electionInfo");
+                  }}
+                  variant="primary"
+                  disabled={!form.formState.isValid}
+                  type="submit"
+                >
+                  Inscrever
+                </Button>
+              )}
+            </div>
+          </BottomNavigation>
         </form>
       </div>
       <Mocker mockData={mockData} submit={form.handleSubmit((data) => signUp(data))} />

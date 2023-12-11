@@ -6,6 +6,9 @@ import { CampaignList } from "./CampaignList";
 import { revalidatePath } from "next/cache";
 import { BottomRightMocker } from "@/app/(frontend)/_shared/components/Mocker";
 import { listCampaigns, createCampaign } from "@/app/api/panel/campaigns/actions";
+import { TopNavigation } from "@/app/(frontend)/_shared/components/navigation/TopNavigation";
+import ProfileDropdown from "@/app/(frontend)/_shared/components/navigation/ProfileDropdown";
+import { SectionTitle } from "@/app/(frontend)/_shared/components/text/SectionTitle";
 
 export default async function ChooseCampaign({
   user,
@@ -34,26 +37,20 @@ export default async function ChooseCampaign({
     <>
       <BottomRightMocker submit={mockAndSubmit} />
       <div className="mt-6 px-4 sm:px-6 lg:px-8">
-        <div className="flex">
-          <h2 className="mb-4 text-4xl font-medium text-gray-900">Bem Vindo,</h2>
-          <div className="flex">
-            {user ? (
-              <div className="mb-4 ms-3 text-4xl font-medium text-gray-900">
-                {user?.name}
-              </div>
-            ) : (
-              <div className="mb-4 ms-3 flex w-64  animate-pulse items-center rounded-lg bg-gray-300"></div>
-            )}
-          </div>
-        </div>
+        <TopNavigation className="z-50 flex justify-between p-4 shadow-md">
+          <SectionTitle>Olá, {user.name}!</SectionTitle>
+          <ProfileDropdown user={user} />
+        </TopNavigation>
 
-        <h2 className="text-sm font-medium text-gray-900">Campanhas Ativas</h2>
-        <ul
-          role="list"
-          className="mt-3 grid grid-cols-1 gap-4 empty:hidden sm:grid-cols-2 sm:gap-6 xl:grid-cols-4"
-        >
-          <CampaignList campaigns={campaigns} />
-        </ul>
+        <div className="mt-20">
+          <h2 className="text-sm font-medium text-gray-900">Campanhas Ativas</h2>
+          <ul
+            role="list"
+            className="mt-3 grid grid-cols-1 gap-4 empty:hidden sm:grid-cols-2 sm:gap-6 xl:grid-cols-4"
+          >
+            <CampaignList campaigns={campaigns} />
+          </ul>
+        </div>
       </div>
     </>
   );

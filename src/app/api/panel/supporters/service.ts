@@ -2,7 +2,7 @@ import type { Campaign, Supporter, User, UserInfo } from "@prisma/client";
 import { normalizeEmail, normalizePhone } from "@/_shared/utils/format";
 import dayjs from "dayjs";
 import { UserWithoutPassword } from "prisma/types/User";
-import { CreateSupportersDto, ReadSupportersDto } from "./dto";
+import { CreateSupportersDto, JoinAsSupporterDto, ReadSupportersDto } from "./dto";
 import prisma from "prisma/prisma";
 import { findCampaignById } from "../campaigns/service";
 import { verifyExistingUser } from "../../user/service";
@@ -322,6 +322,131 @@ export async function signUpAsSupporter(request: CreateSupportersDto) {
     }
     await answerPoll(request.poll);
   }
+
+  await sendEmail({
+    to: user.email,
+    templateId: "welcome_email",
+    dynamicData: {
+      name: user.name,
+      siteLink: `${getEnv("NEXT_PUBLIC_SITE_URL")}/painel`,
+      campaignName: campaign.name,
+      subject: `Bem Vindo à Campanha ${campaign.name}! - ApoioZ`,
+    },
+  });
+
+  const referralInfo = await prisma.supporter.findFirst({
+    where: { id: referral.id },
+    include: { user: { include: { info: true } } },
+  });
+
+  await sendEmail({
+    to: referralInfo.user.email,
+    templateId: "invite_notification",
+    dynamicData: {
+      name: referralInfo.user.name,
+      siteLink: `${getEnv("NEXT_PUBLIC_SITE_URL")}/painel`,
+      campaignName: campaign.name,
+      supporterName: user.name,
+      subject: `Novo apoiador convidado na campanha ${campaign.name}! - ApoioZ`,
+    },
+  });
+
+  return supporter;
+}
+
+export async function joinAsSupporter({
+  userSession,
+  ...request
+}: JoinAsSupporterDto & { userSession: UserWithoutPassword }) {
+  const user = await prisma.user.findFirst({
+    where: { id: userSession.id },
+    include: { info: true },
+  });
+
+  const campaign = await findCampaignById(request.campaignId);
+  const referral = await prisma.supporter.findFirst({
+    where: { id: request.referralId },
+  });
+
+  if (!referral) throw "Referral não encontrado";
+
+  if (!campaign) throw "Campanha não encontrada";
+
+  const conflictingSupporter = await verifyConflictingSupporter(campaign, user.id);
+
+  if (conflictingSupporter?.type === "sameCampaign")
+    throw "Usuário já cadastrado nesta campanha.";
+  if (conflictingSupporter?.type === "otherCampaign") {
+    throw "Usuário já cadastrado em outra campanha do mesmo tipo.";
+  }
+
+  let referralTree = [referral];
+  if (referralTree[0].level != 4) {
+    while (true) {
+      const referral = await prisma.supporter.findFirst({
+        where: {
+          OR: [
+            {
+              referralId: referralTree[referralTree.length - 1]?.id,
+            },
+            {
+              level: 4,
+            },
+          ],
+        },
+      });
+
+      if (!referral) continue;
+
+      referralTree.push(referral);
+
+      if (referral.level === 4) break;
+    }
+  }
+
+  const ownedSupporterGroupsFromReferralTree =
+    await prisma.supporterGroupMembership.findMany({
+      where: {
+        supporterId: {
+          in: referralTree.map((referral) => referral.id),
+        },
+        isOwner: true,
+      },
+    });
+
+  const createSupporterGroupMembershipQuery = ownedSupporterGroupsFromReferralTree.map(
+    (supporterGroup) => ({
+      isOwner: false,
+      supporterGroup: {
+        connect: {
+          id: supporterGroup.supporterGroupId,
+        },
+      },
+    })
+  );
+
+  const supporter = await prisma.supporter.create({
+    include: { user: true },
+    data: {
+      level: 1,
+      Section: { connect: { id: user.info.sectionId } },
+      Zone: { connect: { id: user.info.zoneId } },
+      campaign: { connect: { id: referral.campaignId } },
+      referral: { connect: { id: referral.id } },
+      user: { connect: { id: user.id } },
+      supporterGroupsMemberships: {
+        create: [
+          {
+            isOwner: true,
+            supporterGroup: {
+              create: {},
+            },
+          },
+          ...createSupporterGroupMembershipQuery,
+        ],
+      },
+    },
+  });
 
   await sendEmail({
     to: user.email,

@@ -38,7 +38,10 @@ export function Button({
     <button
       disabled={disabled}
       type={type || "button"}
-      onClick={onClick}
+      onClick={(e) => {
+        type !== "submit" && e.preventDefault();
+        onClick && onClick();
+      }}
       className={clsx(
         "rounded-md px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
         className,

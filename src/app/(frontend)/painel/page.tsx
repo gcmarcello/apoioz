@@ -1,5 +1,5 @@
 import { cookies, headers } from "next/headers";
-import { getCampaign } from "@/app/api/panel/campaigns/actions";
+import { readCampaign } from "@/app/api/panel/campaigns/actions";
 import MainStats from "./(index)/components/MainStats";
 import Footer from "./_shared/components/Footer";
 import { LatestSupporters } from "./(index)/components/latestSupporters/LatestSupporters";
@@ -11,7 +11,7 @@ export default async function PanelPage() {
   if (!activeCampaignId || !userId) return <></>;
 
   const user = await prisma.user.findFirst({ where: { id: userId } });
-  const campaign = await getCampaign({ campaignId: activeCampaignId });
+  const campaign = await readCampaign({ campaignId: activeCampaignId });
 
   if (!user || !campaign) return <></>;
 

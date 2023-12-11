@@ -3,6 +3,7 @@ import { phoneValidator } from "@/_shared/utils/validators/phone.validator";
 import { readDto } from "../../_shared/dto/read";
 import { pollAnswerDto } from "../polls/dto";
 import { birthDateValidator } from "@/_shared/utils/validators/birthDate.validator";
+import { UserInfoSchema, UserSchema } from "prisma/generated/zod";
 
 export const readSupportersDto = readDto(
   z.object({
@@ -23,8 +24,8 @@ export const createSupportersDto = z.object({
   password: z.string().optional(),
   phone: z.custom(phoneValidator, { message: "Telefone inválido" }),
   info: z.object({
-    zoneId: z.string(),
-    sectionId: z.string(),
+    zoneId: z.string().uuid(),
+    sectionId: z.string().uuid(),
     birthDate: z.custom(birthDateValidator, { message: "Data de nascimento inválida" }),
   }),
   referralId: z.string().optional(),
@@ -33,3 +34,10 @@ export const createSupportersDto = z.object({
 });
 
 export type CreateSupportersDto = z.infer<typeof createSupportersDto>;
+
+export const joinAsSupporterDto = z.object({
+  campaignId: z.string(),
+  referralId: z.string().optional(),
+});
+
+export type JoinAsSupporterDto = z.infer<typeof joinAsSupporterDto>;

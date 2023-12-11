@@ -8,9 +8,11 @@ import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { ActionResponse } from "../../_shared/utils/ActionResponse";
 import { CampaignLeaderMiddleware } from "@/middleware/functions/campaignLeader.middleware";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export async function deactivateCampaign() {
-  return cookies().delete("activeCampaign");
+  cookies().delete("activeCampaign");
+  return redirect("/painel");
 }
 
 export async function activateCampaign(campaignId: string) {
@@ -21,8 +23,8 @@ export async function listCampaigns(userId: string) {
   return service.listCampaigns(userId);
 }
 
-export async function getCampaign(request: { campaignId: string }) {
-  return service.getCampaign(request);
+export async function readCampaign(request: { campaignId: string }) {
+  return service.readCampaign(request);
 }
 
 export async function updateCampaign(request: { campaignId: string; data: any }) {
@@ -51,7 +53,7 @@ export async function fetchCampaignTeamMembers() {
 
   if (!userId || !campaignId) return;
 
-  return service.getCampaignTeamMembers(campaignId);
+  return service.readCampaignTeamMembers(campaignId);
 }
 
 export async function generateMainPageStats(data: any) {
