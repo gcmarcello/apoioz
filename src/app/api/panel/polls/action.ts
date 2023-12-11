@@ -11,6 +11,7 @@ import { PollAnswerDto, UpsertPollDto } from "./dto";
 import { IpMiddleware } from "@/middleware/functions/ip.middleware";
 import { AuthMiddleware } from "@/middleware/functions/auth.middleware";
 import { readSupporterFromUser } from "../supporters/service";
+import { getEnv } from "@/_shared/utils/settings";
 
 export async function createPoll(request: UpsertPollDto) {
   try {
@@ -20,7 +21,7 @@ export async function createPoll(request: UpsertPollDto) {
       .then(CampaignLeaderMiddleware);
 
     const poll = await service.createPoll(parsedRequest);
-
+    revalidatePath("/painel/pesquisas");
     return ActionResponse.success({ data: poll });
   } catch (error) {
     console.log(error);
@@ -48,30 +49,32 @@ export async function readActivePoll(request) {
 }
 
 export async function answerPoll(request: PollAnswerDto) {
-  const { request: parsedRequest } = await UseMiddlewares(request).then(IpMiddleware);
+  try {
+    const { request: parsedRequest } = await UseMiddlewares(request).then(IpMiddleware);
 
-  const token = cookies().get("token")?.value;
-  if (!token) return false;
-  const url = process.env.SITE_URL;
-  const user = await fetch(`${url}/api/auth/verify`, {
-    headers: { Authorization: token },
-  }).then((res) => res.json());
+    const token = cookies().get("token")?.value;
+    if (token) {
+      const url = getEnv("NEXT_PUBLIC_SITE_URL");
+      const user = await fetch(`${url}/api/auth/verify`, {
+        headers: { Authorization: token },
+      }).then((res) => res.json());
 
-  if (user) {
-    const poll = await service.readPoll({ id: parsedRequest.pollId });
-    if (!poll) throw new Error("Pesquisa não encontrada");
-    const supporter = await readSupporterFromUser({
-      userId: user.id,
-      campaignId: poll.campaignId,
-    });
+      if (user) {
+        const poll = await service.readPoll({ id: parsedRequest.pollId });
+        if (!poll) throw new Error("Pesquisa não encontrada");
+        const supporter = await readSupporterFromUser({
+          userId: user.id,
+          campaignId: poll.campaignId,
+        });
 
-    if (supporter) {
-      for (const question of parsedRequest.questions) {
-        question.supporterId = supporter.id;
+        if (supporter) {
+          for (const question of parsedRequest.questions) {
+            question.supporterId = supporter.id;
+          }
+        }
       }
     }
-  }
-  try {
+
     const pollAnswer = await service.answerPoll(parsedRequest);
     return ActionResponse.success({ data: pollAnswer });
   } catch (error) {

@@ -67,12 +67,6 @@ export default function QuestionFieldArray({ defaultValues }: { defaultValues: a
     scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  function disableAllOptionsFromQuestion() {
-    for (let i = 0; i < fields.length; i++) {
-      form.setValue(`questions.${i}.active`, true);
-    }
-  }
-
   let pseudoIndex = 0;
 
   if (isMutating) return <Loading />;
@@ -116,7 +110,7 @@ export default function QuestionFieldArray({ defaultValues }: { defaultValues: a
                       allowMultipleAnswers: false,
                       allowFreeAnswer: false,
                       active: true,
-                      options: [{ name: "", active: false }],
+                      options: [{ name: "", active: true }],
                     })
                   }
                   variant="secondary"

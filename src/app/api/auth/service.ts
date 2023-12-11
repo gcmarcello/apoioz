@@ -6,6 +6,7 @@ import dayjs from "dayjs";
 import { sendEmail } from "../emails/service";
 import { compareHash, hashInfo } from "@/_shared/utils/bCrypt";
 import { normalizePhone, maskEmail } from "@/_shared/utils/format";
+import { getEnv } from "@/_shared/utils/settings";
 
 export async function login(request: LoginDto & { user: User; isEmail: boolean }) {
   if (!request.user.password)
@@ -18,9 +19,9 @@ export async function login(request: LoginDto & { user: User; isEmail: boolean }
 }
 
 export function createToken(request: { id: string }) {
-  if (!process.env.JWT_KEY)
+  if (!getEnv("JWT_KEY"))
     throw "O serviço de autenticação se encontra fora do ar. ERROR: MISSING JWTKEY";
-  return jwt.sign({ id: request.id }, process.env.JWT_KEY, { expiresIn: "10h" });
+  return jwt.sign({ id: request.id }, getEnv("JWT_KEY"), { expiresIn: "10h" });
 }
 
 export async function createPasswordRecovery(identifier: string) {
@@ -53,7 +54,7 @@ export async function createPasswordRecovery(identifier: string) {
     templateId: "password_recovery",
     dynamicData: {
       name: potentialUser.name,
-      recoveryLink: `${process.env.NEXT_PUBLIC_SITE_URL}/recuperar/${recovery.id}`,
+      recoveryLink: `${getEnv("NEXT_PUBLIC_SITE_URL")}/recuperar/${recovery.id}`,
       subject: "Recuperação de Senha - ApoioZ",
     },
   });

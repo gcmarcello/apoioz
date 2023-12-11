@@ -9,6 +9,7 @@ import { verifyExistingUser } from "../../user/service";
 import { hashInfo } from "@/_shared/utils/bCrypt";
 import { sendEmail } from "../../emails/service";
 import { answerPoll, readActivePoll } from "../polls/service";
+import { getEnv, isProd } from "@/_shared/utils/settings";
 
 export async function createSupporter(
   request: CreateSupportersDto & {
@@ -139,18 +140,18 @@ export async function createSupporter(
     })
     .catch((err) => console.log(err));
 
-  /**
-   * await sendEmail({
-    to: user.email,
-    templateId: "welcome_email",
-    dynamicData: {
-      name: user.name,
-      siteLink: `${process.env.NEXT_PUBLIC_SITE_URL}/painel`,
-      campaignName: campaign.name,
-      subject: `Bem Vindo à Campanha ${campaign.name}! - ApoioZ`,
-    },
-  });
-   */
+  if (isProd) {
+    await sendEmail({
+      to: user.email,
+      templateId: "welcome_email",
+      dynamicData: {
+        name: user.name,
+        siteLink: `${getEnv("NEXT_PUBLIC_SITE_URL")}/painel`,
+        campaignName: campaign.name,
+        subject: `Bem Vindo à Campanha ${campaign.name}! - ApoioZ`,
+      },
+    });
+  }
 
   return supporter;
 }
@@ -331,7 +332,7 @@ export async function signUpAsSupporter(request: CreateSupportersDto) {
     templateId: "welcome_email",
     dynamicData: {
       name: user.name,
-      siteLink: `${process.env.NEXT_PUBLIC_SITE_URL}/painel`,
+      siteLink: `${getEnv("NEXT_PUBLIC_SITE_URL")}/painel`,
       campaignName: campaign.name,
       subject: `Bem Vindo à Campanha ${campaign.name}! - ApoioZ`,
     },
@@ -347,7 +348,7 @@ export async function signUpAsSupporter(request: CreateSupportersDto) {
     templateId: "invite_notification",
     dynamicData: {
       name: referralInfo.user.name,
-      siteLink: `${process.env.NEXT_PUBLIC_SITE_URL}/painel`,
+      siteLink: `${getEnv("NEXT_PUBLIC_SITE_URL")}/painel`,
       campaignName: campaign.name,
       supporterName: user.name,
       subject: `Novo apoiador convidado na campanha ${campaign.name}! - ApoioZ`,
