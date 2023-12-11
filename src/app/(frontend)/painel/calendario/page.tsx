@@ -28,7 +28,11 @@ export default async function CalendarPage() {
   if (!campaignId || !userId) return <div>Erro</div>;
   const campaign = await readCampaign({ campaignId });
 
-  const events = await readEventsByCampaign(campaignId);
+  const events = await readEventsByCampaign({
+    where: {
+      campaignId,
+    },
+  });
 
   /* async function createMockEvent() {
     createEvent(await mockEvent(campaign.id));

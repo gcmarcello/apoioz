@@ -12,6 +12,7 @@ import {
   XMarkIcon,
   CalendarIcon,
   ClipboardDocumentListIcon,
+  UserGroupIcon,
 } from "@heroicons/react/24/outline";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
@@ -24,6 +25,7 @@ import WhatsAppIcon from "@/app/(frontend)/_shared/components/icons/WhatsAppIcon
 import { activateCampaign } from "@/app/api/panel/campaigns/actions";
 import Image from "next/image";
 import { Logo } from "@/app/(frontend)/_shared/components/Logo";
+import { For } from "@/app/(frontend)/_shared/components/For";
 
 export default function PanelSideBar() {
   const { campaign, visibility, setVisibility, campaigns, supporter } = useSidebar();
@@ -49,6 +51,12 @@ export default function PanelSideBar() {
       href: `/painel/mapa`,
       icon: MapIcon,
       current: pathname.includes("/mapa"),
+    },
+    {
+      name: "Árvore",
+      href: `/painel/arvore`,
+      icon: UserGroupIcon,
+      current: pathname.includes("/time"),
     },
     {
       name: "Calendário",
@@ -161,43 +169,9 @@ export default function PanelSideBar() {
                       <ul role="list" className="flex flex-1 flex-col gap-y-7">
                         <li>
                           <ul role="list" className="-mx-2 space-y-1">
-                            {navigation.map((item) => (
-                              <li key={item.name}>
-                                <a
-                                  href={item.href}
-                                  className={clsx(
-                                    item.current
-                                      ? `bg-indigo-700 text-white`
-                                      : "text-indigo-200 hover:bg-indigo-700 hover:text-white",
-                                    "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
-                                  )}
-                                >
-                                  <item.icon
-                                    className={clsx(
-                                      item.current
-                                        ? "text-white"
-                                        : "text-indigo-200 group-hover:text-white",
-                                      item.icon === WhatsAppIcon &&
-                                        "me-1 h-[1.3rem] w-[1.3rem] fill-indigo-200",
-
-                                      "h-6 w-6 shrink-0"
-                                    )}
-                                    aria-hidden="true"
-                                  />
-                                  {item.name}
-                                </a>
-                              </li>
-                            ))}
-                          </ul>
-                        </li>
-                        {supporter.level === 4 && (
-                          <li>
-                            <div className="text-xs font-semibold leading-6 text-indigo-200">
-                              Administrativo
-                            </div>
-                            <ul role="list" className="-mx-2 space-y-1">
-                              {adminNavigation.map((item) => (
-                                <li key={item.name}>
+                            <For each={navigation}>
+                              {(item) => (
+                                <li>
                                   <a
                                     href={item.href}
                                     className={clsx(
@@ -222,7 +196,45 @@ export default function PanelSideBar() {
                                     {item.name}
                                   </a>
                                 </li>
-                              ))}
+                              )}
+                            </For>
+                          </ul>
+                        </li>
+                        {supporter.level === 4 && (
+                          <li>
+                            <div className="text-xs font-semibold leading-6 text-indigo-200">
+                              Administrativo
+                            </div>
+                            <ul role="list" className="-mx-2 space-y-1">
+                              <For each={adminNavigation}>
+                                {(item) => (
+                                  <li>
+                                    <a
+                                      href={item.href}
+                                      className={clsx(
+                                        item.current
+                                          ? `bg-indigo-700 text-white`
+                                          : "text-indigo-200 hover:bg-indigo-700 hover:text-white",
+                                        "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                                      )}
+                                    >
+                                      <item.icon
+                                        className={clsx(
+                                          item.current
+                                            ? "text-white"
+                                            : "text-indigo-200 group-hover:text-white",
+                                          item.icon === WhatsAppIcon &&
+                                            "me-1 h-[1.3rem] w-[1.3rem] fill-indigo-200",
+
+                                          "h-6 w-6 shrink-0"
+                                        )}
+                                        aria-hidden="true"
+                                      />
+                                      {item.name}
+                                    </a>
+                                  </li>
+                                )}
+                              </For>
                             </ul>
                           </li>
                         )}

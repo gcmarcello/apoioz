@@ -41,3 +41,11 @@ export const joinAsSupporterDto = z.object({
 });
 
 export type JoinAsSupporterDto = z.infer<typeof joinAsSupporterDto>;
+export const readSupportersAsTreeDto = readDto(
+  z.object({
+    supporterId: z.string().optional(),
+    nestLevel: z.number().optional(),
+  })
+);
+
+export type ReadSupportersAsTreeDto = z.infer<typeof readSupportersAsTreeDto>;

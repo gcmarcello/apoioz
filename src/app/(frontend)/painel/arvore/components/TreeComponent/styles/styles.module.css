@@ -1,0 +1,26 @@
+.viewport {
+  background-color: rgb(241 245 249);
+}
+
+.label {
+  font-family: monospace;
+  font-size: 12px;
+  text-align: center;
+}
+
+.button {
+  font-size: 9px;
+  font-family: monospace;
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  width: 100px;
+  text-align: center;
+  color: rgb(148 163 184);
+  background-color: rgba(241, 245, 249, 0.5);
+}
+
+.button:hover {
+  color: rgb(71 85 105);
+}
