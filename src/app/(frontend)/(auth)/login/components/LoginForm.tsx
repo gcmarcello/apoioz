@@ -27,7 +27,7 @@ export default function LoginForm({ supportRedirect }: { supportRedirect?: strin
   const { trigger: loginAction, isMutating: isLoading } = useAction({
     action: login,
     onSuccess: () => {
-      router.push(`/${supportRedirect}` || "/painel");
+      router.push(supportRedirect ? `/${supportRedirect}` : "/painel");
     },
     onError: (error) => {
       form.setError("root.serverError", {
