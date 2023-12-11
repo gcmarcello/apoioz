@@ -4,6 +4,7 @@ import { Campaign } from "@prisma/client";
 import clsx from "clsx";
 
 export function CampaignList({ campaigns }: { campaigns: Campaign[] }) {
+  console.log(campaigns);
   return (
     <>
       {campaigns.map((campaign: any) => (
@@ -19,7 +20,9 @@ export function CampaignList({ campaigns }: { campaigns: Campaign[] }) {
               "flex w-16 flex-shrink-0 items-center justify-center rounded-l-md text-sm font-medium text-white"
             )}
           >
-            {campaign.name.split(" ")[0][0] + campaign.name.split(" ")[1][0]}
+            {(
+              campaign.name.split("")[0][0] + campaign.name.split("")[1][0]
+            ).toUpperCase()}
           </div>
           <div className="flex flex-1 items-center justify-between truncate rounded-r-md border-b border-r border-t border-gray-200 bg-white duration-200 hover:bg-slate-100">
             <div className="flex-1 truncate px-4 py-2 text-sm">
