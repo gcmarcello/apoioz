@@ -1,4 +1,5 @@
 import { getEnv } from "@/_shared/utils/settings";
+import { ActionResponse } from "@/app/api/_shared/utils/ActionResponse";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function AuthMiddleware({
@@ -17,7 +18,9 @@ export async function AuthMiddleware({
 
   const user = await fetch(`${url}/api/auth/verify`, {
     headers: { Authorization: token },
-  }).then((res) => res.json());
+  })
+    .then((res) => res.json())
+    .catch((error) => error);
 
   const isAuthenticated = [...roles, "admin"].includes(user.role);
 

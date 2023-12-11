@@ -18,6 +18,8 @@ import { faker } from "@faker-js/faker";
 import prisma from "prisma/prisma";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 import Loading from "@/app/(frontend)/loading";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createSupportersDto } from "@/app/api/panel/supporters/dto";
 
 dayjs.extend(customParseFormat);
 
@@ -47,15 +49,19 @@ export default function SupporterSignUpPage({
         zoneId: "",
         birthDate: "",
       },
-      campaign: {
-        referralId: referral.id,
-        campaignId: campaign.id,
+      referralId: referral.id,
+      campaignId: campaign.id,
+      poll: {
+        pollId: poll.id,
+        questions: poll.PollQuestion.map((question) => ({
+          questionId: question.id,
+          answers: {
+            freeAnswer: "",
+          },
+        })),
       },
-      questions: poll?.questions?.map((question) => ({
-        questionId: question.id,
-        answer: { options: [], freeAnswer: "" },
-      })),
     },
+    resolver: zodResolver(createSupportersDto),
   });
 
   const mockData = async () => {
@@ -83,16 +89,6 @@ export default function SupporterSignUpPage({
     return data;
   };
 
-  const transformQuestionObjectIntoArray = (questions) => {
-    const arr = Object.keys(questions).map((questionId) => {
-      return {
-        questionId: questionId,
-        answers: questions[questionId].answers,
-      };
-    });
-    return arr;
-  };
-
   const {
     data: signUpData,
     trigger: signUp,
@@ -101,7 +97,6 @@ export default function SupporterSignUpPage({
   } = useAction({
     formatter: (data) => {
       data.phone = normalizePhone(data.phone);
-      data.questions = transformQuestionObjectIntoArray(data.questions);
       return data;
     },
     action: signUpAsSupporter,

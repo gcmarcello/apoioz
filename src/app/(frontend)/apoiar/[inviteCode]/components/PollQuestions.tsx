@@ -1,8 +1,13 @@
 import CheckboxInput from "@/app/(frontend)/_shared/components/fields/Checkbox";
 import RadioInput from "@/app/(frontend)/_shared/components/fields/Radio";
 import { TextAreaField } from "@/app/(frontend)/_shared/components/fields/Text";
+import { useFieldArray } from "react-hook-form";
 
 export function PollQuestions({ poll, form }: { poll: any; form: any }) {
+  const { fields } = useFieldArray({
+    control: form.control, // control props comes from useForm (optional: if you are using FormContext)
+    name: "poll.questions", // unique name for your Field Array
+  });
   return (
     <div className="my-4">
       {poll.PollQuestion.map(
@@ -31,15 +36,15 @@ export function PollQuestions({ poll, form }: { poll: any; form: any }) {
                           <CheckboxInput
                             hform={form}
                             label={option.name}
-                            name={`questions.${question.id}.answers.options.${option.id}`}
+                            name={`poll.questions.${index}.answers.options.${option.id}`}
                           />
                         ) : (
                           <RadioInput
                             hform={form}
                             label={option.name}
-                            group={`questions.${question.id}.answers.options`}
+                            group={`poll.questions.${index}.answers.options`}
                             data={option.id}
-                            name={`questions.${question.id}.answers.options.${option.id}`}
+                            name={`poll.questions.${index}.answers.options.${option.id}`}
                           />
                         )}
                       </td>
@@ -53,7 +58,7 @@ export function PollQuestions({ poll, form }: { poll: any; form: any }) {
                           label={
                             question.PollOption.length ? "Comentários:" : "Resposta:"
                           }
-                          name={`questions.${question.id}.answers.freeAnswer`}
+                          name={`poll.questions.${index}.answers.freeAnswer`}
                         />
                       </td>
                     </tr>

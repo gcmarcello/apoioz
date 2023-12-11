@@ -13,4 +13,4 @@ const prisma = globalThis.prisma ?? prismaClientSingleton();
 
 export default prisma;
 
-if (compareEnv("NODE_ENV", "production")) globalThis.prisma = prisma;
+if (!compareEnv("NODE_ENV", "production")) globalThis.prisma = prisma;

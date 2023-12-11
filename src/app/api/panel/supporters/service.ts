@@ -293,38 +293,34 @@ export async function signUpAsSupporter(request: CreateSupportersDto) {
 
   if (!user || !user.info?.sectionId || !user.info?.zoneId) throw "Erro ao criar usuário";
 
-  const supporter = await prisma.supporter
-    .create({
-      include: { user: true },
-      data: {
-        level: 1,
-        Section: { connect: { id: user.info.sectionId } },
-        Zone: { connect: { id: user.info.zoneId } },
-        campaign: { connect: { id: referral.campaignId } },
-        referral: { connect: { id: referral.id } },
-        user: { connect: { id: user.id } },
-        supporterGroupsMemberships: {
-          create: [
-            {
-              isOwner: true,
-              supporterGroup: {
-                create: {},
-              },
+  const supporter = await prisma.supporter.create({
+    include: { user: true },
+    data: {
+      level: 1,
+      Section: { connect: { id: user.info.sectionId } },
+      Zone: { connect: { id: user.info.zoneId } },
+      campaign: { connect: { id: referral.campaignId } },
+      referral: { connect: { id: referral.id } },
+      user: { connect: { id: user.id } },
+      supporterGroupsMemberships: {
+        create: [
+          {
+            isOwner: true,
+            supporterGroup: {
+              create: {},
             },
-            ...createSupporterGroupMembershipQuery,
-          ],
-        },
+          },
+          ...createSupporterGroupMembershipQuery,
+        ],
       },
-    })
-    .catch((err) => console.log(err));
+    },
+  });
 
-  if (supporter && request.questions) {
-    const poll = await readActivePoll(supporter.campaignId);
-    for (const question of request.questions) {
+  if (supporter && request.poll.questions) {
+    for (const question of request.poll.questions) {
       question.supporterId = supporter.id;
-      question.pollId = poll.id;
     }
-    await answerPoll(request.questions);
+    await answerPoll(request.poll);
   }
 
   await sendEmail({
@@ -393,6 +389,7 @@ export async function readSupportersFromGroup({
         },
       },
     },
+    orderBy: { createdAt: "desc" },
   });
 
   return {
@@ -467,6 +464,7 @@ export async function readSupportersFromGroupWithRelations({
         },
       },
     },
+    orderBy: { createdAt: "desc" },
   });
 
   return {

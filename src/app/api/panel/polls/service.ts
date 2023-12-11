@@ -312,7 +312,7 @@ export async function deletePoll(request) {
   return poll;
 }
 
-export async function answerPoll(request: PollAnswerDto & { ip: string }) {
+export async function answerPoll(request: PollAnswerDto & { ip?: string }) {
   const poll = await prisma.poll.findUnique({
     where: { id: request.pollId },
     include: { PollQuestion: true },

@@ -57,7 +57,9 @@ export async function answerPoll(request: PollAnswerDto) {
       const url = getEnv("NEXT_PUBLIC_SITE_URL");
       const user = await fetch(`${url}/api/auth/verify`, {
         headers: { Authorization: token },
-      }).then((res) => res.json());
+      })
+        .then((res) => res.json())
+        .catch((error) => ActionResponse.error(error));
 
       if (user) {
         const poll = await service.readPoll({ id: parsedRequest.pollId });

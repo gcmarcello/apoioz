@@ -10,7 +10,7 @@ export async function GET(request: Request, response: NextResponse) {
     const token = headers().get("Authorization");
     if (!token) throw "Token não encontrado.";
 
-    const authenticated = jwt.verify(token, getEnv("process.env.JWT_KEY")!);
+    const authenticated = jwt.verify(token, getEnv("JWT_KEY")!);
     if (typeof authenticated === "string") throw "Token inválido.";
     const user = await prisma.user.findFirst({ where: { id: authenticated.id } });
 

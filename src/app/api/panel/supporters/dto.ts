@@ -28,7 +28,7 @@ export const createSupportersDto = z.object({
   }),
   referralId: z.string().optional(),
   campaignId: z.string(),
-  questions: pollAnswerDto.array().optional(),
+  poll: pollAnswerDto,
 });
 
 export type CreateSupportersDto = z.infer<typeof createSupportersDto>;
