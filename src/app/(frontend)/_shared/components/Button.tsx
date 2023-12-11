@@ -1,14 +1,11 @@
 import clsx from "clsx";
 import React, { cloneElement } from "react";
 
-interface ButtonProps {
-  children?: React.ReactNode;
-  onClick?: () => void;
-  className?: string;
+interface ExtraButtonProps {
   variant?: "primary" | "secondary" | "danger" | "excel";
-  type?: "button" | "submit" | "reset";
-  disabled?: boolean;
 }
+
+type ButtonProps = ExtraButtonProps & React.ComponentProps<"button">;
 
 interface IconOnlyButtonProps extends ButtonProps {
   icon?: any;
@@ -26,24 +23,15 @@ const buttonDictionary = {
     "bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50 text-white focus-visible:outline-white ring-emerald-500",
 };
 
-export function Button({
-  children,
-  onClick,
-  className,
-  variant,
-  type,
-  disabled,
-}: ButtonProps) {
+export function Button({ children, className, variant, ...props }: ButtonProps) {
   return (
     <button
-      disabled={disabled}
-      type={type || "button"}
-      onClick={onClick}
       className={clsx(
         "rounded-md px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
         className,
         variant && buttonDictionary[variant]
       )}
+      {...props}
     >
       {children}
     </button>

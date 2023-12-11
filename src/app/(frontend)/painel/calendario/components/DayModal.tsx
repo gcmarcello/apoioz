@@ -102,12 +102,7 @@ export default function DayModal({
                   </div>
                 </div>
                 {showForm ? (
-                  <SubmitEventRequest
-                    day={selectedDay}
-                    campaign={campaign}
-                    userId={userId}
-                    setShow={setShow}
-                  />
+                  <SubmitEventRequest day={selectedDay} setShow={setShow} />
                 ) : (
                   <>
                     <div>

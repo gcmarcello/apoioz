@@ -5,6 +5,7 @@ import { Poll, Supporter } from "@prisma/client";
 import { PollAnswerDto, ReadPollsStats, UpsertPollDto } from "./dto";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
+import { ActionResponse } from "../../_shared/utils/ActionResponse";
 
 dayjs.extend(isBetween);
 
@@ -307,33 +308,39 @@ export async function deletePoll(request) {
 }
 
 export async function answerPoll(request: PollAnswerDto[]) {
-  const poll = await prisma.poll.findUnique({
-    where: { id: request[0].pollId },
-    include: { PollQuestion: true },
-  });
+  try {
+    const poll = await prisma.poll.findUnique({
+      where: { id: request[0].pollId },
+      include: { PollQuestion: true },
+    });
 
-  if (!poll) {
-    throw new Error("Pesquisa não encontrada");
-  }
-
-  const parseAnswer = request.map((item) => {
-    const options = item.answers.options;
-    if (!options) {
-      return [];
+    if (!poll) {
+      throw new Error("Pesquisa não encontrada");
     }
-    return typeof options === "string"
-      ? [options]
-      : Object.keys(options).filter((key) => options[key]);
-  });
 
-  const pollAnswer = await prisma.pollAnswer.createMany({
-    data: request.map((item, index) => ({
-      pollId: item.pollId,
-      questionId: item.questionId,
-      supporterId: item.supporterId,
-      answer: { ...item.answers, options: parseAnswer[index] },
-    })),
-  });
+    const parseAnswer = request.map((item) => {
+      const options = item.answers.options;
+      if (!options) {
+        return [];
+      }
+      return typeof options === "string"
+        ? [options]
+        : Object.keys(options).filter((key) => options[key]);
+    });
 
-  return pollAnswer;
+    const pollAnswer = await prisma.pollAnswer.createMany({
+      data: request.map((item, index) => ({
+        pollId: item.pollId,
+        questionId: item.questionId,
+        supporterId: item.supporterId,
+        answer: { ...item.answers, options: parseAnswer[index] },
+      })),
+    });
+
+    return ActionResponse.success({
+      data: pollAnswer,
+    });
+  } catch (err) {
+    return ActionResponse.error(err);
+  }
 }

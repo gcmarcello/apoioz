@@ -14,7 +14,7 @@ import { Bar } from "react-chartjs-2";
 import { useReports } from "../hooks/useReports";
 
 export function ReferralRanking() {
-  const { supporters: supporterData } = useReports();
+  const { supporters } = useReports();
   ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
   const options: ChartOptions = {
@@ -36,13 +36,13 @@ export function ReferralRanking() {
   };
 
   const labels = [];
-  supporterData?.data?.forEach((a) => {
-    if (a.referralId && labels.find((ref) => ref.id === a.referralId)) {
-      labels.find((ref) => ref.id === a.referralId).count += 1;
-    } else if (a.referralId) {
+  supporters.data?.forEach((supporter) => {
+    if (supporter.referralId && labels.find((ref) => ref.id === supporter.referralId)) {
+      labels.find((ref) => ref.id === supporter.referralId).count += 1;
+    } else if (supporter.referralId) {
       labels.push({
-        id: a.referralId,
-        name: a.referral?.user.name,
+        id: supporter.referralId,
+        name: supporter.referral?.user.name,
         count: 1,
         color: generateRandomHexColor(),
       });

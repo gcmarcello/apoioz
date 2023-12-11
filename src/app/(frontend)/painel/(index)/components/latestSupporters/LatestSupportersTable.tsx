@@ -6,8 +6,8 @@ import dayjs from "dayjs";
 import SupporterOverview from "../SupporterOverview";
 import { Date } from "@/app/(frontend)/_shared/components/Date";
 import { DefaultTable } from "@/app/(frontend)/_shared/components/tables/table";
-import { PaginationObject } from "@/_shared/types/server.types";
 import SupporterBall from "@/app/(frontend)/_shared/components/SupporterBall";
+import { Pagination } from "@/app/api/_shared/dto/read";
 
 export default function LatestSupportersTable({
   initialData,
@@ -23,7 +23,7 @@ export default function LatestSupportersTable({
       user: { include: { info: { include: { Section: true; Zone: true } } } };
     };
   }>[];
-  pagination: PaginationObject;
+  pagination: Pagination;
 }) {
   const columnHelper = createColumnHelper<(typeof initialData)[0]>();
 

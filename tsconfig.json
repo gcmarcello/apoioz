@@ -23,9 +23,8 @@
       "@/*": ["./src/*"],
       "prisma/*": ["./prisma/*"]
     },
-    "forceConsistentCasingInFileNames": true,
-    "strictNullChecks": true
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "prisma/generated/*"]
 }

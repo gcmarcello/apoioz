@@ -2,7 +2,6 @@ import { EyeSlashIcon, EyeIcon, UserPlusIcon } from "@heroicons/react/24/solid";
 import { Zone } from "@prisma/client";
 import { Controller } from "react-hook-form";
 import { Fragment, useRef, useState } from "react";
-import { AddressType, SectionType, ZoneType } from "@/_shared/types/locationTypes";
 import { readSectionsByZone } from "@/app/api/elections/sections/action";
 import { readAddressBySection } from "@/app/api/elections/locations/actions";
 import { toProperCase } from "@/_shared/utils/format";
@@ -25,7 +24,7 @@ export function ElectionInfoSection({
   poll,
 }: {
   form: any;
-  zones: { data: ZoneType[]; message: string };
+  zones: { data: Zone[]; message: string };
   poll: any;
 }) {
   const [showPassword, setShowPassword] = useState(false);

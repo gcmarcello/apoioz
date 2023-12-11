@@ -28,7 +28,7 @@ export async function readSupportersFromGroup(request?: ReadSupportersDto) {
   }
 }
 
-export async function readSupportersFromGroupWithRelations(request: ReadSupportersDto) {
+export async function readSupportersFromGroupWithRelations(request?: ReadSupportersDto) {
   try {
     const { request: parsedRequest } = await UseMiddlewares(request)
       .then(UserSessionMiddleware)
@@ -36,7 +36,7 @@ export async function readSupportersFromGroupWithRelations(request: ReadSupporte
       .then(ReadSupportersMiddleware);
 
     const { data, pagination } =
-      await supportersService.readSupportersFromGroup(parsedRequest);
+      await supportersService.readSupportersFromGroupWithRelations(parsedRequest);
 
     return ActionResponse.success({
       data,

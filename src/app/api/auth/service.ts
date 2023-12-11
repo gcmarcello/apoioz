@@ -4,7 +4,6 @@ import { User } from "@prisma/client";
 import prisma from "prisma/prisma";
 import dayjs from "dayjs";
 import { sendEmail } from "../emails/service";
-import { TokenGeneratorType } from "@/_shared/types/authTypes";
 import { compareHash, hashInfo } from "@/_shared/utils/bCrypt";
 import { normalizePhone, maskEmail } from "@/_shared/utils/format";
 
@@ -18,10 +17,10 @@ export async function login(request: LoginDto & { user: User; isEmail: boolean }
   return createToken({ id: request.user.id });
 }
 
-export function createToken(data: TokenGeneratorType) {
+export function createToken(request: { id: string }) {
   if (!process.env.JWT_KEY)
     throw "O serviço de autenticação se encontra fora do ar. ERROR: MISSING JWTKEY";
-  return jwt.sign({ id: data.id }, process.env.JWT_KEY, { expiresIn: "10h" });
+  return jwt.sign({ id: request.id }, process.env.JWT_KEY, { expiresIn: "10h" });
 }
 
 export async function createPasswordRecovery(identifier: string) {

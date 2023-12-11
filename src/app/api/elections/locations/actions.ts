@@ -13,7 +13,7 @@ export async function readCitiesByState(data: string) {
       data: cities,
     });
   } catch (err) {
-    ActionResponse.error(err);
+    return ActionResponse.error(err);
   }
 }
 
