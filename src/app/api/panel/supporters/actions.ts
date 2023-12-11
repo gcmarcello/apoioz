@@ -101,6 +101,7 @@ export async function signUpAsSupporter(request: CreateSupportersDto) {
       message: "Sucesso ao criar novo apoiador!",
     });
   } catch (error) {
+    console.log(error);
     return ActionResponse.error(error);
   }
 }

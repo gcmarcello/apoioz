@@ -1,10 +1,10 @@
-import { getCampaign } from "@/app/api/panel/campaigns/actions";
+import { readCampaign } from "@/app/api/panel/campaigns/actions";
 import CampaignUpdateForm from "./components/CampaignUpdateForm";
 import { cookies, headers } from "next/headers";
 import { readSupporterFromUser } from "@/app/api/panel/supporters/actions";
 
 export default async function CampaignSettings() {
-  const campaign = await getCampaign({
+  const campaign = await readCampaign({
     campaignId: cookies().get("activeCampaign").value,
   });
   const supporter = await readSupporterFromUser({

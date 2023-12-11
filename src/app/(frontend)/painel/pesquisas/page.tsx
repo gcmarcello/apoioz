@@ -1,6 +1,6 @@
 import prisma from "prisma/prisma";
 import StatsSection from "../../_shared/components/StatsSection";
-import { getCampaign } from "@/app/api/panel/campaigns/service";
+import { readCampaign } from "@/app/api/panel/campaigns/service";
 import { cookies, headers } from "next/headers";
 import { readPolls, readPollsStats } from "@/app/api/panel/polls/service";
 import PollsTable from "./components/PollsTable";

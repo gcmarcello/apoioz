@@ -1,4 +1,4 @@
-import { getCampaign } from "@/app/api/panel/campaigns/actions";
+import { readCampaign } from "@/app/api/panel/campaigns/actions";
 import Footer from "../../painel/_shared/components/Footer";
 import SupporterSignUpPage from "./components/SupporterSignUpPage";
 import { readZonesByCampaign } from "@/app/api/elections/zones/actions";
@@ -14,7 +14,7 @@ export default async function Apoiar({ params }: { params: { inviteCode: string 
     const { inviteCode } = params;
     const inviteCodeInfo = await validateInviteCode(inviteCode);
 
-    const campaign = await getCampaign({
+    const campaign = await readCampaign({
       campaignId: inviteCodeInfo.campaignId,
     });
     const zones = await readZonesByCampaign(inviteCodeInfo.campaignId);
@@ -34,8 +34,6 @@ export default async function Apoiar({ params }: { params: { inviteCode: string 
           zones={zones}
           poll={poll}
         />
-
-        <Footer />
       </ErrorBoundary>
     );
   } catch (error) {

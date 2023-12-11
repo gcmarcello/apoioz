@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { TextField } from "@/app/(frontend)/_shared/components/fields/Text";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 
-export default function LoginForm() {
+export default function LoginForm({ supportRedirect }: { supportRedirect?: string }) {
   const form = useForm<LoginDto>({
     mode: "onChange",
     resolver: zodResolver(loginDto),
@@ -27,7 +27,7 @@ export default function LoginForm() {
   const { trigger: loginAction, isMutating: isLoading } = useAction({
     action: login,
     onSuccess: () => {
-      router.push("/painel");
+      router.push(supportRedirect ? `/${supportRedirect}` : "/painel");
     },
     onError: (error) => {
       form.setError("root.serverError", {

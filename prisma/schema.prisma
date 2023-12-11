@@ -94,6 +94,7 @@ model Campaign {
   updatedAt  DateTime      @updatedAt
   InviteCode InviteCode[]
   Poll       Poll[]
+  slug       String        @unique
 
   @@schema("public")
 }

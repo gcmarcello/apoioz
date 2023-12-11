@@ -62,17 +62,15 @@ export async function updateCampaign(request: any) {
   }
 }
 
-export async function getCampaign(request: { campaignId: string }) {
+export async function readCampaign(request: { campaignId?: string; slug?: string }) {
   const campaign = await prisma.campaign.findFirst({
-    where: {
-      id: request.campaignId,
-    },
+    where: request.campaignId ? { id: request.campaignId } : { slug: request.slug },
   });
 
   return campaign;
 }
 
-export async function getCampaignBasicInfo(campaignId: string) {
+export async function readCampaignBasicInfo(campaignId: string) {
   try {
     const campaign = await prisma.campaign.findUnique({
       where: { id: campaignId },
@@ -181,7 +179,7 @@ export async function generateMainPageStats({
   };
 }
 
-export async function getCampaignTeamMembers(campaignId: string) {
+export async function readCampaignTeamMembers(campaignId: string) {
   const teamMembers = await prisma.supporter.findMany({
     where: { campaignId: campaignId, level: { gt: 1 } },
     include: {

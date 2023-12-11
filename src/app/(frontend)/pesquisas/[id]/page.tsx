@@ -1,8 +1,9 @@
 import { readPoll, verifyExistingVote } from "@/app/api/panel/polls/service";
 import { ExternalPollForm } from "../components/ExternalPollForm";
-import { getCampaign } from "@/app/api/panel/campaigns/service";
+import { readCampaign } from "@/app/api/panel/campaigns/service";
 import { headers } from "next/headers";
 import { PollHeader } from "../components/PollHeader";
+import { notFound, redirect } from "next/navigation";
 
 export default async function PesquisaExternalPage({
   params,
@@ -10,7 +11,10 @@ export default async function PesquisaExternalPage({
   params: { id: string };
 }) {
   const poll = await readPoll({ id: params.id });
-  const campaign = await getCampaign({ campaignId: poll.campaignId });
+  if (!poll) {
+    return notFound();
+  }
+  const campaign = await readCampaign({ campaignId: poll.campaignId });
 
   if (
     await verifyExistingVote({ ip: headers().get("X-Forwarded-For"), pollId: params.id })

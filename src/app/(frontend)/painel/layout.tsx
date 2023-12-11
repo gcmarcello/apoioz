@@ -1,4 +1,4 @@
-import { getCampaign, listCampaigns } from "@/app/api/panel/campaigns/actions";
+import { readCampaign, listCampaigns } from "@/app/api/panel/campaigns/actions";
 import "../globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -29,7 +29,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const activeCampaignId = cookies().get("activeCampaign")?.value;
 
   if (activeCampaignId && userId) {
-    const campaign = await getCampaign({
+    const campaign = await readCampaign({
       campaignId: activeCampaignId,
     });
 

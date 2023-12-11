@@ -2,19 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { AuthMiddleware } from "./middleware/functions/auth.middleware";
 
 export async function middleware(request: NextRequest) {
-  const startsWith = (arg: string) => request.nextUrl.pathname.startsWith(arg);
-
-  if (startsWith("/api/panel")) {
-    return NextResponse.next();
-  }
-
-  if (startsWith("/api/signup")) {
-    return NextResponse.next();
-  }
-
-  if (startsWith("/registrar")) {
-    return NextResponse.next();
-  }
+  const startsWith = (arg: string | RegExp) => {
+    if (typeof arg === "string") return request.nextUrl.pathname.startsWith(arg);
+    return arg.test(request.nextUrl.pathname);
+  };
 
   if (startsWith("/login")) {
     const isAuthenticated = await AuthMiddleware({
@@ -48,18 +39,6 @@ export async function middleware(request: NextRequest) {
     });
   }
 
-  if (startsWith("/admin")) {
-    const parsedRequest = await AuthMiddleware({
-      request,
-      additionalArguments: { roles: ["admin"] },
-    });
-
-    if (parsedRequest)
-      return NextResponse.next({
-        headers: parsedRequest.newHeaders,
-      });
-  }
-
   if (startsWith("/apoiar")) {
     const isAuthenticated = await AuthMiddleware({
       request,
@@ -78,5 +57,22 @@ export async function middleware(request: NextRequest) {
 
     if (isAuthenticated)
       return NextResponse.redirect(new URL("/painel", request.nextUrl).href);
+  }
+
+  if (/^\/[^\/.]+[^.]$/.test(request.nextUrl.pathname)) {
+    const userId = await AuthMiddleware({
+      request,
+      additionalArguments: { roles: ["user"] },
+    });
+
+    const requestHeaders = new Headers(request.headers);
+
+    requestHeaders.set("userId", userId);
+
+    return NextResponse.next({
+      request: {
+        headers: requestHeaders,
+      },
+    });
   }
 }

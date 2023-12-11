@@ -1,7 +1,7 @@
 import { EyeSlashIcon, EyeIcon, UserPlusIcon } from "@heroicons/react/24/solid";
 import { Zone } from "@prisma/client";
 import { Controller, useForm } from "react-hook-form";
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { readSectionsByZone } from "@/app/api/elections/sections/action";
 import { readAddressBySection } from "@/app/api/elections/locations/actions";
 import { toProperCase } from "@/_shared/utils/format";
@@ -15,6 +15,7 @@ import {
 import { PollQuestions } from "./PollQuestions";
 import { SectionTitle } from "@/app/(frontend)/_shared/components/text/SectionTitle";
 import { CreateSupportersDto } from "@/app/api/panel/supporters/dto";
+import { scrollToElement } from "@/app/(frontend)/_shared/utils/scroll";
 
 export function ElectionInfoSection({
   form,
@@ -28,6 +29,7 @@ export function ElectionInfoSection({
   const [showPassword, setShowPassword] = useState(false);
   const [willAddPassword, setWillAddPassword] = useState(null);
   const ref = useRef<null | HTMLDivElement>(null);
+  const formRef = useRef<null | HTMLDivElement>(null);
 
   const {
     data: sectionList,
@@ -57,6 +59,12 @@ export function ElectionInfoSection({
     action: readAddressBySection,
   });
 
+  useEffect(() => {
+    if (ref.current) {
+      scrollToElement(ref.current, 12);
+    }
+  }, [address]);
+
   return (
     <>
       <div className="my-4 flex gap-2">
@@ -66,6 +74,7 @@ export function ElectionInfoSection({
             setWillAddPassword(true);
             form.resetField("password");
             setShowPassword(false);
+            scrollToElement(formRef.current, 12);
           }}
           className={clsx(
             "mx-auto rounded-md px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 duration-200 lg:hover:bg-gray-50",
@@ -94,6 +103,7 @@ export function ElectionInfoSection({
             setWillAddPassword(false);
             form.resetField("password");
             setShowPassword(false);
+            scrollToElement(formRef.current, 12);
           }}
           className={clsx(
             "mx-auto rounded-md px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 duration-200 lg:hover:bg-gray-50",
@@ -123,6 +133,7 @@ export function ElectionInfoSection({
           </div>
         </button>
       </div>
+      <div ref={formRef}></div>
       {willAddPassword && (
         <div>
           <label
@@ -175,38 +186,49 @@ export function ElectionInfoSection({
               hform={form}
               data={sectionList}
               disabled={!sectionList?.length}
-              onChange={(value) => {
-                fetchAddress(value.id);
-              }}
+              onChange={async (value) => fetchAddress(value.id)}
               name={"info.sectionId"}
               label="Seção"
               displayValueKey={"number"}
             />
           </div>
+
           <div className="col-span-2">
-            <SectionTitle>{poll.title}</SectionTitle>
-            <PollQuestions form={form} poll={poll} />
+            <div>
+              {address && (
+                <div
+                  ref={ref}
+                  className={clsx("mb-4 mt-6 border-y border-gray-100 text-left")}
+                >
+                  <dl className="divide-y divide-gray-100">
+                    <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                      <dt className="text-sm font-medium leading-6 text-gray-900">
+                        Local de Votação
+                      </dt>
+                      <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                        {toProperCase(address?.location)}
+                      </dd>
+                    </div>
+                    <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                      <dt className="text-sm font-medium leading-6 text-gray-900">
+                        Endereço
+                      </dt>
+                      <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                        {toProperCase(address?.address + ", " + address?.City?.name)}
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+              )}
+            </div>
+
+            {poll && (
+              <div>
+                <SectionTitle>{poll.title}</SectionTitle>
+                <PollQuestions form={form} poll={poll} />
+              </div>
+            )}
           </div>
-        </div>
-      )}
-      {address && !isLoading && (
-        <div ref={ref} className="mt-6 border-t border-gray-100 text-left">
-          <dl className="divide-y divide-gray-100">
-            <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-              <dt className="text-sm font-medium leading-6 text-gray-900">
-                Local de Votação
-              </dt>
-              <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                {toProperCase(address.location)}
-              </dd>
-            </div>
-            <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-              <dt className="text-sm font-medium leading-6 text-gray-900">Endereço</dt>
-              <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                {toProperCase(address.address + ", " + address.City?.name)}
-              </dd>
-            </div>
-          </dl>
         </div>
       )}
     </>

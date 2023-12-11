@@ -5,7 +5,7 @@ import { CampaignLeaderMiddleware } from "@/middleware/functions/campaignLeader.
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
 import { readPoll } from "@/app/api/panel/polls/service";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 export default async function EditarPesquisaPage({ params }: { params: { id: string } }) {
   const { request: parsedRequest } = await UseMiddlewares()
@@ -16,7 +16,7 @@ export default async function EditarPesquisaPage({ params }: { params: { id: str
   const poll = await readPoll({ ...parsedRequest, id: params.id });
 
   if (!poll) {
-    return redirect("/404");
+    return notFound();
   }
 
   const defaultValues = {

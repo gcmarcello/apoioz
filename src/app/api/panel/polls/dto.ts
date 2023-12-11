@@ -52,19 +52,25 @@ export const readPollsStats = z.array(
   })
 );
 
-export const pollAnswerDto = z.object({
-  pollId: z.string(),
-  questions: z.array(
-    z.object({
-      supporterId: z.string().optional(),
-      questionId: z.string().uuid({ message: "ID da pergunta é obrigatório" }),
-      answers: z.object({
-        options: z.record(z.boolean()).or(z.string()).or(z.array(z.string())).optional(),
-        freeAnswer: z.string().optional(),
-      }),
-    })
-  ),
-});
+export const pollAnswerDto = z
+  .object({
+    pollId: z.string(),
+    questions: z.array(
+      z.object({
+        supporterId: z.string().optional(),
+        questionId: z.string().uuid({ message: "ID da pergunta é obrigatório" }),
+        answers: z.object({
+          options: z
+            .record(z.boolean())
+            .or(z.string())
+            .or(z.array(z.string()))
+            .optional(),
+          freeAnswer: z.string().optional(),
+        }),
+      })
+    ),
+  })
+  .nullable();
 
 export type UpsertPollDto = z.infer<typeof upsertPollDto>;
 export type PollAnswerDto = z.infer<typeof pollAnswerDto>;
