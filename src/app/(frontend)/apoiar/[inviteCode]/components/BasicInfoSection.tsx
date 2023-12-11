@@ -1,3 +1,4 @@
+import { normalizePhone } from "@/_shared/utils/format";
 import {
   MaskedTextField,
   TextField,
@@ -38,7 +39,11 @@ export function BasicInfoSection({
           autoComplete="tel"
           placeholder="ex. 999999999"
           name="phone"
-          mask="(99) 99999-9999"
+          mask={
+            normalizePhone(form.watch("phone"))?.length < 11
+              ? "(99) 9999-99999"
+              : "(99) 99999-9999"
+          }
         />
       </div>
       <div className="mt-2">
