@@ -18,10 +18,10 @@ export const readSupportersDto = readDto(
 export type ReadSupportersDto = z.infer<typeof readSupportersDto>;
 
 export const createSupportersDto = z.object({
-  name: z.string().min(3),
-  email: z.string().email().min(3),
+  name: z.string().min(3, { message: "Nome deve ter no mínimo 3 caracteres" }),
+  email: z.string().email({ message: "Email inválido" }).min(3),
   password: z.string().optional(),
-  phone: z.custom(phoneValidator),
+  phone: z.custom(phoneValidator, { message: "Telefone inválido" }),
   info: z.object({
     zoneId: z.string(),
     sectionId: z.string(),
