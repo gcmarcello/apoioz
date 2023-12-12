@@ -22,6 +22,15 @@ export interface BaseProps<Fields extends FieldValues> {
 export const fieldClasses =
   "block w-full appearance-none rounded-md border border-gray-200  px-3 py-1.5 text-gray-900 placeholder-gray-400 focus:outline-none sm:text-sm";
 
+export const getErrorMessage = (form: any, name: string) => {
+  const path = name.split(".");
+
+  const errorMessage = path.reduce((acc, part) => acc && acc[part], form.formState.errors)
+    ?.message as string;
+
+  return errorMessage;
+};
+
 export const ErrorField = ({ message }: { message: string | undefined }) =>
   message ? <p className="mt-1 h-2 w-full text-[11px] text-red-600">{message}</p> : null;
 

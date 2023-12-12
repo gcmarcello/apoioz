@@ -1,5 +1,5 @@
 import { MouseEventHandler } from "react";
-import { Edge, Handle, NodeProps, Position, useReactFlow } from "reactflow";
+import { Edge, Handle, Node, NodeProps, Position, useReactFlow } from "reactflow";
 
 import styles from "./styles/styles.module.css";
 import clsx from "clsx";
@@ -11,7 +11,8 @@ import {
   ButtonSpinner,
   LoadingSpinner,
 } from "@/app/(frontend)/_shared/components/Spinners";
-import { processNodesEdges } from "./lib/nodesEdges";
+import { processNodesEdges } from "../lib/nodesEdges";
+import { CustomFlowContext } from "../types/CustomFlowContext";
 
 type NodeData = {
   expanded: boolean;
@@ -21,10 +22,6 @@ type NodeData = {
 };
 
 function getLabel(data: any): string {
-  if (!data.hasChildren) {
-    return data.label;
-  }
-
   return data.label.length > 15 ? `${data.label.slice(0, 15)}...` : data.label;
 }
 
@@ -55,36 +52,23 @@ function getColor(data: any): string {
     : expandedColor;
 }
 
-export default function CustomNode({
-  onExpand,
-  addNodes,
-  addEdges,
-  data,
-  id,
-  xPos,
-  yPos,
-}: NodeProps<NodeData> & {
-  onExpand: () => void;
-  addNodes: (nodes: NodeProps<NodeData>[]) => void;
-  addEdges: (edges: Edge[]) => void;
+export function CustomNode({
+  customFlowContext: { onExpand, saveEdges, saveNodes },
+  ...node
+}: Node<NodeData> & {
+  customFlowContext: CustomFlowContext;
 }) {
-  const {
-    trigger: fetchReferred,
-    data: referred,
-    isMutating: isFetching,
-  } = useAction({
+  const { trigger: fetchReferred, isMutating: isFetching } = useAction({
     action: readSupportersAsTree,
     onSuccess: ({ data }) => {
-      onExpand();
-      const { nodes, edges } = processNodesEdges(data);
-      console.log(nodes);
-      addNodes(nodes);
-      addEdges(edges);
+      const { nodes, edges } = processNodesEdges({ supporters: data });
+      saveNodes(nodes);
+      saveEdges(edges);
     },
   });
 
-  const label = getLabel(data);
-  const color = getColor(data);
+  const label = getLabel(node.data);
+  const color = getColor(node.data);
 
   return (
     <div className="block w-72 rounded-md border-2 border-stone-400 bg-white px-4 py-2 shadow-md">
@@ -113,13 +97,15 @@ export default function CustomNode({
         position={Position.Bottom}
         className={clsx("-mb-6 flex w-full justify-center !bg-transparent text-gray-500")}
         onClick={() => {
-          data.hasChildren ? onExpand() : fetchReferred({ where: { supporterId: id } });
+          node.data.hasChildren
+            ? onExpand(node)
+            : fetchReferred({ where: { supporterId: node.id } });
         }}
       >
         {isFetching ? (
           <ButtonSpinner />
         ) : (
-          !data.expanded && <EllipsisHorizontalIcon className="h-5 w-5" />
+          !node.data.expanded && <EllipsisHorizontalIcon className="h-5 w-5" />
         )}
       </Handle>
     </div>

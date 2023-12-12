@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import ReactFlow, {
   applyEdgeChanges,
   applyNodeChanges,
@@ -10,20 +10,19 @@ import ReactFlow, {
   Node,
   Edge,
   Panel,
+  useReactFlow,
+  useNodesState,
+  useEdgesState,
+  addEdge,
 } from "reactflow";
 
-import CustomNode from "./CustomNode";
+import { CustomNode } from "./components/CustomNode";
 import useAnimatedNodes from "./lib/useAnimatedNodes";
 import useExpandCollapse from "./lib/useExpandCollapse";
 
 import "reactflow/dist/base.css";
-import { ComboboxField } from "@/app/(frontend)/_shared/components/fields/Select";
 import { useForm } from "react-hook-form";
-import {
-  readSupportersFromGroup,
-  readSupportersInverseTree,
-} from "@/app/api/panel/supporters/actions";
-import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
+import { NodeSearch } from "./components/NodeSearch";
 
 const proOptions = { account: "paid-pro", hideAttribution: true };
 
@@ -42,37 +41,17 @@ function ReactFlowPro({
   treeHeight = 220,
   animationDuration = 300,
 }: ExpandCollapseExampleProps) {
-  const [nodes, setNodes] = useState<Node[]>(initialNodes);
-  const [edges, setEdges] = useState<Edge[]>(initialEdges);
+  const [nodes, setNodes] = useState(initialNodes);
+  const [edges, setEdges] = useState(initialEdges);
 
   const { nodes: visibleNodes, edges: visibleEdges } = useExpandCollapse(nodes, edges, {
     treeWidth,
     treeHeight,
   });
+
   const { nodes: animatedNodes } = useAnimatedNodes(visibleNodes, {
     animationDuration,
   });
-
-  const onNodesChange: OnNodesChange = useCallback(
-    (changes) => (nds) => {
-      console.log(changes);
-      return applyNodeChanges(changes, nds);
-    },
-    []
-  );
-
-  const onEdgesChange: OnEdgesChange = useCallback(
-    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
-    []
-  );
-
-  const addNodes = (nodes: Node[]) => {
-    setNodes((nds) => nds.concat(nodes));
-  };
-
-  const addEdges = (edges: Edge[]) => {
-    setEdges((eds) => eds.concat(edges));
-  };
 
   const onExpand = useCallback(
     (node) => {
@@ -92,18 +71,71 @@ function ReactFlowPro({
     [setNodes]
   );
 
-  const nodeTypes = {
-    custom: (node) => (
-      <CustomNode
-        {...node}
-        onExpand={() => onExpand(node)}
-        addNodes={addNodes}
-        addEdges={addEdges}
-      />
-    ),
-  };
+  const saveNodes = useCallback(
+    (newNodes: Node[]) => {
+      setNodes((currentNodes) => {
+        const newUniqueNodes = newNodes.filter(
+          (newNode) =>
+            !currentNodes.some((existingNode) => existingNode.id === newNode.id)
+        );
+        const updatedCurrentNodes = currentNodes.map((n) => {
+          const updatedNode = newNodes.find((nn) => nn.id === n.id);
+          return updatedNode
+            ? {
+                ...n,
+                data: updatedNode.data,
+              }
+            : n;
+        });
+        return updatedCurrentNodes.concat(newUniqueNodes);
+      });
+    },
+    [setNodes]
+  );
 
-  const form = useForm();
+  const saveEdges = useCallback(
+    (newEdges: Edge[]) => {
+      setEdges((currentEdges) => {
+        const newUniqueEdges = newEdges.filter(
+          (newEdge) =>
+            !currentEdges.some((existingEdge) => existingEdge.id === newEdge.id)
+        );
+        const updatedCurrentEdges = currentEdges.map((e) => {
+          const updatedEdge = newEdges.find((ne) => ne.id === e.id);
+          return updatedEdge
+            ? {
+                ...e,
+                data: updatedEdge.data,
+              }
+            : e;
+        });
+        return updatedCurrentEdges.concat(newUniqueEdges);
+      });
+    },
+    [setEdges]
+  );
+
+  const onNodesChange: OnNodesChange = useCallback(
+    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
+    []
+  );
+
+  const onEdgesChange: OnEdgesChange = useCallback(
+    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+    []
+  );
+
+  const customFlowContext = useMemo(
+    () => ({ onExpand, saveNodes, saveEdges }),
+    [onExpand, saveNodes, saveEdges]
+  );
+
+  const nodeTypes = useMemo(
+    () => ({
+      custom: (node) => <CustomNode {...node} customFlowContext={customFlowContext} />,
+    }),
+    [customFlowContext]
+  );
 
   return (
     <ReactFlow
@@ -120,20 +152,7 @@ function ReactFlowPro({
       elementsSelectable={false}
     >
       <Panel position="top-left" className="bg-white pb-6 pr-6">
-        <ComboboxField
-          label="Encontre um apoiador"
-          hform={form}
-          name={"name"}
-          fetcher={readSupportersFromGroup}
-          onChange={(value) => {
-            readSupportersInverseTree({
-              where: {
-                supporterId: value.id,
-              },
-            });
-          }}
-          displayValueKey={"user.name"}
-        />
+        <NodeSearch customFlowContext={customFlowContext} />
       </Panel>
       <Background />
       <MiniMap />

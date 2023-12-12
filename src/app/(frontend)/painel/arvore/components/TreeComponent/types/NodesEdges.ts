@@ -1,4 +1,4 @@
-import { Node } from 'reactflow';
+import { Node } from "reactflow";
 
 export type NodeData = {
   expanded: boolean;

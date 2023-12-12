@@ -14,7 +14,7 @@ import {
   CheckIcon,
   ChevronUpDownIcon,
 } from "@heroicons/react/24/solid";
-import { BaseProps, Field, fieldClasses } from "./Field";
+import { BaseProps, Field, fieldClasses, getErrorMessage } from "./Field";
 import { Controller, Path } from "react-hook-form";
 import { useAction } from "../../hooks/useAction";
 import { ErrorResponse, SuccessResponse } from "@/app/api/_shared/utils/ActionResponse";
@@ -36,7 +36,7 @@ export function ListboxField<Fields, Data extends Array<{ [key: string]: any }>>
 ) {
   const id = useId();
 
-  const errorMessage = hform.formState.errors[name]?.message as string;
+  const errorMessage = getErrorMessage(hform, name);
 
   const options = data.map((i) => ({
     id: i.id as string,
@@ -273,12 +273,14 @@ export function ComboboxField<Fields, Data extends { [key: string]: any }[]>({
 
   const timeout = useRef(setTimeout(() => {}, 0));
 
+  const errorMessage = getErrorMessage(props.hform, props.name);
+
   return (
     <Controller
       name={props.name}
       control={props.hform.control}
       render={({ field: { onChange, value } }) => (
-        <Field errorMessage={null} label={props.label} id={id}>
+        <Field errorMessage={errorMessage} label={props.label} id={id}>
           <Combobox
             disabled={props.disabled}
             as={Fragment}

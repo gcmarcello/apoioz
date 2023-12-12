@@ -28,8 +28,6 @@ export async function createSupporter(
 
   const campaign = await findCampaignById(request.supporterSession.campaignId);
 
-  console.log(campaign);
-
   if (request.supporterSession.level < 4 && request.referralId)
     throw "Você não pode cadastrar um apoiador para um apoiador.";
 
@@ -56,48 +54,22 @@ export async function createSupporter(
     }
   }
 
-  let referralTree = [referral];
-  if (referralTree[0].level != 4) {
-    while (true) {
-      const referral = await prisma.supporter.findFirst({
-        where: {
-          OR: [
-            {
-              referralId: referralTree[referralTree.length - 1]?.id,
-              campaignId: campaign.id,
-            },
-            {
-              level: 4,
-              campaignId: campaign.id,
-            },
-          ],
+  const referralsSupporterGroups = await prisma.supporterGroup.findMany({
+    where: {
+      memberships: {
+        some: {
+          supporterId: referral.id,
         },
-      });
-
-      if (!referral) continue;
-
-      referralTree.push(referral);
-
-      if (referral.level === 4) break;
-    }
-  }
-
-  const ownedSupporterGroupsFromReferralTree =
-    await prisma.supporterGroupMembership.findMany({
-      where: {
-        supporterId: {
-          in: referralTree.map((referral) => referral.id),
-        },
-        isOwner: true,
       },
-    });
+    },
+  });
 
-  const createSupporterGroupMembershipQuery = ownedSupporterGroupsFromReferralTree.map(
+  const createSupporterGroupMembershipQuery = referralsSupporterGroups.map(
     (supporterGroup) => ({
       isOwner: false,
       supporterGroup: {
         connect: {
-          id: supporterGroup.supporterGroupId,
+          id: supporterGroup.id,
         },
       },
     })
@@ -227,7 +199,7 @@ export async function readSupportersAsTree({
   return supporters;
 }
 
-export async function readSupportersInverseTree({
+export async function readSupporterTrail({
   supporterSession,
   where: { supporterId },
 }: ReadSupportersAsTreeDto & {
@@ -239,15 +211,12 @@ export async function readSupportersInverseTree({
       memberships: {
         some: {
           supporterId: supporterId,
-          isOwner: false,
         },
       },
     },
   });
 
-  console.log(referralSupporterGroups);
-
-  const referralSupporterGroupOwners = await prisma.supporterGroupMembership
+  const referrals = await prisma.supporterGroupMembership
     .findMany({
       where: {
         supporterGroupId: {
@@ -258,34 +227,25 @@ export async function readSupportersInverseTree({
       include: {
         supporter: {
           include: {
-            referred: true,
+            user: true,
           },
         },
       },
     })
     .then((res) => res.map((m) => m.supporter));
 
-  const supporterMap = new Map(
-    referralSupporterGroupOwners.map((s) => [s.id, { ...s, children: [] }])
-  );
-
-  const roots = referralSupporterGroupOwners.filter((s) => s.referralId === null);
-
-  function buildTree(supporter) {
-    referralSupporterGroupOwners.forEach((s) => {
-      if (s.referralId === supporter.id) {
-        const child = supporterMap.get(s.id);
-        supporter.children.push(child);
-        buildTree(child);
-      }
-    });
+  function generateReferralTrail(referrals) {
+    if (referrals.length <= 1) {
+      return [referrals[0] || {}];
+    }
+    const currentReferral = referrals[0];
+    currentReferral.referred = generateReferralTrail(referrals.slice(1));
+    return [currentReferral];
   }
 
-  roots.forEach((root) => {
-    buildTree(supporterMap.get(root.id));
-  });
+  const referralTree = generateReferralTrail(referrals);
 
-  return true;
+  return referralTree;
 }
 
 export async function signUpAsSupporter(request: CreateSupportersDto) {
@@ -605,8 +565,6 @@ export async function readSupportersFromGroup({
     },
     orderBy: { createdAt: "desc" },
   });
-
-  console.log(supporterList.length);
 
   return {
     data: supporterList,

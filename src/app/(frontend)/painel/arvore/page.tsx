@@ -24,7 +24,11 @@ export default async function TimePage() {
 
   if (!tree) return;
 
-  const { nodes: initialNodes, edges: initialEdges } = processNodesEdges(tree, true);
+  console.log(tree);
+
+  const { nodes: initialNodes, edges: initialEdges } = processNodesEdges({
+    supporters: tree,
+  });
 
   return <TreeComponent initialNodes={initialNodes} initialEdges={initialEdges} />;
 }
