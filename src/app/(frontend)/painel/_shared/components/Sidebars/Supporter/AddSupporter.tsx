@@ -110,6 +110,8 @@ export function AddSupporterForm({
 
   if (!zones || !form) return <></>;
 
+  console.log(form.formState.errors);
+
   return (
     <form>
       <div className="space-y-6 pb-5 pt-6">

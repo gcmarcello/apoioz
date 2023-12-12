@@ -99,14 +99,13 @@ export async function readSupportersAsTree(request?: ReadSupportersAsTreeDto) {
   }
 }
 
-export async function readSupportersInverseTree(request?: ReadSupportersAsTreeDto) {
+export async function readSupporterTrail(request?: ReadSupportersAsTreeDto) {
   try {
-    console.log("xd");
     const { request: parsedRequest } = await UseMiddlewares(request)
       .then(UserSessionMiddleware)
       .then(SupporterSessionMiddleware);
 
-    const supporters = await supportersService.readSupportersInverseTree(parsedRequest);
+    const supporters = await supportersService.readSupporterTrail(parsedRequest);
 
     return ActionResponse.success({
       data: supporters,

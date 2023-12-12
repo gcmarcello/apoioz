@@ -2,7 +2,7 @@
 import clsx from "clsx";
 import React, { forwardRef, useId } from "react";
 import { Controller, Path, useForm } from "react-hook-form";
-import { BaseProps, Field, fieldClasses } from "./Field";
+import { BaseProps, Field, fieldClasses, getErrorMessage } from "./Field";
 import InputMask from "react-input-mask";
 
 type TextFieldProps<Fields> = Omit<React.ComponentPropsWithoutRef<"input">, "id"> &
@@ -18,12 +18,7 @@ type MaskedTextFieldProps<Fields> = TextFieldProps<Fields> & {
 export function TextField<T>(props: TextFieldProps<T>) {
   const id = useId();
 
-  const path = props.name.split(".");
-
-  const errorMessage = path.reduce(
-    (acc, part) => acc && acc[part],
-    props.hform.formState.errors
-  )?.message as string;
+  const errorMessage = getErrorMessage(props.hform, props.name);
 
   const className = clsx(
     fieldClasses,
@@ -55,12 +50,7 @@ export function TextField<T>(props: TextFieldProps<T>) {
 export function TextFieldWithAddon<T>(props: TextFieldProps<T> & { addon: string }) {
   const id = useId();
 
-  const path = props.name.split(".");
-
-  const errorMessage = path.reduce(
-    (acc, part) => acc && acc[part],
-    props.hform.formState.errors
-  )?.message as string;
+  const errorMessage = getErrorMessage(props.hform, props.name);
 
   const className = clsx(
     fieldClasses,
@@ -97,7 +87,7 @@ export function TextFieldWithAddon<T>(props: TextFieldProps<T> & { addon: string
 export function TextAreaField<T>(props: TextAreaFieldProps<T>) {
   const id = useId();
 
-  const errorMessage = props.hform.formState.errors[props.name]?.message as string;
+  const errorMessage = getErrorMessage(props.hform, props.name);
 
   const className = clsx(
     fieldClasses,
@@ -130,12 +120,7 @@ export function MaskedTextField<T>(_props: MaskedTextFieldProps<T>) {
 
   const { mask, onChange, onBlur, ...props } = _props;
 
-  const path = props.name.split(".");
-
-  const errorMessage = path.reduce(
-    (acc, part) => acc && acc[part],
-    props.hform.formState.errors
-  )?.message as string;
+  const errorMessage = getErrorMessage(props.hform, props.name);
 
   const className = clsx(
     fieldClasses,
