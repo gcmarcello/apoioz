@@ -3,7 +3,7 @@ import {
   readCampaignLeader,
   verifyConflictingSupporter,
 } from "@/app/api/panel/supporters/service";
-import { CampaignHeader } from "../../_shared/components/CampaignHeader";
+import { CampaignHeader } from "../_shared/components/CampaignHeader";
 import {
   readCampaign,
   verifyCampaignSupportAvailabilityByZone,
@@ -11,12 +11,12 @@ import {
 import { readUser } from "@/app/api/user/service";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
-import { Button } from "../../_shared/components/Button";
-import ProfileDropdown from "../../_shared/components/navigation/ProfileDropdown";
-import { TopNavigation } from "../../_shared/components/navigation/TopNavigation";
-import { SectionTitle } from "../../_shared/components/text/SectionTitle";
+import { Button } from "../_shared/components/Button";
+import ProfileDropdown from "../_shared/components/navigation/ProfileDropdown";
+import { TopNavigation } from "../_shared/components/navigation/TopNavigation";
+import { SectionTitle } from "../_shared/components/text/SectionTitle";
 import Link from "next/link";
-import ErrorAlert from "../../_shared/components/alerts/errorAlert";
+import ErrorAlert from "../_shared/components/alerts/errorAlert";
 import JoinCampaign from "./components/JoinCampaign";
 
 export default async function CampaignLandingPage({
