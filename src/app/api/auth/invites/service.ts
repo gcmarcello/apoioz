@@ -45,11 +45,7 @@ export async function useInviteCode(code: string) {
 }
 
 export async function removeInvalidInviteCodes() {
-  const codes = await prisma.inviteCode.findMany({
+  return await prisma.inviteCode.deleteMany({
     where: { expiresAt: { lte: dayjs().toISOString() } },
-  });
-
-  await prisma.inviteCode.deleteMany({
-    where: { id: { in: codes.map((code) => code.id) } },
   });
 }
