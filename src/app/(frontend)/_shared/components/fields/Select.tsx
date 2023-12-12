@@ -18,6 +18,7 @@ import { BaseProps, Field, fieldClasses } from "./Field";
 import { Controller, Path } from "react-hook-form";
 import { useAction } from "../../hooks/useAction";
 import { ErrorResponse, SuccessResponse } from "@/app/api/_shared/utils/ActionResponse";
+import { ButtonSpinner } from "../Spinners";
 
 type SelectFieldProps<
   Fields,
@@ -225,7 +226,11 @@ export function ComboboxField<Fields, Data extends { [key: string]: any }[]>({
 
   const [query, setQuery] = useState("");
 
-  const { data: fetchedData, trigger: fetchData } = useAction({
+  const {
+    data: fetchedData,
+    trigger: fetchData,
+    isMutating,
+  } = useAction({
     action: fetcher,
   });
 
@@ -266,8 +271,6 @@ export function ComboboxField<Fields, Data extends { [key: string]: any }[]>({
     }
   }, [query]);
 
-  const errorMessage = props.hform.formState.errors[props.name]?.message as string;
-
   const timeout = useRef(setTimeout(() => {}, 0));
 
   return (
@@ -275,7 +278,7 @@ export function ComboboxField<Fields, Data extends { [key: string]: any }[]>({
       name={props.name}
       control={props.hform.control}
       render={({ field: { onChange, value } }) => (
-        <Field errorMessage={errorMessage} label={props.label} id={id}>
+        <Field errorMessage={null} label={props.label} id={id}>
           <Combobox
             disabled={props.disabled}
             as={Fragment}
@@ -304,8 +307,8 @@ export function ComboboxField<Fields, Data extends { [key: string]: any }[]>({
                 }}
               />
               <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-                {props.relative ? (
-                  props.relative
+                {isMutating ? (
+                  <ButtonSpinner />
                 ) : (
                   <MagnifyingGlassIcon
                     className="h-5 w-5 text-gray-400"

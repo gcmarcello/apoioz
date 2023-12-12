@@ -92,6 +92,23 @@ export async function readSupportersAsTree(request?: ReadSupportersAsTreeDto) {
   }
 }
 
+export async function readSupportersInverseTree(request?: ReadSupportersAsTreeDto) {
+  try {
+    console.log("xd");
+    const { request: parsedRequest } = await UseMiddlewares(request)
+      .then(UserSessionMiddleware)
+      .then(SupporterSessionMiddleware);
+
+    const supporters = await supportersService.readSupportersInverseTree(parsedRequest);
+
+    return ActionResponse.success({
+      data: supporters,
+    });
+  } catch (err) {
+    ActionResponse.error(err);
+  }
+}
+
 export async function signUpAsSupporter(request: CreateSupportersDto) {
   try {
     const newSupporter = await supportersService.signUpAsSupporter(request);

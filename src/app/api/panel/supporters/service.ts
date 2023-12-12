@@ -28,6 +28,8 @@ export async function createSupporter(
 
   const campaign = await findCampaignById(request.supporterSession.campaignId);
 
+  console.log(campaign);
+
   if (request.supporterSession.level < 4 && request.referralId)
     throw "Você não pode cadastrar um apoiador para um apoiador.";
 
@@ -62,9 +64,11 @@ export async function createSupporter(
           OR: [
             {
               referralId: referralTree[referralTree.length - 1]?.id,
+              campaignId: campaign.id,
             },
             {
               level: 4,
+              campaignId: campaign.id,
             },
           ],
         },
@@ -165,7 +169,7 @@ export async function createSupporter(
 
 export async function readSupportersAsTree({
   supporterSession,
-  where: { nestLevel, supporterId } = { nestLevel: 2, supporterId: null },
+  where: { nestLevel = 2, supporterId = null } = {},
 }: ReadSupportersAsTreeDto & {
   userSession: UserWithoutPassword;
   supporterSession: Supporter;
@@ -208,8 +212,8 @@ export async function readSupportersAsTree({
 
   const supporters = await prisma.supporter.findMany({
     where: {
-      campaignId: supporterSession.campaignId,
-      id: supporterSession.id,
+      campaignId: supporter.campaignId,
+      id: supporter.id,
     },
     include: {
       referral: { include: { user: { include: { info: true } } } },
@@ -218,7 +222,70 @@ export async function readSupportersAsTree({
     },
   });
 
+  if (!supporters) throw "Apoiador não encontrado";
+
   return supporters;
+}
+
+export async function readSupportersInverseTree({
+  supporterSession,
+  where: { supporterId },
+}: ReadSupportersAsTreeDto & {
+  userSession: UserWithoutPassword;
+  supporterSession: Supporter;
+}) {
+  const referralSupporterGroups = await prisma.supporterGroup.findMany({
+    where: {
+      memberships: {
+        some: {
+          supporterId: supporterId,
+          isOwner: false,
+        },
+      },
+    },
+  });
+
+  console.log(referralSupporterGroups);
+
+  const referralSupporterGroupOwners = await prisma.supporterGroupMembership
+    .findMany({
+      where: {
+        supporterGroupId: {
+          in: referralSupporterGroups.map((group) => group.id),
+        },
+        isOwner: true,
+      },
+      include: {
+        supporter: {
+          include: {
+            referred: true,
+          },
+        },
+      },
+    })
+    .then((res) => res.map((m) => m.supporter));
+
+  const supporterMap = new Map(
+    referralSupporterGroupOwners.map((s) => [s.id, { ...s, children: [] }])
+  );
+
+  const roots = referralSupporterGroupOwners.filter((s) => s.referralId === null);
+
+  function buildTree(supporter) {
+    referralSupporterGroupOwners.forEach((s) => {
+      if (s.referralId === supporter.id) {
+        const child = supporterMap.get(s.id);
+        supporter.children.push(child);
+        buildTree(child);
+      }
+    });
+  }
+
+  roots.forEach((root) => {
+    buildTree(supporterMap.get(root.id));
+  });
+
+  return true;
 }
 
 export async function signUpAsSupporter(request: CreateSupportersDto) {
@@ -507,11 +574,12 @@ export async function readSupportersFromGroup({
 }: ReadSupportersDto & {
   supporterSession: Supporter;
 }) {
-  const supporterGroup = await prisma.supporterGroupMembership.findFirst({
-    where: { supporterId: supporterSession?.id, isOwner: true },
+  const supporterGroupMembership = await prisma.supporterGroupMembership.findFirst({
+    where: { supporterId: supporterSession.id, isOwner: true },
   });
 
-  if (!supporterGroup) throw "Você não tem permissão para acessar este grupo de apoio.";
+  if (!supporterGroupMembership)
+    throw "Você não tem permissão para acessar este grupo de apoio.";
 
   const supporterList = await prisma.supporter.findMany({
     take: pagination?.pageSize,
@@ -519,7 +587,7 @@ export async function readSupportersFromGroup({
       campaignId: supporterSession.campaignId,
       supporterGroupsMemberships: {
         some: {
-          supporterGroupId: supporterGroup?.supporterGroupId,
+          supporterGroupId: supporterGroupMembership?.supporterGroupId,
         },
       },
       user: {
@@ -537,6 +605,8 @@ export async function readSupportersFromGroup({
     },
     orderBy: { createdAt: "desc" },
   });
+
+  console.log(supporterList.length);
 
   return {
     data: supporterList,

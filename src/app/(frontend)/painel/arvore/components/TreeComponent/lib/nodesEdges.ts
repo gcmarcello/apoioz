@@ -1,3 +1,5 @@
+import { readSupportersAsTree } from "@/app/api/panel/supporters/service";
+import { Prisma } from "@prisma/client";
 import { data } from "autoprefixer";
 
 export const createEdge = (source, target) => ({
@@ -8,7 +10,6 @@ export const createEdge = (source, target) => ({
 });
 
 export const createNode = (node) => {
-  console.log(Boolean(node.referred));
   return {
     id: node.id.toString(),
     type: "supporter",
@@ -23,3 +24,25 @@ export const createNode = (node) => {
     },
   };
 };
+
+export function processNodesEdges(
+  supporters: Awaited<ReturnType<typeof readSupportersAsTree>>,
+  includeRoot = false
+) {
+  const edges = [];
+  const nodes = [];
+
+  includeRoot && nodes.push(createNode(supporters[0]));
+
+  const processSupporter = (supporter) => {
+    supporter.referred?.forEach((child) => {
+      nodes.push(createNode(child));
+      edges.push(createEdge(supporter.id, child.id));
+      processSupporter(child);
+    });
+  };
+
+  processSupporter(supporters[0]);
+
+  return { edges, nodes };
+}

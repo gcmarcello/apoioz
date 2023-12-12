@@ -40,7 +40,7 @@
     "leaflet": "^1.9.4",
     "leaflet.markercluster": "^1.5.3",
     "lodash": "^4.17.21",
-    "next": "14.0.1-canary.2",
+    "next": "14.0.5-canary.7",
     "postcss": "8.4.28",
     "react": "^18",
     "react-chartjs-2": "^5.2.0",

@@ -15,6 +15,8 @@ export async function UserSessionMiddleware<P>({ request }: MiddlewareArguments<
     })
     .then((user) => user!);
 
+  if (!user) throw "Usuário não encontrado";
+
   const { password, ...rest } = user;
 
   return {

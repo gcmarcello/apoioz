@@ -96,7 +96,7 @@ export function AddSupporterForm({
     );
     form.setValue(
       "info.birthDate",
-      dayjs(fakerPT_BR.date.past().toISOString()).format("DD/MM/YYYY")
+      dayjs(fakerPT_BR.date.past({ refDate: 1 }).toISOString()).format("DD/MM/YYYY")
     );
     form.trigger("name");
   }

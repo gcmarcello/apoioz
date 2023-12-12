@@ -29,8 +29,8 @@ export const createSupportersDto = z.object({
     birthDate: z.custom(birthDateValidator, { message: "Data de nascimento inválida" }),
   }),
   referralId: z.string().optional(),
-  campaignId: z.string(),
-  poll: pollAnswerDto,
+  campaignId: z.string().optional(),
+  poll: pollAnswerDto.optional(),
 });
 
 export type CreateSupportersDto = z.infer<typeof createSupportersDto>;
