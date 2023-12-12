@@ -54,7 +54,6 @@ function ReactFlowPro({
   const onNodesChange: OnNodesChange = useCallback(
     (changes) =>
       setNodes((nds) => {
-        console.log(changes);
         return applyNodeChanges(changes, nds);
       }),
     []

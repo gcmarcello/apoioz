@@ -71,6 +71,7 @@ interface TableProps {
   dataSetter?: JSX.Element;
   count: number;
   disablePagination?: boolean;
+  disableXlsx?: boolean;
   globalFilter?: string;
   setGlobalFilter?: Dispatch<string>;
   TableHeader?: React.ElementType;
@@ -82,6 +83,7 @@ export function DefaultTable({
   dataSetter,
   count,
   disablePagination,
+  disableXlsx,
   globalFilter,
   setGlobalFilter,
   TableHeader,
@@ -117,10 +119,14 @@ export function DefaultTable({
       <div
         className={clsx(
           "relative mt-4 flex w-full items-center gap-2 md:mt-0",
-          globalFilter !== undefined ? "justify-between" : "justify-end"
+          globalFilter !== undefined
+            ? "justify-between"
+            : disableXlsx
+            ? ""
+            : "justify-end"
         )}
       >
-        {setGlobalFilter === undefined && <TableHeader />}
+        {setGlobalFilter === undefined && TableHeader && <TableHeader />}
         {globalFilter !== undefined && (
           <>
             <span className="absolute">
@@ -137,12 +143,14 @@ export function DefaultTable({
           </>
         )}
 
-        <Xlsx
-          data={data}
-          columns={columns}
-          fileName={`ApoioZ ${dayjs().format("DD-MM-YYYY")} - Apoiadores`}
-          sheetName={"Apoiadores"}
-        />
+        {!disableXlsx && (
+          <Xlsx
+            data={data}
+            columns={columns}
+            fileName={`ApoioZ ${dayjs().format("DD-MM-YYYY")} - Apoiadores`}
+            sheetName={"Apoiadores"}
+          />
+        )}
       </div>
 
       <div className="mt-4 flex flex-col">

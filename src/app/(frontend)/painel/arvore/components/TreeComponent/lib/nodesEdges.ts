@@ -8,7 +8,6 @@ export const createEdge = (source, target) => ({
 });
 
 export const createNode = (node) => {
-  console.log(Boolean(node.referred));
   return {
     id: node.id.toString(),
     type: "supporter",

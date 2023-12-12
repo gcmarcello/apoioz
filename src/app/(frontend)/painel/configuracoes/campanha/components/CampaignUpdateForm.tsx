@@ -1,8 +1,14 @@
 "use client";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
+import {
+  TextField,
+  TextFieldWithAddon,
+} from "@/app/(frontend)/_shared/components/fields/Text";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 import { getContrastRatioFromHex } from "@/app/(frontend)/_shared/utils/colors";
 import { updateCampaign } from "@/app/api/panel/campaigns/actions";
+import { updateCampaignDto } from "@/app/api/panel/campaigns/dto";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
@@ -15,7 +21,9 @@ export default function CampaignUpdateForm({ campaign }) {
         primaryColor: campaign?.options?.primaryColor || "#000000",
         secondaryColor: campaign?.options?.secondaryColor || "#FFFFFF",
       },
+      slug: campaign.slug,
     },
+    resolver: zodResolver(updateCampaignDto),
   });
   const [contrast, setContrast] = useState(null);
 
@@ -44,11 +52,11 @@ export default function CampaignUpdateForm({ campaign }) {
   });
 
   return (
-    <main className="px-4 sm:px-6 lg:flex-auto lg:px-0">
+    <main className="px-2 sm:px-6 lg:flex-auto lg:px-0">
       <div className="mt-14 max-w-2xl space-y-16 sm:space-y-20 lg:mx-4 lg:max-w-none">
         <form onSubmit={form.handleSubmit((data) => updateCampaignTrigger(data))}>
           <div className="space-y-12">
-            <div className="border-b border-gray-900/10 pb-12">
+            <div className="border-b border-gray-900/10 pb-8">
               <h2 className="text-base font-semibold leading-7 text-gray-900">
                 Campanha
               </h2>
@@ -59,44 +67,18 @@ export default function CampaignUpdateForm({ campaign }) {
               <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-8">
                 <div className="grid-cols-2 space-y-4 sm:col-span-6">
                   <div className="col-span-2 lg:col-span-1">
-                    <label
-                      htmlFor="username"
-                      className="block text-sm font-medium leading-6 text-gray-900"
-                    >
-                      Nome da Campanha
-                    </label>
-                    <div className="mt-2">
-                      <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
-                        <input
-                          type="text"
-                          name="name"
-                          id="name"
-                          autoComplete="name"
-                          className="block flex-1 border-0 bg-transparent py-1.5  text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                          {...form.register("name", { required: true })}
-                        />
-                      </div>
-                    </div>
+                    <TextField hform={form} label="Nome da Campanha" name="name" />
                   </div>
                   <div className="col-span-2 lg:col-span-1">
-                    <label
-                      htmlFor="username"
-                      className="block text-sm font-medium leading-6 text-gray-900"
-                    >
-                      Ano
-                    </label>
-                    <div className="mt-2">
-                      <div className="flex  rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
-                        <input
-                          type="text"
-                          name="year"
-                          id="year"
-                          autoComplete="year"
-                          className="block flex-1  border-0 bg-transparent py-1.5  text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                          {...form.register("year", { required: true })}
-                        />
-                      </div>
-                    </div>
+                    <TextField hform={form} label="Ano da Campanha" name="year" />
+                  </div>
+                  <div className="col-span-2 lg:col-span-1">
+                    <TextFieldWithAddon
+                      addon="apoioz.com.br/"
+                      hform={form}
+                      label="Slug (link da campanha)"
+                      name="slug"
+                    />
                   </div>
                 </div>
 

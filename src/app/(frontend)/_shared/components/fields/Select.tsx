@@ -247,8 +247,6 @@ export function ComboboxField<Fields, Data extends { [key: string]: any }[]>({
   useEffect(() => {
     if (!fetcher) return;
     if (query === "") {
-      console.log(1, "fetching...");
-
       fetchData({
         pagination: {
           pageSize: 10,

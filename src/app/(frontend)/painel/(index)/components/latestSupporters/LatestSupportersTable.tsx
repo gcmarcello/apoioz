@@ -89,6 +89,7 @@ export default function LatestSupportersTable({
       columns={columns}
       count={pagination.count}
       disablePagination={true}
+      disableXlsx={true}
       TableHeader={() => (
         <div className="my-2 sm:flex-auto">
           <h1 className="text-base font-semibold leading-6 text-gray-900">
