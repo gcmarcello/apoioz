@@ -206,12 +206,7 @@ export async function createCampaign(data: any) {
 
   const campaign = await prisma.campaign.create({
     data: {
-      userId: data.userId,
-      name: data.name,
-      type: data.type,
-      cityId: data.cityId,
-      stateId: data.stateId,
-      year: data.year,
+      ...data,
       supporters: {
         create: {
           id: supporterId,

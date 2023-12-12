@@ -1,9 +1,17 @@
 import { MouseEventHandler } from "react";
-import { Handle, NodeProps, Position, useReactFlow } from "reactflow";
+import { Edge, Handle, NodeProps, Position, useReactFlow } from "reactflow";
 
 import styles from "./styles/styles.module.css";
 import clsx from "clsx";
 import { EllipsisHorizontalIcon, PlusIcon } from "@heroicons/react/24/solid";
+import { XCircleIcon } from "@heroicons/react/24/outline";
+import { readSupportersAsTree } from "@/app/api/panel/supporters/actions";
+import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
+import {
+  ButtonSpinner,
+  LoadingSpinner,
+} from "@/app/(frontend)/_shared/components/Spinners";
+import { processNodesEdges } from "./lib/nodesEdges";
 
 type NodeData = {
   expanded: boolean;
@@ -47,29 +55,33 @@ function getColor(data: any): string {
     : expandedColor;
 }
 
-export default function CustomNode({ data, id, xPos, yPos }: NodeProps<NodeData>) {
-  const { addNodes, addEdges } = useReactFlow();
-
-  const addChildNode: MouseEventHandler = (evt) => {
-    if (data.expanded) {
-      evt.preventDefault();
-      evt.stopPropagation();
-    }
-
-    const newNodeId = `${id}__${new Date().getTime()}`;
-
-    addNodes({
-      id: newNodeId,
-      position: { x: xPos, y: yPos + 100 },
-      data: { label: "X" },
-    });
-    addEdges({
-      id: `${id}->${newNodeId}`,
-      source: id,
-      target: newNodeId,
-      type: "smoothstep",
-    });
-  };
+export default function CustomNode({
+  onExpand,
+  addNodes,
+  addEdges,
+  data,
+  id,
+  xPos,
+  yPos,
+}: NodeProps<NodeData> & {
+  onExpand: () => void;
+  addNodes: (nodes: NodeProps<NodeData>[]) => void;
+  addEdges: (edges: Edge[]) => void;
+}) {
+  const {
+    trigger: fetchReferred,
+    data: referred,
+    isMutating: isFetching,
+  } = useAction({
+    action: readSupportersAsTree,
+    onSuccess: ({ data }) => {
+      onExpand();
+      const { nodes, edges } = processNodesEdges(data);
+      console.log(nodes);
+      addNodes(nodes);
+      addEdges(edges);
+    },
+  });
 
   const label = getLabel(data);
   const color = getColor(data);
@@ -100,8 +112,15 @@ export default function CustomNode({ data, id, xPos, yPos }: NodeProps<NodeData>
         type="source"
         position={Position.Bottom}
         className={clsx("-mb-6 flex w-full justify-center !bg-transparent text-gray-500")}
+        onClick={() => {
+          data.hasChildren ? onExpand() : fetchReferred({ where: { supporterId: id } });
+        }}
       >
-        {!data.expanded && <EllipsisHorizontalIcon className="h-5 w-5" />}
+        {isFetching ? (
+          <ButtonSpinner />
+        ) : (
+          !data.expanded && <EllipsisHorizontalIcon className="h-5 w-5" />
+        )}
       </Handle>
     </div>
   );

@@ -7,9 +7,9 @@ import ReactFlow, {
   Background,
   OnNodesChange,
   OnEdgesChange,
-  NodeMouseHandler,
   Node,
   Edge,
+  Panel,
 } from "reactflow";
 
 import CustomNode from "./CustomNode";
@@ -17,13 +17,15 @@ import useAnimatedNodes from "./lib/useAnimatedNodes";
 import useExpandCollapse from "./lib/useExpandCollapse";
 
 import "reactflow/dist/base.css";
-import styles from "./styles/styles.module.css";
+import { ComboboxField } from "@/app/(frontend)/_shared/components/fields/Select";
+import { useForm } from "react-hook-form";
+import {
+  readSupportersFromGroup,
+  readSupportersInverseTree,
+} from "@/app/api/panel/supporters/actions";
+import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 
 const proOptions = { account: "paid-pro", hideAttribution: true };
-
-const nodeTypes = {
-  custom: CustomNode,
-};
 
 type ExpandCollapseExampleProps = {
   initialNodes: Node[];
@@ -36,8 +38,8 @@ type ExpandCollapseExampleProps = {
 function ReactFlowPro({
   initialNodes,
   initialEdges,
-  treeWidth = 400,
-  treeHeight = 125,
+  treeWidth = 550,
+  treeHeight = 220,
   animationDuration = 300,
 }: ExpandCollapseExampleProps) {
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
@@ -52,19 +54,28 @@ function ReactFlowPro({
   });
 
   const onNodesChange: OnNodesChange = useCallback(
-    (changes) =>
-      setNodes((nds) => {
-        return applyNodeChanges(changes, nds);
-      }),
+    (changes) => (nds) => {
+      console.log(changes);
+      return applyNodeChanges(changes, nds);
+    },
     []
   );
+
   const onEdgesChange: OnEdgesChange = useCallback(
     (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
     []
   );
 
-  const onNodeClick: NodeMouseHandler = useCallback(
-    (_, node) => {
+  const addNodes = (nodes: Node[]) => {
+    setNodes((nds) => nds.concat(nodes));
+  };
+
+  const addEdges = (edges: Edge[]) => {
+    setEdges((eds) => eds.concat(edges));
+  };
+
+  const onExpand = useCallback(
+    (node) => {
       setNodes((nds) => {
         return nds.map((n) => {
           if (n.id === node.id) {
@@ -81,6 +92,19 @@ function ReactFlowPro({
     [setNodes]
   );
 
+  const nodeTypes = {
+    custom: (node) => (
+      <CustomNode
+        {...node}
+        onExpand={() => onExpand(node)}
+        addNodes={addNodes}
+        addEdges={addEdges}
+      />
+    ),
+  };
+
+  const form = useForm();
+
   return (
     <ReactFlow
       fitView
@@ -88,22 +112,36 @@ function ReactFlowPro({
       edges={visibleEdges}
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
-      onNodeClick={onNodeClick}
       proOptions={proOptions}
       nodeTypes={nodeTypes}
       nodesDraggable={false}
       nodesConnectable={false}
-      className={styles.viewport}
       zoomOnDoubleClick={false}
       elementsSelectable={false}
     >
+      <Panel position="top-left" className="bg-white pb-6 pr-6">
+        <ComboboxField
+          label="Encontre um apoiador"
+          hform={form}
+          name={"name"}
+          fetcher={readSupportersFromGroup}
+          onChange={(value) => {
+            readSupportersInverseTree({
+              where: {
+                supporterId: value.id,
+              },
+            });
+          }}
+          displayValueKey={"user.name"}
+        />
+      </Panel>
       <Background />
       <MiniMap />
     </ReactFlow>
   );
 }
 
-export default function TreeComponent({ initialNodes, initialEdges }) {
+export default function Tree({ initialNodes, initialEdges }) {
   return (
     <ReactFlowProvider>
       <ReactFlowPro initialNodes={initialNodes} initialEdges={initialEdges} />

@@ -27,6 +27,7 @@ export default async function ChooseCampaign({
       type: "vereador",
       cityId: user?.info?.cityId,
       stateId: null,
+      slug: fakerPT_BR.word.noun(),
       year: date.format("YYYY"),
     });
 
