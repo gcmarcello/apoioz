@@ -50,12 +50,7 @@ export function TextField<T>(props: TextFieldProps<T>) {
 export function TextFieldWithAddon<T>(props: TextFieldProps<T> & { addon: string }) {
   const id = useId();
 
-  const path = props.name.split(".");
-
-  const errorMessage = path.reduce(
-    (acc, part) => acc && acc[part],
-    props.hform.formState.errors
-  )?.message as string;
+  const errorMessage = getErrorMessage(props.hform, props.name);
 
   const className = clsx(
     fieldClasses,
