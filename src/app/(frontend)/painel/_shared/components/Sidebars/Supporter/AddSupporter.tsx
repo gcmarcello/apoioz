@@ -38,7 +38,7 @@ export function AddSupporterForm({
   const errRef = useRef<null | HTMLDivElement>(null);
 
   const form = useForm<CreateSupportersDto>({
-    resolver: zodResolver(createSupportersDto as any),
+    resolver: zodResolver(createSupportersDto),
     mode: "onChange",
   });
 
