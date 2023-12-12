@@ -28,7 +28,7 @@ export default function SwitchInput({
         <Switch.Group as="div" className="flex items-center">
           <Switch
             disabled={disabled}
-            checked={value}
+            checked={Boolean(value)}
             onChange={onChange}
             className={clsx(
               value ? "bg-indigo-600" : "bg-gray-200",
