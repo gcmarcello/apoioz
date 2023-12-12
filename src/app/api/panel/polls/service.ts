@@ -280,7 +280,6 @@ export async function updatePoll(request) {
     operations.push(questionOperation);
 
     for (const option of question.options) {
-      console.log(question.options);
       let optionOperation;
       if (option.id) {
         optionOperation = prisma.pollOption.update({
@@ -312,17 +311,20 @@ export async function deletePoll(request) {
   return poll;
 }
 
-export async function answerPoll(request: PollAnswerDto & { ip?: string }) {
+export async function answerPoll(
+  request: PollAnswerDto & { ip?: string; bypassIpCheck?: boolean }
+) {
   const poll = await prisma.poll.findUnique({
     where: { id: request.pollId },
     include: { PollQuestion: true },
   });
 
   if (
-    await verifyExistingVote({
+    !request.bypassIpCheck &&
+    (await verifyExistingVote({
       ip: headers().get("X-Forwarded-For"),
       pollId: request.pollId,
-    })
+    }))
   ) {
     throw new Error("Você já respondeu esta pesquisa!");
   }

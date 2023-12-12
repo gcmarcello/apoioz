@@ -368,7 +368,7 @@ export async function signUpAsSupporter(request: CreateSupportersDto) {
     for (const question of request.poll.questions) {
       question.supporterId = supporter.id;
     }
-    await answerPoll(request.poll);
+    await answerPoll({ ...request.poll, bypassIpCheck: true });
   }
 
   await sendEmail({
@@ -436,9 +436,11 @@ export async function joinAsSupporter({
           OR: [
             {
               referralId: referralTree[referralTree.length - 1]?.id,
+              campaignId: campaign.id,
             },
             {
               level: 4,
+              campaignId: campaign.id,
             },
           ],
         },
@@ -668,9 +670,11 @@ export async function verifyConflictingSupporter(campaign: Campaign, userId: str
   const conflictingCampaigns: string[] = (
     await prisma.campaign.findMany({
       where: {
-        cityId: campaign.cityId,
-        type: campaign.type,
-        year: campaign.year,
+        AND: [
+          { cityId: campaign.cityId },
+          { type: campaign.type },
+          { year: campaign.year },
+        ],
       },
     })
   ).map((campaign) => campaign.id);
@@ -681,11 +685,21 @@ export async function verifyConflictingSupporter(campaign: Campaign, userId: str
       campaignId: { in: conflictingCampaigns },
     },
   });
+  console.log(conflictingSupporter);
 
   if (conflictingSupporter?.campaignId === campaign.id)
-    return { type: "sameCampaign", supporter: conflictingSupporter };
+    return {
+      type: "sameCampaign",
+      supporter: conflictingSupporter,
+      message: "Você já faz parte desta rede.",
+    };
   if (conflictingSupporter)
-    return { type: "otherCampaign", supporter: conflictingSupporter };
+    return {
+      type: "otherCampaign",
+      supporter: conflictingSupporter,
+      message: "Você já faz parte da rede de outro candidato.",
+    };
+  console.log("testxd");
   return null;
 }
 

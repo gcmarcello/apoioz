@@ -3,7 +3,6 @@ import dayjs from "dayjs";
 import prisma from "prisma/prisma";
 
 export async function createInviteCode({ campaignId, referralId }) {
-  console.log({ campaignId, referralId });
   if (!campaignId || !referralId) throw "Missing campaignId or referralId";
 
   const code = await prisma.inviteCode.create({
@@ -46,11 +45,7 @@ export async function useInviteCode(code: string) {
 }
 
 export async function removeInvalidInviteCodes() {
-  const codes = await prisma.inviteCode.findMany({
+  return await prisma.inviteCode.deleteMany({
     where: { expiresAt: { lte: dayjs().toISOString() } },
-  });
-
-  await prisma.inviteCode.deleteMany({
-    where: { id: { in: codes.map((code) => code.id) } },
   });
 }

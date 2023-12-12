@@ -13,7 +13,7 @@ export default async function CampaignSettings() {
   });
   if (supporter.level === 4) return <CampaignUpdateForm campaign={campaign} />;
   return (
-    <div className="mt-10 text-sm">
+    <div className="mt-14 text-sm font-semibold text-gray-700">
       Você não tem permissão para acessar as configurações de campanha.
     </div>
   );

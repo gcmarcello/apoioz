@@ -5,11 +5,24 @@ import { cookies, headers } from "next/headers";
 import { readPolls, readPollsStats } from "@/app/api/panel/polls/service";
 import PollsTable from "./components/PollsTable";
 import PageHeader from "../../_shared/components/PageHeader";
+import { CampaignLeaderMiddleware } from "@/middleware/functions/campaignLeader.middleware";
+import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
+import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
+import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
+import { redirect } from "next/navigation";
+import { showToast } from "../../_shared/components/alerts/toast";
 
 export default async function PesquisasPage() {
+  await UseMiddlewares()
+    .then(UserSessionMiddleware)
+    .then(SupporterSessionMiddleware)
+    .then(CampaignLeaderMiddleware)
+    .catch(() => {
+      redirect("/painel");
+    });
+
   const activeCampaignId = cookies().get("activeCampaign")?.value;
   const polls = await readPolls({ campaignId: activeCampaignId });
-
   const stats = await readPollsStats({ campaignId: activeCampaignId });
   return (
     <>

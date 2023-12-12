@@ -4,7 +4,6 @@ import { Campaign } from "@prisma/client";
 import clsx from "clsx";
 
 export function CampaignList({ campaigns }: { campaigns: Campaign[] }) {
-  console.log(campaigns);
   return (
     <>
       {campaigns.map((campaign: any) => (

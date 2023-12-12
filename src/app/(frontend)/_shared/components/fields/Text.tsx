@@ -47,6 +47,48 @@ export function TextField<T>(props: TextFieldProps<T>) {
   );
 }
 
+export function TextFieldWithAddon<T>(props: TextFieldProps<T> & { addon: string }) {
+  const id = useId();
+
+  const path = props.name.split(".");
+
+  const errorMessage = path.reduce(
+    (acc, part) => acc && acc[part],
+    props.hform.formState.errors
+  )?.message as string;
+
+  const className = clsx(
+    fieldClasses,
+    props.className,
+    errorMessage
+      ? "border-red-500 ring-red-500"
+      : "focus:border-indigo-500 focus:ring-indigo-500 ",
+    "pr-8"
+  );
+
+  return (
+    <Field
+      errorMessage={errorMessage}
+      relative={props.relative}
+      id={id}
+      label={props.label}
+    >
+      <div className="mt-2 flex rounded-md shadow-sm">
+        <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 px-3 text-gray-500 sm:text-sm">
+          {props.addon}
+        </span>
+        <input
+          id={id}
+          type={props.type}
+          {...props.hform.register(props.name)}
+          {...props}
+          className={clsx(className, "rounded-l-none")}
+        />
+      </div>
+    </Field>
+  );
+}
+
 export function TextAreaField<T>(props: TextAreaFieldProps<T>) {
   const id = useId();
 

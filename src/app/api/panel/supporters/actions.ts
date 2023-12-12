@@ -5,9 +5,16 @@ import { UserSessionMiddleware } from "@/middleware/functions/userSession.middle
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 import { revalidatePath } from "next/cache";
 import { CreateSupportersLevelMiddleware, ReadSupportersMiddleware } from "./middlewares";
-import { CreateSupportersDto, ReadSupportersAsTreeDto, ReadSupportersDto } from "./dto";
+import {
+  CreateSupportersDto,
+  JoinAsSupporterDto,
+  ReadSupportersAsTreeDto,
+  ReadSupportersDto,
+} from "./dto";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { ActionResponse } from "../../_shared/utils/ActionResponse";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 
 export async function readSupportersFromGroup(request?: ReadSupportersDto) {
   try {
@@ -114,6 +121,23 @@ export async function signUpAsSupporter(request: CreateSupportersDto) {
 
     return ActionResponse.success({
       data: newSupporter,
+      message: "Sucesso ao criar novo apoiador!",
+    });
+  } catch (error) {
+    console.log(error);
+    return ActionResponse.error(error);
+  }
+}
+
+export async function joinAsSupporter(request: JoinAsSupporterDto) {
+  try {
+    const { request: parsedRequest } =
+      await UseMiddlewares(request).then(UserSessionMiddleware);
+
+    /* const newSupporter = await supportersService.joinAsSupporter(parsedRequest); */
+    cookies().set("activeCampaign", request.campaignId);
+    return ActionResponse.success({
+      data: "xd",
       message: "Sucesso ao criar novo apoiador!",
     });
   } catch (error) {

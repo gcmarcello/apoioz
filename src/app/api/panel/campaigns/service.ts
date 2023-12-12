@@ -5,6 +5,7 @@ import crypto from "crypto";
 
 import prisma from "prisma/prisma";
 import { readZonesByCity, readZonesByState } from "../../elections/zones/actions";
+import { readZonesByCampaign } from "../../elections/zones/service";
 
 export async function verifyPermission(
   userId: string | null,
@@ -52,6 +53,13 @@ export async function listCampaigns(userId: string) {
 export async function updateCampaign(request: any) {
   try {
     const { userSession, supporterSession, ...data } = request;
+
+    const slugAvailability = await prisma.campaign.findFirst({
+      where: { slug: data.slug },
+    });
+
+    if (slugAvailability) throw "Slug já está em uso por outra campanha.";
+
     const updatedCampaign = await prisma.campaign.update({
       where: { id: supporterSession.campaignId },
       data,
@@ -221,4 +229,24 @@ export async function createCampaign(data: any) {
   });
 
   return { campaign };
+}
+
+export async function verifyCampaignSupportAvailabilityByZone({
+  userId,
+  campaignId,
+}: {
+  userId: string;
+  campaignId: string;
+}) {
+  const supporter = await prisma.supporter.findFirst({
+    where: { userId: userId, campaignId: campaignId },
+  });
+
+  if (!supporter) return false;
+  const campaignZones = await readZonesByCampaign(campaignId);
+
+  if (campaignZones.filter((zone) => zone.id === supporter.zoneId).length > 0)
+    return false;
+
+  return true;
 }

@@ -52,7 +52,7 @@ export function IconOnlyButton({
       className={className || "h-6 w-6"}
       disabled={disabled}
       type={type}
-      onClick={onClick}
+      onClick={() => onClick}
     >
       <Icon className={clsx(iconClassName, disabled && "opacity-50")} />
     </button>

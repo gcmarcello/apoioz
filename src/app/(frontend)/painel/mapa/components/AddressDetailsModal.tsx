@@ -11,7 +11,6 @@ export default function AddressDetailsModal({
   setOpen: any;
   modalInfo: any;
 }) {
-  console.log(modalInfo);
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={setOpen}>
