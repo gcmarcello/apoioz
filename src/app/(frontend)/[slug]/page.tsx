@@ -30,16 +30,16 @@ export default async function CampaignLandingPage({
   const userId = headers().get("userId");
   const user = await readUser(userId);
 
+  if (!campaign) {
+    notFound();
+  }
+
   const conflictingZone = await verifyCampaignSupportAvailabilityByZone({
     userId,
     campaignId: campaign?.id,
   });
 
   const referral = await readCampaignLeader(campaign?.id);
-
-  if (!campaign) {
-    notFound();
-  }
 
   if (!user) {
     redirect("/login?support=" + campaign?.slug);
@@ -48,13 +48,15 @@ export default async function CampaignLandingPage({
   const conflictingSupport = await verifyConflictingSupporter(campaign, user.id);
 
   return (
-    <>
-      <TopNavigation className="flex justify-between p-4 shadow-md lg:justify-end">
-        <div className="block lg:hidden">
-          <SectionTitle>{user.name}</SectionTitle>
-        </div>
-        <ProfileDropdown user={user} />
-      </TopNavigation>
+    <div>
+      <header>
+        <TopNavigation className="flex justify-between p-4 shadow-md lg:justify-end">
+          <div className="block lg:hidden">
+            <SectionTitle>{user.name}</SectionTitle>
+          </div>
+          <ProfileDropdown user={user} />
+        </TopNavigation>
+      </header>
       <div className="mt-24 flex flex-col items-center">
         <CampaignHeader
           campaign={campaign}
@@ -86,6 +88,6 @@ export default async function CampaignLandingPage({
           <JoinCampaign referral={referral} campaign={campaign} />
         )}
       </div>
-    </>
+    </div>
   );
 }
