@@ -9,7 +9,7 @@ import {
 import { fakerPT_BR } from "@faker-js/faker";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Campaign } from "@prisma/client";
-import { Dispatch, SetStateAction, useEffect, useRef } from "react";
+import { Dispatch, SetStateAction, useContext, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 import { toProperCase } from "@/_shared/utils/format";
@@ -26,6 +26,8 @@ import dayjs from "dayjs";
 import { readZonesByCampaign } from "@/app/api/elections/zones/actions";
 import { readSectionsByZone } from "@/app/api/elections/sections/action";
 import { readAddressBySection } from "@/app/api/elections/locations/actions";
+import SwitchInput from "@/app/(frontend)/_shared/components/fields/Switch";
+import { SidebarContext } from "../lib/sidebar.ctx";
 
 export function AddSupporterForm({
   campaign,
@@ -36,6 +38,8 @@ export function AddSupporterForm({
 }) {
   const ref = useRef<null | HTMLDivElement>(null);
   const errRef = useRef<null | HTMLDivElement>(null);
+
+  const { supporter: userSupporter } = useContext(SidebarContext);
 
   const form = useForm<CreateSupportersDto>({
     resolver: zodResolver(createSupportersDto),
@@ -101,6 +105,9 @@ export function AddSupporterForm({
     form.trigger("name");
   }
 
+  console.log(form.watch());
+  console.log(form.formState.errors);
+
   if (!zones || !form) return <></>;
 
   return (
@@ -136,42 +143,52 @@ export function AddSupporterForm({
           mask="99/99/9999"
           name={"info.birthDate"}
         />
-        <ComboboxField
-          label="Indicador"
-          hform={form}
-          name={"referralId"}
-          fetcher={readSupportersFromGroup}
-          displayValueKey={"user.name"}
+        {userSupporter.level >= 4 && (
+          <ComboboxField
+            label="Indicador"
+            hform={form}
+            name={"referralId"}
+            fetcher={readSupportersFromGroup}
+            displayValueKey={"user.name"}
+          />
+        )}
+        <SwitchInput
+          control={form.control}
+          label="Apoiador Externo"
+          name="externalSupporter"
+          subLabel="que não vive na região."
         />
 
-        <div className="grid grid-cols-2 gap-3">
-          <div className="col-span-1">
-            <ListboxField
-              hform={form}
-              data={zones}
-              displayValueKey={"number"}
-              name={"info.zoneId"}
-              label="Zona"
-              onChange={(value) => {
-                fetchSections(value.id);
-              }}
-            />
+        {userSupporter.level >= 4 && !form.watch("externalSupporter") && (
+          <div className="grid grid-cols-2 gap-3">
+            <div className="col-span-1">
+              <ListboxField
+                hform={form}
+                data={zones}
+                displayValueKey={"number"}
+                name={"info.zoneId"}
+                label="Zona"
+                onChange={(value) => {
+                  fetchSections(value.id);
+                }}
+              />
+            </div>
+            <div className="col-span-1">
+              <ComboboxField
+                hform={form}
+                data={sections}
+                label="Seção"
+                name={"info.sectionId"}
+                displayValueKey={"number"}
+                disabled={!sections}
+                onChange={(value) => {
+                  fetchAddress(value.id);
+                }}
+                reverseOptions={true}
+              />
+            </div>
           </div>
-          <div className="col-span-1">
-            <ComboboxField
-              hform={form}
-              data={sections}
-              label="Seção"
-              name={"info.sectionId"}
-              displayValueKey={"number"}
-              disabled={!sections}
-              onChange={(value) => {
-                fetchAddress(value.id);
-              }}
-              reverseOptions={true}
-            />
-          </div>
-        </div>
+        )}
         {address && (
           <div ref={ref} className="mt-6 border-t border-gray-100">
             <dl className="divide-y divide-gray-100">
