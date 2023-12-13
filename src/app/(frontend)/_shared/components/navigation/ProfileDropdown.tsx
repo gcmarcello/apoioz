@@ -6,16 +6,14 @@ import clsx from "clsx";
 import Image from "next/image";
 import { Fragment } from "react";
 import { ButtonSpinner } from "../Spinners";
-import { User } from "@prisma/client";
 import { UserWithoutPassword } from "prisma/types/User";
 import Link from "next/link";
-import { getEnv } from "@/_shared/utils/settings";
 
 export default function ProfileDropdown({ user }: { user: UserWithoutPassword }) {
   const userNavigation = [
     {
       name: "Meu Perfil",
-      href: "/painel/configuracoes",
+      href: "/configuracoes",
     },
   ];
 

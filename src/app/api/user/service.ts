@@ -80,7 +80,7 @@ export async function readUser(userId: string) {
 }
 
 export async function updateUser(request) {
-  const { userSession, supporterSession, birthDate, ...data } = request;
+  const { userSession, birthDate, ...data } = request;
   try {
     const verifyExistingEmail = await prisma.user.findFirst({
       where: { email: normalizeEmail(data.email) },
