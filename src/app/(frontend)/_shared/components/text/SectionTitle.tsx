@@ -1,3 +1,9 @@
-export function SectionTitle({ children }) {
-  return <h1 className="text-base font-semibold leading-7 text-gray-900">{children}</h1>;
+import clsx from "clsx";
+
+export function SectionTitle({ children, className }) {
+  return (
+    <h1 className={clsx("text-base font-semibold leading-7 text-gray-900", className)}>
+      {children}
+    </h1>
+  );
 }
