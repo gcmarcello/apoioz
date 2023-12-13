@@ -1,4 +1,6 @@
 import { readSupportersAsTree } from "@/app/api/panel/supporters/service";
+import { Supporter } from "@prisma/client";
+import { SupporterWithUserInfo } from "prisma/types/Supporter";
 
 export const createEdge = (source, target) => ({
   id: `e${source}->${target}`,
@@ -7,46 +9,44 @@ export const createEdge = (source, target) => ({
   type: "smoothstep",
 });
 
-export const createNode = (node, expandNodes) => {
+export const createNode = (supporter: any, expanded = false) => {
   return {
-    id: node.id.toString(),
+    id: supporter.id.toString(),
     type: "supporter",
     position: {
       x: 0,
       y: 0,
     },
     data: {
-      label: node.user.name,
-      level: node.level,
-      expanded: expandNodes,
-      hasChildren: Boolean(node.referred),
+      label: supporter.user.name,
+      level: supporter.level,
     },
   };
 };
 
 export function processNodesEdges({
   supporters,
-  includeRoot = true,
-  expandNodes = false,
 }: {
-  supporters: Awaited<ReturnType<typeof readSupportersAsTree>>;
+  supporters: any;
   includeRoot?: boolean;
   expandNodes?: boolean;
 }) {
   const edges = [];
   const nodes = [];
 
-  includeRoot && nodes.push(createNode(supporters[0], expandNodes));
+  supporters.forEach((supporter) => {
+    const shouldCreateSupporterNode = !nodes.some((n) => n.id === supporter.id);
 
-  const processSupporter = (supporter) => {
-    supporter.referred?.forEach((child) => {
-      nodes.push(createNode(child, expandNodes));
-      edges.push(createEdge(supporter.id, child.id));
-      processSupporter(child);
-    });
-  };
+    if (!shouldCreateSupporterNode) return;
 
-  processSupporter(supporters[0]);
+    nodes.push(createNode(supporter));
+
+    const referral = supporters.find((s) => s.id === supporter.referralId);
+
+    if (!referral) return;
+
+    edges.push(createEdge(referral.id, supporter.id));
+  });
 
   return { edges, nodes };
 }

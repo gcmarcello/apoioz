@@ -1,8 +1,7 @@
 import { useMemo } from "react";
 import { Node, Edge } from "reactflow";
 import { HierarchyNode, HierarchyPointNode, stratify, tree } from "d3-hierarchy";
-
-import { ExpandCollapseNode } from "./types";
+import { ExpandCollapseNode } from "../types/NodesEdges";
 
 export type UseExpandCollapseOptions = {
   layoutNodes?: boolean;
@@ -30,6 +29,7 @@ function useExpandCollapse(
       .parentId((d: Node) => edges.find((e: Edge) => e.target === d.id)?.source)(nodes);
 
     hierarchy.descendants().forEach((d) => {
+      d.data.data.hasChildren = Boolean(d.children?.length);
       d.children = d.data.data.expanded ? d.children : undefined;
     });
 
