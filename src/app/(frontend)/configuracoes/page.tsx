@@ -29,7 +29,7 @@ export default async function SettingsPage() {
           </div>
           <ProfileDropdown user={user} />
         </TopNavigation>
-        <div className="mt-24 max-w-2xl space-y-16 sm:space-y-20 lg:mx-4 lg:max-w-none">
+        <div className="mb-10 mt-24 max-w-2xl space-y-16 sm:space-y-20 lg:mx-4 lg:max-w-none">
           <div className="lg:px-20">
             <h2 className="text-base font-semibold leading-7 text-gray-900">Perfil</h2>
             <p className="mt-1 text-sm leading-6 text-gray-500">
