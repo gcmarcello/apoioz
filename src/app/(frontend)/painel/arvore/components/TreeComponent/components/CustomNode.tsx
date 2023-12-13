@@ -13,9 +13,11 @@ import {
 } from "@/app/(frontend)/_shared/components/Spinners";
 import { processNodesEdges } from "../lib/nodesEdges";
 import { CustomFlowContext } from "../types/CustomFlowContext";
+import { readSupporterAndReferred } from "@/app/api/panel/supporters/actions";
 
 type NodeData = {
   expanded: boolean;
+  expandable: boolean;
   label: string;
   level: number;
   hasChildren: boolean;
@@ -53,17 +55,19 @@ function getColor(data: any): string {
 }
 
 export function CustomNode({
-  customFlowContext: { onExpand, saveEdges, saveNodes },
+  customFlowContext: { toggleNodesVisibility, saveEdges, saveNodes },
   ...node
 }: Node<NodeData> & {
   customFlowContext: CustomFlowContext;
 }) {
-  const { trigger: fetchReferred, isMutating: isFetching } = useAction({
-    action: readSupportersAsTree,
+  const { trigger: fetchSupporterReferred, isMutating: isFetching } = useAction({
+    action: readSupporterAndReferred,
     onSuccess: ({ data }) => {
+      console.log(data);
       const { nodes, edges } = processNodesEdges({ supporters: data });
       saveNodes(nodes);
       saveEdges(edges);
+      toggleNodesVisibility(node as any);
     },
   });
 
@@ -98,15 +102,11 @@ export function CustomNode({
         className={clsx("-mb-6 flex w-full justify-center !bg-transparent text-gray-500")}
         onClick={() => {
           node.data.hasChildren
-            ? onExpand(node)
-            : fetchReferred({ where: { supporterId: node.id } });
+            ? toggleNodesVisibility(node as any)
+            : fetchSupporterReferred({ where: { supporterId: node.id } });
         }}
       >
-        {isFetching ? (
-          <ButtonSpinner />
-        ) : (
-          !node.data.expanded && <EllipsisHorizontalIcon className="h-5 w-5" />
-        )}
+        {isFetching ? <ButtonSpinner /> : <EllipsisHorizontalIcon className="h-5 w-5" />}
       </Handle>
     </div>
   );

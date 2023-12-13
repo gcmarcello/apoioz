@@ -222,7 +222,7 @@ export async function readSupporterTrail({
     },
   });
 
-  const referrals = await prisma.supporterGroupMembership
+  const notFlattenedReferrals = await prisma.supporterGroupMembership
     .findMany({
       where: {
         supporterGroupId: {
@@ -233,6 +233,11 @@ export async function readSupporterTrail({
       include: {
         supporter: {
           include: {
+            referred: {
+              include: {
+                user: true,
+              },
+            },
             user: true,
           },
         },
@@ -240,18 +245,38 @@ export async function readSupporterTrail({
     })
     .then((res) => res.map((m) => m.supporter));
 
-  function generateReferralTrail(referrals) {
-    if (referrals.length <= 1) {
-      return [referrals[0] || {}];
-    }
-    const currentReferral = referrals[0];
-    currentReferral.referred = generateReferralTrail(referrals.slice(1));
-    return [currentReferral];
-  }
+  const referrals = notFlattenedReferrals.reduce((acc, curr) => {
+    return [...acc, curr, ...curr.referred];
+  }, []);
 
-  const referralTree = generateReferralTrail(referrals);
+  return referrals;
+}
 
-  return referralTree;
+export async function readSupporterAndReferred({
+  supporterSession,
+  where: { supporterId = null } = {},
+}: ReadSupportersAsTreeDto & {
+  userSession: UserWithoutPassword;
+  supporterSession: Supporter;
+}) {
+  const supporters = await prisma.supporter
+    .findFirst({
+      where: { id: supporterId || supporterSession.id },
+      include: {
+        user: true,
+        referred: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    })
+    .then((res) => {
+      const { referred, ...supporter } = res;
+      return [supporter, ...referred];
+    });
+
+  return supporters;
 }
 
 export async function signUpAsSupporter(request: CreateSupportersDto) {

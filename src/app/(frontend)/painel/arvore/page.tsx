@@ -1,4 +1,7 @@
-import { readSupportersAsTree } from "@/app/api/panel/supporters/service";
+import {
+  readSupporterAndReferred,
+  readSupportersAsTree,
+} from "@/app/api/panel/supporters/service";
 import TreeComponent from "./components/TreeComponent";
 import {
   createNode,
@@ -10,21 +13,13 @@ import { UserSessionMiddleware } from "@/middleware/functions/userSession.middle
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 
 export default async function TimePage() {
-  /**
-   * await UseMiddlewares()
-    .then(CampaignLeaderMiddleware)
-    .catch(() => redirect("/painel"));
-   */
-
   const { request: parsedRequest } = await UseMiddlewares()
     .then(UserSessionMiddleware)
     .then(SupporterSessionMiddleware);
 
-  const tree = await readSupportersAsTree(parsedRequest);
+  const tree = await readSupporterAndReferred(parsedRequest);
 
   if (!tree) return;
-
-  console.log(tree);
 
   const { nodes: initialNodes, edges: initialEdges } = processNodesEdges({
     supporters: tree,

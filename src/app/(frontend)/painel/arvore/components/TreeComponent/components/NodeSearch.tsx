@@ -7,32 +7,42 @@ import {
 import { processNodesEdges } from "../lib/nodesEdges";
 import { CustomFlowContext } from "../types/CustomFlowContext";
 import { useForm } from "react-hook-form";
+import { useReactFlow } from "reactflow";
 
 export function NodeSearch({
-  customFlowContext: { saveEdges, saveNodes },
+  customFlowContext: { saveEdges, saveNodes, toggleNodesVisibility },
 }: {
   customFlowContext: CustomFlowContext;
 }) {
+  const { fitView } = useReactFlow();
+
+  const searchForm = useForm();
+
   const { trigger: fetchSupporterTrail } = useAction({
     action: readSupporterTrail,
     onSuccess: ({ data }) => {
-      console.log(data);
       const { nodes, edges } = processNodesEdges({
         supporters: data,
-        expandNodes: true,
       });
       saveNodes(nodes);
       saveEdges(edges);
+      toggleNodesVisibility(nodes as any);
+      setTimeout(() => {
+        const node = nodes.find((node) => searchForm.getValues("supporter") === node.id);
+        fitView({
+          duration: 2500,
+          padding: 1,
+          nodes: [node],
+        });
+      }, 200);
     },
   });
-
-  const form = useForm();
 
   return (
     <ComboboxField
       label="Encontre um apoiador"
-      hform={form}
-      name={"name"}
+      hform={searchForm}
+      name={"supporter"}
       fetcher={readSupportersFromGroup}
       onChange={(value) => {
         fetchSupporterTrail({

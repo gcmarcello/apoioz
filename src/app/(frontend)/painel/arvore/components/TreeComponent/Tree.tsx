@@ -53,17 +53,19 @@ function ReactFlowPro({
     animationDuration,
   });
 
-  const onExpand = useCallback(
-    (node) => {
-      setNodes((nds) => {
-        return nds.map((n) => {
-          if (n.id === node.id) {
+  const toggleNodesVisibility = useCallback(
+    (toggledNodes: Node[] | Node) => {
+      setNodes((nodes) => {
+        const toggledNodesArray = Array.isArray(toggledNodes)
+          ? toggledNodes
+          : [toggledNodes];
+        return nodes.map((n) => {
+          if (toggledNodesArray.some((tn) => tn.id === n.id)) {
             return {
               ...n,
               data: { ...n.data, expanded: !n.data.expanded },
             };
           }
-
           return n;
         });
       });
@@ -126,8 +128,8 @@ function ReactFlowPro({
   );
 
   const customFlowContext = useMemo(
-    () => ({ onExpand, saveNodes, saveEdges }),
-    [onExpand, saveNodes, saveEdges]
+    () => ({ toggleNodesVisibility, saveNodes, saveEdges }),
+    [toggleNodesVisibility, saveNodes, saveEdges]
   );
 
   const nodeTypes = useMemo(

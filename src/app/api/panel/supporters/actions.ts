@@ -115,6 +115,22 @@ export async function readSupporterTrail(request?: ReadSupportersAsTreeDto) {
   }
 }
 
+export async function readSupporterAndReferred(request?: ReadSupportersAsTreeDto) {
+  try {
+    const { request: parsedRequest } = await UseMiddlewares(request)
+      .then(UserSessionMiddleware)
+      .then(SupporterSessionMiddleware);
+
+    const supporters = await supportersService.readSupporterAndReferred(parsedRequest);
+
+    return ActionResponse.success({
+      data: supporters,
+    });
+  } catch (err) {
+    ActionResponse.error(err);
+  }
+}
+
 export async function signUpAsSupporter(request: CreateSupportersDto) {
   try {
     const newSupporter = await supportersService.signUpAsSupporter(request);
