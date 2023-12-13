@@ -273,46 +273,22 @@ export async function signUpAsSupporter(request: CreateSupportersDto) {
     }
   }
 
-  let referralTree = [referral];
-  if (referralTree[0].level != 4) {
-    while (true) {
-      const referral = await prisma.supporter.findFirst({
-        where: {
-          OR: [
-            {
-              referralId: referralTree[referralTree.length - 1]?.id,
-            },
-            {
-              level: 4,
-            },
-          ],
+  const referralsSupporterGroups = await prisma.supporterGroup.findMany({
+    where: {
+      memberships: {
+        some: {
+          supporterId: referral.id,
         },
-      });
-
-      if (!referral) continue;
-
-      referralTree.push(referral);
-
-      if (referral.level === 4) break;
-    }
-  }
-
-  const ownedSupporterGroupsFromReferralTree =
-    await prisma.supporterGroupMembership.findMany({
-      where: {
-        supporterId: {
-          in: referralTree.map((referral) => referral.id),
-        },
-        isOwner: true,
       },
-    });
+    },
+  });
 
-  const createSupporterGroupMembershipQuery = ownedSupporterGroupsFromReferralTree.map(
+  const createSupporterGroupMembershipQuery = referralsSupporterGroups.map(
     (supporterGroup) => ({
       isOwner: false,
       supporterGroup: {
         connect: {
-          id: supporterGroup.supporterGroupId,
+          id: supporterGroup.id,
         },
       },
     })
@@ -428,48 +404,22 @@ export async function joinAsSupporter({
     throw "Usuário já cadastrado em outra campanha do mesmo tipo.";
   }
 
-  let referralTree = [referral];
-  if (referralTree[0].level != 4) {
-    while (true) {
-      const referral = await prisma.supporter.findFirst({
-        where: {
-          OR: [
-            {
-              referralId: referralTree[referralTree.length - 1]?.id,
-              campaignId: campaign.id,
-            },
-            {
-              level: 4,
-              campaignId: campaign.id,
-            },
-          ],
+  const referralsSupporterGroups = await prisma.supporterGroup.findMany({
+    where: {
+      memberships: {
+        some: {
+          supporterId: referral.id,
         },
-      });
-
-      if (!referral) continue;
-
-      referralTree.push(referral);
-
-      if (referral.level === 4) break;
-    }
-  }
-
-  const ownedSupporterGroupsFromReferralTree =
-    await prisma.supporterGroupMembership.findMany({
-      where: {
-        supporterId: {
-          in: referralTree.map((referral) => referral.id),
-        },
-        isOwner: true,
       },
-    });
+    },
+  });
 
-  const createSupporterGroupMembershipQuery = ownedSupporterGroupsFromReferralTree.map(
+  const createSupporterGroupMembershipQuery = referralsSupporterGroups.map(
     (supporterGroup) => ({
       isOwner: false,
       supporterGroup: {
         connect: {
-          id: supporterGroup.supporterGroupId,
+          id: supporterGroup.id,
         },
       },
     })
