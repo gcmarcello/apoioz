@@ -9,6 +9,7 @@ import { listCampaigns, createCampaign } from "@/app/api/panel/campaigns/actions
 import { TopNavigation } from "@/app/(frontend)/_shared/components/navigation/TopNavigation";
 import ProfileDropdown from "@/app/(frontend)/_shared/components/navigation/ProfileDropdown";
 import { SectionTitle } from "@/app/(frontend)/_shared/components/text/SectionTitle";
+import Paragraph from "@/app/(frontend)/_shared/components/text/Paragraph";
 
 export default async function ChooseCampaign({
   user,
@@ -47,9 +48,16 @@ export default async function ChooseCampaign({
           <h2 className="text-sm font-medium text-gray-900">Campanhas Ativas</h2>
           <ul
             role="list"
-            className="mt-3 grid grid-cols-1 gap-4 empty:hidden sm:grid-cols-2 sm:gap-6 xl:grid-cols-4"
+            className={clsx(
+              "grid grid-cols-1 gap-4 empty:hidden sm:grid-cols-2 sm:gap-6 xl:grid-cols-4",
+              campaigns.length ? "mt-3" : "mt-1"
+            )}
           >
-            <CampaignList campaigns={campaigns} />
+            {campaigns.length ? (
+              <CampaignList campaigns={campaigns} />
+            ) : (
+              <Paragraph>Você não está participando de nenhuma campanha!</Paragraph>
+            )}
           </ul>
         </div>
       </div>

@@ -87,6 +87,13 @@ export function AddSupporterForm({
   }, [address]);
 
   useEffect(() => {
+    if (form.getValues("externalSupporter")) {
+      form.setValue("info.zoneId", undefined);
+      form.setValue("info.sectionId", undefined);
+    }
+  }, [form.watch("externalSupporter")]);
+
+  useEffect(() => {
     if (!form) return;
     setMetaform({
       submit: addSupporter,
@@ -113,6 +120,7 @@ export function AddSupporterForm({
       "info.birthDate",
       dayjs(fakerPT_BR.date.past({ refDate: 1 }).toISOString()).format("DD/MM/YYYY")
     );
+    form.setValue("externalSupporter", false);
     form.trigger("name");
   }
 
@@ -121,10 +129,10 @@ export function AddSupporterForm({
   return (
     <form>
       <div className="pb-4 pt-2">
-        {/* <Mocker
+        <Mocker
           mockData={generateFakeData}
           submit={form.handleSubmit((data) => addSupporter(data))}
-        /> */}
+        />
         <div className="space-y-3 divide-y">
           <div className="space-y-3">
             <div className="flex items-center"></div>

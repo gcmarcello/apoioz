@@ -4,10 +4,7 @@ import {
   verifyConflictingSupporter,
 } from "@/app/api/panel/supporters/service";
 import { CampaignHeader } from "../_shared/components/CampaignHeader";
-import {
-  readCampaign,
-  verifyCampaignSupportAvailabilityByZone,
-} from "@/app/api/panel/campaigns/service";
+import { readCampaign, verifyConflictingZone } from "@/app/api/panel/campaigns/service";
 import { readUser } from "@/app/api/user/service";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
@@ -30,22 +27,24 @@ export default async function CampaignLandingPage({
   const userId = headers().get("userId");
   const user = await readUser(userId);
 
-  if (!campaign) {
-    notFound();
-  }
-
-  const conflictingZone = await verifyCampaignSupportAvailabilityByZone({
-    userId,
-    campaignId: campaign?.id,
-  });
-
-  const referral = await readCampaignLeader(campaign?.id);
-
   if (!user) {
     redirect("/login?support=" + campaign?.slug);
   }
 
+  if (!campaign) {
+    notFound();
+  }
+
+  const conflictingZone = await verifyConflictingZone({
+    userId,
+    campaignId: campaign?.id,
+  });
+
+  console.log(conflictingZone);
+
   const conflictingSupport = await verifyConflictingSupporter(campaign, user.id);
+
+  const referral = await readCampaignLeader(campaign?.id);
 
   return (
     <div>
@@ -68,14 +67,14 @@ export default async function CampaignLandingPage({
               : "Seja um apoiador da nossa campanha!"
           }
         />
-        {conflictingZone && (
+        {conflictingZone.status && (
           <div className="mx-4 my-3">
             <ErrorAlert errors={["Esta campanha não faz parte da sua região."]} />
           </div>
         )}
 
-        {!conflictingZone && conflictingSupport ? (
-          conflictingSupport.type === "otherCampaign" ? (
+        {conflictingSupport &&
+          (conflictingSupport.type === "otherCampaign" ? (
             <div className="mx-4 my-3">
               <ErrorAlert errors={[conflictingSupport.message]} />
             </div>
@@ -83,8 +82,9 @@ export default async function CampaignLandingPage({
             <Link href="/painel">
               <Button variant="primary">Voltar ao painel de controle</Button>
             </Link>
-          )
-        ) : (
+          ))}
+
+        {!conflictingSupport && !conflictingZone.status && (
           <JoinCampaign referral={referral} campaign={campaign} />
         )}
       </div>

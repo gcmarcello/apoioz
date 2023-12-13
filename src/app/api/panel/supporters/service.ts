@@ -31,6 +31,12 @@ export async function createSupporter(
   if (request.supporterSession.level < 4 && request.referralId)
     throw "Você não pode cadastrar um apoiador para um apoiador.";
 
+  if (request.supporterSession.level < 4 && request.externalSupporter)
+    throw "Você não pode cadastrar um apoiador externo.";
+
+  if ((!request.info?.sectionId || !request.info?.zoneId) && !request.externalSupporter)
+    throw "Apoiadores precisam ter uma seção e zona.";
+
   const referral = request.referralId
     ? await prisma.supporter.findFirst({
         where: { id: request.referralId },
@@ -96,15 +102,15 @@ export async function createSupporter(
         },
       });
 
-  if (!user || !user.info?.sectionId || !user.info?.zoneId) throw "Erro ao criar usuário";
-
   const supporter = await prisma.supporter
     .create({
       include: { user: true },
       data: {
         level: 1,
-        Section: { connect: { id: user.info.sectionId } },
-        Zone: { connect: { id: user.info.zoneId } },
+        Section: user.info.sectionId
+          ? { connect: { id: user.info.sectionId } }
+          : undefined,
+        Zone: user.info.zoneId ? { connect: { id: user.info.zoneId } } : undefined,
         campaign: { connect: { id: referral.campaignId } },
         referral: { connect: { id: referral.id } },
         user: { connect: { id: user.id } },
@@ -518,12 +524,16 @@ export async function readSupportersFromGroup({
     orderBy: { createdAt: "desc" },
   });
 
+  const supporterListWithoutFormerSupporters = supporterList.filter(
+    (supporter) => supporter.userId !== getEnv("ANONYMOUS_USER_ID")
+  );
+
   return {
-    data: supporterList,
+    data: supporterListWithoutFormerSupporters,
     pagination: {
       pageIndex: pagination?.pageIndex,
       pageSize: pagination?.pageSize,
-      count: supporterList.length + 1,
+      count: supporterListWithoutFormerSupporters.length + 1,
     },
   };
 }
@@ -593,12 +603,16 @@ export async function readSupportersFromGroupWithRelations({
     orderBy: { createdAt: "desc" },
   });
 
+  const supporterListWithoutFormerSupporters = supporterList.filter(
+    (supporter) => supporter.userId !== getEnv("ANONYMOUS_USER_ID")
+  );
+
   return {
-    data: supporterList,
+    data: supporterListWithoutFormerSupporters,
     pagination: {
       pageIndex: pagination?.pageIndex,
       pageSize: pagination?.pageSize,
-      count: supporterList.length + 1,
+      count: supporterListWithoutFormerSupporters.length + 1,
     },
   };
 }
@@ -614,6 +628,26 @@ export async function readSupporterFromUser({
     where: { userId, campaignId },
   });
   if (supporter) return supporter;
+}
+
+export async function deleteSupporterAsSupporter({
+  supporterSession,
+}: {
+  supporterSession: Supporter;
+}) {
+  const supporter = await prisma.supporter.findFirst({
+    where: { id: supporterSession.id },
+  });
+
+  if (!supporter) throw "Apoiador não encontrado";
+  if (supporter.level === 4) throw "Você não pode sair da campanha sendo o líder.";
+
+  const deletedSupporter = await prisma.supporter.update({
+    where: { id: supporter.id },
+    data: { userId: getEnv("ANONYMOUS_USER_ID") },
+  });
+
+  return deletedSupporter;
 }
 
 export async function verifyConflictingSupporter(campaign: Campaign, userId: string) {
@@ -635,7 +669,6 @@ export async function verifyConflictingSupporter(campaign: Campaign, userId: str
       campaignId: { in: conflictingCampaigns },
     },
   });
-  console.log(conflictingSupporter);
 
   if (conflictingSupporter?.campaignId === campaign.id)
     return {
@@ -649,7 +682,6 @@ export async function verifyConflictingSupporter(campaign: Campaign, userId: str
       supporter: conflictingSupporter,
       message: "Você já faz parte da rede de outro candidato.",
     };
-  console.log("testxd");
   return null;
 }
 
