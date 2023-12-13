@@ -9,7 +9,7 @@ import {
 import { fakerPT_BR } from "@faker-js/faker";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Campaign } from "@prisma/client";
-import { Dispatch, SetStateAction, useEffect, useRef } from "react";
+import { Dispatch, SetStateAction, useContext, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 import { toProperCase } from "@/_shared/utils/format";
@@ -26,6 +26,13 @@ import dayjs from "dayjs";
 import { readZonesByCampaign } from "@/app/api/elections/zones/actions";
 import { readSectionsByZone } from "@/app/api/elections/sections/action";
 import { readAddressBySection } from "@/app/api/elections/locations/actions";
+import SwitchInput from "@/app/(frontend)/_shared/components/fields/Switch";
+import { SidebarContext } from "../lib/sidebar.ctx";
+import { scrollToElement } from "@/app/(frontend)/_shared/utils/scroll";
+import clsx from "clsx";
+import { SectionTitle } from "@/app/(frontend)/_shared/components/text/SectionTitle";
+import { MinusSmallIcon, PlusSmallIcon } from "@heroicons/react/24/solid";
+import DisclosureAccordion from "@/app/(frontend)/_shared/components/Disclosure";
 
 export function AddSupporterForm({
   campaign,
@@ -36,6 +43,8 @@ export function AddSupporterForm({
 }) {
   const ref = useRef<null | HTMLDivElement>(null);
   const errRef = useRef<null | HTMLDivElement>(null);
+
+  const { supporter: userSupporter } = useContext(SidebarContext);
 
   const form = useForm<CreateSupportersDto>({
     resolver: zodResolver(createSupportersDto),
@@ -72,6 +81,12 @@ export function AddSupporterForm({
   }, []);
 
   useEffect(() => {
+    if (ref.current) {
+      scrollToElement(ref.current, 0);
+    }
+  }, [address]);
+
+  useEffect(() => {
     if (!form) return;
     setMetaform({
       submit: addSupporter,
@@ -103,92 +118,110 @@ export function AddSupporterForm({
 
   if (!zones || !form) return <></>;
 
-  console.log(form.formState.errors);
-
   return (
     <form>
-      <div className="space-y-6 pb-5 pt-6">
-        <Mocker
+      <div className="pb-4 pt-2">
+        {/* <Mocker
           mockData={generateFakeData}
           submit={form.handleSubmit((data) => addSupporter(data))}
-        />
-        <div className="flex items-center">
-          <h4 className="block text-lg font-medium leading-6 text-gray-900">
-            Adicionar Manualmente
-          </h4>
-        </div>
-        {form.formState.errors.root?.serverError.message ? (
-          <div ref={errRef} className="scroll-mt-64">
-            <ErrorAlert
-              errors={[form.formState.errors.root.serverError.message as string]}
+        /> */}
+        <div className="space-y-3 divide-y">
+          <div className="space-y-3">
+            <div className="flex items-center"></div>
+            {form.formState.errors.root?.serverError.message ? (
+              <div ref={errRef} className="scroll-mt-64">
+                <ErrorAlert
+                  errors={[form.formState.errors.root.serverError.message as string]}
+                />
+              </div>
+            ) : null}
+            <TextField label="Nome do Apoiador" hform={form} name={"name"} />
+            <TextField label="Email" hform={form} name={"email"} />
+            <MaskedTextField
+              label="Celular"
+              hform={form}
+              name={"phone"}
+              mask="(99) 99999-9999"
             />
+            <MaskedTextField
+              hform={form}
+              label="Data de Nascimento"
+              mask="99/99/9999"
+              name={"info.birthDate"}
+            />
+            {!form.watch("externalSupporter") && (
+              <div className="grid grid-cols-2 gap-3">
+                <div className="col-span-1">
+                  <ListboxField
+                    hform={form}
+                    data={zones}
+                    displayValueKey={"number"}
+                    name={"info.zoneId"}
+                    label="Zona"
+                    onChange={(value) => {
+                      fetchSections(value.id);
+                    }}
+                  />
+                </div>
+                <div className="col-span-1">
+                  <ComboboxField
+                    hform={form}
+                    data={sections}
+                    label="Seção"
+                    name={"info.sectionId"}
+                    displayValueKey={"number"}
+                    disabled={!sections}
+                    onChange={(value) => {
+                      fetchAddress(value.id);
+                    }}
+                  />
+                </div>
+              </div>
+            )}
           </div>
-        ) : null}
-        <TextField label="Nome do Apoiador" hform={form} name={"name"} />
-        <TextField label="Email" hform={form} name={"email"} />
-        <MaskedTextField
-          label="Celular"
-          hform={form}
-          name={"phone"}
-          mask="(99) 99999-9999"
-        />
-        <MaskedTextField
-          hform={form}
-          label="Data de Nascimento"
-          mask="99/99/9999"
-          name={"info.birthDate"}
-        />
-        <ComboboxField
-          label="Indicador"
-          hform={form}
-          name={"referralId"}
-          fetcher={readSupportersFromGroup}
-          displayValueKey={"user.name"}
-        />
+          {userSupporter.level >= 4 && (
+            <DisclosureAccordion title="Opções de Administrador" scrollToContent={true}>
+              <div className="space-y-8">
+                <ComboboxField
+                  label="Indicado Por"
+                  hform={form}
+                  name={"referralId"}
+                  fetcher={readSupportersFromGroup}
+                  displayValueKey={"user.name"}
+                />
 
-        <div className="grid grid-cols-2 gap-3">
-          <div className="col-span-1">
-            <ListboxField
-              hform={form}
-              data={zones}
-              displayValueKey={"number"}
-              name={"info.zoneId"}
-              label="Zona"
-              onChange={(value) => {
-                fetchSections(value.id);
-              }}
-            />
-          </div>
-          <div className="col-span-1">
-            <ComboboxField
-              hform={form}
-              data={sections}
-              label="Seção"
-              name={"info.sectionId"}
-              displayValueKey={"number"}
-              disabled={!sections}
-              onChange={(value) => {
-                fetchAddress(value.id);
-              }}
-              reverseOptions={true}
-            />
-          </div>
+                <SwitchInput
+                  control={form.control}
+                  label="Apoiador Externo"
+                  name="externalSupporter"
+                  subLabel="que não vive na região."
+                />
+              </div>
+            </DisclosureAccordion>
+          )}
         </div>
-        {address && (
-          <div ref={ref} className="mt-6 border-t border-gray-100">
+
+        {!form.watch("externalSupporter") && (
+          <div
+            ref={ref}
+            className={clsx(
+              "mt-6 border-t border-gray-100",
+              address ? "block" : "hidden"
+            )}
+          >
             <dl className="divide-y divide-gray-100">
               <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                 <dt className="text-sm font-medium leading-6 text-gray-900">
                   Local de Votação
                 </dt>
                 <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                  {toProperCase(address.location || "")}
+                  {toProperCase(address?.location || "")}
                 </dd>
               </div>
               <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                 <dt className="text-sm font-medium leading-6 text-gray-900">Endereço</dt>
                 <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                  {toProperCase(address.address + ", " + address.City?.name)}
+                  {toProperCase(address?.address + ", " + address?.City?.name)}
                 </dd>
               </div>
             </dl>

@@ -10,7 +10,7 @@ export function TopNavigation(props: TopNavigationProps) {
   return (
     <nav
       className={clsx(
-        "w-100 fixed left-0 right-0 top-0 items-center border-t border-gray-200 bg-white",
+        "w-100 fixed left-0 right-0 top-0 items-center border-t-0 border-gray-200 bg-white",
         className
       )}
     >
