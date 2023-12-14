@@ -3,8 +3,16 @@ import { Edge, Handle, Node, NodeProps, Position, useReactFlow } from "reactflow
 
 import styles from "./styles/styles.module.css";
 import clsx from "clsx";
-import { EllipsisHorizontalIcon, PlusIcon } from "@heroicons/react/24/solid";
-import { XCircleIcon } from "@heroicons/react/24/outline";
+import {
+  ChevronUpIcon,
+  EllipsisHorizontalIcon,
+  PlusIcon,
+} from "@heroicons/react/24/solid";
+import {
+  ChevronDownIcon,
+  MinusCircleIcon,
+  XCircleIcon,
+} from "@heroicons/react/24/outline";
 import { readSupportersAsTree } from "@/app/api/panel/supporters/actions";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 import {
@@ -63,7 +71,6 @@ export function CustomNode({
   const { trigger: fetchSupporterReferred, isMutating: isFetching } = useAction({
     action: readSupporterAndReferred,
     onSuccess: ({ data }) => {
-      console.log(data);
       const { nodes, edges } = processNodesEdges({ supporters: data });
       saveNodes(nodes);
       saveEdges(edges);
@@ -82,7 +89,9 @@ export function CustomNode({
         </div>
         <div className="ml-2">
           <div className="text-lg font-bold">{label}</div>
-          <div className="text-gray-500">Apoiador</div>
+          <div className="text-gray-500">
+            {node.data.level === 4 ? "Líder" : "Apoiador"}
+          </div>
         </div>
       </div>
 
@@ -99,14 +108,22 @@ export function CustomNode({
       <Handle
         type="source"
         position={Position.Bottom}
-        className={clsx("-mb-6 flex w-full justify-center !bg-transparent text-gray-500")}
+        className={clsx(
+          "-mb-10 flex w-full justify-center !bg-transparent text-gray-500"
+        )}
         onClick={() => {
           node.data.hasChildren
             ? toggleNodesVisibility(node as any)
             : fetchSupporterReferred({ where: { supporterId: node.id } });
         }}
       >
-        {isFetching ? <ButtonSpinner /> : <EllipsisHorizontalIcon className="h-5 w-5" />}
+        {isFetching ? (
+          <ButtonSpinner />
+        ) : node.data.expanded ? (
+          <MinusCircleIcon className="ml-10 h-10 w-10" />
+        ) : (
+          <ChevronDownIcon className="h-10 w-10" />
+        )}
       </Handle>
     </div>
   );

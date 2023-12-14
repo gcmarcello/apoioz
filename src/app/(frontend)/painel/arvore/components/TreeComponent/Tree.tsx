@@ -153,7 +153,7 @@ function ReactFlowPro({
       zoomOnDoubleClick={false}
       elementsSelectable={false}
     >
-      <Panel position="top-left" className="bg-white pb-6 pr-6">
+      <Panel position="top-left" className="rounded-2xl bg-slate-50 bg-opacity-50 p-6">
         <NodeSearch customFlowContext={customFlowContext} />
       </Panel>
       <Background />
