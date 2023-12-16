@@ -27,7 +27,7 @@ export function getPageName(url: string, mobile: boolean = false): string {
   } else {
     switch (pageName) {
       case "mapa":
-        return "Mapa de Eleitores";
+        return "Mapa de Apoiadores";
       case "painel":
         return "Painel de Controle";
       case "time":

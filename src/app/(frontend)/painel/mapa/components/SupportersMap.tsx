@@ -9,6 +9,9 @@ import { toProperCase } from "@/_shared/utils/format";
 import { For } from "@/app/(frontend)/_shared/components/For";
 import { FullscreenControl } from "react-leaflet-fullscreen";
 import MarkerClusterGroup from "react-leaflet-cluster";
+import { generateContrastingColorsArray } from "@/app/(frontend)/_shared/utils/colors";
+import { Neighborhood, Zone } from "prisma/generated/zod";
+import { filterOutValues, retrieveBoundsFromGeoJSONS } from "../utils/coordinates";
 
 const POSITION_CLASSES = {
   bottomleft: "leaflet-bottom leaflet-left",
@@ -20,21 +23,17 @@ const POSITION_CLASSES = {
 export function SupportersMap({
   mapData,
   zones,
-  mapOptions,
   neighborhoods,
+  sections,
 }: {
   mapData: any;
-  zones: any;
-  mapOptions: any;
-  neighborhoods: any;
+  zones: (Zone & { label: number; color: string; checked: boolean })[];
+  neighborhoods: (Neighborhood & { label: string; color: string; checked: boolean })[];
+  sections: { showEmptySections: boolean };
 }) {
   const [open, setOpen] = useState(false);
   const [modalInfo, setModalInfo] = useState(null);
-  const center = [51.505, -0.09];
-  const rectangle = [
-    [51.49, -0.08],
-    [51.5, -0.06],
-  ];
+  const center = [0, 0];
 
   const mapRef = useRef(null);
 
@@ -50,12 +49,27 @@ export function SupportersMap({
 
   function FitBoundsComponent() {
     const map = useMap();
-    const markerCoords = mapData!.map((marker) => marker.geocode);
+    const markerCoords = mapData?.map((marker) => marker.geocode);
+    let geoJSONBounds = null;
+
+    if (zones.filter((zone) => zone.checked).length) {
+      geoJSONBounds = retrieveBoundsFromGeoJSONS(
+        zones.filter((zone) => zone.checked).map((zone) => zone.geoJSON)
+      );
+    } else if (neighborhoods.filter((neighborhood) => neighborhood.checked).length) {
+      geoJSONBounds = retrieveBoundsFromGeoJSONS(
+        neighborhoods
+          .filter((neighborhood) => neighborhood.checked)
+          .map((neighborhood) => neighborhood.geoJSON)
+      );
+    }
+
     useEffect(() => {
       if (!mapRef.current) {
         mapRef.current = map;
       }
-      map.fitBounds(markerCoords as LatLngBoundsExpression);
+      const mapBounds = geoJSONBounds || markerCoords;
+      map.fitBounds(mapBounds);
     }, [map, markerCoords]);
 
     return null;
@@ -108,77 +122,101 @@ export function SupportersMap({
         />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+          url="http://15.229.220.0:8080/styles/positron/{z}/{x}/{y}.png"
         />
-        {mapOptions.showZones && (
-          <For each={zones}>
-            {({ geoJSON, color, checked, value }, index) =>
-              (zones.every((zone) => !zone.checked) || checked) && (
-                <GeoJSON key={`zone-${index}`} data={geoJSON} style={{ color }} />
-              )
-            }
-          </For>
-        )}
-        {mapOptions.showNeighborhoods && (
-          <For each={neighborhoods}>
-            {({ geoJSON, color, checked, value }, index) =>
-              (neighborhoods.every((neighborhood) => !neighborhood.checked) ||
-                checked) && (
-                <GeoJSON
-                  key={`neighborhood-${index}`}
-                  data={geoJSON}
-                  style={{ color }}
+
+        <For each={zones}>
+          {({ geoJSON, color, checked }, index) => {
+            if (!geoJSON || !checked) return null;
+            return (
+              <GeoJSON key={`zone-${index}`} data={geoJSON as any} style={{ color }} />
+            );
+          }}
+        </For>
+
+        <For each={neighborhoods}>
+          {({ geoJSON, color, checked, name }, index) => {
+            if (
+              !geoJSON ||
+              (!checked && neighborhoods.some((n) => n.checked)) ||
+              zones.some((zone) => zone.checked)
+            )
+              return null;
+            return (
+              <GeoJSON
+                key={`neighborhood-${index}`}
+                data={geoJSON as any}
+                style={{ color }}
+                eventHandlers={{
+                  click: (event) => {
+                    if (closeTimeout) clearTimeout(closeTimeout);
+                    event.target.openPopup();
+                  },
+                  mouseout: (event) => {
+                    closeTimeout = setTimeout(() => {
+                      event.target.closePopup();
+                    }, 300);
+                  },
+                }}
+              >
+                <Popup
+                  interactive={true}
+                  offset={[0, 0]}
                   eventHandlers={{
-                    click: (event) => {
+                    mouseover: (event) => {
                       if (closeTimeout) clearTimeout(closeTimeout);
-                      event.target.openPopup();
                     },
                     mouseout: (event) => {
-                      closeTimeout = setTimeout(() => {
-                        event.target.closePopup();
-                      }, 300);
+                      event.target._source.closePopup();
                     },
                   }}
                 >
-                  <Popup
-                    interactive={true}
-                    offset={[0, 0]}
-                    eventHandlers={{
-                      mouseover: (event) => {
-                        if (closeTimeout) clearTimeout(closeTimeout);
-                      },
-                      mouseout: (event) => {
-                        event.target._source.closePopup();
-                      },
-                    }}
-                  >
-                    {(() => {
-                      return (
-                        <article className="flex max-w-2xl flex-col items-start  gap-y-3 ">
-                          <div className="group relative">
-                            <div className="text-sm font-bold text-gray-900">
-                              {toProperCase(value)}
-                            </div>
+                  {(() => {
+                    return (
+                      <article className="flex max-w-2xl flex-col items-start  gap-y-3 ">
+                        <div className="group relative">
+                          <div className="text-sm font-bold text-gray-900">
+                            {toProperCase(name)}
                           </div>
-                        </article>
-                      );
-                    })()}
-                  </Popup>
-                </GeoJSON>
-              )
-            }
-          </For>
-        )}
-        {mapOptions.showAddresses && (
+                        </div>
+                      </article>
+                    );
+                  })()}
+                </Popup>
+              </GeoJSON>
+            );
+          }}
+        </For>
+        {
           <MarkerClusterGroup
             chunkedLoading
-            maxClusterRadius={100}
+            maxClusterRadius={50}
             showCoverageOnHover={false}
             iconCreateFunction={createClusterCustomIcon}
           >
             <For each={mapData} fallback={<p>Loading...</p>}>
-              {({ geocode, location, address, supportersCount, sectionsCount }, index) =>
-                (supportersCount || mapOptions.showEmptyAddresses) && (
+              {(
+                {
+                  geocode,
+                  location,
+                  address,
+                  supportersCount,
+                  sectionsCount,
+                  zone,
+                  neighborhood,
+                },
+                index
+              ) => {
+                if (
+                  !geocode ||
+                  (!zones.find((z) => z.number === zone).checked &&
+                    zones.some((z) => z.checked)) ||
+                  (!neighborhoods.find((n) => n.name === neighborhood).checked &&
+                    neighborhoods.some((n) => n.checked)) ||
+                  (!sections.showEmptySections && supportersCount === 0)
+                )
+                  return null;
+                return (
                   <Marker
                     icon={createAddressCustomIcon(supportersCount)}
                     key={index}
@@ -255,11 +293,11 @@ export function SupportersMap({
                       })()}
                     </Popup>
                   </Marker>
-                )
-              }
+                );
+              }}
             </For>
           </MarkerClusterGroup>
-        )}
+        }
         <FitBoundsComponent />
       </MapContainer>
       {/* <AddressDetailsModal open={open} setOpen={setOpen} modalInfo={modalInfo} /> */}

@@ -13,7 +13,6 @@ export async function createMapData() {
       .then(SupporterSessionMiddleware);
 
     const mapData = await service.createMapData(parsedRequest);
-
     return ActionResponse.success({ data: mapData });
   } catch (err) {
     console.log(err);

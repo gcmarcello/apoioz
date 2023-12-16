@@ -21,7 +21,7 @@ export async function createMapData(request) {
     include: {
       Section: {
         include: {
-          Zone: true,
+          Zone: { select: { id: true, number: true, stateId: true } },
           Supporter: {
             where: {
               supporterGroupsMemberships: {
@@ -34,26 +34,11 @@ export async function createMapData(request) {
     },
   });
 
-  const zones = await readZonesByCampaign(request.supporterSession.campaignId);
-  const zonesInfo = [];
-  for (const zone of zones) {
-    zonesInfo.push(await readZoneGeoJSON(zone.id));
-  }
+  const zones = await readZonesByCampaign(request.supporterSession.campaignId, true);
 
   const neighborhoods = await prisma.neighborhood.findMany({
     where: { cityId },
   });
-  for (const neighborhood of neighborhoods) {
-    (neighborhood as any).color = generateRandomHexColor();
-  }
 
-  return { addresses: mapData, zonesInfo, neighborhoods };
-}
-
-export async function readZoneGeoJSON(zoneId: string) {
-  const json = await prisma.zone.findFirst({
-    where: { id: zoneId },
-    include: { ZoneGeoJSON: { select: { geoJSON: true } } },
-  });
-  return { ...json, color: generateRandomHexColor() };
+  return { addresses: mapData, zones, neighborhoods };
 }

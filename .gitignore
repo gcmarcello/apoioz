@@ -8,6 +8,9 @@ generated
 /.pnp
 .pnp.js
 
+#scripts
+/scripts
+
 # testing
 /coverage
 

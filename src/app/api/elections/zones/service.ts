@@ -1,13 +1,17 @@
 import prisma from "prisma/prisma";
 
-export async function readZonesByCampaign(campaignId: string) {
+export async function readZonesByCampaign(campaignId: string, geoJSON: boolean = false) {
   try {
     const campaign = await prisma.campaign.findUnique({
       where: { id: campaignId },
       include: {
         city: {
           include: {
-            City_To_Zone: { include: { Zone: true } },
+            City_To_Zone: {
+              include: {
+                Zone: { select: { id: true, number: true, stateId: true, geoJSON } },
+              },
+            },
           },
         },
       },
@@ -24,7 +28,7 @@ export async function readZonesByCampaign(campaignId: string) {
 export async function readZonesByCity(cityId: string) {
   const selectedZones = await prisma.city_To_Zone.findMany({
     where: { cityId },
-    select: { City: true, Zone: true },
+    select: { City: true, Zone: { select: { id: true, number: true, stateId: true } } },
     orderBy: { Zone: { number: "asc" } },
   });
   return {
@@ -37,7 +41,7 @@ export async function readZonesByCity(cityId: string) {
 export async function readZonesByState(stateId: string) {
   const selectedZones = await prisma.zone.findMany({
     where: { stateId },
-    include: { State: true },
+    select: { id: true, number: true, stateId: true, State: true },
   });
   return {
     state: selectedZones[0].State,
