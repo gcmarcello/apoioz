@@ -49,17 +49,10 @@ export const createSupportersDto = z
 
 export type CreateSupportersDto = z.infer<typeof createSupportersDto>;
 
-export const joinAsSupporterDto = z.object({
-  campaignId: z.string(),
-  referralId: z.string().optional(),
-});
-
-export type JoinAsSupporterDto = z.infer<typeof joinAsSupporterDto>;
-
 export const readSupportersAsTreeDto = readDto(
   z.object({
     supporterId: z.string().optional(),
-    nestLevel: z.number().optional(),
+    hierarchyLevel: z.number().optional(),
   })
 );
 

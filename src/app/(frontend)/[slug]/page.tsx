@@ -1,8 +1,4 @@
 "use server";
-import {
-  readCampaignLeader,
-  verifyConflictingSupporter,
-} from "@/app/api/panel/supporters/service";
 import { CampaignHeader } from "../_shared/components/CampaignHeader";
 import {
   readCampaign,
@@ -18,6 +14,7 @@ import { SectionTitle } from "../_shared/components/text/SectionTitle";
 import Link from "next/link";
 import ErrorAlert from "../_shared/components/alerts/errorAlert";
 import JoinCampaign from "./components/JoinCampaign";
+import { verifyConflictingSupporter } from "@/app/api/panel/supporters/services/create.service";
 
 export default async function CampaignLandingPage({
   params,
@@ -39,7 +36,11 @@ export default async function CampaignLandingPage({
     campaignId: campaign?.id,
   });
 
-  const referral = await readCampaignLeader(campaign?.id);
+  const referral = await prisma.campaign.findFirst({
+    where: {
+      id: campaign.id,
+    },
+  });
 
   if (!user) {
     redirect("/login?support=" + campaign?.slug);
