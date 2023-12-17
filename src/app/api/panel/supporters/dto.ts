@@ -32,19 +32,22 @@ export const createSupportersDto = z
     }),
     referralId: z.string().optional(),
     campaignId: z.string().optional(),
-    externalSupporter: z.boolean().optional(),
+    externalSupporter: z.boolean().optional().default(false),
     poll: pollAnswerDto.optional(),
   })
   .refine(
     (data) => {
-      if (!data.info.sectionId || !data.info.zoneId) {
-        return data.externalSupporter;
-      }
+      if (
+        (Boolean(data.info.sectionId) === false || Boolean(data.info.zoneId) === false) &&
+        Boolean(data.externalSupporter) === false
+      )
+        return false;
+      return true;
     },
-    (data) => ({
-      path: !data.info.zoneId ? ["info.zoneId"] : ["info.sectionId"],
-      message: !data.info.zoneId ? "Zona inválida" : "Seção Inválida",
-    })
+    {
+      message: "Seção e Zona são obrigatórios para apoiadores internos",
+      path: ["externalSupporter"],
+    }
   );
 
 export type CreateSupportersDto = z.infer<typeof createSupportersDto>;

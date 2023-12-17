@@ -150,11 +150,32 @@ export async function joinAsSupporter(request: JoinAsSupporterDto) {
     const { request: parsedRequest } =
       await UseMiddlewares(request).then(UserSessionMiddleware);
 
-    /* const newSupporter = await supportersService.joinAsSupporter(parsedRequest); */
+    const newSupporter = await supportersService.joinAsSupporter(parsedRequest);
     cookies().set("activeCampaign", request.campaignId);
     return ActionResponse.success({
-      data: "xd",
+      data: newSupporter,
       message: "Sucesso ao criar novo apoiador!",
+    });
+  } catch (error) {
+    console.log(error);
+    return ActionResponse.error(error);
+  }
+}
+
+export async function leaveAsSupporter() {
+  try {
+    const { request: parsedRequest } = await UseMiddlewares()
+      .then(UserSessionMiddleware)
+      .then(SupporterSessionMiddleware);
+
+    const deleteSupporter =
+      await supportersService.deleteSupporterAsSupporter(parsedRequest);
+
+    cookies().delete("activeCampaign");
+
+    return ActionResponse.success({
+      data: deleteSupporter,
+      message: "Sucesso ao sair da campanha!",
     });
   } catch (error) {
     console.log(error);

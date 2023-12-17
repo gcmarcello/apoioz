@@ -2,6 +2,7 @@ import { readCampaign } from "@/app/api/panel/campaigns/actions";
 import CampaignUpdateForm from "./components/CampaignUpdateForm";
 import { cookies, headers } from "next/headers";
 import { readSupporterFromUser } from "@/app/api/panel/supporters/actions";
+import LeaveCampaignForm from "./components/LeaveCampaignForm";
 
 export default async function CampaignSettings() {
   const campaign = await readCampaign({
@@ -12,9 +13,5 @@ export default async function CampaignSettings() {
     campaignId: campaign.id,
   });
   if (supporter.level === 4) return <CampaignUpdateForm campaign={campaign} />;
-  return (
-    <div className="mt-14 text-sm font-semibold text-gray-700">
-      Você não tem permissão para acessar as configurações de campanha.
-    </div>
-  );
+  return <LeaveCampaignForm campaign={campaign} />;
 }

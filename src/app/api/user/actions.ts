@@ -17,9 +17,8 @@ export async function readUserFromSupporter(supporterId: string) {
 
 export async function updateUser(request) {
   try {
-    const { request: parsedRequest } = await UseMiddlewares(request)
-      .then(UserSessionMiddleware)
-      .then(SupporterSessionMiddleware);
+    const { request: parsedRequest } =
+      await UseMiddlewares(request).then(UserSessionMiddleware);
 
     revalidatePath("/painel/configuracoes");
 
@@ -29,6 +28,7 @@ export async function updateUser(request) {
       data: updatedUser,
     });
   } catch (err) {
+    console.log(err);
     return ActionResponse.error(err);
   }
 }
