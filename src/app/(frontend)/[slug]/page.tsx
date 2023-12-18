@@ -11,8 +11,7 @@ import { SectionTitle } from "../_shared/components/text/SectionTitle";
 import Link from "next/link";
 import ErrorAlert from "../_shared/components/alerts/errorAlert";
 import JoinCampaign from "./components/JoinCampaign";
-import { verifyConflictingSupporter } from "@/app/api/panel/supporters/services/create.service";
-import { readCampaignLeader } from "@/app/api/panel/supporters/service";
+import { verifyConflictingSupporter } from "@/app/api/panel/supporters/service";
 
 export default async function CampaignLandingPage({
   params,
@@ -42,7 +41,12 @@ export default async function CampaignLandingPage({
 
   const conflictingSupport = await verifyConflictingSupporter(campaign, user.id);
 
-  const referral = await readCampaignLeader(campaign?.id);
+  const referral = await prisma.supporter.findFirst({
+    where: {
+      userId: user.id,
+      campaignId: campaign?.id,
+    },
+  });
 
   return (
     <div>

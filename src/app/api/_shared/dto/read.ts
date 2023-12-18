@@ -1,8 +1,9 @@
 import { ZodTypeAny, z } from "zod";
 
 const paginationDto = z.object({
-  pageSize: z.number().optional(),
-  pageIndex: z.number().optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  cursor: z.any(),
   count: z.number().optional(),
 });
 

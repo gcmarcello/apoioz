@@ -18,7 +18,6 @@ export function scrollToElement(element, margin = 20) {
   const scrollableParent = getScrollableParent(element);
 
   if (scrollableParent !== window) {
-    // Scroll within the container
     const containerDims = scrollableParent.getBoundingClientRect();
     const scrollPosition =
       dims.top - containerDims.top + scrollableParent.scrollTop - margin;
@@ -29,7 +28,6 @@ export function scrollToElement(element, margin = 20) {
       });
     }, 250);
   } else {
-    // Scroll the window
     setTimeout(() => {
       window.scroll({
         top: dims.top + window.scrollY - margin,

@@ -29,7 +29,7 @@ function useExpandCollapse(
       .parentId((d: Node) => edges.find((e: Edge) => e.target === d.id)?.source)(nodes);
 
     hierarchy.descendants().forEach((d) => {
-      d.data.data.hasChildren = Boolean(d.children?.length);
+      d.data.data.hasChildren = Boolean(d.children?.length > 0);
       d.children = d.data.data.expanded ? d.children : undefined;
     });
 

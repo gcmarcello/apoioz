@@ -2,7 +2,7 @@
 import { Button } from "@/app/(frontend)/_shared/components/Button";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
-import { joinAsSupporter } from "@/app/api/panel/supporters/actions";
+import { createSupporter } from "@/app/api/panel/supporters/actions";
 import { cookies } from "next/headers";
 import { useRouter } from "next/navigation";
 import { Router } from "next/router";
@@ -18,7 +18,7 @@ export default function JoinCampaign({
 }) {
   const router = useRouter();
   const { trigger: join, isMutating: isLoading } = useAction({
-    action: joinAsSupporter,
+    action: createSupporter,
     onSuccess: () => {
       showToast({ message: "Apoiando!", title: "Sucesso", variant: "success" });
       router.push("/painel");

@@ -8,32 +8,6 @@ import { readZonesByCity, readZonesByState } from "../../elections/zones/actions
 import { readZonesByCampaign } from "../../elections/zones/service";
 import { getEnv } from "@/_shared/utils/settings";
 
-export async function verifyPermission(
-  userId: string | null,
-  campaignId: string
-): Promise<Supporter> {
-  try {
-    if (!userId)
-      throw {
-        message: `Você não tem permissão para acessar os dados dessa campanha.`,
-        status: 403,
-      };
-    const validateCampaignSupporter = await prisma.supporter.findFirst({
-      where: { campaignId: campaignId, userId: userId },
-    });
-
-    if (!validateCampaignSupporter?.level)
-      throw {
-        message: `Você não tem permissão para acessar os dados dessa campanha.`,
-        status: 403,
-      };
-
-    return validateCampaignSupporter;
-  } catch (error) {
-    throw error;
-  }
-}
-
 export async function findCampaignById(campaignId: string) {
   return await prisma.campaign.findFirst({
     where: { id: campaignId },
@@ -107,14 +81,7 @@ export async function readCampaignBasicInfo(campaignId: string) {
   }
 }
 
-export async function generateMainPageStats({
-  userId,
-  campaignId,
-}: {
-  userId: string;
-  campaignId: string;
-}) {
-  await verifyPermission(userId, campaignId);
+export async function generateMainPageStats(supporterSession: string) {
   const totalSupporters = await prisma.supporter.count({
     where: { campaignId: campaignId, userId: { not: getEnv("ANONYMOUS_USER_ID") } },
   });

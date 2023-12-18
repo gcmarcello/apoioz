@@ -16,9 +16,10 @@ export type ActionResponseType<T> = SuccessResponse<T> | ErrorResponse;
 export class ActionResponse {
   public static success<T>({
     data,
+    pagination,
     message = "Operação realizada com sucesso",
   }: SuccessResponse<T>): SuccessResponse<T> {
-    return { data, message };
+    return { data, pagination, message };
   }
 
   public static error(message: string | string[] = "Operação falhou"): ErrorResponse {

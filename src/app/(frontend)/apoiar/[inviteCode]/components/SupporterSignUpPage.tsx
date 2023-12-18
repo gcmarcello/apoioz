@@ -1,10 +1,9 @@
 "use client";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
-import axios from "axios";
-import { EyeIcon, EyeSlashIcon, UserIcon } from "@heroicons/react/24/outline";
+import { UserIcon } from "@heroicons/react/24/outline";
 import AddSupporterSuccess from "./AddSupporterSuccess";
 import { normalizeEmail, normalizePhone, toProperCase } from "@/_shared/utils/format";
 import dayjs from "dayjs";
@@ -13,9 +12,7 @@ import { BasicInfoSection } from "./BasicInfoSection";
 import { ElectionInfoSection } from "./ElectionInfoSection";
 import clsx from "clsx";
 import { Mocker } from "@/app/(frontend)/_shared/components/Mocker";
-import { createSupporter, signUpAsSupporter } from "@/app/api/panel/supporters/actions";
 import { faker } from "@faker-js/faker";
-import prisma from "prisma/prisma";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 import Loading from "@/app/(frontend)/loading";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,6 +20,7 @@ import { CreateSupportersDto, createSupportersDto } from "@/app/api/panel/suppor
 import { BottomNavigation } from "@/app/(frontend)/_shared/components/navigation/BottomNavigation";
 import { Button } from "@/app/(frontend)/_shared/components/Button";
 import ErrorAlert from "@/app/(frontend)/_shared/components/alerts/errorAlert";
+import { signUpAsSupporter } from "@/app/api/auth/action";
 
 dayjs.extend(customParseFormat);
 

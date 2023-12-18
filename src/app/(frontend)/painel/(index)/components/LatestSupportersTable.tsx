@@ -1,32 +1,60 @@
 "use client";
 import { createColumnHelper } from "@tanstack/react-table";
 import React, { useState } from "react";
-import { Prisma } from "@prisma/client";
 import dayjs from "dayjs";
-import SupporterOverview from "../SupporterOverview";
+import SupporterOverview from "./SupporterOverview";
 import { Date } from "@/app/(frontend)/_shared/components/Date";
 import { DefaultTable } from "@/app/(frontend)/_shared/components/tables/table";
 import SupporterBall from "@/app/(frontend)/_shared/components/SupporterBall";
-import { Pagination } from "@/app/api/_shared/dto/read";
 import { ParagraphLink } from "@/app/(frontend)/_shared/components/text/ParagraphLink";
+import { Pagination } from "@/app/api/_shared/dto/read";
+import { Prisma } from "@prisma/client";
 
-export default function LatestSupportersTable({
-  initialData,
-  pagination,
-}: {
-  initialData: Prisma.SupporterGetPayload<{
-    include: {
-      referral: {
-        include: {
-          user: true;
+type LatestSupportersTableData = Prisma.SupporterGetPayload<{
+  include: {
+    user: {
+      select: {
+        info: { include: { Section: true; Zone: true } };
+        name: true;
+        email: true;
+        phone: true;
+      };
+    };
+    referral: {
+      include: {
+        user: {
+          select: {
+            info: { include: { Section: true; Zone: true } };
+            name: true;
+            email: true;
+            phone: true;
+          };
+        };
+        referral: {
+          include: {
+            user: {
+              select: {
+                info: { include: { Section: true; Zone: true } };
+                name: true;
+                email: true;
+                phone: true;
+              };
+            };
+          };
         };
       };
-      user: { include: { info: { include: { Section: true; Zone: true } } } };
     };
-  }>[];
+  };
+}>[];
+
+export default function LatestSupportersTable({
+  data,
+  pagination,
+}: {
+  data: LatestSupportersTableData;
   pagination: Pagination;
 }) {
-  const columnHelper = createColumnHelper<(typeof initialData)[0]>();
+  const columnHelper = createColumnHelper<(typeof data)[0]>();
   const [globalFilter, setGlobalFilter] = useState("");
 
   const columns = [
@@ -84,25 +112,27 @@ export default function LatestSupportersTable({
   ];
 
   return (
-    <DefaultTable
-      data={initialData}
-      columns={columns}
-      count={pagination.count}
-      disablePagination={true}
-      disableXlsx={true}
-      TableHeader={() => (
-        <div className="my-2 sm:flex-auto">
-          <h1 className="text-base font-semibold leading-6 text-gray-900">
-            Novos Apoiadores
-          </h1>
-          <div className="flex items-center gap-1">
-            <p className="mt-1 text-sm text-gray-700">
-              Os últimos apoiadores adicionados.{" "}
-              <ParagraphLink href="/painel/relatorios">Ver todos</ParagraphLink>
-            </p>
+    <div className="mt-8">
+      <DefaultTable
+        data={data}
+        columns={columns}
+        count={pagination.count}
+        disablePagination={true}
+        disableXlsx={true}
+        TableHeader={() => (
+          <div className="my-2 sm:flex-auto">
+            <h1 className="text-base font-semibold leading-6 text-gray-900">
+              Novos Apoiadores
+            </h1>
+            <div className="flex items-center gap-1">
+              <p className="mt-1 text-sm text-gray-700">
+                Os últimos apoiadores adicionados.{" "}
+                <ParagraphLink href="/painel/relatorios">Ver todos</ParagraphLink>
+              </p>
+            </div>
           </div>
-        </div>
-      )}
-    />
+        )}
+      />
+    </div>
   );
 }

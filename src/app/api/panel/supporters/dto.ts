@@ -3,8 +3,6 @@ import { phoneValidator } from "@/_shared/utils/validators/phone.validator";
 import { readDto } from "../../_shared/dto/read";
 import { pollAnswerDto } from "../polls/dto";
 import { birthDateValidator } from "@/_shared/utils/validators/birthDate.validator";
-import { UserInfoSchema, UserSchema } from "prisma/generated/zod";
-import { data } from "autoprefixer";
 
 export const readSupportersDto = readDto(
   z.object({
@@ -52,11 +50,11 @@ export const createSupportersDto = z
 
 export type CreateSupportersDto = z.infer<typeof createSupportersDto>;
 
-export const readSupportersAsTreeDto = readDto(
+export const readSupporterBranchesDto = readDto(
   z.object({
     supporterId: z.string().optional(),
-    hierarchyLevel: z.number().optional(),
+    branches: z.number().optional(),
   })
 );
 
-export type ReadSupportersAsTreeDto = z.infer<typeof readSupportersAsTreeDto>;
+export type ReadSupporterBranchesDto = z.infer<typeof readSupporterBranchesDto>;

@@ -42,6 +42,9 @@ export function useAction<
 
     return action(formattedArg)
       .then((res) => {
+        if (!res) {
+          throw "Resposta indefinida.";
+        }
         if ("error" in res) {
           throw res.message;
         }
@@ -65,6 +68,8 @@ export function useAction<
     onSuccess: (data) => onSuccess && onSuccess(data),
     onError: (error) => onError && onError(error),
   });
+
+  console.log(mutation);
 
   const actionResult = {
     ...mutation,

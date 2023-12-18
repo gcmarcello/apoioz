@@ -1,7 +1,3 @@
-import { readSupportersAsTree } from "@/app/api/panel/supporters/service";
-import { Supporter } from "@prisma/client";
-import { SupporterWithUserInfo } from "prisma/types/Supporter";
-
 export const createEdge = (source, target) => ({
   id: `e${source}->${target}`,
   source: source.toString(),

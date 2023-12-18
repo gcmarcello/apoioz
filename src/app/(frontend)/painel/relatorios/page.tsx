@@ -1,8 +1,5 @@
 "use client";
-import { readSupportersFromGroup } from "@/app/api/panel/supporters/actions";
 import SupportersTable from "./components/SupportersTable";
-import { Bar } from "react-chartjs-2";
-import { faker } from "@faker-js/faker";
 import { SupportersLastMonth } from "./components/SupportersLastMonth";
 import { ReferralRanking } from "./components/ReferralRanking";
 import { InformationCircleIcon } from "@heroicons/react/24/solid";

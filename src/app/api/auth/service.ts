@@ -11,7 +11,7 @@ import { findCampaignById } from "../panel/campaigns/service";
 import { answerPoll } from "../panel/polls/service";
 import { CreateSupportersDto } from "../panel/supporters/dto";
 import { verifyExistingUser } from "../user/service";
-import { verifyConflictingSupporter } from "../panel/supporters/services/create.service";
+import { verifyConflictingSupporter } from "../panel/supporters/service";
 
 export async function login(request: LoginDto & { user: User; isEmail: boolean }) {
   if (!request.user.password)

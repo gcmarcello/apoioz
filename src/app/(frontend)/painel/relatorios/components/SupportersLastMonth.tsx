@@ -1,5 +1,4 @@
 "use client";
-import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
 import {
   Chart as ChartJS,
@@ -13,8 +12,6 @@ import {
   ChartData,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import { LoadingSpinner } from "@/app/(frontend)/_shared/components/Spinners";
-import { useEffect, useState } from "react";
 import { useReports } from "../hooks/useReports";
 
 interface LineProps {

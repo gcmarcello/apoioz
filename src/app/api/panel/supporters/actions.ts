@@ -1,22 +1,16 @@
 "use server";
 
-import * as supportersService from "./service";
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 import { revalidatePath } from "next/cache";
 import { CreateSupportersLevelMiddleware, ReadSupportersMiddleware } from "./middlewares";
-import {
-  CreateSupportersDto,
-  JoinAsSupporterDto,
-  ReadSupportersAsTreeDto,
-  ReadSupportersDto,
-} from "./dto";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { ActionResponse } from "../../_shared/utils/ActionResponse";
-import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
+import * as service from "./service";
+import { ReadSupportersDto, CreateSupportersDto, ReadSupporterBranchesDto } from "./dto";
 
-export async function readSupportersFromGroup(request?: ReadSupportersDto) {
+export async function readSupportersFromSupporterGroup(request?: ReadSupportersDto) {
   try {
     const { request: parsedRequest } = await UseMiddlewares(request)
       .then(UserSessionMiddleware)
@@ -24,7 +18,7 @@ export async function readSupportersFromGroup(request?: ReadSupportersDto) {
       .then(ReadSupportersMiddleware);
 
     const { data, pagination } =
-      await supportersService.readSupportersFromGroup(parsedRequest);
+      await service.readSupportersFromSupporterGroup(parsedRequest);
 
     return ActionResponse.success({
       data,
@@ -35,7 +29,9 @@ export async function readSupportersFromGroup(request?: ReadSupportersDto) {
   }
 }
 
-export async function readSupportersFromGroupWithRelations(request?: ReadSupportersDto) {
+export async function readSupportersFromSupporterGroupWithRelation(
+  request?: ReadSupportersDto
+) {
   try {
     const { request: parsedRequest } = await UseMiddlewares(request)
       .then(UserSessionMiddleware)
@@ -43,7 +39,9 @@ export async function readSupportersFromGroupWithRelations(request?: ReadSupport
       .then(ReadSupportersMiddleware);
 
     const { data, pagination } =
-      await supportersService.readSupportersFromGroupWithRelations(parsedRequest);
+      await service.readSupportersFromSupporterGroupWithRelation(parsedRequest);
+
+    console.log(data, pagination);
 
     return ActionResponse.success({
       data,
@@ -52,13 +50,6 @@ export async function readSupportersFromGroupWithRelations(request?: ReadSupport
   } catch (err) {
     return ActionResponse.error(err);
   }
-}
-
-export async function readSupporterFromUser(data: {
-  userId: string;
-  campaignId: string;
-}) {
-  return supportersService.readSupporterFromUser(data);
 }
 
 export async function createSupporter(request: CreateSupportersDto) {
@@ -68,7 +59,7 @@ export async function createSupporter(request: CreateSupportersDto) {
       .then(SupporterSessionMiddleware)
       .then(CreateSupportersLevelMiddleware);
 
-    const newSupporter = await supportersService.createSupporter(parsedRequest);
+    const newSupporter = await service.createSupporter(parsedRequest);
 
     if (!newSupporter) throw "Erro ao criar novo apoiador.";
 
@@ -83,13 +74,13 @@ export async function createSupporter(request: CreateSupportersDto) {
   }
 }
 
-export async function readSupportersAsTree(request?: ReadSupportersAsTreeDto) {
+export async function readSupporterTrail(request?: ReadSupporterBranchesDto) {
   try {
     const { request: parsedRequest } = await UseMiddlewares(request)
       .then(UserSessionMiddleware)
       .then(SupporterSessionMiddleware);
 
-    const supporters = await supportersService.readSupportersAsTree(parsedRequest);
+    const supporters = await service.readSupporterTrail(parsedRequest);
 
     return ActionResponse.success({
       data: supporters,
@@ -99,66 +90,19 @@ export async function readSupportersAsTree(request?: ReadSupportersAsTreeDto) {
   }
 }
 
-export async function readSupporterTrail(request?: ReadSupportersAsTreeDto) {
+export async function readSupporterBranches(request?: ReadSupporterBranchesDto) {
   try {
     const { request: parsedRequest } = await UseMiddlewares(request)
       .then(UserSessionMiddleware)
       .then(SupporterSessionMiddleware);
 
-    const supporters = await supportersService.readSupporterTrail(parsedRequest);
+    const supporters = await service.readSupporterBranches(parsedRequest);
 
     return ActionResponse.success({
       data: supporters,
     });
   } catch (err) {
     ActionResponse.error(err);
-  }
-}
-
-export async function readSupporterAndReferred(request?: ReadSupportersAsTreeDto) {
-  try {
-    const { request: parsedRequest } = await UseMiddlewares(request)
-      .then(UserSessionMiddleware)
-      .then(SupporterSessionMiddleware);
-
-    const supporters = await supportersService.readSupporterAndReferred(parsedRequest);
-
-    return ActionResponse.success({
-      data: supporters,
-    });
-  } catch (err) {
-    ActionResponse.error(err);
-  }
-}
-
-export async function signUpAsSupporter(request: CreateSupportersDto) {
-  try {
-    const newSupporter = await supportersService.signUpAsSupporter(request);
-
-    return ActionResponse.success({
-      data: newSupporter,
-      message: "Sucesso ao criar novo apoiador!",
-    });
-  } catch (error) {
-    console.log(error);
-    return ActionResponse.error(error);
-  }
-}
-
-export async function joinAsSupporter(request: JoinAsSupporterDto) {
-  try {
-    const { request: parsedRequest } =
-      await UseMiddlewares(request).then(UserSessionMiddleware);
-
-    const newSupporter = await supportersService.joinAsSupporter(parsedRequest);
-    cookies().set("activeCampaign", request.campaignId);
-    return ActionResponse.success({
-      data: newSupporter,
-      message: "Sucesso ao criar novo apoiador!",
-    });
-  } catch (error) {
-    console.log(error);
-    return ActionResponse.error(error);
   }
 }
 
@@ -168,8 +112,7 @@ export async function leaveAsSupporter() {
       .then(UserSessionMiddleware)
       .then(SupporterSessionMiddleware);
 
-    const deleteSupporter =
-      await supportersService.deleteSupporterAsSupporter(parsedRequest);
+    const deleteSupporter = await service.deleteSupporterAsSupporter(parsedRequest);
 
     cookies().delete("activeCampaign");
 

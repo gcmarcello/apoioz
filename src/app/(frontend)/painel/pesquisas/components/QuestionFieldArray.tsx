@@ -55,7 +55,7 @@ export default function QuestionFieldArray({ defaultValues }: { defaultValues: a
     },
     onError: (error) => {
       showToast({
-        message: error.message || "Erro inesperado",
+        message: error,
         title: "Erro",
         variant: "error",
       });

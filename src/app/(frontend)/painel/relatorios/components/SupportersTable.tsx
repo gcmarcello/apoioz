@@ -11,7 +11,7 @@ import { useReports } from "../hooks/useReports";
 import { LoadingSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 
 export default function SupportersTable() {
-  const columnHelper = createColumnHelper<SupporterTableType>();
+  const columnHelper = createColumnHelper<any>(); // @todo
 
   const { supporters, openAsSupporter, globalFilter, setGlobalFilter } = useReports();
 
@@ -84,6 +84,8 @@ export default function SupportersTable() {
         <LoadingSpinner />
       </div>
     );
+
+  console.log(supporters);
 
   return (
     <DefaultTable

@@ -1,27 +1,14 @@
-import { MouseEventHandler } from "react";
 import { Edge, Handle, Node, NodeProps, Position, useReactFlow } from "reactflow";
 
-import styles from "./styles/styles.module.css";
 import clsx from "clsx";
-import {
-  ChevronUpIcon,
-  EllipsisHorizontalIcon,
-  PlusIcon,
-} from "@heroicons/react/24/solid";
-import {
-  ChevronDownIcon,
-  MinusCircleIcon,
-  XCircleIcon,
-} from "@heroicons/react/24/outline";
-import { readSupportersAsTree } from "@/app/api/panel/supporters/actions";
+
+import { ChevronDownIcon, MinusCircleIcon } from "@heroicons/react/24/outline";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
-import {
-  ButtonSpinner,
-  LoadingSpinner,
-} from "@/app/(frontend)/_shared/components/Spinners";
+import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { processNodesEdges } from "../lib/nodesEdges";
 import { CustomFlowContext } from "../types/CustomFlowContext";
-import { readSupporterAndReferred } from "@/app/api/panel/supporters/actions";
+import { readSupporterBranches } from "@/app/api/panel/supporters/actions";
+import { flattenSupporterWithReferred } from "@/app/(frontend)/_shared/utils/flattenSupporterTree";
 
 type NodeData = {
   expanded: boolean;
@@ -68,8 +55,17 @@ export function CustomNode({
 }: Node<NodeData> & {
   customFlowContext: CustomFlowContext;
 }) {
-  const { trigger: fetchSupporterReferred, isMutating: isFetching } = useAction({
-    action: readSupporterAndReferred,
+  const {
+    trigger: fetchSupporterReferred,
+    isMutating: isFetching,
+    error: error,
+  } = useAction({
+    action: readSupporterBranches,
+    parser: (data) => {
+      if (data.referred.length < 1) throw "No referred found";
+
+      return flattenSupporterWithReferred(data);
+    },
     onSuccess: ({ data }) => {
       const { nodes, edges } = processNodesEdges({ supporters: data });
       saveNodes(nodes);
@@ -114,7 +110,7 @@ export function CustomNode({
         onClick={() => {
           node.data.hasChildren
             ? toggleNodesVisibility(node as any)
-            : fetchSupporterReferred({ where: { supporterId: node.id } });
+            : fetchSupporterReferred({ where: { supporterId: node.id, branches: 1 } });
         }}
       >
         {isFetching ? (
@@ -122,7 +118,7 @@ export function CustomNode({
         ) : node.data.expanded ? (
           <MinusCircleIcon className="ml-10 h-10 w-10" />
         ) : (
-          <ChevronDownIcon className="h-10 w-10" />
+          !error && <ChevronDownIcon className="h-10 w-10" />
         )}
       </Handle>
     </div>

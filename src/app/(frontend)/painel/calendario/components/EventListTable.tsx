@@ -1,5 +1,4 @@
 import { contrastingColor } from "@/app/(frontend)/_shared/utils/colors";
-import { readSupporterFromUser } from "@/app/api/panel/supporters/actions";
 import { CalendarIcon, MapPinIcon } from "@heroicons/react/24/solid";
 import clsx from "clsx";
 import dayjs from "dayjs";
@@ -7,12 +6,15 @@ import { headers, cookies } from "next/headers";
 import { EventListActions } from "./EventListActions";
 import { Event } from "@prisma/client";
 import { Date } from "@/app/(frontend)/_shared/components/Date";
+import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
+import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
+import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 
 export default async function EventListTable({ events }: { events: Event[] }) {
-  const supporter = await readSupporterFromUser({
-    userId: headers().get("userId")!,
-    campaignId: cookies().get("activeCampaign")!.value,
-  });
+  const {
+    request: { supporterSession },
+  } = await UseMiddlewares().then(UserSessionMiddleware).then(SupporterSessionMiddleware);
+
   function getInitials(name: string) {
     const letters = name.split("");
     return (letters[0] + letters[1]).toLocaleUpperCase();
@@ -39,7 +41,7 @@ export default async function EventListTable({ events }: { events: Event[] }) {
                 <h3 className="pr-10 font-semibold text-gray-900 xl:pr-0">
                   {event.name}
                 </h3>
-                {event.status !== "active" && supporter.level === 4 && (
+                {event.status !== "active" && supporterSession.level === 4 && (
                   <div className="px-2">
                     <EventListActions event={event} />
                   </div>

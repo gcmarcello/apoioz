@@ -1,11 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Supporter, User } from "@prisma/client";
+import { User } from "@prisma/client";
 import { ReportsContext } from "../contexts/reports.ctx";
 import clsx from "clsx";
 import { ArrowLeftIcon, EyeIcon } from "@heroicons/react/24/outline";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
-import { readSupportersFromGroupWithRelations } from "@/app/api/panel/supporters/actions";
+import { readSupportersFromSupporterGroupWithRelation } from "@/app/api/panel/supporters/actions";
 
 export default function ReportsProvider({ children }: { children: any }) {
   const [viewingAs, setViewingAs] = useState<User | undefined>(undefined);
@@ -13,10 +13,10 @@ export default function ReportsProvider({ children }: { children: any }) {
 
   const {
     trigger: fetchSupporters,
-    data: supporters,
+    data,
     pagination,
   } = useAction({
-    action: readSupportersFromGroupWithRelations,
+    action: readSupportersFromSupporterGroupWithRelation,
   });
 
   const openAsSupporter = async (user: any) => {
@@ -38,7 +38,7 @@ export default function ReportsProvider({ children }: { children: any }) {
     <ReportsContext.Provider
       value={{
         supporters: {
-          data: supporters,
+          data,
           pagination,
         },
         openAsSupporter,

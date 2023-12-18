@@ -6,6 +6,7 @@ import { LoginDto } from "./dto";
 import { ExistingUserMiddleware } from "./middlewares";
 import { ActionResponse } from "../_shared/utils/ActionResponse";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
+import { CreateSupportersDto } from "../panel/supporters/dto";
 
 export async function login(request: LoginDto) {
   try {
@@ -22,8 +23,6 @@ export async function login(request: LoginDto) {
       message: "Login realizado com sucesso!",
     });
   } catch (err: any) {
-    console.log(err);
-
     return ActionResponse.error(err);
   }
 }
@@ -71,6 +70,20 @@ export async function signUp() {
       data: null,
     });
   } catch (error) {
+    return ActionResponse.error(error);
+  }
+}
+
+export async function signUpAsSupporter(request: CreateSupportersDto) {
+  try {
+    const newSupporter = await authService.signUpAsSupporter(request);
+
+    return ActionResponse.success({
+      data: newSupporter,
+      message: "Sucesso ao criar novo apoiador!",
+    });
+  } catch (error) {
+    console.log(error);
     return ActionResponse.error(error);
   }
 }
