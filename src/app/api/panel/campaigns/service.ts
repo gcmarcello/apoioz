@@ -7,6 +7,7 @@ import prisma from "prisma/prisma";
 import { readZonesByCity, readZonesByState } from "../../elections/zones/actions";
 import { readZonesByCampaign } from "../../elections/zones/service";
 import { getEnv } from "@/_shared/utils/settings";
+import { SupporterSession } from "@/middleware/functions/supporterSession.middleware";
 
 export async function findCampaignById(campaignId: string) {
   return await prisma.campaign.findFirst({
@@ -81,20 +82,37 @@ export async function readCampaignBasicInfo(campaignId: string) {
   }
 }
 
-export async function generateMainPageStats(supporterSession: string) {
+export async function generateMainPageStats(supporterSession: SupporterSession) {
   const totalSupporters = await prisma.supporter.count({
-    where: { campaignId: campaignId, userId: { not: getEnv("ANONYMOUS_USER_ID") } },
-  });
-  const supportersLastWeek = await prisma.supporter.count({
     where: {
-      campaignId: campaignId,
-      createdAt: { lt: dayjs().subtract(1, "week").toISOString() },
-      userId: { not: getEnv("ANONYMOUS_USER_ID") },
+      SupporterGroup: {
+        some: {
+          ownerId: supporterSession.id,
+        },
+      },
     },
   });
+
+  const supportersLastWeek = await prisma.supporter.count({
+    where: {
+      SupporterGroup: {
+        some: {
+          ownerId: supporterSession.id,
+        },
+      },
+      createdAt: { lt: dayjs().subtract(1, "week").toISOString() },
+    },
+  });
+
   const mostFrequentReferralId = await prisma.supporter.groupBy({
-    where: { campaignId: campaignId, userId: { not: getEnv("ANONYMOUS_USER_ID") } },
     by: ["referralId"],
+    where: {
+      SupporterGroup: {
+        some: {
+          ownerId: supporterSession.id,
+        },
+      },
+    },
     _count: {
       referralId: true,
     },
@@ -103,50 +121,30 @@ export async function generateMainPageStats(supporterSession: string) {
         referralId: "desc",
       },
     },
-
-    take: 1,
   });
 
   const mostFrequentReferral = await prisma.supporter.findUnique({
-    where: {
-      id: mostFrequentReferralId[0].referralId! || userId,
-      userId: { not: getEnv("ANONYMOUS_USER_ID") },
-    },
-    include: { user: { select: { name: true } } },
+    where: { id: mostFrequentReferralId[0].referralId },
   });
 
-  const supporters = await prisma.supporter.findMany({
-    where: { campaignId: campaignId, userId: { not: getEnv("ANONYMOUS_USER_ID") } },
-    include: {
-      user: {
-        include: {
-          info: {
-            select: { Section: { include: { Address: true } }, Zone: true },
+  const mostFrequentAddress = await prisma.address.findMany({
+    where: {
+      Section: {
+        every: {
+          Supporter: {
+            some: {
+              SupporterGroup: {
+                some: {
+                  ownerId: supporterSession.id,
+                },
+              },
+            },
           },
         },
       },
     },
+    include: {},
   });
-
-  const sectionCounts: any[] = [];
-
-  supporters.forEach((supporter) => {
-    const section = supporter.user.info?.Section;
-    const zone = supporter.user.info?.Zone;
-    const index = sectionCounts.findIndex(
-      (supporter) => section?.id === supporter.section?.id
-    );
-    if (index === -1) {
-      sectionCounts.push({ section: section, zone: zone, count: 1 });
-    } else {
-      sectionCounts[index] = {
-        ...sectionCounts[index],
-        count: sectionCounts[index].count + 1,
-      };
-    }
-  });
-
-  const leadingSection = sectionCounts.sort((a, b) => b.count - a.count)[0];
 
   return {
     totalSupporters,
