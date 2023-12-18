@@ -127,23 +127,33 @@ export async function generateMainPageStats(supporterSession: SupporterSession) 
     where: { id: mostFrequentReferralId[0].referralId },
   });
 
-  const mostFrequentAddress = await prisma.address.findMany({
+  const mostFrequentSection = await prisma.userInfo.groupBy({
+    by: ["sectionId"],
     where: {
-      Section: {
-        every: {
-          Supporter: {
-            some: {
-              SupporterGroup: {
-                some: {
-                  ownerId: supporterSession.id,
-                },
+      user: {
+        supporter: {
+          some: {
+            SupporterGroup: {
+              some: {
+                ownerId: supporterSession.id,
               },
             },
           },
         },
       },
     },
-    include: {},
+    _count: {
+      sectionId: true,
+    },
+    orderBy: {
+      _count: {
+        sectionId: "desc",
+      },
+    },
+  });
+
+  const leadingSection = await prisma.section.findUnique({
+    where: { id: mostFrequentSection[0].sectionId },
   });
 
   return {
@@ -170,25 +180,15 @@ export async function readCampaignTeamMembers(campaignId: string) {
 export async function createCampaign(data: any) {
   const supporterId = crypto.randomUUID();
 
-  const supporterGroup = await prisma.supporterGroup.create({
-    data: {},
-  });
-
   const campaign = await prisma.campaign.create({
     data: {
-      ...data,
       supporters: {
         create: {
           id: supporterId,
           userId: data.userId,
           level: 4,
-          supporterGroupsMemberships: {
-            create: [
-              {
-                isOwner: true,
-                supporterGroupId: supporterGroup.id,
-              },
-            ],
+          SupporterGroup: {
+            create: {},
           },
         },
       },

@@ -1,7 +1,7 @@
 import { ComboboxField } from "@/app/(frontend)/_shared/components/fields/Select";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 import {
-  readSupporterGroupSupporters,
+  readSupportersFromSupporterGroup,
   readSupporterTrail,
 } from "@/app/api/panel/supporters/actions";
 import { processNodesEdges } from "../lib/nodesEdges";
@@ -43,7 +43,7 @@ export function NodeSearch({
       label="Encontre um apoiador"
       hform={searchForm}
       name={"supporter"}
-      fetcher={readSupporterGroupSupporters}
+      fetcher={readSupportersFromSupporterGroup}
       onChange={(value) => {
         fetchSupporterTrail({
           where: {

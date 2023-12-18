@@ -4,7 +4,7 @@ import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 import { CreateSupportersDto, createSupportersDto } from "@/app/api/panel/supporters/dto";
 import {
   createSupporter,
-  readSupporterGroupSupporters,
+  readSupportersFromSupporterGroup,
 } from "@/app/api/panel/supporters/actions";
 import { fakerPT_BR } from "@faker-js/faker";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -194,7 +194,7 @@ export function AddSupporterForm({
                   label="Indicado Por"
                   hform={form}
                   name={"referralId"}
-                  fetcher={readSupporterGroupSupporters}
+                  fetcher={readSupportersFromSupporterGroup}
                   displayValueKey={"user.name"}
                 />
 

@@ -77,25 +77,24 @@ enum CampaignTypes {
 }
 
 model Campaign {
-  id             String           @id @default(uuid()) @db.Uuid
-  user           User?            @relation(fields: [userId], references: [id])
-  userId         String           @db.Uuid
-  options        Json?            @db.JsonB
-  name           String
-  year           String
-  supporters     Supporter[]
-  city           City?            @relation(fields: [cityId], references: [id])
-  cityId         String?          @db.VarChar
-  state          State?           @relation(fields: [stateId], references: [id])
-  stateId        String?          @db.VarChar
-  type           CampaignTypes
-  Event          Event[]
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  InviteCode     InviteCode[]
-  Poll           Poll[]
-  slug           String           @unique
-  SupporterGroup SupporterGroup[]
+  id         String        @id @default(uuid()) @db.Uuid
+  user       User?         @relation(fields: [userId], references: [id])
+  userId     String        @db.Uuid
+  options    Json?         @db.JsonB
+  name       String
+  year       String
+  supporters Supporter[]
+  city       City?         @relation(fields: [cityId], references: [id])
+  cityId     String?       @db.VarChar
+  state      State?        @relation(fields: [stateId], references: [id])
+  stateId    String?       @db.VarChar
+  type       CampaignTypes
+  Event      Event[]
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  InviteCode InviteCode[]
+  Poll       Poll[]
+  slug       String        @unique
 
   @@schema("public")
 }
@@ -132,8 +131,6 @@ model SupporterGroup {
   memberships SupporterGroupMembership[]
   createdAt   DateTime                   @default(now())
   updatedAt   DateTime                   @updatedAt
-  Campaign    Campaign?                  @relation(fields: [campaignId], references: [id])
-  campaignId  String?                    @db.Uuid
 
   @@schema("public")
 }
