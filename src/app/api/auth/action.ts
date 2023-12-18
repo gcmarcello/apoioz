@@ -23,6 +23,7 @@ export async function login(request: LoginDto) {
       message: "Login realizado com sucesso!",
     });
   } catch (err: any) {
+    console.log(err);
     return ActionResponse.error(err);
   }
 }

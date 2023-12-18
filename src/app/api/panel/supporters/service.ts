@@ -191,9 +191,9 @@ export async function readSupportersFromSupporterGroupWithRelation({
   if (!supporterGroup) throw "Você não tem permissão para acessar este grupo de apoio.";
 
   const supporterList = await prisma.supporter.findMany({
-    take: pagination.take,
-    skip: pagination.skip,
-    cursor: pagination.cursor,
+    take: pagination?.take || undefined,
+    skip: pagination?.skip || undefined,
+    cursor: pagination?.cursor || undefined,
     where: {
       campaignId: supporterSession.campaignId,
       supporterGroupsMemberships: {

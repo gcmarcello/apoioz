@@ -20,7 +20,7 @@ export default async function PanelPage() {
 
   return (
     <>
-      <MainStats />
+      {/* <MainStats /> */}
       <LatestSupportersTable
         data={latestSupporters.data}
         pagination={latestSupporters.pagination}

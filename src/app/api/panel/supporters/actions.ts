@@ -48,6 +48,7 @@ export async function readSupportersFromSupporterGroupWithRelation(
       pagination,
     });
   } catch (err) {
+    console.log(err);
     return ActionResponse.error(err);
   }
 }
