@@ -41,8 +41,6 @@ export async function readSupportersFromSupporterGroupWithRelation(
     const { data, pagination } =
       await service.readSupportersFromSupporterGroupWithRelation(parsedRequest);
 
-    console.log(data, pagination);
-
     return ActionResponse.success({
       data,
       pagination,

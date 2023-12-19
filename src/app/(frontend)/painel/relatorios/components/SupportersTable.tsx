@@ -23,14 +23,14 @@ export default function SupportersTable() {
       enableGlobalFilter: true,
       cell: (info) => info.getValue(),
     }),
-    columnHelper.accessor("referral", {
+    columnHelper.accessor("referral.user.name", {
       id: "referral",
       header: "Indicado por",
       enableSorting: true,
       cell: (info) => (
         <div className="group flex items-center gap-x-1.5 text-gray-500">
-          {info.getValue()?.user.name || "Líder"}
-          {info.getValue()?.user.name && <SupporterBall level={info.getValue()?.level} />}
+          {info.getValue()}
+
           <div className="absolute hidden group-hover:block"></div>
         </div>
       ),
@@ -38,6 +38,7 @@ export default function SupportersTable() {
     columnHelper.accessor("user.info.Zone.number", {
       id: "zone",
       header: "Zona",
+      enableSorting: true,
       cell: (info) => info.getValue(),
       filterFn: "arrIncludes",
     }),
@@ -54,6 +55,7 @@ export default function SupportersTable() {
     columnHelper.accessor("user", {
       id: "options",
       header: "Opções",
+      enableSorting: false,
       cell: (info) => (
         <div className="flex gap-x-3">
           <a
@@ -84,8 +86,6 @@ export default function SupportersTable() {
         <LoadingSpinner />
       </div>
     );
-
-  console.log(supporters);
 
   return (
     <DefaultTable

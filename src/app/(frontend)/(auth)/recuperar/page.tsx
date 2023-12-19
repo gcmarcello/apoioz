@@ -10,6 +10,7 @@ import { ArrowLeftCircleIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import SuccessAlert from "../../_shared/components/alerts/successAlert";
 import { useAction } from "../../_shared/hooks/useAction";
+import Image from "next/image";
 
 export default function RecoverPasswordPage() {
   const form = useForm();
@@ -37,13 +38,15 @@ export default function RecoverPasswordPage() {
         <ArrowLeftCircleIcon className="fixed left-3 top-3 h-10 w-10  text-indigo-600" />
       </Link>
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <img
-          className="mx-auto h-10 w-auto"
-          src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
+        <Image
+          height={150}
+          width={150}
+          className="mx-auto"
+          src="/logoindigo.svg"
           alt="Your Company"
         />
 
-        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-700">
+        <h2 className=" text-center text-2xl font-bold leading-9 tracking-tight text-gray-700">
           Recuperar Senha
         </h2>
       </div>

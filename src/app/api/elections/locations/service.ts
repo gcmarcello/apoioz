@@ -39,7 +39,7 @@ export async function readNeighborhoodsByCampaign(campaignId: string) {
   });
 
   if (checkForCampaign.cityId === null)
-    throw "Busca de bairros só é permitida para campanhas municipais.";
+    throw "Busca de bairros só é permitida para redes de apoio municipais.";
 
   return await prisma.neighborhood.findMany({
     where: { cityId: checkForCampaign.cityId },

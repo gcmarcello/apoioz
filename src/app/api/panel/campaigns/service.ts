@@ -72,7 +72,7 @@ export async function readCampaignBasicInfo(campaignId: string) {
 
     if (!campaign)
       return NextResponse.json({
-        message: `Você não tem permissão para acessar os dados dessa campanha.`,
+        message: `Essa campanha não existe.`,
         status: 403,
       });
 

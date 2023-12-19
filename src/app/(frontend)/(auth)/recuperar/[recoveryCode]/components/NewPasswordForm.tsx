@@ -56,7 +56,7 @@ export default function NewPasswordForm({
       <div className="my-2 flex flex-col justify-end space-y-4 sm:mx-auto sm:w-full sm:max-w-sm">
         <p className="mb-2 text-center text-sm text-gray-500">
           Digite e confime sua nova senha abaixo para reaver o acesso ao painel de
-          controle das campanhas que você participa!
+          controle das redes de apoio que você participa!
         </p>
         <form
           onSubmit={form.handleSubmit((data) => submitPasswordReset(data))}

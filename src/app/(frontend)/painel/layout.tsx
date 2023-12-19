@@ -33,6 +33,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       campaignId: activeCampaignId,
     });
 
+    if (!campaign) {
+      return <ChooseCampaign user={user} />;
+    }
+
     const supporter = await prisma.supporter.findFirst({
       where: { userId, campaignId: campaign.id },
     });

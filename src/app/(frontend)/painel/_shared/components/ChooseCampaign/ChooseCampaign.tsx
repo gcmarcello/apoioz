@@ -45,7 +45,7 @@ export default async function ChooseCampaign({
         </TopNavigation>
 
         <div className="mt-20">
-          <h2 className="text-sm font-medium text-gray-900">Campanhas Ativas</h2>
+          <h2 className="text-sm font-medium text-gray-900">Redes de Apoio Ativas</h2>
           <ul
             role="list"
             className={clsx(
