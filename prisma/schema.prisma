@@ -1,26 +1,34 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["postgresqlExtensions", "multiSchema"]
+  previewFeatures = ["postgresqlExtensions", "multiSchema", "fullTextSearch"]
+}
+
+generator zod {
+  provider         = "zod-prisma-types"
+  useMultipleFiles = true // default is false
+  createInputTypes = false // default is true
 }
 
 datasource db {
   provider   = "postgresql"
   url        = env("DATABASE_URL")
   extensions = [uuid_ossp(map: "uuid-ossp", schema: "extensions")]
-  schemas    = ["public", "section_mapping", "extensions"]
+  schemas    = ["public", "elections", "polls", "extensions"]
 }
 
 model User {
-  id        String      @id @default(uuid()) @db.Uuid
-  email     String      @unique
-  name      String?
-  password  String?
-  role      String
-  info      UserInfo?
-  campaign  Campaign[]
-  supporter Supporter[] @relation(name: "UserToSupporter")
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  id               String             @id @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  name             String
+  email            String             @unique
+  phone            String?            @unique
+  password         String?
+  role             String
+  info             UserInfo?
+  campaign         Campaign[]
+  supporter        Supporter[]        @relation(name: "UserToSupporter")
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  PasswordRecovery PasswordRecovery[]
 
   @@schema("public")
 }
@@ -28,18 +36,13 @@ model User {
 model UserInfo {
   user      User      @relation(fields: [userId], references: [id])
   userId    String    @id @unique @default(uuid()) @db.Uuid
-  phone     String?
-  birthDate DateTime?
-  stateId   String?   @db.VarChar
   party     Party?    @relation(fields: [partyId], references: [id])
-  partyId   String?   @db.Uuid
-  State     State?    @relation(fields: [stateId], references: [id])
-  City      City?     @relation(fields: [cityId], references: [id])
-  cityId    String?   @db.VarChar
+  partyId   String?
   Zone      Zone?     @relation(fields: [zoneId], references: [id])
   zoneId    String?   @db.Uuid
   Section   Section?  @relation(fields: [sectionId], references: [id])
   sectionId String?   @db.Uuid
+  birthDate DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
@@ -47,54 +50,81 @@ model UserInfo {
 }
 
 model Party {
-  id       String     @id @default(uuid()) @db.Uuid
+  id       String     @id @unique
   number   Int        @unique
   name     String
   ideology String
   UserInfo UserInfo[]
 
+  @@schema("elections")
+}
+
+enum CampaignTypes {
+  conselheiro_tutelar
+  vereador
+  prefeito
+  deputado_estadual
+  deputado_federal
+  senador
+  governador
+  presidente
+
   @@schema("public")
 }
 
 model Campaign {
-  id         String      @id @default(uuid()) @db.Uuid
-  user       User?       @relation(fields: [userId], references: [id])
-  userId     String      @db.Uuid
+  id         String        @id @default(uuid()) @db.Uuid
+  options    Json?         @db.JsonB
   name       String
   year       String
+  slug       String        @unique
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  user       User          @relation(fields: [userId], references: [id])
+  userId     String        @db.Uuid
   supporters Supporter[]
-  city       City?       @relation(fields: [cityId], references: [id])
-  cityId     String?     @db.VarChar
-  state      State?      @relation(fields: [stateId], references: [id])
-  stateId    String?     @db.VarChar
-  type       String
+  city       City?         @relation(fields: [cityId], references: [id])
+  cityId     String?       @db.VarChar
+  state      State?        @relation(fields: [stateId], references: [id])
+  stateId    String?       @db.VarChar
+  type       CampaignTypes
   Event      Event[]
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  InviteCode InviteCode[]
+  Poll       Poll[]
 
   @@schema("public")
 }
 
 model Supporter {
-  id                         String                     @id @default(uuid()) @db.Uuid
-  campaignId                 String                     @db.Uuid
-  campaign                   Campaign?                  @relation(fields: [campaignId], references: [id])
-  userId                     String                     @db.Uuid
-  user                       User                       @relation("UserToSupporter", fields: [userId], references: [id])
-  referralId                 String?                    @db.Uuid
-  referral                   Supporter?                 @relation("Referrals", fields: [referralId], references: [id])
-  referred                   Supporter[]                @relation("Referrals")
-  level                      Int
+  id         String    @id @default(uuid()) @db.Uuid
+  campaignId String    @db.Uuid
+  campaign   Campaign? @relation(fields: [campaignId], references: [id])
+  userId     String    @db.Uuid
+  user       User      @relation("UserToSupporter", fields: [userId], references: [id])
+  referralId String?   @db.Uuid
+  level      Int
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  InviteCode                 InviteCode[]
+  PollAnswer                 PollAnswer[]
+  SupporterGroup             SupporterGroup?
   supporterGroupsMemberships SupporterGroupMembership[]
   Event                      Event[]
-  createdAt                  DateTime                   @default(now())
-  updatedAt                  DateTime                   @updatedAt
+  referral                   Supporter?                 @relation("Referrals", fields: [referralId], references: [id])
+  referred                   Supporter[]                @relation("Referrals")
+  Section                    Section?                   @relation(fields: [sectionId], references: [id])
+  sectionId                  String?                    @db.Uuid
+  Zone                       Zone?                      @relation(fields: [zoneId], references: [id])
+  zoneId                     String?                    @db.Uuid
 
   @@schema("public")
 }
 
 model SupporterGroup {
   id          String                     @id @default(uuid()) @db.Uuid
+  ownerId     String                     @unique @db.Uuid
+  owner       Supporter                  @relation(fields: [ownerId], references: [id])
   memberships SupporterGroupMembership[]
   createdAt   DateTime                   @default(now())
   updatedAt   DateTime                   @updatedAt
@@ -107,7 +137,6 @@ model SupporterGroupMembership {
   supporter        Supporter      @relation(fields: [supporterId], references: [id])
   supporterGroupId String         @db.Uuid
   supporterGroup   SupporterGroup @relation(fields: [supporterGroupId], references: [id])
-  isOwner          Boolean        @default(false)
   id               String         @id @default(uuid()) @db.Uuid
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
@@ -116,19 +145,35 @@ model SupporterGroupMembership {
 }
 
 model Event {
-  id          String     @id @default(uuid()) @db.Uuid
-  name        String     @db.VarChar
-  description String     @db.Text
-  location    String     @db.VarChar
-  dateStart   DateTime   @db.Timestamptz(3)
-  dateEnd     DateTime   @db.Timestamptz(3)
-  campaignId  String     @db.Uuid
-  Campaign    Campaign   @relation(fields: [campaignId], references: [id])
-  hostId      String     @db.Uuid
-  Supporter   Supporter? @relation(fields: [hostId], references: [id])
-  status      String     @db.VarChar
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id           String     @id @default(uuid()) @db.Uuid
+  name         String     @db.VarChar
+  description  String     @db.Text
+  location     String     @db.VarChar
+  dateStart    DateTime   @db.Timestamptz(3)
+  dateEnd      DateTime   @db.Timestamptz(3)
+  campaignId   String     @db.Uuid
+  Campaign     Campaign   @relation(fields: [campaignId], references: [id])
+  hostId       String     @db.Uuid
+  Supporter    Supporter? @relation(fields: [hostId], references: [id])
+  status       String     @db.VarChar
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  observations String?    @db.Text
+
+  @@schema("public")
+}
+
+model InviteCode {
+  id          String    @id @default(uuid()) @db.Uuid
+  campaignId  String    @db.Uuid
+  referralId  String    @db.Uuid
+  expiresAt   DateTime  @db.Timestamptz(3)
+  enteredAt   DateTime? @db.Timestamptz(3)
+  submittedAt DateTime? @db.Timestamptz(3)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  campaign    Campaign  @relation(fields: [campaignId], references: [id])
+  referral    Supporter @relation(fields: [referralId], references: [id])
 
   @@schema("public")
 }
@@ -145,7 +190,7 @@ model Address {
   City         City      @relation(fields: [cityId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_3624b3085165071df70276a4000")
   Section      Section[]
 
-  @@schema("section_mapping")
+  @@schema("elections")
 }
 
 model City {
@@ -155,10 +200,10 @@ model City {
   Address      Address[]
   State        State          @relation(fields: [stateId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_e99de556ee56afe72154f3ed04a")
   City_To_Zone City_To_Zone[]
-  UserInfo     UserInfo[]
   Campaign     Campaign[]
+  Neighborhood Neighborhood[]
 
-  @@schema("section_mapping")
+  @@schema("elections")
 }
 
 model City_To_Zone {
@@ -168,19 +213,20 @@ model City_To_Zone {
   City   City   @relation(fields: [cityId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_1408688a13ad486e02cf6a50a03")
   Zone   Zone   @relation(fields: [zoneId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ef5c307ae0af73209fd208026a5")
 
-  @@schema("section_mapping")
+  @@schema("elections")
 }
 
 model Section {
-  id        String     @id(map: "PK_c4cd691e8a76eaaffa862f0fb25") @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
-  number    String     @db.VarChar
-  addressId String?    @db.Uuid
-  zoneId    String     @db.Uuid
-  Address   Address?   @relation(fields: [addressId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_3ff69a4fa9a649daf3fa869bcbc")
-  Zone      Zone       @relation(fields: [zoneId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_deab69c6c23c07560c03943b6aa")
+  id        String      @id(map: "PK_c4cd691e8a76eaaffa862f0fb25") @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  number    Int         @db.Integer
+  addressId String?     @db.Uuid
+  zoneId    String      @db.Uuid
+  Address   Address?    @relation(fields: [addressId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_3ff69a4fa9a649daf3fa869bcbc")
+  Zone      Zone        @relation(fields: [zoneId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_deab69c6c23c07560c03943b6aa")
   UserInfo  UserInfo[]
+  Supporter Supporter[]
 
-  @@schema("section_mapping")
+  @@schema("elections")
 }
 
 model State {
@@ -189,20 +235,101 @@ model State {
   name     String     @db.VarChar
   City     City[]
   Zone     Zone[]
-  UserInfo UserInfo[]
   Campaign Campaign[]
 
-  @@schema("section_mapping")
+  @@schema("elections")
 }
 
 model Zone {
   id           String         @id(map: "PK_3a6cfcf317ea20ea08421eab0a5") @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
-  number       String         @db.VarChar
+  number       Int            @db.Integer
   stateId      String         @db.VarChar
   City_To_Zone City_To_Zone[]
   Section      Section[]
   State        State          @relation(fields: [stateId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_943d589a985354af23c8330abde")
   UserInfo     UserInfo[]
+  Supporter    Supporter[]
+  geoJSON      Json?          @db.JsonB
 
-  @@schema("section_mapping")
+  @@schema("elections")
+}
+
+model Neighborhood {
+  id      String @id @unique @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  name    String @db.VarChar
+  cityId  String @db.VarChar
+  City    City   @relation(fields: [cityId], references: [id])
+  geoJSON Json?  @db.JsonB
+
+  @@schema("elections")
+}
+
+model PasswordRecovery {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  expiresAt DateTime @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt
+
+  @@schema("public")
+}
+
+model Poll {
+  id             String         @id @unique @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  title          String         @db.VarChar
+  campaignId     String         @db.Uuid
+  activeAtSignUp Boolean        @default(false)
+  campaign       Campaign       @relation(fields: [campaignId], references: [id])
+  active         Boolean        @default(true)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  PollQuestion   PollQuestion[]
+  PollAnswer     PollAnswer[]
+
+  @@schema("polls")
+}
+
+model PollQuestion {
+  id                   String       @id @unique @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  pollId               String?      @db.Uuid
+  poll                 Poll?        @relation(fields: [pollId], references: [id])
+  question             String       @db.VarChar
+  allowMultipleAnswers Boolean      @default(false)
+  allowFreeAnswer      Boolean      @default(false)
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+  PollOption           PollOption[]
+  PollAnswer           PollAnswer[]
+  active               Boolean      @default(true)
+
+  @@schema("polls")
+}
+
+model PollOption {
+  id         String        @id @unique @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  questionId String?       @db.Uuid
+  question   PollQuestion? @relation(fields: [questionId], references: [id])
+  name       String        @db.VarChar
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  active     Boolean       @default(true)
+
+  @@schema("polls")
+}
+
+model PollAnswer {
+  id           String       @id @unique @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
+  answer       Json?        @db.JsonB
+  pollId       String       @db.Uuid
+  poll         Poll         @relation(fields: [pollId], references: [id])
+  questionId   String       @db.Uuid
+  PollQuestion PollQuestion @relation(fields: [questionId], references: [id])
+  supporterId  String?      @db.Uuid
+  supporter    Supporter?   @relation(fields: [supporterId], references: [id])
+  ip           String?      @db.VarChar
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@schema("polls")
 }

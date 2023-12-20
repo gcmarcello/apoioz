@@ -1,11 +1,9 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/javascript-node-postgres
 {
   "name": "ApoioZ",
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-  "forwardPorts": [5432, 4040, 3000],
+  "forwardPorts": [5432, 5430, 4040, 3000],
   "customizations": {
     "vscode": {
       "extensions": [
@@ -18,7 +16,8 @@
         "maxcutlyp.dotenv-autocomplete",
         "bradlc.vscode-tailwindcss",
         "GitHub.copilot",
-        "rangav.vscode-thunder-client"
+        "rangav.vscode-thunder-client",
+        "eamodio.gitlens"
       ],
       "settings": {
         "extensions.autoCheckUpdates": false,
@@ -30,6 +29,9 @@
         },
         "editor.codeActionsOnSave": {
           "source.fixAll.eslint": true
+        },
+        "material-icon-theme.folders.associations": {
+          "_shared": "shared"
         },
         "material-icon-theme.activeIconPack": "none",
         "editor.formatOnSave": true,

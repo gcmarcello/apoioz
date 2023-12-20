@@ -8,6 +8,11 @@ services:
 
     volumes:
       - ../..:/workspaces:cached
+      - type: bind
+        source: ${SSH_AUTH_SOCK}
+        target: /ssh-agent
+    environment:
+      SSH_AUTH_SOCK: /ssh-agent
 
     command: sleep infinity
 
@@ -19,7 +24,6 @@ services:
 
   db:
     image: postgres:latest
-    restart: unless-stopped
     volumes:
       - postgres-data:/var/lib/postgresql/data
     environment:
@@ -31,9 +35,17 @@ services:
     extra_hosts:
       - host.docker.internal:host-gateway
 
+  cloudbeaver:
+    image: dbeaver/cloudbeaver:latest
+    ports:
+      - 5431:8978
+    volumes:
+      - "cloudbeaver:/opt/cloudbeaver/workspace/"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
   ngrok:
     image: ngrok/ngrok:latest
-    restart: unless-stopped
     command:
       - "start"
       - "--all"
@@ -46,8 +58,6 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-    # Add "forwardPorts": ["5432"] to **devcontainer.json** to forward PostgreSQL locally.
-    # (Adding the "ports" property to this file will not forward from a Codespace.)
-
 volumes:
   postgres-data:
+  cloudbeaver:
