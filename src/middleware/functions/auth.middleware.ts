@@ -22,6 +22,8 @@ export async function AuthMiddleware({
     .then((res) => res.json())
     .catch((error) => error);
 
+  if(!user) return false;
+
   const isAuthenticated = [...roles, "admin"].includes(user.role);
 
   if (!isAuthenticated) return false;

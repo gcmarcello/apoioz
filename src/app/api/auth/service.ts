@@ -19,9 +19,10 @@ export async function login(request: LoginDto & { user: User; isEmail: boolean }
 }
 
 export function createToken(request: { id: string }) {
-  if (!getEnv("JWT_KEY"))
+  const JWT_KEY = getEnv("JWT_KEY")
+  if (!JWT_KEY)
     throw "O serviço de autenticação se encontra fora do ar. ERROR: MISSING JWTKEY";
-  return jwt.sign({ id: request.id }, getEnv("JWT_KEY"), { expiresIn: "7d" });
+  return jwt.sign({ id: request.id }, JWT_KEY, { expiresIn: "7d" });
 }
 
 export async function createPasswordRecovery(identifier: string) {

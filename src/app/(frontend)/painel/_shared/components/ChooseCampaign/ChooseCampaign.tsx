@@ -25,7 +25,7 @@ export default async function ChooseCampaign({
     await createCampaign({
       name: fakerPT_BR.person.fullName() + " " + date.format("YYYY"),
       type: "vereador",
-      cityId: "3518800",
+      cityId: "3550308",
       slug: fakerPT_BR.word.noun(),
       year: date.format("YYYY"),
     });

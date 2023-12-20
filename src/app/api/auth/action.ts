@@ -7,7 +7,6 @@ import { ExistingUserMiddleware } from "./middlewares";
 import { ActionResponse } from "../_shared/utils/ActionResponse";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { createSupporter } from "../panel/supporters/service";
-import { createUser } from "../user/service";
 import { validateInviteCode } from "./invites/service";
 
 export async function login(request: LoginDto) {
