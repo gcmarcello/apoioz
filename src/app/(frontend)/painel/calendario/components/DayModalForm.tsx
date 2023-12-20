@@ -1,4 +1,3 @@
-import { Mocker } from "@/app/(frontend)/_shared/components/Mocker";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 import { readEventsAvailability, createEvent } from "@/app/api/panel/events/actions";
 import { fakerPT_BR } from "@faker-js/faker";
@@ -111,11 +110,6 @@ export default function SubmitEventRequest({
   return (
     <form onSubmit={form.handleSubmit((data) => submitEvent(data))}>
       <div className="my-2">
-        <Mocker
-          mockData={generateFakeData}
-          submit={form.handleSubmit((data) => submitEvent(data))}
-        />
-
         <div className="mt-4">
           <label
             htmlFor="name"

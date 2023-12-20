@@ -45,8 +45,6 @@ export function ListboxField<
     displayValue: i?.[props.displayValueKey as string] as string,
   }));
 
-  console.log(options);
-
   return (
     <Controller
       name={name}

@@ -3,13 +3,6 @@ generator client {
   previewFeatures = ["postgresqlExtensions", "multiSchema", "fullTextSearch"]
 }
 
-generator zod {
-  provider               = "zod-prisma-types"
-  useMultipleFiles       = true // default is false
-  createInputTypes       = false // default is true
-  addInputTypeValidation = false // default is true
-}
-
 datasource db {
   provider   = "postgresql"
   url        = env("DATABASE_URL")
