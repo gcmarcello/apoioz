@@ -50,11 +50,11 @@ export default function CampaignUpdateForm({ campaign }) {
         title: "Dados atualizados",
       }),
   });
-
+//@todo 
   return (
     <main className="px-2 sm:px-6 lg:flex-auto lg:px-0">
       <div className="mt-14 max-w-2xl space-y-16 sm:space-y-20 lg:mx-4 lg:max-w-none">
-        <form onSubmit={form.handleSubmit((data) => updateCampaignTrigger(data))}>
+        <form onSubmit={form.handleSubmit((data) => updateCampaignTrigger(data as any))}> 
           <div className="space-y-12">
             <div className="border-b border-gray-900/10 pb-8">
               <h2 className="text-base font-semibold leading-7 text-gray-900">
