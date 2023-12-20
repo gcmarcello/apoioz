@@ -218,9 +218,9 @@ export default function Map() {
                   <Marker
                     icon={createAddressCustomIcon(supportersCount)}
                     key={index}
-                    customOptions={{
+                    {...{customOptions: {
                       supportersCount,
-                    }}
+                    }}}
                     interactive={true}
                     position={geocode as LatLngExpression}
                     title={location!}
