@@ -117,7 +117,7 @@ export default function Map() {
         />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="http://15.229.220.0:8080/styles/positron/{z}/{x}/{y}.png"
+          url="https://apoiozmaps.xyz/styles/positron/{z}/{x}/{y}.png"
         />
 
         <For each={zones}>
@@ -218,9 +218,11 @@ export default function Map() {
                   <Marker
                     icon={createAddressCustomIcon(supportersCount)}
                     key={index}
-                    {...{customOptions: {
-                      supportersCount,
-                    }}}
+                    {...{
+                      customOptions: {
+                        supportersCount,
+                      },
+                    }}
                     interactive={true}
                     position={geocode as LatLngExpression}
                     title={location!}
