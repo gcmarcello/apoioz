@@ -87,17 +87,13 @@ export async function readCampaignBasicInfo(campaignId: string) {
 export async function generateMainPageStats(supporterSession: SupporterSession) {
   const totalSupporters = await prisma.supporter.count({
     where: {
-      SupporterGroup: {
-        ownerId: supporterSession.id,
-      },
+      campaignId: supporterSession.campaignId,
     },
   });
 
   const supportersLastWeek = await prisma.supporter.count({
     where: {
-      SupporterGroup: {
-        ownerId: supporterSession.id,
-      },
+      campaignId: supporterSession.campaignId,
       createdAt: { lt: dayjs().subtract(1, "week").toISOString() },
     },
   });
@@ -106,13 +102,7 @@ export async function generateMainPageStats(supporterSession: SupporterSession) 
     .groupBy({
       by: ["referralId"],
       where: {
-        supporterGroupsMemberships: {
-          some: {
-            supporterGroup: {
-              ownerId: supporterSession.id,
-            },
-          },
-        },
+        campaignId: supporterSession.campaignId,
       },
       _count: {
         referralId: true,
@@ -129,11 +119,18 @@ export async function generateMainPageStats(supporterSession: SupporterSession) 
       count: s._count.referralId,
     }));
 
-  if (!referralLeaderCount.id) throw "Indicação não encontrada";
+  const campaignLeader = await prisma.supporter.findFirst({
+    where: {
+      level: 4,
+      campaignId: supporterSession.campaignId,
+    },
+  });
 
   const referralLeader = await prisma.supporter
-    .findUnique({
-      where: { id: referralLeaderCount.id },
+    .findFirst({
+      where: {
+        id: referralLeaderCount.id || campaignLeader?.id,
+      },
       include: {
         user: true,
       },
@@ -147,9 +144,7 @@ export async function generateMainPageStats(supporterSession: SupporterSession) 
         user: {
           supporter: {
             some: {
-              SupporterGroup: {
-                ownerId: supporterSession.id,
-              },
+              campaignId: supporterSession.campaignId,
             },
           },
         },
@@ -172,7 +167,7 @@ export async function generateMainPageStats(supporterSession: SupporterSession) 
   if (!leadingSectionCount.id) throw "Seção não encontrada";
 
   const leadingSection = await prisma.section
-    .findUnique({
+    .findFirst({
       where: { id: leadingSectionCount.id },
       include: {
         Zone: true,
