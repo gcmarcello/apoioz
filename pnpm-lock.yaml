@@ -143,6 +143,9 @@ dependencies:
   tailwindcss:
     specifier: 3.3.3
     version: 3.3.3
+  typescript:
+    specifier: 5.3.2
+    version: 5.3.2
   zod:
     specifier: 3.21.0
     version: 3.21.0
@@ -205,9 +208,6 @@ devDependencies:
   ts-jest:
     specifier: ^29.1.1
     version: 29.1.1(@babel/core@7.23.6)(jest@29.7.0)(typescript@5.3.2)
-  typescript:
-    specifier: 5.3.2
-    version: 5.3.2
 
 packages:
 
@@ -7001,7 +7001,6 @@ packages:
     resolution: {integrity: sha512-6l+RyNy7oAHDfxC4FzSJcz9vnjTKxrLpDG5M2Vu4SHRVNg6xzqZp6LYSR9zjqQTu8DU/f5xwxUdADOkbrIX2gQ==}
     engines: {node: '>=14.17'}
     hasBin: true
-    dev: true
 
   /unbox-primitive@1.0.2:
     resolution: {integrity: sha512-61pPlCD9h51VoreyJ0BReideM3MDKMKnh6+V9L08331ipq6Q8OFXZYiqP6n/tbHx4s5I9uRhcye6BrbkizkBDw==}
