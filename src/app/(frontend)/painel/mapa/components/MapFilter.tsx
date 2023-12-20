@@ -19,7 +19,7 @@ export function MapFilter() {
   });
 
   return (
-    <form className="hidden lg:block">
+    <form className="">
       <DisclosureAccordion title={"Zonas"}>
         <div className="max-h-96 overflow-y-auto ps-1">
           {zoneFields.map(
