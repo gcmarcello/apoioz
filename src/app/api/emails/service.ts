@@ -53,14 +53,17 @@ async function readEmailTemplate(templateId, dynamicData) {
 }
 
 async function readTemplateFile(templateId: string): Promise<string> {
-  const templatePath = path.join(templatesDir, `${templateId}.html`);
-  try {
-    const templateContent = await fs.readFile(templatePath, "utf8");
-    return templateContent;
-  } catch (error) {
-    console.error("Error reading the template file:", error);
-    throw new Error(`Failed to read the template file: ${templateId}`);
-  }
+  const templatePath = path.join(
+    process.cwd(),
+    "src",
+    "app",
+    "api",
+    "emails",
+    "templates",
+    `${templateId}.html`
+  );
+  const templateContent = await fs.readFile(templatePath, "utf8");
+  return templateContent;
 }
 
 function replaceTemplatePlaceholders(templateString, dynamicData) {
