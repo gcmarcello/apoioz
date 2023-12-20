@@ -33,8 +33,8 @@ export default async function SettingsPage() {
           <div className="lg:px-20">
             <h2 className="text-base font-semibold leading-7 text-gray-900">Perfil</h2>
             <p className="mt-1 text-sm leading-6 text-gray-500">
-              Informações pessoais do apoiador. Elas são compartilhadas entre as campanhas
-              que você participa.
+              Informações pessoais do apoiador. Elas são compartilhadas entre as redes de
+              apoio que você participa.
             </p>
             <div>
               <ProfileUpdateForm user={user} />

@@ -81,7 +81,7 @@ export async function readSupporterBranches({
 }
 
 export async function readSupporterTrail({
-  where: { supporterId },
+  where: { supporterId } = {},
   supporterSession,
 }: ReadSupporterBranchesDto & {
   userSession: UserWithoutPassword;

@@ -8,7 +8,9 @@ export async function readZonesByCampaign(campaignId: string, geoJSON: boolean =
         include: {
           City_To_Zone: {
             include: {
-              Zone: { select: { id: true, number: true, stateId: true } },
+              Zone: {
+                select: { id: true, number: true, stateId: true, geoJSON: true },
+              },
             },
           },
         },

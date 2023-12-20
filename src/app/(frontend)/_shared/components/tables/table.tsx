@@ -165,12 +165,25 @@ export function DefaultTable({
                         <For each={headerGroup.headers} identifier={"header"}>
                           {(header) => (
                             <th className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-                              {header.isPlaceholder
-                                ? null
-                                : flexRender(
+                              {header.isPlaceholder ? null : (
+                                <div
+                                  {...{
+                                    className: header.column.getCanSort()
+                                      ? "cursor-pointer select-none"
+                                      : "",
+                                    onClick: header.column.getToggleSortingHandler(),
+                                  }}
+                                >
+                                  {flexRender(
                                     header.column.columnDef.header,
                                     header.getContext()
                                   )}
+                                  {{
+                                    asc: " 🔼",
+                                    desc: " 🔽",
+                                  }[header.column.getIsSorted() as string] ?? null}
+                                </div>
+                              )}
                             </th>
                           )}
                         </For>

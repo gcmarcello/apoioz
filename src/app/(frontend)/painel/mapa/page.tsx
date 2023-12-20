@@ -125,21 +125,6 @@ export default function MapPage() {
     },
   });
 
-  function clearFilters(e) {
-    e.preventDefault();
-    form.setValue(
-      "zones",
-      form.getValues("zones").map((zone) => ({ ...zone, checked: false }))
-    );
-    form.setValue(
-      "neighborhoods",
-      form
-        .getValues("neighborhoods")
-        .map((neighborhood) => ({ ...neighborhood, checked: false }))
-    );
-    form.setValue("sections", { showEmptySections: false });
-  }
-
   useEffect(() => {
     trigger();
   }, [trigger]);

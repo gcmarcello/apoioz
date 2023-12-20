@@ -52,15 +52,15 @@ export function SupportersMap({
     const markerCoords = mapData?.map((marker) => marker.geocode);
     let geoJSONBounds = null;
 
-    if (zones.filter((zone) => zone.checked).length) {
-      geoJSONBounds = retrieveBoundsFromGeoJSONS(
-        zones.filter((zone) => zone.checked).map((zone) => zone.geoJSON)
-      );
-    } else if (neighborhoods.filter((neighborhood) => neighborhood.checked).length) {
+    if (neighborhoods.filter((neighborhood) => neighborhood.checked).length) {
       geoJSONBounds = retrieveBoundsFromGeoJSONS(
         neighborhoods
           .filter((neighborhood) => neighborhood.checked)
           .map((neighborhood) => neighborhood.geoJSON)
+      );
+    } else if (zones.filter((zone) => zone.checked).length) {
+      geoJSONBounds = retrieveBoundsFromGeoJSONS(
+        zones.filter((zone) => zone.checked).map((zone) => zone.geoJSON)
       );
     }
 
@@ -126,8 +126,10 @@ export function SupportersMap({
         />
 
         <For each={zones}>
-          {({ geoJSON, color, checked }, index) => {
-            if (!geoJSON || !checked) return null;
+          {({ geoJSON, color, checked, id }, index) => {
+            if (!geoJSON) return null;
+            if (!checked && zones.some((zone) => zone.checked)) return null;
+            if (neighborhoods.some((neighborhood) => neighborhood.checked)) return null;
             return (
               <GeoJSON key={`zone-${index}`} data={geoJSON as any} style={{ color }} />
             );
@@ -135,11 +137,12 @@ export function SupportersMap({
         </For>
 
         <For each={neighborhoods}>
-          {({ geoJSON, color, checked, name }, index) => {
+          {({ geoJSON, color, checked, name, id }, index) => {
             if (
               !geoJSON ||
-              (!checked && neighborhoods.some((n) => n.checked)) ||
-              zones.some((zone) => zone.checked)
+              !checked ||
+              (neighborhoods.some((neighborhood) => neighborhood.checked) &&
+                !neighborhoods.find((neighborhood) => neighborhood.id === id).checked)
             )
               return null;
             return (

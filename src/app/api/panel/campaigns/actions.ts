@@ -59,7 +59,9 @@ export async function listCampaigns(userId: string) {
 }
 
 export async function readCampaign(request: { campaignId: string }) {
-  return service.readCampaign(request);
+  const campaign = await service.readCampaign(request);
+  if (!campaign) deactivateCampaign();
+  return campaign;
 }
 
 export async function updateCampaign(request: { campaignId: string; data: any }) {
