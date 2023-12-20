@@ -1,14 +1,17 @@
-import { Campaign, Supporter } from "@prisma/client";
+import { Supporter } from "@prisma/client";
 import { UserWithoutPassword } from "prisma/types/User";
-import { hashInfo } from "@/_shared/utils/bCrypt";
-import { normalizeEmail, normalizePhone } from "@/_shared/utils/format";
 import { getEnv } from "@/_shared/utils/settings";
 import dayjs from "dayjs";
+var customParseFormat = require("dayjs/plugin/customParseFormat");
+dayjs.extend(customParseFormat);
 import { sendEmail } from "../../emails/service";
-import { verifyExistingUser } from "../../user/service";
-import { findCampaignById } from "../campaigns/service";
-import { CreateSupportersDto, ReadSupporterBranchesDto, ReadSupportersDto } from "./dto";
-import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
+import { checkUserCanJoinCampaign, findCampaignById } from "../campaigns/service";
+import {
+  AddSupporterDto,
+  CreateSupporterDto,
+  ReadSupporterBranchesDto,
+  ReadSupportersDto,
+} from "./dto";
 
 export async function readSupporterBranches({
   supporterSession,
@@ -43,12 +46,7 @@ export async function readSupporterBranches({
       where: {
         supporterId: supporterId || supporterSession.id,
         supporterGroup: {
-          memberships: {
-            some: {
-              supporterId: supporterSession.id,
-              isOwner: true,
-            },
-          },
+          ownerId: supporterSession.id,
         },
       },
       include: {
@@ -75,7 +73,7 @@ export async function readSupporterBranches({
         },
       },
     })
-    .then((m) => m.supporter);
+    .then((m) => m?.supporter);
 
   if (!supporterTree) throw "Você não tem permissão para acessar este apoiador";
 
@@ -84,48 +82,36 @@ export async function readSupporterBranches({
 
 export async function readSupporterTrail({
   where: { supporterId },
+  supporterSession,
 }: ReadSupporterBranchesDto & {
   userSession: UserWithoutPassword;
   supporterSession: Supporter;
 }) {
-  const referralSupporterGroups = await prisma.supporterGroup.findMany({
-    where: {
-      memberships: {
-        some: {
-          supporterId: supporterId,
-        },
-      },
-    },
-  });
-
-  const notFlattenedReferrals = await prisma.supporterGroupMembership
+  const supporterSupporterGroupsOwners = await prisma.supporterGroup
     .findMany({
       where: {
-        supporterGroupId: {
-          in: referralSupporterGroups.map((group) => group.id),
+        memberships: {
+          some: {
+            supporterId: supporterId || supporterSession.id,
+          },
         },
-        isOwner: true,
       },
       include: {
-        supporter: {
+        owner: {
           include: {
-            referred: {
-              include: {
-                user: true,
-              },
-            },
+            referred: true,
             user: true,
           },
         },
       },
     })
-    .then((res) => res.map((m) => m.supporter));
+    .then((sg) => sg.map((m) => m.owner));
 
-  const referrals = notFlattenedReferrals.reduce((acc, curr) => {
+  const trail = supporterSupporterGroupsOwners.reduce((acc: any, curr: any) => {
     return [...acc, curr, ...curr.referred];
   }, []);
 
-  return referrals;
+  return trail;
 }
 
 export async function readSupportersFromSupporterGroup({
@@ -135,20 +121,15 @@ export async function readSupportersFromSupporterGroup({
 }: ReadSupportersDto & {
   supporterSession: Supporter;
 }) {
-  const supporterGroupMembership = await prisma.supporterGroupMembership.findFirst({
-    where: { supporterId: supporterSession.id, isOwner: true },
-  });
-
-  if (!supporterGroupMembership)
-    throw "Você não tem permissão para acessar este grupo de apoio.";
-
   const supporterList = await prisma.supporter.findMany({
-    take: pagination?.pageSize,
+    take: pagination?.take,
     where: {
       campaignId: supporterSession.campaignId,
       supporterGroupsMemberships: {
         some: {
-          supporterGroupId: supporterGroupMembership?.supporterGroupId,
+          supporterGroup: {
+            ownerId: supporterSession.id,
+          },
         },
       },
       user: {
@@ -170,8 +151,6 @@ export async function readSupportersFromSupporterGroup({
   return {
     data: supporterList,
     pagination: {
-      pageIndex: pagination?.pageIndex,
-      pageSize: pagination?.pageSize,
       count: supporterList.length + 1,
     },
   };
@@ -184,21 +163,17 @@ export async function readSupportersFromSupporterGroupWithRelation({
 }: ReadSupportersDto & {
   supporterSession: Supporter;
 }) {
-  const supporterGroup = await prisma.supporterGroupMembership.findFirst({
-    where: { supporterId: supporterSession?.id, isOwner: true },
-  });
-
-  if (!supporterGroup) throw "Você não tem permissão para acessar este grupo de apoio.";
-
   const supporterList = await prisma.supporter.findMany({
-    take: pagination.take,
-    skip: pagination.skip,
-    cursor: pagination.cursor,
+    take: pagination?.take,
+    skip: pagination?.skip,
+    cursor: pagination?.cursor,
     where: {
       campaignId: supporterSession.campaignId,
       supporterGroupsMemberships: {
         some: {
-          supporterGroupId: supporterGroup?.supporterGroupId,
+          supporterGroup: {
+            ownerId: supporterSession.id,
+          },
         },
       },
       user: {
@@ -253,80 +228,43 @@ export async function readSupportersFromSupporterGroupWithRelation({
   };
 }
 
-export async function verifyConflictingSupporter(campaign: Campaign, userId: string) {
-  const conflictingCampaigns: string[] = (
-    await prisma.campaign.findMany({
-      where: {
-        AND: [
-          { cityId: campaign.cityId },
-          { type: campaign.type },
-          { year: campaign.year },
-        ],
-      },
-    })
-  ).map((campaign) => campaign.id);
-
-  const conflictingSupporter = await prisma.supporter.findFirst({
+export async function createSupporter(request: CreateSupporterDto) {
+  const existingUser = await prisma.user.findFirst({
     where: {
-      userId: userId,
-      campaignId: { in: conflictingCampaigns },
+      OR: [
+        {
+          email: request.user?.email,
+        },
+        {
+          id: request.userId,
+        },
+      ],
+    },
+    include: {
+      info: true,
     },
   });
-  console.log(conflictingSupporter);
 
-  if (conflictingSupporter?.campaignId === campaign.id)
-    return {
-      type: "sameCampaign",
-      supporter: conflictingSupporter,
-      message: "Você já faz parte desta rede.",
-    };
-  if (conflictingSupporter)
-    return {
-      type: "otherCampaign",
-      supporter: conflictingSupporter,
-      message: "Você já faz parte da rede de outro candidato.",
-    };
+  if (existingUser) {
+    const userCanJoinCampaign = await checkUserCanJoinCampaign({
+      campaignId: request.campaignId,
+      userId: existingUser.id,
+    });
 
-  return null;
-}
-
-export async function createSupporter(
-  request: CreateSupportersDto & {
-    userSession: UserWithoutPassword;
-    supporterSession: Supporter;
+    if (userCanJoinCampaign != "canJoin") throw userCanJoinCampaign;
   }
-) {
-  const existingUser = await verifyExistingUser(request.phone, request.email);
 
-  const campaign = await findCampaignById(request.supporterSession.campaignId);
-
-  if (request.supporterSession.level < 4 && request.referralId)
-    throw "Você não pode cadastrar um apoiador para um apoiador.";
-
-  const referral = request.referralId
-    ? await prisma.supporter.findFirst({
-        where: { id: request.referralId },
-      })
-    : request.supporterSession;
-
-  if (!referral) throw "Apoiador não encontrado";
+  const campaign = await findCampaignById(request.campaignId);
 
   if (!campaign) throw "Campanha não encontrada";
 
-  if (existingUser) {
-    const conflictingSupporter = await verifyConflictingSupporter(
-      campaign,
-      existingUser.id
-    );
+  const referral = await prisma.supporter.findFirst({
+    where: { id: request.referralId, campaignId: request.campaignId },
+  });
 
-    if (conflictingSupporter?.type === "sameCampaign")
-      throw "Usuário já cadastrado nesta campanha.";
-    if (conflictingSupporter?.type === "otherCampaign") {
-      throw "Usuário já cadastrado em outra campanha do mesmo tipo.";
-    }
-  }
+  if (!referral) throw "Indicador não encontrado";
 
-  const referralsSupporterGroups = await prisma.supporterGroup.findMany({
+  const referralSupporterGroups = await prisma.supporterGroup.findMany({
     where: {
       memberships: {
         some: {
@@ -336,9 +274,8 @@ export async function createSupporter(
     },
   });
 
-  const createSupporterGroupMembershipQuery = referralsSupporterGroups.map(
+  const createSupporterGroupMembershipQuery = referralSupporterGroups.map(
     (supporterGroup) => ({
-      isOwner: false,
       supporterGroup: {
         connect: {
           id: supporterGroup.id,
@@ -347,45 +284,57 @@ export async function createSupporter(
     })
   );
 
-  const user = existingUser
-    ? existingUser
-    : await prisma.user.create({
-        include: {
-          info: true,
-        },
-        data: {
-          email: normalizeEmail(request.email),
-          password: request.password ? await hashInfo(request.password) : null,
-          name: request.name,
-          role: "user",
-          phone: normalizePhone(request.phone),
-          info: {
-            create: {
-              ...request.info,
-              birthDate: dayjs(request.info.birthDate, "DD/MM/YYYY").toISOString(),
-            },
-          },
-        },
-      });
+  const user = existingUser || request.user!;
 
-  if (!user || !user.info?.sectionId || !user.info?.zoneId) throw "Erro ao criar usuário";
+  const userId = request.userId || crypto.randomUUID();
 
+  const supporterId = crypto.randomUUID();
   const supporter = await prisma.supporter
     .create({
       include: { user: true },
       data: {
+        id: supporterId,
         level: 1,
-        Section: { connect: { id: user.info.sectionId } },
-        Zone: { connect: { id: user.info.zoneId } },
+        Section: {
+          connect: user?.info?.sectionId ? { id: user?.info?.sectionId } : undefined,
+        },
+        Zone: {
+          connect: user?.info?.zoneId ? { id: user?.info?.zoneId } : undefined,
+        },
         campaign: { connect: { id: referral.campaignId } },
         referral: { connect: { id: referral.id } },
-        user: { connect: { id: user.id } },
+        user: {
+          connectOrCreate: {
+            where: {
+              id: userId,
+            },
+            create: {
+              id: userId,
+              email: user.email,
+              name: user.name,
+              phone: user.phone,
+              password: user.password,
+              info: {
+                create: {
+                  birthDate: dayjs(user.info?.birthDate, "DD/MM/YYYY").toISOString(),
+                  zoneId: user.info?.zoneId,
+                  sectionId: user.info?.sectionId,
+                },
+              },
+              role: "user",
+            },
+          },
+        },
+        SupporterGroup: {
+          create: {},
+        },
         supporterGroupsMemberships: {
           create: [
             {
-              isOwner: true,
               supporterGroup: {
-                create: {},
+                connect: {
+                  ownerId: supporterId,
+                },
               },
             },
             ...createSupporterGroupMembershipQuery,
@@ -410,6 +359,8 @@ export async function createSupporter(
     where: { id: referral.id },
     include: { user: { include: { info: true } } },
   });
+
+  if (!referralInfo) throw "Apoiador não encontrado";
 
   await sendEmail({
     to: referralInfo.user.email,
@@ -444,4 +395,17 @@ export async function deleteSupporterAsSupporter({
   });
 
   return deletedSupporter;
+}
+
+export async function readSupporterFromUser(data: {
+  userId: string;
+  campaignId: string;
+}) {
+  const supporter = await prisma.supporter.findFirst({
+    where: { userId: data.userId, campaignId: data.campaignId },
+  });
+
+  if (!supporter) throw "Apoiador não encontrado";
+
+  return supporter;
 }

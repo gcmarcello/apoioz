@@ -2,7 +2,8 @@
 import { User } from "@prisma/client";
 import { headers } from "next/headers";
 import { MiddlewareArguments } from "../types/types";
-import prisma from "prisma/prisma";
+import { prisma } from "prisma/prisma";
+import { UserWithoutPassword } from "prisma/types/User";
 
 export async function UserSessionMiddleware<P>({ request }: MiddlewareArguments<P>) {
   const userId = headers().get("userId")!;
@@ -27,7 +28,7 @@ export async function UserSessionMiddleware<P>({ request }: MiddlewareArguments<
   };
 }
 
-export type UserSession = User;
+export type UserSession = UserWithoutPassword;
 
 export type UserSessionMiddlewareReturnType<T> = Awaited<
   ReturnType<typeof UserSessionMiddleware<T>>

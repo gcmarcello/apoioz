@@ -1,4 +1,4 @@
-import prisma from "prisma/prisma";
+import { prisma } from "prisma/prisma";
 
 export async function readAddressBySection(sectionId: string) {
   return await prisma.address.findFirst({
@@ -34,14 +34,16 @@ export async function readAddressesByCampaign(campaignId: string) {
 }
 
 export async function readNeighborhoodsByCampaign(campaignId: string) {
-  const checkForCampaign = await prisma.campaign.findUnique({
+  const campaign = await prisma.campaign.findUnique({
     where: { id: campaignId },
   });
 
-  if (checkForCampaign.cityId === null)
-    throw "Busca de bairros só é permitida para campanhas municipais.";
+  if (!campaign) throw "Campanha não encontrada.";
+
+  if (campaign.cityId === null)
+    throw "A busca de bairros só é permitida para campanhas municipais.";
 
   return await prisma.neighborhood.findMany({
-    where: { cityId: checkForCampaign.cityId },
+    where: { cityId: campaign.cityId },
   });
 }

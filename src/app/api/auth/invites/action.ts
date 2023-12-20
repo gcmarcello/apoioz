@@ -5,11 +5,12 @@ import * as services from "./service";
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 
-export async function createInviteCode(request) {
+export async function createInviteCode() {
   try {
-    const { request: parsedRequest } = await UseMiddlewares(request)
+    const { request: parsedRequest } = await UseMiddlewares()
       .then(UserSessionMiddleware)
       .then(SupporterSessionMiddleware);
+
     const inviteCode = await services.createInviteCode({
       campaignId: parsedRequest.supporterSession.campaignId,
       referralId: parsedRequest.supporterSession.id,

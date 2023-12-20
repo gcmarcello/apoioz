@@ -1,4 +1,4 @@
-import prisma from "prisma/prisma";
+import { prisma } from "prisma/prisma";
 import StatsSection from "../../_shared/components/StatsSection";
 import { readCampaign } from "@/app/api/panel/campaigns/service";
 import { cookies, headers } from "next/headers";

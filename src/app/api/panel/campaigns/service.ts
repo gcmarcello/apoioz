@@ -3,11 +3,13 @@ import dayjs from "dayjs";
 import { NextResponse } from "next/server";
 import crypto from "crypto";
 
-import prisma from "prisma/prisma";
+import { prisma } from "prisma/prisma";
 import { readZonesByCity, readZonesByState } from "../../elections/zones/actions";
 import { readZonesByCampaign } from "../../elections/zones/service";
 import { getEnv } from "@/_shared/utils/settings";
 import { SupporterSession } from "@/middleware/functions/supporterSession.middleware";
+import { CreateCampaignDto } from "./dto";
+import { UserSession } from "@/middleware/functions/userSession.middleware";
 
 export async function findCampaignById(campaignId: string) {
   return await prisma.campaign.findFirst({
@@ -86,9 +88,7 @@ export async function generateMainPageStats(supporterSession: SupporterSession) 
   const totalSupporters = await prisma.supporter.count({
     where: {
       SupporterGroup: {
-        some: {
-          ownerId: supporterSession.id,
-        },
+        ownerId: supporterSession.id,
       },
     },
   });
@@ -96,74 +96,87 @@ export async function generateMainPageStats(supporterSession: SupporterSession) 
   const supportersLastWeek = await prisma.supporter.count({
     where: {
       SupporterGroup: {
-        some: {
-          ownerId: supporterSession.id,
-        },
+        ownerId: supporterSession.id,
       },
       createdAt: { lt: dayjs().subtract(1, "week").toISOString() },
     },
   });
 
-  const mostFrequentReferralId = await prisma.supporter.groupBy({
-    by: ["referralId"],
-    where: {
-      SupporterGroup: {
-        some: {
+  const referralLeaderCount = await prisma.supporter
+    .groupBy({
+      by: ["referralId"],
+      where: {
+        SupporterGroup: {
           ownerId: supporterSession.id,
         },
       },
-    },
-    _count: {
-      referralId: true,
-    },
-    orderBy: {
       _count: {
-        referralId: "desc",
+        referralId: true,
       },
-    },
-  });
+      orderBy: {
+        _count: {
+          referralId: "desc",
+        },
+      },
+    })
+    .then((s) => s[0])
+    .then((s) => ({
+      id: s.referralId,
+      count: s._count.referralId,
+    }));
 
-  const mostFrequentReferral = await prisma.supporter.findUnique({
-    where: { id: mostFrequentReferralId[0].referralId },
-  });
+  if (!referralLeaderCount.id) throw "Indicação não encontrada";
 
-  const mostFrequentSection = await prisma.userInfo.groupBy({
-    by: ["sectionId"],
-    where: {
-      user: {
-        supporter: {
-          some: {
-            SupporterGroup: {
-              some: {
+  const referralLeader = await prisma.supporter
+    .findUnique({
+      where: { id: referralLeaderCount.id },
+    })
+    .then((r) => ({ ...r, count: referralLeaderCount.count }));
+
+  const leadingSectionCount = await prisma.userInfo
+    .groupBy({
+      by: ["sectionId"],
+      where: {
+        user: {
+          supporter: {
+            some: {
+              SupporterGroup: {
                 ownerId: supporterSession.id,
               },
             },
           },
         },
       },
-    },
-    _count: {
-      sectionId: true,
-    },
-    orderBy: {
       _count: {
-        sectionId: "desc",
+        sectionId: true,
       },
-    },
-  });
+      orderBy: {
+        _count: {
+          sectionId: "desc",
+        },
+      },
+    })
+    .then((s) => s[0])
+    .then((s) => ({
+      id: s.sectionId,
+      count: s._count.sectionId,
+    }));
 
-  const leadingSection = await prisma.section.findUnique({
-    where: { id: mostFrequentSection[0].sectionId },
-  });
+  if (!leadingSectionCount.id) throw "Seção não encontrada";
+
+  const leadingSection = await prisma.section
+    .findUnique({
+      where: { id: leadingSectionCount.id },
+    })
+    .then((r) => ({ ...r, count: leadingSectionCount.count }));
+
+  if (!leadingSection) throw "Seção não encontrada";
 
   return {
     totalSupporters,
     supportersLastWeek,
     leadingSection,
-    referralLeader: {
-      ...mostFrequentReferral,
-      count: mostFrequentReferralId[0]._count.referralId,
-    },
+    referralLeader,
   };
 }
 
@@ -171,24 +184,40 @@ export async function readCampaignTeamMembers(campaignId: string) {
   const teamMembers = await prisma.supporter.findMany({
     where: { campaignId: campaignId, level: { gt: 1 } },
     include: {
-      user: { include: { info: { include: { City: true, Zone: true } } } },
+      user: { include: { info: { include: { Zone: true } } } },
     },
   });
+
   return teamMembers;
 }
 
-export async function createCampaign(data: any) {
+export async function createCampaign({
+  userSession,
+  ...data
+}: CreateCampaignDto & { userSession: UserSession }) {
   const supporterId = crypto.randomUUID();
 
   const campaign = await prisma.campaign.create({
     data: {
+      name: data.name,
+      slug: data.slug,
+      type: data.type,
+      year: data.year,
+      userId: userSession.id,
+      cityId: data.cityId,
       supporters: {
         create: {
           id: supporterId,
-          userId: data.userId,
+          userId: userSession.id,
           level: 4,
           SupporterGroup: {
-            create: {},
+            create: {
+              memberships: {
+                create: {
+                  supporterId,
+                },
+              },
+            },
           },
         },
       },
@@ -198,38 +227,60 @@ export async function createCampaign(data: any) {
     },
   });
 
-  return { campaign };
+  return campaign;
 }
 
-export async function verifyConflictingZone({
-  userId,
+export async function checkUserCanJoinCampaign({
   campaignId,
+  userId,
 }: {
-  userId: string;
   campaignId: string;
+  userId: string;
 }) {
-  const userWithoutZone = await prisma.user.findFirst({
-    where: { id: userId, info: { zoneId: null } },
+  const campaign = await prisma.campaign.findFirst({
+    where: {
+      id: campaignId,
+    },
   });
 
-  if (userWithoutZone)
-    return { type: "noZone", message: "Usuário sem zona", status: true };
+  if (!campaign) throw "Campanha não encontrada";
 
-  const user = await prisma.user.findFirst({
-    where: { id: userId },
-    include: { info: true },
+  const conflictingCampaignsIds: string[] = (
+    await prisma.campaign.findMany({
+      where: {
+        AND: [
+          { cityId: campaign.cityId },
+          { type: campaign.type },
+          { year: campaign.year },
+        ],
+      },
+    })
+  ).map((campaign) => campaign.id);
+
+  const conflictingSupporter = await prisma.supporter.findFirst({
+    where: {
+      userId: userId,
+      campaignId: { in: conflictingCampaignsIds },
+    },
   });
 
-  if (!user) return { type: "noUser", message: "Usuário não encontrado", status: true };
+  console.log(conflictingSupporter);
+
+  if (conflictingSupporter?.campaignId === campaign.id) return "sameCampaign";
+
+  if (conflictingSupporter) return "otherCampaign";
+
+  const userInfo = await prisma.userInfo.findFirst({
+    where: { userId },
+  });
+
+  if (!userInfo) throw "Usuário não encontrado";
 
   const campaignZones = await readZonesByCampaign(campaignId);
 
-  if (campaignZones.filter((zone) => zone.id === user.info.zoneId).length > 0)
-    return {
-      type: "wrongRegion",
-      message: "Zona do usuário fora da região",
-      status: true,
-    };
+  if (!campaignZones) throw "Campanha não encontrada";
 
-  return { message: "Zona do usuário corresponde à campanha", status: false };
+  const userIsFromRegion = campaignZones.some((zone) => zone.id === userInfo.zoneId);
+
+  return userIsFromRegion ? "canJoin" : "notFromRegion";
 }

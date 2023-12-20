@@ -23,11 +23,9 @@ export default async function ChooseCampaign({
     const date = dayjs(fakerPT_BR.date.soon({ days: Math.ceil(Math.random() * 30) }));
 
     await createCampaign({
-      userId: user.id,
       name: fakerPT_BR.person.fullName() + " " + date.format("YYYY"),
       type: "vereador",
-      cityId: user?.info?.cityId,
-      stateId: null,
+      cityId: "3548500",
       slug: fakerPT_BR.word.noun(),
       year: date.format("YYYY"),
     });

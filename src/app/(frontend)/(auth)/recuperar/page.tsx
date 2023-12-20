@@ -10,10 +10,13 @@ import { ArrowLeftCircleIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import SuccessAlert from "../../_shared/components/alerts/successAlert";
 import { useAction } from "../../_shared/hooks/useAction";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { PasswordResetDto, passwordResetDto } from "@/app/api/auth/dto";
 
 export default function RecoverPasswordPage() {
-  const form = useForm();
-  const [showSuccess, setShowSuccess] = useState({ email: null, show: false });
+  const form = useForm<PasswordResetDto>({
+    resolver: zodResolver(passwordResetDto),
+  });
 
   const handleMask = () => {
     const identifier = form.watch("identifier");
@@ -25,10 +28,13 @@ export default function RecoverPasswordPage() {
     return "";
   };
 
-  const { trigger: submitPasswordRecovery, isMutating: loading } = useAction({
+  const {
+    trigger: submitPasswordRecovery,
+    isMutating: loading,
+    data,
+  } = useAction({
     action: createPasswordRecovery,
     onError: (err) => showToast({ message: err, title: "Erro", variant: "error" }),
-    onSuccess: (res) => setShowSuccess({ email: res, show: true }),
   });
 
   return (
@@ -48,11 +54,11 @@ export default function RecoverPasswordPage() {
         </h2>
       </div>
       <div className="my-2 flex flex-col justify-end space-y-4 sm:mx-auto sm:w-full sm:max-w-sm">
-        {showSuccess.show ? (
+        {data ? (
           <>
             <SuccessAlert
               successes={[
-                `Um link para redefinição de senha foi enviado para o email ${showSuccess.email}.
+                `Um link para redefinição de senha foi enviado para o email ${data}.
         Caso o email ainda não tenha chegado, verifique sua caixa de spam.`,
               ]}
             />

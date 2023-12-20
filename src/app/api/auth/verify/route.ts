@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import jwt from "jsonwebtoken";
 import { headers } from "next/headers";
-import prisma from "prisma/prisma";
+import { prisma } from "prisma/prisma";
 import { getEnv } from "@/_shared/utils/settings";
 
 export async function GET(request: Request, response: NextResponse) {

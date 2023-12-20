@@ -1,28 +1,22 @@
-import prisma from "prisma/prisma";
+import { prisma } from "prisma/prisma";
 
 export async function readZonesByCampaign(campaignId: string, geoJSON: boolean = false) {
-  try {
-    const campaign = await prisma.campaign.findUnique({
-      where: { id: campaignId },
-      include: {
-        city: {
-          include: {
-            City_To_Zone: {
-              include: {
-                Zone: { select: { id: true, number: true, stateId: true } },
-              },
+  const campaign = await prisma.campaign.findUnique({
+    where: { id: campaignId },
+    include: {
+      city: {
+        include: {
+          City_To_Zone: {
+            include: {
+              Zone: { select: { id: true, number: true, stateId: true } },
             },
           },
         },
       },
-    });
+    },
+  });
 
-    if (campaign?.city) {
-      return campaign.city.City_To_Zone.flatMap((cityToZone) => cityToZone.Zone);
-    }
-  } catch (error) {
-    console.log(error);
-  }
+  return campaign?.city?.City_To_Zone.flatMap((cityToZone) => cityToZone.Zone);
 }
 
 export async function readZonesByCity(cityId: string) {

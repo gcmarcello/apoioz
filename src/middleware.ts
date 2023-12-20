@@ -28,6 +28,7 @@ export async function middleware(request: NextRequest) {
       url.pathname = "/login";
       return NextResponse.redirect(url);
     }
+
     const requestHeaders = new Headers(request.headers);
 
     requestHeaders.set("userId", userId);

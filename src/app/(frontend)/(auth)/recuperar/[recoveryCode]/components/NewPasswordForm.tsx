@@ -3,18 +3,21 @@
 import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
-import { createPasswordRecovery, resetPassword } from "@/app/api/auth/action";
-import { ArrowLeftCircleIcon, EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
-import Link from "next/link";
-import { redirect, useRouter } from "next/navigation";
-import { Router } from "next/router";
+import { resetPassword } from "@/app/api/auth/action";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function NewPasswordForm({
   resetInfo,
 }: {
-  resetInfo: { valid: boolean; code: string; userName: string; userId: string };
+  resetInfo: {
+    valid: boolean;
+    code: string;
+    userName: string | null;
+    userId: string;
+  };
 }) {
   const form = useForm({
     defaultValues: {
@@ -33,7 +36,7 @@ export default function NewPasswordForm({
     isMutating: loading,
   } = useAction({
     action: resetPassword,
-    onSuccess: (res) => {
+    onSuccess: () => {
       router.push("/painel");
     },
     onError: (err) => showToast({ message: err, title: "Erro", variant: "error" }),

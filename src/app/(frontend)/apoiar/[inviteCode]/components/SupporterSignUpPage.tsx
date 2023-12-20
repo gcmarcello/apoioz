@@ -16,22 +16,22 @@ import { faker } from "@faker-js/faker";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 import Loading from "@/app/(frontend)/loading";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CreateSupportersDto, createSupportersDto } from "@/app/api/panel/supporters/dto";
 import { BottomNavigation } from "@/app/(frontend)/_shared/components/navigation/BottomNavigation";
 import { Button } from "@/app/(frontend)/_shared/components/Button";
 import ErrorAlert from "@/app/(frontend)/_shared/components/alerts/errorAlert";
 import { signUpAsSupporter } from "@/app/api/auth/action";
+import { SignUpAsSupporterDto, signUpAsSupporterDto } from "@/app/api/auth/dto";
 
 dayjs.extend(customParseFormat);
 
 export default function SupporterSignUpPage({
-  referral,
+  inviteCodeId,
   campaign,
   user,
   zones,
   poll,
 }: {
-  referral: any;
+  inviteCodeId: string;
   campaign: any;
   user: any;
   zones: any;
@@ -39,19 +39,20 @@ export default function SupporterSignUpPage({
 }) {
   const [success, setSuccess] = useState(false);
   const [stage, setStage] = useState("basicInfo");
-  const form = useForm<CreateSupportersDto>({
+  const form = useForm<SignUpAsSupporterDto>({
     defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      phone: "",
-      info: {
-        sectionId: "",
-        zoneId: "",
-        birthDate: "",
+      user: {
+        name: "",
+        email: "",
+        password: "",
+        phone: "",
+        info: {
+          sectionId: "",
+          zoneId: "",
+          birthDate: "",
+        },
       },
-      referralId: referral.id,
-      campaignId: campaign.id,
+      inviteCodeId,
       poll: poll && {
         pollId: poll.id,
         questions: poll.PollQuestion.map((question) => ({
@@ -62,7 +63,7 @@ export default function SupporterSignUpPage({
         })),
       },
     },
-    resolver: zodResolver(createSupportersDto),
+    resolver: zodResolver(signUpAsSupporterDto),
     mode: "onChange",
   });
 
@@ -76,17 +77,14 @@ export default function SupporterSignUpPage({
       zoneId: "5a9734d8-0068-41de-ac51-ccb81f22b821",
       sectionId: "827a0c56-1a47-442e-bd9c-222d8a8b33a2",
       birthDate: dayjs(faker.date.birthdate()).format("DD/MM/YYYY"),
-      campaign: {
-        referralId: referral.id,
-        campaignId: campaign.id,
-      },
+      campaignId: campaign.id,
     };
-    form.setValue("name", data.name);
-    form.setValue("email", data.email);
-    form.setValue("phone", data.phone);
-    form.setValue("info.zoneId", data.zoneId);
-    form.setValue("info.sectionId", data.sectionId);
-    form.setValue("info.birthDate", data.birthDate);
+    form.setValue("user.name", data.name);
+    form.setValue("user.email", data.email);
+    form.setValue("user.phone", data.phone);
+    form.setValue("user.info.zoneId", data.zoneId);
+    form.setValue("user.info.sectionId", data.sectionId);
+    form.setValue("user.info.birthDate", data.birthDate);
 
     return data;
   };
@@ -98,7 +96,7 @@ export default function SupporterSignUpPage({
     reset: resetSignUp,
   } = useAction({
     formatter: (data) => {
-      data.phone = normalizePhone(data.phone);
+      data.user.phone = normalizePhone(data.user.phone);
       return data;
     },
     action: signUpAsSupporter,

@@ -61,5 +61,5 @@ export function ReferralRanking() {
     ],
   };
 
-  return <Bar options={options} data={data} />;
+  return <Bar options={options as any} data={data} />;
 }

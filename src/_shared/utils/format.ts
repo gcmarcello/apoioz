@@ -3,8 +3,7 @@ export function normalizeEmail(data: string) {
 }
 
 export function normalizePhone(data: string) {
-  if (!data) return null;
-  return data.replace(/[^0-9]/g, "");
+  return data?.replace(/[^0-9]/g, "");
 }
 
 export function formatPhone(data: string) {
@@ -24,7 +23,7 @@ export function toProperCase(input: string): string | undefined {
     .join(" ");
 }
 
-export function maskEmail(email) {
+export function maskEmail(email: string) {
   let [username, domain] = email.split("@");
   let [domainName, domainExtension] = domain.split(".");
 

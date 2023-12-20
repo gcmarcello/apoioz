@@ -3,6 +3,7 @@ import { phoneValidator } from "@/_shared/utils/validators/phone.validator";
 import { readDto } from "../../_shared/dto/read";
 import { pollAnswerDto } from "../polls/dto";
 import { birthDateValidator } from "@/_shared/utils/validators/birthDate.validator";
+import { createUserDto } from "../../user/dto";
 
 export const readSupportersDto = readDto(
   z.object({
@@ -17,26 +18,32 @@ export const readSupportersDto = readDto(
 
 export type ReadSupportersDto = z.infer<typeof readSupportersDto>;
 
-export const createSupportersDto = z
-  .object({
-    name: z.string().min(3, { message: "Nome deve ter no mínimo 3 caracteres" }),
-    email: z.string().email({ message: "Email inválido" }).min(3),
-    password: z.string().optional(),
-    phone: z.custom(phoneValidator, { message: "Telefone inválido" }),
-    info: z.object({
-      zoneId: z.string().uuid().optional(),
-      sectionId: z.string().uuid().optional(),
-      birthDate: z.custom(birthDateValidator, { message: "Data de nascimento inválida" }),
-    }),
-    referralId: z.string().optional(),
-    campaignId: z.string().optional(),
-    externalSupporter: z.boolean().optional().default(false),
-    poll: pollAnswerDto.optional(),
+export const createSupporterDto = z.object({
+  user: createUserDto.optional(),
+  userId: z.string().optional(),
+  referralId: z.string().optional(),
+  campaignId: z.string(),
+  poll: pollAnswerDto.optional(),
+  externalSupporter: z.boolean().optional(),
+});
+
+export type CreateSupporterDto = z.infer<typeof createSupporterDto>;
+
+export const addSupporterDto = createSupporterDto
+  .omit({
+    campaignId: true,
+    userId: true,
   })
+  .merge(
+    z.object({
+      user: createUserDto,
+    })
+  )
   .refine(
     (data) => {
       if (
-        (Boolean(data.info.sectionId) === false || Boolean(data.info.zoneId) === false) &&
+        (Boolean(data.user.info.sectionId) === false ||
+          Boolean(data.user.info.zoneId) === false) &&
         Boolean(data.externalSupporter) === false
       )
         return false;
@@ -48,11 +55,11 @@ export const createSupportersDto = z
     }
   );
 
-export type CreateSupportersDto = z.infer<typeof createSupportersDto>;
+export type AddSupporterDto = z.infer<typeof addSupporterDto>;
 
 export const readSupporterBranchesDto = readDto(
   z.object({
-    supporterId: z.string().optional(),
+    supporterId: z.string().nullable().optional(),
     branches: z.number().optional(),
   })
 );

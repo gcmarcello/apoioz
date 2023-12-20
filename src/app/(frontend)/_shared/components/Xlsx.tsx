@@ -28,18 +28,18 @@ export default function Xlsx({ data, columns, fileName, sheetName }: XlsxProps) 
     value: `${column.accessorKey}`.replace(/\./g, ""),
   }));
 
-  function getNestedProperty(obj, path) {
+  function getNestedProperty(obj: any, path: string | string[]) {
     if (typeof path === "string") {
       path = path.split(".");
     }
 
-    return path.reduce((current, key) => {
+    return path.reduce((current: { [x: string]: any }, key: string | number) => {
       return current ? current[key] : undefined;
     }, obj);
   }
 
   function dataFormatter(data: any) {
-    const formattedData = data.map((row) => {
+    const formattedData = data.map((row: any) => {
       const formattedRow: any = {};
       parsedColumns.forEach((column) => {
         const value = getNestedProperty(row, column.key);
@@ -51,7 +51,10 @@ export default function Xlsx({ data, columns, fileName, sheetName }: XlsxProps) 
     return formattedData;
   }
 
-  function excelObjectBuilder(data, columns) {
+  function excelObjectBuilder(
+    data: any[],
+    columns: { label: any; key: string; value: string }[]
+  ) {
     return [
       {
         sheet: sheetName || `ApoioZ ${dayjs().format("DD-MM-YYYY")}`,

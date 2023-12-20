@@ -1,10 +1,6 @@
 "use client";
 import { ArrowDownIcon, ArrowUpIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
-
-import { useEffect, useState } from "react";
-import { Campaign, User } from "@prisma/client";
-import { generateMainPageStats } from "@/app/api/panel/campaigns/actions";
 import { ReadPollsStats } from "@/app/api/panel/polls/dto";
 
 export default function StatsSection({ stats }: { stats: ReadPollsStats }) {

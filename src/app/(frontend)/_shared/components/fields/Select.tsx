@@ -15,32 +15,32 @@ import {
   ChevronUpDownIcon,
 } from "@heroicons/react/24/solid";
 import { BaseProps, Field, fieldClasses, getErrorMessage } from "./Field";
-import { Controller, Path } from "react-hook-form";
+import { Controller, FieldValues, Path } from "react-hook-form";
 import { useAction } from "../../hooks/useAction";
 import { ErrorResponse, SuccessResponse } from "@/app/api/_shared/utils/ActionResponse";
 import { ButtonSpinner } from "../Spinners";
 
 type SelectFieldProps<
-  Fields,
+  Fields extends FieldValues,
   Data extends Array<{ [key: string]: any }>,
 > = BaseProps<Fields> & {
   data?: Data | undefined[];
   displayValueKey: Path<Data[0]>;
-  onChange?: any;
+  onChange?: (value: any) => void;
   reverseOptions?: boolean;
 };
 
-export function ListboxField<Fields, Data extends Array<{ [key: string]: any }>>(
-  { hform, name, data = [], ...props }: SelectFieldProps<Fields, Data>,
-  ref
-) {
+export function ListboxField<
+  Fields extends FieldValues,
+  Data extends Array<{ [key: string]: any }>,
+>({ hform, name, data = [], ...props }: SelectFieldProps<Fields, Data>, ref) {
   const id = useId();
 
   const errorMessage = getErrorMessage(hform, name);
 
   const options = data.map((i) => ({
-    id: i.id as string,
-    displayValue: i[props.displayValueKey as string] as string,
+    id: i?.id as string,
+    displayValue: i?.[props.displayValueKey as string] as string,
   }));
 
   return (
@@ -55,7 +55,7 @@ export function ListboxField<Fields, Data extends Array<{ [key: string]: any }>>
               as={Fragment}
               value={value || ""}
               onChange={(data: any) => {
-                props.onChange(data);
+                props.onChange && props.onChange(data);
                 onChange(data.id);
               }}
             >
@@ -188,7 +188,10 @@ export function ListboxField<Fields, Data extends Array<{ [key: string]: any }>>
   );
 }
 
-export function ComboboxField<Fields, Data extends { [key: string]: any }[]>({
+export function ComboboxField<
+  Fields extends FieldValues,
+  Data extends { [key: string]: any }[],
+>({
   data = [],
   fetcher,
   debounce = 500,
@@ -200,8 +203,8 @@ export function ComboboxField<Fields, Data extends { [key: string]: any }[]>({
   const id = useId();
 
   const generateOptions = useCallback(
-    (data) =>
-      data.map((i) => {
+    (data: any) =>
+      data.map((i: any) => {
         return {
           id: i.id as string,
           displayValue: (props.displayValueKey as string)
@@ -232,6 +235,9 @@ export function ComboboxField<Fields, Data extends { [key: string]: any }[]>({
     isMutating,
   } = useAction({
     action: fetcher,
+    onSuccess: () => {
+      fetchData();
+    },
   });
 
   const options = useMemo(() => {
@@ -244,7 +250,7 @@ export function ComboboxField<Fields, Data extends { [key: string]: any }[]>({
 
     return query === ""
       ? initialOptions
-      : generateOptions(data).filter((option) =>
+      : generateOptions(data).filter((option: any) =>
           option.displayValue.toString().toLowerCase().includes(query.toLowerCase())
         );
   }, [fetchedData, initialOptions, query]);
@@ -282,7 +288,7 @@ export function ComboboxField<Fields, Data extends { [key: string]: any }[]>({
           <Combobox
             disabled={props.disabled}
             as={Fragment}
-            value={options?.find((o) => o.id === value) || ""}
+            value={options?.find((o: any) => o.id === value) || ""}
             onChange={(data: any) => {
               props.onChange && props.onChange(data);
               onChange(data.id);
@@ -323,7 +329,7 @@ export function ComboboxField<Fields, Data extends { [key: string]: any }[]>({
                     "absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
                   )}
                 >
-                  {options.map((data) => (
+                  {options.map((data: any) => (
                     <Combobox.Option
                       key={data.id}
                       value={data || {}}

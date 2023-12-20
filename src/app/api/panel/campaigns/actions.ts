@@ -9,10 +9,45 @@ import { ActionResponse } from "../../_shared/utils/ActionResponse";
 import { CampaignLeaderMiddleware } from "@/middleware/functions/campaignLeader.middleware";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { createSupporter } from "../supporters/service";
+import { checkUserCanJoinCampaign } from "./service";
+import { CreateCampaignDto, JoinCampaignDto } from "./dto";
 
 export async function deactivateCampaign() {
   cookies().delete("activeCampaign");
   return redirect("/painel");
+}
+
+export async function joinCampaign(request: JoinCampaignDto) {
+  try {
+    const {
+      request: { userSession },
+    } = await UseMiddlewares(request).then(UserSessionMiddleware);
+
+    const campaignOwnerSupporter = await prisma.supporter.findFirst({
+      where: {
+        campaignId: request.campaignId,
+        level: 4,
+      },
+    });
+
+    if (!campaignOwnerSupporter) throw "Campanha não encontrada.";
+
+    const supporter = await createSupporter({
+      campaignId: request.campaignId,
+      userId: userSession.id,
+      referralId: campaignOwnerSupporter.id,
+    });
+
+    revalidatePath("/painel");
+
+    return ActionResponse.success({
+      data: supporter,
+      message: "Sucesso ao criar novo apoiador!",
+    });
+  } catch (err: any) {
+    return ActionResponse.error(err);
+  }
 }
 
 export async function activateCampaign(campaignId: string) {
@@ -60,6 +95,19 @@ export async function generateMainPageStats(data: any) {
   return service.generateMainPageStats(data);
 }
 
-export async function createCampaign(data: any) {
-  return service.createCampaign(data);
+export async function createCampaign(data: CreateCampaignDto) {
+  try {
+    const { request: parsedRequest } =
+      await UseMiddlewares(data).then(UserSessionMiddleware);
+
+    const campaign = await service.createCampaign(parsedRequest);
+
+    return ActionResponse.success({
+      data: campaign,
+      message: "Campanha criada com sucesso!",
+    });
+  } catch (e) {
+    console.log(e);
+    return ActionResponse.error(e);
+  }
 }

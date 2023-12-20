@@ -1,13 +1,11 @@
 import { readCampaign } from "@/app/api/panel/campaigns/actions";
-import Footer from "../../painel/_shared/components/Footer";
 import SupporterSignUpPage from "./components/SupporterSignUpPage";
 import { readZonesByCampaign } from "@/app/api/elections/zones/actions";
-import { validateInviteCode } from "@/app/api/auth/invites/action";
 import { readUserFromSupporter } from "@/app/api/user/actions";
-import prisma from "prisma/prisma";
 import { ErrorBoundary } from "next/dist/client/components/error-boundary";
 import Error from "./error";
 import { readActivePoll } from "@/app/api/panel/polls/service";
+import { validateInviteCode } from "@/app/api/auth/invites/service";
 
 export default async function Apoiar({ params }: { params: { inviteCode: string } }) {
   try {
@@ -19,16 +17,13 @@ export default async function Apoiar({ params }: { params: { inviteCode: string 
     });
     const zones = await readZonesByCampaign(inviteCodeInfo.campaignId);
     const user = await readUserFromSupporter(inviteCodeInfo.referralId);
-    const referral = await prisma.supporter.findUnique({
-      where: { id: inviteCodeInfo.referralId },
-    });
 
     const poll = await readActivePoll({ campaignId: inviteCodeInfo.campaignId });
 
     return (
       <ErrorBoundary errorComponent={Error}>
         <SupporterSignUpPage
-          referral={referral}
+          inviteCodeId={inviteCodeInfo.id}
           campaign={campaign}
           user={user}
           zones={zones}

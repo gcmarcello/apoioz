@@ -40,6 +40,7 @@ export function SupportersLastMonth() {
       },
     },
   };
+
   const labels = [];
   const today = dayjs();
   for (let i = 29; i >= 0; i--) {
@@ -65,5 +66,5 @@ export function SupportersLastMonth() {
     ],
   };
 
-  return <Bar options={options} data={data} />;
+  return <Bar options={options as any} data={data} />;
 }

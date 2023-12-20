@@ -1,8 +1,7 @@
 "use server";
-import { Supporter, User } from "@prisma/client";
+import { Supporter } from "@prisma/client";
 import { cookies } from "next/headers";
-import prisma from "prisma/prisma";
-import { MiddlewareArguments } from "../types/types";
+import { prisma } from "prisma/prisma";
 import { UserSessionMiddlewareReturnType } from "./userSession.middleware";
 import { UserWithoutPassword } from "prisma/types/User";
 

@@ -1,4 +1,4 @@
-import prisma from "prisma/prisma";
+import { prisma } from "prisma/prisma";
 import { readZonesByState } from "../zones/service";
 
 export async function readSectionsByState(stateId: string) {

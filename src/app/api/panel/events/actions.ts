@@ -3,8 +3,6 @@
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
 import { revalidatePath } from "next/cache";
-import { cookies, headers } from "next/headers";
-import { readSupporterFromUser } from "../supporters/service";
 import { CreateEventDto, ReadEventsAvailability, ReadEventsDto } from "./dto";
 import * as service from "./service";
 import { ActionResponse } from "../../_shared/utils/ActionResponse";

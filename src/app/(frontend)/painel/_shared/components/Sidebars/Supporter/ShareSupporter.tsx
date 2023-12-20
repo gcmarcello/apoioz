@@ -22,14 +22,6 @@ export function ShareSupporter({
   const [isMounted, setMounted] = useState(false);
   const { supporter } = useSidebar();
 
-  const generateNewCode = async () => {
-    const newCode = await createInviteCode({
-      campaignId: campaign.id,
-      referralId: supporter.id,
-    });
-    return newCode;
-  };
-
   const {
     data: inviteCode,
     trigger: generateInviteCode,

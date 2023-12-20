@@ -63,7 +63,7 @@ export function contrastingColor(): [string, string] {
 }
 
 export function generateContrastingColorsArray(
-  count,
+  count: number,
   baseColors = [],
   contrastThreshold = 4.5,
   poolSize = 1000
@@ -112,10 +112,10 @@ export function generateContrastingColorsArray(
 }
 
 function isContrastingWithNeighborsAndBaseColors(
-  newColor,
-  existingColors,
-  baseColors,
-  threshold
+  newColor: string,
+  existingColors: string | any[],
+  baseColors: any[],
+  threshold: number
 ) {
   const lastIndex = existingColors.length - 1;
   // Check contrast with the last color in the array

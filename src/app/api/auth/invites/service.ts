@@ -1,6 +1,6 @@
 import { isProd } from "@/_shared/utils/settings";
 import dayjs from "dayjs";
-import prisma from "prisma/prisma";
+import { prisma } from "prisma/prisma";
 
 export async function createInviteCode({ campaignId, referralId }) {
   if (!campaignId || !referralId) throw "Missing campaignId or referralId";

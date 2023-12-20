@@ -1,4 +1,4 @@
-import prisma from "prisma/prisma";
+import { prisma } from "prisma/prisma";
 import { readZonesByCampaign } from "../../elections/zones/service";
 import {
   contrastingColor,
@@ -12,10 +12,6 @@ export async function createMapData(request) {
 
   if (!cityId) throw "City not found";
 
-  const supporterGroup = await prisma.supporterGroupMembership.findFirst({
-    where: { supporterId: request.supporterSession.id, isOwner: true },
-  });
-
   const mapData = await prisma.address.findMany({
     where: { cityId },
     include: {
@@ -24,8 +20,8 @@ export async function createMapData(request) {
           Zone: { select: { id: true, number: true, stateId: true } },
           Supporter: {
             where: {
-              supporterGroupsMemberships: {
-                some: { supporterGroupId: supporterGroup.supporterGroupId },
+              SupporterGroup: {
+                ownerId: request.supporterSession.id,
               },
             },
           },

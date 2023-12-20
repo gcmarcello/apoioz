@@ -1,9 +1,9 @@
 import { Mocker } from "@/app/(frontend)/_shared/components/Mocker";
 import ErrorAlert from "@/app/(frontend)/_shared/components/alerts/errorAlert";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
-import { CreateSupportersDto, createSupportersDto } from "@/app/api/panel/supporters/dto";
+import { AddSupporterDto, addSupporterDto } from "@/app/api/panel/supporters/dto";
 import {
-  createSupporter,
+  addSupporter,
   readSupportersFromSupporterGroup,
 } from "@/app/api/panel/supporters/actions";
 import { fakerPT_BR } from "@faker-js/faker";
@@ -30,8 +30,6 @@ import SwitchInput from "@/app/(frontend)/_shared/components/fields/Switch";
 import { SidebarContext } from "../lib/sidebar.ctx";
 import { scrollToElement } from "@/app/(frontend)/_shared/utils/scroll";
 import clsx from "clsx";
-import { SectionTitle } from "@/app/(frontend)/_shared/components/text/SectionTitle";
-import { MinusSmallIcon, PlusSmallIcon } from "@heroicons/react/24/solid";
 import DisclosureAccordion from "@/app/(frontend)/_shared/components/Disclosure";
 
 export function AddSupporterForm({
@@ -46,8 +44,8 @@ export function AddSupporterForm({
 
   const { supporter: userSupporter } = useContext(SidebarContext);
 
-  const form = useForm<CreateSupportersDto>({
-    resolver: zodResolver(createSupportersDto),
+  const form = useForm<AddSupporterDto>({
+    resolver: zodResolver(addSupporterDto),
     mode: "onChange",
   });
 
@@ -63,8 +61,8 @@ export function AddSupporterForm({
     action: readAddressBySection,
   });
 
-  const { data: supporter, trigger: addSupporter } = useAction({
-    action: createSupporter,
+  const { data: supporter, trigger: addSupporterTrigger } = useAction({
+    action: addSupporter,
     onError: (err) => showToast({ message: err, variant: "error", title: "Erro" }),
     onSuccess: ({ data }) => {
       showToast({
@@ -88,18 +86,20 @@ export function AddSupporterForm({
 
   useEffect(() => {
     if (form.getValues("externalSupporter")) {
-      form.setValue("info.zoneId", undefined);
-      form.setValue("info.sectionId", undefined);
+      form.setValue("user.info.zoneId", undefined);
+      form.setValue("user.info.sectionId", undefined);
     }
   }, [form.watch("externalSupporter")]);
 
   useEffect(() => {
     if (!form) return;
     setMetaform({
-      submit: addSupporter,
+      submit: addSupporterTrigger,
       form: form,
     });
   }, [form]);
+
+  console.log(form.formState.errors);
 
   async function generateFakeData() {
     if (!zones) return;
@@ -108,20 +108,20 @@ export function AddSupporterForm({
     const { data: sections } = await fetchSections(zone.id);
     if (!sections) return;
 
-    form.setValue("name", fakerPT_BR.person.fullName());
-    form.setValue("email", fakerPT_BR.internet.email());
-    form.setValue("phone", fakerPT_BR.phone.number());
-    form.setValue("info.zoneId", zone.id);
+    form.setValue("user.name", fakerPT_BR.person.fullName());
+    form.setValue("user.email", fakerPT_BR.internet.email());
+    form.setValue("user.phone", fakerPT_BR.phone.number());
+    form.setValue("user.info.zoneId", zone.id);
     form.setValue(
-      "info.sectionId",
+      "user.info.sectionId",
       sections[Math.round(Math.random() * sections.length)].id
     );
     form.setValue(
-      "info.birthDate",
+      "user.info.birthDate",
       dayjs(fakerPT_BR.date.past({ refDate: 1 }).toISOString()).format("DD/MM/YYYY")
     );
     form.setValue("externalSupporter", false);
-    form.trigger("name");
+    form.trigger("user.name");
   }
 
   if (!zones || !form) return <></>;
@@ -143,19 +143,19 @@ export function AddSupporterForm({
                 />
               </div>
             ) : null}
-            <TextField label="Nome do Apoiador" hform={form} name={"name"} />
-            <TextField label="Email" hform={form} name={"email"} />
+            <TextField label="Nome do Apoiador" hform={form} name={"user.name"} />
+            <TextField label="Email" hform={form} name={"user.email"} />
             <MaskedTextField
               label="Celular"
               hform={form}
-              name={"phone"}
+              name={"user.phone"}
               mask="(99) 99999-9999"
             />
             <MaskedTextField
               hform={form}
               label="Data de Nascimento"
               mask="99/99/9999"
-              name={"info.birthDate"}
+              name={"user.info.birthDate"}
             />
             {!form.watch("externalSupporter") && (
               <div className="grid grid-cols-2 gap-3">
@@ -164,7 +164,7 @@ export function AddSupporterForm({
                     hform={form}
                     data={zones}
                     displayValueKey={"number"}
-                    name={"info.zoneId"}
+                    name={"user.info.zoneId"}
                     label="Zona"
                     onChange={(value) => {
                       fetchSections(value.id);
@@ -176,7 +176,7 @@ export function AddSupporterForm({
                     hform={form}
                     data={sections}
                     label="Seção"
-                    name={"info.sectionId"}
+                    name={"user.info.sectionId"}
                     displayValueKey={"number"}
                     disabled={!sections}
                     onChange={(value) => {

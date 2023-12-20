@@ -1,8 +1,6 @@
 "use server";
-import { User } from "@prisma/client";
 import { cookies } from "next/headers";
-import prisma from "prisma/prisma";
-import { MiddlewareArguments } from "../types/types";
+import { prisma } from "prisma/prisma";
 import { UserSessionMiddlewareReturnType } from "./userSession.middleware";
 
 export async function CampaignLeaderMiddleware<T>({

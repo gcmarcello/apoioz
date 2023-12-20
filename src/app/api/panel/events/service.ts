@@ -4,7 +4,7 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 import utc from "dayjs/plugin/utc";
 import { cookies, headers } from "next/headers";
 import { Supporter, User } from "@prisma/client";
-import prisma from "prisma/prisma";
+import { prisma } from "prisma/prisma";
 import { sendEmail } from "../../emails/service";
 import { CreateEventDto, ReadEventsAvailability, ReadEventsDto } from "./dto";
 import { SupporterSession } from "@/middleware/functions/supporterSession.middleware";

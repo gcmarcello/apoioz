@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 export type MetaForm = {
-  form: ReturnType<typeof useForm>;
-  submit: () => void;
+  form: any;
+  submit: any;
 };
 
 export const useMetaForm = () => {

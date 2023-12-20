@@ -1,4 +1,14 @@
 import { z } from "zod";
+import { createUserDto } from "../user/dto";
+import { pollAnswerDto } from "../panel/polls/dto";
+
+export const signUpAsSupporterDto = z.object({
+  user: createUserDto,
+  poll: pollAnswerDto.optional(),
+  inviteCodeId: z.string(),
+});
+
+export type SignUpAsSupporterDto = z.infer<typeof signUpAsSupporterDto>;
 
 export const loginDto = z.object({
   identifier: z.string(),
@@ -31,3 +41,9 @@ export const signupDto = z.object({
 });
 
 export type SignupDto = z.infer<typeof signupDto>;
+
+export const passwordResetDto = z.object({
+  identifier: z.string().email(),
+});
+
+export type PasswordResetDto = z.infer<typeof passwordResetDto>;

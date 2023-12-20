@@ -1,5 +1,5 @@
 "use server";
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { ActionResponse } from "../../_shared/utils/ActionResponse";
 import * as service from "./service";
@@ -9,7 +9,6 @@ import { CampaignLeaderMiddleware } from "@/middleware/functions/campaignLeader.
 import { revalidatePath } from "next/cache";
 import { PollAnswerDto, UpsertPollDto } from "./dto";
 import { IpMiddleware } from "@/middleware/functions/ip.middleware";
-import { AuthMiddleware } from "@/middleware/functions/auth.middleware";
 import { readSupporterFromUser } from "../supporters/service";
 import { getEnv } from "@/_shared/utils/settings";
 

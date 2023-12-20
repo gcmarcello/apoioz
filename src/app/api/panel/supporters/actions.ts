@@ -3,19 +3,17 @@
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 import { revalidatePath } from "next/cache";
-import { CreateSupportersLevelMiddleware, ReadSupportersMiddleware } from "./middlewares";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { ActionResponse } from "../../_shared/utils/ActionResponse";
 import { cookies } from "next/headers";
 import * as service from "./service";
-import { ReadSupportersDto, CreateSupportersDto, ReadSupporterBranchesDto } from "./dto";
+import { ReadSupportersDto, ReadSupporterBranchesDto, AddSupporterDto } from "./dto";
 
 export async function readSupportersFromSupporterGroup(request?: ReadSupportersDto) {
   try {
     const { request: parsedRequest } = await UseMiddlewares(request)
       .then(UserSessionMiddleware)
-      .then(SupporterSessionMiddleware)
-      .then(ReadSupportersMiddleware);
+      .then(SupporterSessionMiddleware);
 
     const { data, pagination } =
       await service.readSupportersFromSupporterGroup(parsedRequest);
@@ -35,8 +33,7 @@ export async function readSupportersFromSupporterGroupWithRelation(
   try {
     const { request: parsedRequest } = await UseMiddlewares(request)
       .then(UserSessionMiddleware)
-      .then(SupporterSessionMiddleware)
-      .then(ReadSupportersMiddleware);
+      .then(SupporterSessionMiddleware);
 
     const { data, pagination } =
       await service.readSupportersFromSupporterGroupWithRelation(parsedRequest);
@@ -52,14 +49,22 @@ export async function readSupportersFromSupporterGroupWithRelation(
   }
 }
 
-export async function createSupporter(request: CreateSupportersDto) {
+export async function addSupporter(request: AddSupporterDto) {
   try {
-    const parsedRequest = await UseMiddlewares(request)
+    const { request: parsedRequest } = await UseMiddlewares(request)
       .then(UserSessionMiddleware)
-      .then(SupporterSessionMiddleware)
-      .then(CreateSupportersLevelMiddleware);
+      .then(SupporterSessionMiddleware);
 
-    const newSupporter = await service.createSupporter(parsedRequest);
+    if (parsedRequest.supporterSession.level < 4 && request.referralId)
+      throw "Você não pode cadastrar um apoiador para um apoiador.";
+
+    const newSupporter = await service.createSupporter({
+      campaignId: parsedRequest.supporterSession.campaignId,
+      user: request.user,
+      referralId: request.referralId,
+    });
+
+    console.log(newSupporter);
 
     if (!newSupporter) throw "Erro ao criar novo apoiador.";
 
@@ -70,6 +75,7 @@ export async function createSupporter(request: CreateSupportersDto) {
       message: "Sucesso ao criar novo apoiador!",
     });
   } catch (err: any) {
+    console.log(err);
     return ActionResponse.error(err);
   }
 }

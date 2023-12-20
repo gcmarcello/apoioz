@@ -15,10 +15,10 @@ export default function SupporterOverview({
   const menuItems = [
     { name: "Nome", info: supporter?.user?.name },
     { name: "WhatsApp", info: formatPhone(supporter?.user?.phone || "") },
-    {
+    /**{
       name: "Cidade",
       info: toProperCase(supporter?.user?.info?.City?.name || ""),
-    },
+    }, */
     { name: "Indicado por", info: supporter?.referral?.user.name },
   ];
 

@@ -3,7 +3,7 @@ import "../globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { cookies, headers } from "next/headers";
-import prisma from "prisma/prisma";
+import { prisma } from "prisma/prisma";
 import ChooseCampaign from "./_shared/components/ChooseCampaign/ChooseCampaign";
 import { PanelSidebarsLayout } from "./_shared/components/Sidebars/PanelSidebarsLayout";
 
@@ -28,32 +28,30 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   const activeCampaignId = cookies().get("activeCampaign")?.value;
 
-  if (activeCampaignId && userId) {
-    const campaign = await readCampaign({
-      campaignId: activeCampaignId,
-    });
+  if (!activeCampaignId) return <ChooseCampaign user={user} />;
 
-    const supporter = await prisma.supporter.findFirst({
-      where: { userId, campaignId: campaign.id },
-    });
+  const activeCampaign = await readCampaign({
+    campaignId: activeCampaignId,
+  });
 
-    const campaigns = await listCampaigns(user.id);
+  if (!activeCampaign) return <ChooseCampaign user={user} />;
 
-    if (!campaign) return;
+  const supporter = await prisma.supporter.findFirst({
+    where: { userId, campaignId: activeCampaign.id },
+  });
 
-    return (
-      <main>
-        <PanelSidebarsLayout
-          campaign={campaign}
-          campaigns={campaigns}
-          user={user}
-          supporter={supporter}
-        />
+  const campaigns = await listCampaigns(user.id);
 
-        <div className="h-[calc(100vh-80px-30px)] p-4 lg:ml-64 lg:p-8">{children}</div>
-      </main>
-    );
-  }
+  return (
+    <main>
+      <PanelSidebarsLayout
+        campaign={activeCampaign}
+        campaigns={campaigns}
+        user={user}
+        supporter={supporter}
+      />
 
-  return <ChooseCampaign user={user} />;
+      <div className="h-[calc(100vh-80px-30px)] p-4 lg:ml-64 lg:p-8">{children}</div>
+    </main>
+  );
 }

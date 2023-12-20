@@ -10,7 +10,7 @@ import { ParagraphLink } from "@/app/(frontend)/_shared/components/text/Paragrap
 import { Pagination } from "@/app/api/_shared/dto/read";
 import { Prisma } from "@prisma/client";
 
-type LatestSupportersTableData = Prisma.SupporterGetPayload<{
+export type LatestSupportersTableData = Prisma.SupporterGetPayload<{
   include: {
     user: {
       select: {
@@ -116,7 +116,7 @@ export default function LatestSupportersTable({
       <DefaultTable
         data={data}
         columns={columns}
-        count={pagination.count}
+        count={pagination.count || 0}
         disablePagination={true}
         disableXlsx={true}
         TableHeader={() => (

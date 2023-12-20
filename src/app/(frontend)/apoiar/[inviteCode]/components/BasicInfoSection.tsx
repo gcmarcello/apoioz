@@ -3,13 +3,13 @@ import {
   MaskedTextField,
   TextField,
 } from "@/app/(frontend)/_shared/components/fields/Text";
-import { CreateSupportersDto } from "@/app/api/panel/supporters/dto";
+import { AddSupporterDto } from "@/app/api/panel/supporters/dto";
 import { useForm } from "react-hook-form";
 
 export function BasicInfoSection({
   form,
 }: {
-  form: ReturnType<typeof useForm<CreateSupportersDto>>;
+  form: ReturnType<typeof useForm<AddSupporterDto>>;
 }) {
   return (
     <>
@@ -17,7 +17,7 @@ export function BasicInfoSection({
         <TextField
           hform={form}
           label="Nome do Apoiador"
-          name={"name"}
+          name={"user.name"}
           autoComplete="name"
           placeholder="ex. João Silva"
         />
@@ -26,7 +26,7 @@ export function BasicInfoSection({
         <TextField
           hform={form}
           label="Email"
-          name={"email"}
+          name={"user.email"}
           autoComplete="email"
           placeholder="ex. joao@silva.com"
         />
@@ -38,9 +38,9 @@ export function BasicInfoSection({
           inputMode="numeric"
           autoComplete="tel"
           placeholder="ex. 999999999"
-          name="phone"
+          name="user.phone"
           mask={
-            normalizePhone(form.watch("phone"))?.length < 11
+            normalizePhone(form.watch("user.phone"))?.length < 11
               ? "(99) 9999-99999"
               : "(99) 99999-9999"
           }
@@ -53,7 +53,7 @@ export function BasicInfoSection({
           inputMode="numeric"
           autoComplete="birthDate"
           placeholder="ex. 01/01/1990"
-          name="info.birthDate"
+          name="user.info.birthDate"
           mask="99/99/9999"
         />
       </div>

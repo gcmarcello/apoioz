@@ -2,23 +2,13 @@
 import { Button } from "@/app/(frontend)/_shared/components/Button";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
-import { createSupporter } from "@/app/api/panel/supporters/actions";
-import { cookies } from "next/headers";
+import { joinCampaign } from "@/app/api/panel/campaigns/actions";
 import { useRouter } from "next/navigation";
-import { Router } from "next/router";
-import { Campaign, Supporter } from "prisma/generated/zod";
-import { UserWithoutPassword } from "prisma/types/User";
 
-export default function JoinCampaign({
-  campaign,
-  referral,
-}: {
-  campaign: Campaign;
-  referral: Supporter;
-}) {
+export default function JoinCampaign({ campaignId }: { campaignId: string }) {
   const router = useRouter();
   const { trigger: join, isMutating: isLoading } = useAction({
-    action: createSupporter,
+    action: joinCampaign,
     onSuccess: () => {
       showToast({ message: "Apoiando!", title: "Sucesso", variant: "success" });
       router.push("/painel");
@@ -28,10 +18,7 @@ export default function JoinCampaign({
     },
   });
   return (
-    <Button
-      onClick={() => join({ campaignId: campaign.id, referralId: referral.id })}
-      variant="primary"
-    >
+    <Button onClick={() => join({ campaignId })} variant="primary">
       Apoiar!
     </Button>
   );

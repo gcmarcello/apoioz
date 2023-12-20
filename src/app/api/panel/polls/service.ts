@@ -1,6 +1,6 @@
 "use server";
 
-import prisma from "prisma/prisma";
+import { prisma } from "prisma/prisma";
 import { Poll, PollAnswer, Supporter } from "@prisma/client";
 import { PollAnswerDto, ReadPollsStats, UpsertPollDto } from "./dto";
 import dayjs from "dayjs";

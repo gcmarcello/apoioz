@@ -5,8 +5,8 @@ import { useFieldArray } from "react-hook-form";
 
 export function PollQuestions({ poll, form }: { poll: any; form: any }) {
   const { fields } = useFieldArray({
-    control: form.control, // control props comes from useForm (optional: if you are using FormContext)
-    name: "poll.questions", // unique name for your Field Array
+    control: form.control,
+    name: "poll.questions",
   });
 
   return (

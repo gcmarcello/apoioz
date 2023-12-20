@@ -1,12 +1,14 @@
 import Footer from "../_shared/components/Footer";
-import MainStats from "./components/MainStats";
 import { readSupportersFromSupporterGroupWithRelation } from "@/app/api/panel/supporters/service";
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
 import LatestSupportersTable from "./components/LatestSupportersTable";
+import { cookies } from "next/headers";
 
 export default async function PanelPage() {
+  if (!cookies().get("activeCampaign")?.value) return;
+
   const {
     request: { supporterSession, userSession },
   } = await UseMiddlewares().then(UserSessionMiddleware).then(SupporterSessionMiddleware);
@@ -18,9 +20,11 @@ export default async function PanelPage() {
 
   if (!latestSupporters) return;
 
+  console.log(latestSupporters);
+
   return (
     <>
-      <MainStats />
+      {/** <MainStats /> @todo */}
       <LatestSupportersTable
         data={latestSupporters.data}
         pagination={latestSupporters.pagination}

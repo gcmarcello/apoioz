@@ -3,58 +3,50 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { hashInfo } from "@/_shared/utils/bCrypt";
 import { normalizePhone, normalizeEmail } from "@/_shared/utils/format";
-import prisma from "prisma/prisma";
+import { prisma } from "prisma/prisma";
 import { handlePrismaError } from "prisma/prismaError";
 import { validateUUID } from "@/_shared/utils/validators/uuid.validator";
+import { CreateUserDto } from "./dto";
 dayjs.extend(customParseFormat);
 
-export async function createUser(data: any) {
-  try {
-    const { name, email, password, ...info } = data;
+export async function createUser(data: CreateUserDto) {
+  const { name, email, password, phone, info } = data;
 
-    const existingUser = await prisma.user.findFirst({
-      where: { email: normalizeEmail(email) },
-    });
-    if (existingUser)
-      throw {
-        message: `Usuário com este email já existe.`,
-        status: 409,
-      };
-    const user = await prisma.user.create({
-      data: {
-        email: normalizeEmail(data.email),
-        password: data.password && (await hashInfo(data.password)),
-        role: "user",
-        name: data.name,
-        info: {
-          create: {
-            ...info,
-            phone: normalizePhone(info.phone),
-            birthDate: dayjs(info.birthDate, "DD/MM/YYYY").toISOString(),
-          },
+  const existingUser = await prisma.user.findFirst({
+    where: { email: normalizeEmail(email) },
+  });
+
+  if (existingUser) throw `Usuário com este email já existe.`;
+
+  const user = await prisma.user.create({
+    data: {
+      email: normalizeEmail(data.email),
+      password: data.password && (await hashInfo(data.password)),
+      role: "user",
+      name: data.name,
+      phone: normalizePhone(phone),
+      info: {
+        create: {
+          ...info,
+          birthDate: dayjs(info.birthDate, "DD/MM/YYYY").toISOString(),
         },
       },
-      include: {
-        info: true,
-      },
-    });
-    return {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      info: {
-        state: info.stateId,
-        city: info.cityId,
-        zone: info.zoneId,
-        section: info.sectionId,
-        birthDate: info.birthDate,
-      },
-    };
-  } catch (error) {
-    console.log(error);
-    return handlePrismaError("usuário", error);
-  }
+    },
+    include: {
+      info: true,
+    },
+  });
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    info: {
+      zone: info.zoneId,
+      section: info.sectionId,
+      birthDate: info.birthDate,
+    },
+  };
 }
 
 export async function readUsers() {
@@ -79,7 +71,7 @@ export async function readUser(userId: string) {
   }
 }
 
-export async function updateUser(request) {
+export async function updateUser(request: any) {
   const { userSession, birthDate, ...data } = request;
   try {
     const verifyExistingEmail = await prisma.user.findFirst({

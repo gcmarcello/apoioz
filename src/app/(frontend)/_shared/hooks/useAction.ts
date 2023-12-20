@@ -69,8 +69,6 @@ export function useAction<
     onError: (error) => onError && onError(error),
   });
 
-  console.log(mutation);
-
   const actionResult = {
     ...mutation,
     data: (mutation?.data?.data || defaultData) as ParserReturnType,

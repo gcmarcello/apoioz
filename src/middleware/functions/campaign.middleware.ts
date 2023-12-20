@@ -1,7 +1,7 @@
 "use server";
 import { Supporter } from "@prisma/client";
 import { MiddlewareArguments } from "../types/types";
-import prisma from "prisma/prisma";
+import { prisma } from "prisma/prisma";
 import { SupporterSessionMiddlewareReturnType } from "./supporterSession.middleware";
 
 export async function CampaignMiddleware<T>({

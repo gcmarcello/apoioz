@@ -1,6 +1,5 @@
 "use client";
 import { Date } from "@/app/(frontend)/_shared/components/Date";
-import { PollsTableType } from "@/_shared/types/tableTypes";
 import {
   AtSymbolIcon,
   CheckBadgeIcon,
@@ -18,7 +17,7 @@ import { Poll, PollQuestion } from "@prisma/client";
 import { ParagraphLink } from "@/app/(frontend)/_shared/components/text/ParagraphLink";
 
 export default function PollsTable({ polls }: { polls: Poll[] }) {
-  const columnHelper = createColumnHelper<PollsTableType>();
+  const columnHelper = createColumnHelper<any>(); // @todo
 
   const columns = [
     columnHelper.accessor("title", {
