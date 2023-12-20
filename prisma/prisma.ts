@@ -12,4 +12,4 @@ declare global {
 
 export const prisma = globalThis.prisma! ?? prismaClientSingleton()!;
 
-if (!compareEnv("NODE_ENV", "production")) globalThis.prisma = prisma;
+globalThis.prisma = prisma;
