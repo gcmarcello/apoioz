@@ -8,7 +8,7 @@ export class ReportsContextProps {
     pagination: any;
     data: ExtractSuccessResponse<typeof readSupportersFromSupporterGroupWithRelation>;
   };
-  openAsSupporter: (user: any, campaignId: string) => void;
+  openAsSupporter: (supporterId: string) => void;
   restoreView: () => void;
   viewingAs: User | undefined;
   setViewingAs: Dispatch<User>;

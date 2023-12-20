@@ -26,6 +26,7 @@ type SelectFieldProps<
 > = BaseProps<Fields> & {
   data?: Data | undefined[];
   displayValueKey: Path<Data[0]>;
+  valueKey?: Path<Data[0]>;
   onChange?: (value: any) => void;
   reverseOptions?: boolean;
 };
@@ -33,82 +34,124 @@ type SelectFieldProps<
 export function ListboxField<
   Fields extends FieldValues,
   Data extends Array<{ [key: string]: any }>,
->({ hform, name, data = [], ...props }: SelectFieldProps<Fields, Data>, ref) {
+>({ hform, name, data, ...props }: SelectFieldProps<Fields, Data>, ref) {
   const id = useId();
 
   const errorMessage = getErrorMessage(hform, name);
 
-  const options = data.map((i) => ({
+  const options = (data || []).map((i) => ({
     id: i?.id as string,
+    value: i?.[(props.valueKey as string) || "id"] as string,
     displayValue: i?.[props.displayValueKey as string] as string,
   }));
 
-  return (
-    <>
-      <Controller
-        name={name}
-        control={hform.control}
-        render={({ field: { onChange, value } }) => (
-          <Field errorMessage={errorMessage} label={props.label} id={id}>
-            <Listbox
-              disabled={props.disabled}
-              as={Fragment}
-              value={value || ""}
-              onChange={(data: any) => {
-                props.onChange && props.onChange(data);
-                onChange(data.id);
-              }}
-            >
-              {({ open, disabled, value }) => {
-                const selectedOption = options?.find((o) => o.id === value)?.displayValue;
+  console.log(options);
 
-                return (
-                  <>
-                    <div className="relative mt-2">
-                      <Listbox.Button
+  return (
+    <Controller
+      name={name}
+      control={hform.control}
+      render={({ field: { onChange, value } }) => (
+        <Field errorMessage={errorMessage} label={props.label} id={id}>
+          <Listbox
+            disabled={props.disabled}
+            as={Fragment}
+            value={value || ""}
+            onChange={(data: any) => {
+              props.onChange && props.onChange(data);
+              onChange(data.value);
+            }}
+          >
+            {({ open, disabled, value }) => {
+              const selectedOption = options?.find((o) => o.value === value)
+                ?.displayValue;
+
+              return (
+                <>
+                  <div className="relative mt-2">
+                    <Listbox.Button
+                      className={clsx(
+                        disabled ? "bg-gray-100" : "bg-white",
+                        "relative w-full cursor-pointer rounded-md  py-1.5 pl-3 pr-10 text-left text-gray-900",
+                        fieldClasses
+                      )}
+                    >
+                      <span className="block truncate">
+                        {selectedOption || "Selecionar"}
+                      </span>
+                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                        <ChevronUpDownIcon
+                          className="h-5 w-5 text-gray-400"
+                          aria-hidden="true"
+                        />
+                      </span>
+                    </Listbox.Button>
+
+                    <Transition
+                      show={open}
+                      as={Fragment}
+                      leave="transition ease-in duration-100"
+                      leaveFrom="opacity-100"
+                      leaveTo="opacity-0"
+                    >
+                      <Listbox.Options
                         className={clsx(
-                          disabled ? "bg-gray-100" : "bg-white",
-                          "relative w-full cursor-pointer rounded-md  py-1.5 pl-3 pr-10 text-left text-gray-900",
-                          fieldClasses
+                          "absolute z-10 mt-1 max-h-60 w-full  overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm",
+                          props.reverseOptions && "-translate-y-full"
                         )}
                       >
-                        <span className="block truncate">
-                          {selectedOption || "Selecionar"}
-                        </span>
-                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                          <ChevronUpDownIcon
-                            className="h-5 w-5 text-gray-400"
-                            aria-hidden="true"
-                          />
-                        </span>
-                      </Listbox.Button>
-
-                      <Transition
-                        show={open}
-                        as={Fragment}
-                        leave="transition ease-in duration-100"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
-                      >
-                        <Listbox.Options
-                          className={clsx(
-                            "absolute z-10 mt-1 max-h-60 w-full  overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm",
-                            props.reverseOptions && "-translate-y-full"
-                          )}
+                        <Listbox.Option
+                          key={"default"}
+                          disabled
+                          defaultChecked
+                          className={({ active }) =>
+                            clsx(
+                              active
+                                ? "bg-indigo-600 text-white"
+                                : "bg-gray-100 text-gray-900",
+                              "relative cursor-default select-none py-2 pl-3 pr-9"
+                            )
+                          }
+                          value={null}
                         >
+                          {({ selected, active }) => (
+                            <>
+                              <span
+                                className={clsx(
+                                  selected ? "font-semibold" : "font-normal",
+                                  "block truncate"
+                                )}
+                              >
+                                Selecionar
+                              </span>
+
+                              {selected ? (
+                                <span
+                                  className={clsx(
+                                    active ? "text-white" : "text-indigo-600",
+                                    "absolute inset-y-0 right-0 flex items-center pr-4"
+                                  )}
+                                >
+                                  <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                </span>
+                              ) : null}
+                            </>
+                          )}
+                        </Listbox.Option>
+                        {options.map((item) => (
                           <Listbox.Option
-                            key={"default"}
-                            disabled
-                            defaultChecked
-                            className={({ active }) =>
+                            key={item.id}
+                            value={item || {}}
+                            className={({ active, disabled }) =>
                               clsx(
                                 active
                                   ? "bg-indigo-600 text-white"
-                                  : "bg-gray-100 text-gray-900",
+                                  : disabled
+                                  ? "bg-gray-100"
+                                  : "text-gray-900",
                                 "relative cursor-default select-none py-2 pl-3 pr-9"
                               )
                             }
-                            value={null}
                           >
                             {({ selected, active }) => (
                               <>
@@ -118,7 +161,7 @@ export function ListboxField<
                                     "block truncate"
                                   )}
                                 >
-                                  Selecionar
+                                  {item.displayValue}
                                 </span>
 
                                 {selected ? (
@@ -134,57 +177,17 @@ export function ListboxField<
                               </>
                             )}
                           </Listbox.Option>
-                          {options.map((item) => (
-                            <Listbox.Option
-                              key={item.id}
-                              value={item || {}}
-                              className={({ active, disabled }) =>
-                                clsx(
-                                  active
-                                    ? "bg-indigo-600 text-white"
-                                    : disabled
-                                    ? "bg-gray-100"
-                                    : "text-gray-900",
-                                  "relative cursor-default select-none py-2 pl-3 pr-9"
-                                )
-                              }
-                            >
-                              {({ selected, active }) => (
-                                <>
-                                  <span
-                                    className={clsx(
-                                      selected ? "font-semibold" : "font-normal",
-                                      "block truncate"
-                                    )}
-                                  >
-                                    {item.displayValue}
-                                  </span>
-
-                                  {selected ? (
-                                    <span
-                                      className={clsx(
-                                        active ? "text-white" : "text-indigo-600",
-                                        "absolute inset-y-0 right-0 flex items-center pr-4"
-                                      )}
-                                    >
-                                      <CheckIcon className="h-5 w-5" aria-hidden="true" />
-                                    </span>
-                                  ) : null}
-                                </>
-                              )}
-                            </Listbox.Option>
-                          ))}
-                        </Listbox.Options>
-                      </Transition>
-                    </div>
-                  </>
-                );
-              }}
-            </Listbox>
-          </Field>
-        )}
-      />
-    </>
+                        ))}
+                      </Listbox.Options>
+                    </Transition>
+                  </div>
+                </>
+              );
+            }}
+          </Listbox>
+        </Field>
+      )}
+    />
   );
 }
 
@@ -235,9 +238,6 @@ export function ComboboxField<
     isMutating,
   } = useAction({
     action: fetcher,
-    onSuccess: () => {
-      fetchData();
-    },
   });
 
   const options = useMemo(() => {

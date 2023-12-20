@@ -23,10 +23,7 @@ export default function SubmitEventRequest({
 }) {
   const form = useForm();
 
-  const {
-    data: { dateEvents, availableTimes },
-    trigger: fetchEventsAvailability,
-  } = useAction({
+  const { data, trigger: fetchEventsAvailability } = useAction({
     action: readEventsAvailability,
     parser: (data) => {
       return {
@@ -39,6 +36,8 @@ export default function SubmitEventRequest({
       };
     },
   });
+
+  const { dateEvents, availableTimes } = data || {};
 
   const { trigger: submitEvent, isMutating: loading } = useAction({
     action: createEvent,
@@ -74,40 +73,40 @@ export default function SubmitEventRequest({
     });
   }, []);
 
-  useEffect(() => {
-    if (form.watch("dateStart")) {
-      form.resetField("dateEnd");
-      const selectedTime = dayjs(form.watch("dateStart")?.value);
-      let times = availableTimes?.filter((time) => {
-        const timeDate = dayjs(time.value);
-        return timeDate.isAfter(selectedTime);
-      });
-      if (dateEvents) {
-        times = times?.filter((time) => {
-          const selectedEndTime = dayjs(time.value);
-          for (const event of dateEvents) {
-            const eventStartTime = dayjs(event.start);
-            const eventEndTime = dayjs(event.end);
-            if (
-              selectedTime.isBefore(eventEndTime) &&
-              selectedEndTime.isAfter(eventStartTime)
-            ) {
-              return false;
-            }
-          }
-          return true;
-        });
-      }
-      setEndingAvailableTimes(times || []);
-    }
-  }, [form.watch("dateStart"), availableTimes]);
-
   const generateFakeData = () => {
     form.setValue("name", fakerPT_BR.company.buzzPhrase());
     form.setValue("description", fakerPT_BR.lorem.paragraph());
     form.setValue("location", fakerPT_BR.location.county());
     form.setValue("observations", fakerPT_BR.lorem.paragraph());
   };
+
+  const onDateStartChange = () => {
+    form.resetField("dateEnd");
+    const selectedTime = dayjs(form.watch("dateStart")?.value);
+    let times = availableTimes?.filter((time) => {
+      const timeDate = dayjs(time.value);
+      return timeDate.isAfter(selectedTime);
+    });
+    if (dateEvents) {
+      times = times?.filter((time) => {
+        const selectedEndTime = dayjs(time.value);
+        for (const event of dateEvents) {
+          const eventStartTime = dayjs(event.start);
+          const eventEndTime = dayjs(event.end);
+          if (
+            selectedTime.isBefore(eventEndTime) &&
+            selectedEndTime.isAfter(eventStartTime)
+          ) {
+            return false;
+          }
+        }
+        return true;
+      });
+    }
+    setEndingAvailableTimes(times || []);
+  };
+
+  if (!data) return null;
 
   return (
     <form onSubmit={form.handleSubmit((data) => submitEvent(data))}>
@@ -158,7 +157,9 @@ export default function SubmitEventRequest({
               name="dateStart"
               label="Hora de início"
               data={availableTimes}
-              displayValueKey={"value.startOf"}
+              onChange={onDateStartChange}
+              displayValueKey={"name"}
+              valueKey={"value"}
               disabled={!availableTimes?.length}
             />
             {Array.isArray(availableTimes) && !availableTimes.length && (
@@ -174,7 +175,8 @@ export default function SubmitEventRequest({
               name="dateEnd"
               label="Hora de término"
               data={endingAvailableTimes}
-              displayValueKey=""
+              displayValueKey="name"
+              valueKey="value"
               disabled={!endingAvailableTimes?.length}
             />
           </div>

@@ -5,6 +5,7 @@ import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
 import LatestSupportersTable from "./components/LatestSupportersTable";
 import { cookies } from "next/headers";
+import MainStats from "./components/MainStats";
 
 export default async function PanelPage() {
   if (!cookies().get("activeCampaign")?.value) return;
@@ -24,7 +25,7 @@ export default async function PanelPage() {
 
   return (
     <>
-      {/** <MainStats /> @todo */}
+      <MainStats />
       <LatestSupportersTable
         data={latestSupporters.data}
         pagination={latestSupporters.pagination}

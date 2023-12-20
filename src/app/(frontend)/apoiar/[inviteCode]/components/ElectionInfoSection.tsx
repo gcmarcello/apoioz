@@ -14,15 +14,15 @@ import {
 } from "@/app/(frontend)/_shared/components/fields/Select";
 import { PollQuestions } from "./PollQuestions";
 import { SectionTitle } from "@/app/(frontend)/_shared/components/text/SectionTitle";
-import { CreateSupportersDto } from "@/app/api/panel/supporters/dto";
 import { scrollToElement } from "@/app/(frontend)/_shared/utils/scroll";
+import { SignUpAsSupporterDto } from "@/app/api/auth/dto";
 
 export function ElectionInfoSection({
   form,
   zones,
   poll,
 }: {
-  form: ReturnType<typeof useForm<CreateSupportersDto>>;
+  form: ReturnType<typeof useForm<SignUpAsSupporterDto>>;
   zones: { data: Zone[]; message: string };
   poll: any;
 }) {
@@ -39,7 +39,7 @@ export function ElectionInfoSection({
     action: readSectionsByZone,
     parser: (data) => {
       resetAddress();
-      form.resetField("info.sectionId");
+      form.resetField("user.info.sectionId");
       return data;
     },
     onError: (error) => {
@@ -72,7 +72,7 @@ export function ElectionInfoSection({
           type="button"
           onClick={() => {
             setWillAddPassword(true);
-            form.resetField("password");
+            form.resetField("user.password");
             setShowPassword(false);
             scrollToElement(formRef.current, 12);
           }}
@@ -101,7 +101,7 @@ export function ElectionInfoSection({
           type="button"
           onClick={() => {
             setWillAddPassword(false);
-            form.resetField("password");
+            form.resetField("user.password");
             setShowPassword(false);
             scrollToElement(formRef.current, 12);
           }}
@@ -147,7 +147,7 @@ export function ElectionInfoSection({
               <input
                 type={showPassword ? "text" : "password"}
                 autoComplete="password"
-                {...form.register("password", { required: true, minLength: 6 })}
+                {...form.register("user.password", { required: true, minLength: 6 })}
                 id="password"
                 className="block w-full rounded-none rounded-l-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               />
@@ -175,7 +175,7 @@ export function ElectionInfoSection({
             <ListboxField
               hform={form}
               label="Zona"
-              name={"info.zoneId"}
+              name={"user.info.zoneId"}
               data={zones.data}
               displayValueKey="number"
               onChange={async (e) => await fetchSections(e.id)}
@@ -187,7 +187,7 @@ export function ElectionInfoSection({
               data={sectionList}
               disabled={!sectionList?.length}
               onChange={async (value) => fetchAddress(value.id)}
-              name={"info.sectionId"}
+              name={"user.info.sectionId"}
               label="Seção"
               displayValueKey={"number"}
             />

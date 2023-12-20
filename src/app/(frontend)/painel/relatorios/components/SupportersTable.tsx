@@ -70,9 +70,7 @@ export default function SupportersTable() {
           </a>
           <EyeIcon
             role="button"
-            onClick={() =>
-              openAsSupporter(info.row.original.user, info.row.original.campaignId)
-            }
+            onClick={() => openAsSupporter(info.row.original)}
             className="h-[1.45rem] w-[1.45rem] text-gray-400 hover:text-gray-500"
           />
         </div>

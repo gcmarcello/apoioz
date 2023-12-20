@@ -76,6 +76,7 @@ export function ShareSupporter({
       </div>
 
       <div className="w-[300px] space-y-4">
+        {`${window.location.origin}/apoiar/${inviteCode?.id}`}
         <button
           onClick={(e) => {
             e.preventDefault();

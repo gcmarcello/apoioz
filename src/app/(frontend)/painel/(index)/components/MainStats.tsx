@@ -1,30 +1,16 @@
 import { ArrowDownIcon, ArrowUpIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
-import { Campaign, User } from "@prisma/client";
-import { generateMainPageStats } from "@/app/api/panel/campaigns/actions";
+import { generateMainPageStats } from "@/app/api/panel/campaigns/service";
+import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
+import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
+import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 
-export default function MainStats({
-  user,
-  campaign,
-}: {
-  user: User;
-  campaign: Campaign;
-}) {
-  const [mainPageStats, setMainPageStats] = useState<any>(null);
+export default async function MainStats() {
+  const {
+    request: { supporterSession },
+  } = await UseMiddlewares().then(UserSessionMiddleware).then(SupporterSessionMiddleware);
 
-  useEffect(() => {
-    (async () => {
-      if (user && campaign) {
-        generateMainPageStats({
-          campaignId: campaign.id,
-          userId: user.id,
-        })
-          .then((data: any) => setMainPageStats(data))
-          .catch((err) => console.log(err));
-      }
-    })();
-  }, [campaign, user]);
+  const mainPageStats = await generateMainPageStats(supporterSession);
 
   if (!mainPageStats)
     return (
@@ -83,8 +69,8 @@ export default function MainStats({
     },
     {
       name: "Seção Líder",
-      stat: mainPageStats?.leadingSection.section.number,
-      previousStat: `Zona ${mainPageStats?.leadingSection.zone?.number} - ${mainPageStats?.leadingSection.section?.Address.location}`,
+      stat: mainPageStats?.leadingSection.number,
+      previousStat: `Zona ${mainPageStats?.leadingSection.Zone?.number} - ${mainPageStats?.leadingSection.Address.location}`,
       change: `${mainPageStats?.leadingSection.count}`,
       changeType: false,
     },

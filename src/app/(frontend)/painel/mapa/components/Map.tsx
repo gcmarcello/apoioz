@@ -9,9 +9,9 @@ import { toProperCase } from "@/_shared/utils/format";
 import { For } from "@/app/(frontend)/_shared/components/For";
 import { FullscreenControl } from "react-leaflet-fullscreen";
 import MarkerClusterGroup from "react-leaflet-cluster";
-import { generateContrastingColorsArray } from "@/app/(frontend)/_shared/utils/colors";
-import { Neighborhood, Zone } from "prisma/generated/zod";
-import { filterOutValues, retrieveBoundsFromGeoJSONS } from "../utils/coordinates";
+import { retrieveBoundsFromGeoJSONS } from "../utils/coordinates";
+import { useFormContext } from "react-hook-form";
+import { useMapData } from "../hooks/useMapData";
 
 const POSITION_CLASSES = {
   bottomleft: "leaflet-bottom leaflet-left",
@@ -20,17 +20,9 @@ const POSITION_CLASSES = {
   topright: "leaflet-top leaflet-right",
 };
 
-export function SupportersMap({
-  mapData,
-  zones,
-  neighborhoods,
-  sections,
-}: {
-  mapData: any;
-  zones: (Zone & { label: number; color: string; checked: boolean })[];
-  neighborhoods: (Neighborhood & { label: string; color: string; checked: boolean })[];
-  sections: { showEmptySections: boolean };
-}) {
+export default function Map() {
+  const { neighborhoods, addresses, zones, sections, ...mapData } = useMapData();
+
   const [open, setOpen] = useState(false);
   const [modalInfo, setModalInfo] = useState(null);
   const center = [0, 0];
@@ -38,19 +30,19 @@ export function SupportersMap({
   const mapRef = useRef(null);
 
   const handleMarkerClick = useCallback(
-    (info) => {
+    (info: any) => {
       setModalInfo(info);
       setOpen(true);
     },
     [setModalInfo, setOpen]
   );
 
-  let closeTimeout = null;
+  let closeTimeout: string | number | NodeJS.Timeout | null | undefined = null;
 
   function FitBoundsComponent() {
     const map = useMap();
-    const markerCoords = mapData?.map((marker) => marker.geocode);
-    let geoJSONBounds = null;
+    const markerCoords = addresses?.map((marker: { geocode: any }) => marker.geocode);
+    let geoJSONBounds: L.LatLngBounds | null = null;
 
     if (neighborhoods.filter((neighborhood) => neighborhood.checked).length) {
       geoJSONBounds = retrieveBoundsFromGeoJSONS(
@@ -78,7 +70,10 @@ export function SupportersMap({
   const createClusterCustomIcon = function (cluster: MarkerCluster) {
     const supporterCount = cluster
       .getAllChildMarkers()
-      .reduce((acc, marker) => acc + marker.options.customOptions.supportersCount, 0);
+      .reduce(
+        (acc, marker) => acc + marker["options" as any].customOptions.supportersCount,
+        0
+      );
 
     return L.divIcon({
       html: `<div class="relative text-white font-bold flex justify-center items-center w-12 h-12">
@@ -106,7 +101,7 @@ export function SupportersMap({
     });
   };
 
-  if (!mapData) return null;
+  if (!addresses) return null;
 
   return (
     <>
@@ -197,7 +192,7 @@ export function SupportersMap({
             showCoverageOnHover={false}
             iconCreateFunction={createClusterCustomIcon}
           >
-            <For each={mapData} fallback={<p>Loading...</p>}>
+            <For each={addresses} fallback={<p>Loading...</p>}>
               {(
                 {
                   geocode,

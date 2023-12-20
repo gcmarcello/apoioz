@@ -22,6 +22,7 @@ export async function createEvent(request: CreateEventDto) {
       data: event,
     });
   } catch (err) {
+    console.log(err);
     ActionResponse.error(err);
   }
 }

@@ -17,11 +17,18 @@ export default function ReportsProvider({ children }: { children: any }) {
     pagination,
   } = useAction({
     action: readSupportersFromSupporterGroupWithRelation,
+    onSuccess: (data) => {
+      console.log(`data`, data);
+    },
   });
 
-  const openAsSupporter = async (user: any) => {
-    await fetchSupporters();
-    setViewingAs(user);
+  const openAsSupporter = async (supporter: any) => {
+    await fetchSupporters({
+      where: {
+        supporterId: supporter.id,
+      },
+    });
+    setViewingAs(supporter);
     setGlobalFilter("");
   };
 

@@ -12,6 +12,8 @@ import {
   ReadSupporterBranchesDto,
   ReadSupportersDto,
 } from "./dto";
+import { hashInfo } from "@/_shared/utils/bCrypt";
+import { answerPoll } from "../polls/service";
 
 export async function readSupporterBranches({
   supporterSession,
@@ -99,7 +101,11 @@ export async function readSupporterTrail({
       include: {
         owner: {
           include: {
-            referred: true,
+            referred: {
+              include: {
+                user: true,
+              },
+            },
             user: true,
           },
         },
@@ -163,6 +169,23 @@ export async function readSupportersFromSupporterGroupWithRelation({
 }: ReadSupportersDto & {
   supporterSession: Supporter;
 }) {
+  const supporterId = where?.supporterId
+    ? await prisma.supporter
+        .findFirst({
+          where: {
+            supporterGroupsMemberships: {
+              some: {
+                supporterGroup: {
+                  ownerId: supporterSession.id,
+                },
+              },
+            },
+            id: where?.supporterId,
+          },
+        })
+        .then((s) => s.id)
+    : supporterSession.id;
+
   const supporterList = await prisma.supporter.findMany({
     take: pagination?.take,
     skip: pagination?.skip,
@@ -172,14 +195,14 @@ export async function readSupportersFromSupporterGroupWithRelation({
       supporterGroupsMemberships: {
         some: {
           supporterGroup: {
-            ownerId: supporterSession.id,
+            ownerId: supporterId,
           },
         },
       },
       user: {
-        name: { contains: where?.user.name },
-        email: { contains: where?.user.email },
-        phone: { contains: where?.user.phone },
+        name: { contains: where?.user?.name },
+        email: { contains: where?.user?.email },
+        phone: { contains: where?.user?.phone },
       },
     },
     include: {
@@ -236,7 +259,7 @@ export async function createSupporter(request: CreateSupporterDto) {
           email: request.user?.email,
         },
         {
-          id: request.userId,
+          id: request?.userId,
         },
       ],
     },
@@ -289,60 +312,66 @@ export async function createSupporter(request: CreateSupporterDto) {
   const userId = request.userId || crypto.randomUUID();
 
   const supporterId = crypto.randomUUID();
-  const supporter = await prisma.supporter
-    .create({
-      include: { user: true },
-      data: {
-        id: supporterId,
-        level: 1,
-        Section: {
-          connect: user?.info?.sectionId ? { id: user?.info?.sectionId } : undefined,
-        },
-        Zone: {
-          connect: user?.info?.zoneId ? { id: user?.info?.zoneId } : undefined,
-        },
-        campaign: { connect: { id: referral.campaignId } },
-        referral: { connect: { id: referral.id } },
-        user: {
-          connectOrCreate: {
-            where: {
-              id: userId,
-            },
-            create: {
-              id: userId,
-              email: user.email,
-              name: user.name,
-              phone: user.phone,
-              password: user.password,
-              info: {
-                create: {
-                  birthDate: dayjs(user.info?.birthDate, "DD/MM/YYYY").toISOString(),
-                  zoneId: user.info?.zoneId,
-                  sectionId: user.info?.sectionId,
-                },
+
+  const supporter = await prisma.supporter.create({
+    include: { user: true },
+    data: {
+      id: supporterId,
+      level: 1,
+      Section: {
+        connect: user?.info?.sectionId ? { id: user?.info?.sectionId } : undefined,
+      },
+      Zone: {
+        connect: user?.info?.zoneId ? { id: user?.info?.zoneId } : undefined,
+      },
+      campaign: { connect: { id: referral.campaignId } },
+      referral: { connect: { id: referral.id } },
+      user: {
+        connectOrCreate: {
+          where: {
+            id: userId,
+          },
+          create: {
+            id: userId,
+            email: user.email,
+            name: user.name,
+            phone: user.phone,
+            password: user.password ? await hashInfo(user.password) : undefined,
+            info: {
+              create: {
+                birthDate: dayjs(user.info?.birthDate, "DD/MM/YYYY").toISOString(),
+                zoneId: user.info?.zoneId,
+                sectionId: user.info?.sectionId,
               },
-              role: "user",
             },
+            role: "user",
           },
         },
-        SupporterGroup: {
-          create: {},
-        },
-        supporterGroupsMemberships: {
-          create: [
-            {
-              supporterGroup: {
-                connect: {
-                  ownerId: supporterId,
-                },
+      },
+      SupporterGroup: {
+        create: {},
+      },
+      supporterGroupsMemberships: {
+        create: [
+          {
+            supporterGroup: {
+              connect: {
+                ownerId: supporterId,
               },
             },
-            ...createSupporterGroupMembershipQuery,
-          ],
-        },
+          },
+          ...createSupporterGroupMembershipQuery,
+        ],
       },
-    })
-    .catch((err) => console.log(err));
+    },
+  });
+
+  if (supporter && request?.poll?.questions) {
+    for (const question of request.poll.questions) {
+      question.supporterId = supporter.id;
+    }
+    await answerPoll({ ...request.poll, bypassIpCheck: true });
+  }
 
   await sendEmail({
     to: user.email,

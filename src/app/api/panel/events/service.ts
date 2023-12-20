@@ -19,8 +19,8 @@ export async function createEvent(
     data: {
       name: request.name,
       campaignId: request.supporterSession.campaignId,
-      dateStart: request.dateStart.value,
-      dateEnd: request.dateEnd.value,
+      dateStart: request.dateStart,
+      dateEnd: request.dateEnd,
       description: request.description,
       location: request.location,
       status: request.supporterSession.level === 4 ? "active" : "pending",

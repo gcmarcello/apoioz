@@ -59,7 +59,7 @@ export function PollQuestions({ poll, form }: { poll: any; form: any }) {
                           label={
                             question.PollOption.length ? "Comentários:" : "Resposta:"
                           }
-                          name={`poll.questions.${index}.answers.freeAnswer`}
+                          name={`poll.questions.${index}.answers.freeAnswer` as never} // @todo
                         />
                       </td>
                     </tr>

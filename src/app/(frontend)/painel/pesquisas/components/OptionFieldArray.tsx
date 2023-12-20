@@ -9,7 +9,7 @@ import { Poll } from "@prisma/client";
 export default function OptionFieldArray({ nestIndex, control, form }) {
   const { fields, remove, append, move } = useFieldArray<Poll>({
     control,
-    name: `questions.${nestIndex}.options`,
+    name: `questions.${nestIndex}.options` as never, //@todo
   });
 
   let pseudoIndex = 0;

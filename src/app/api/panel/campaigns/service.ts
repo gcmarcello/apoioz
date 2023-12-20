@@ -106,8 +106,12 @@ export async function generateMainPageStats(supporterSession: SupporterSession) 
     .groupBy({
       by: ["referralId"],
       where: {
-        SupporterGroup: {
-          ownerId: supporterSession.id,
+        supporterGroupsMemberships: {
+          some: {
+            supporterGroup: {
+              ownerId: supporterSession.id,
+            },
+          },
         },
       },
       _count: {
@@ -130,6 +134,9 @@ export async function generateMainPageStats(supporterSession: SupporterSession) 
   const referralLeader = await prisma.supporter
     .findUnique({
       where: { id: referralLeaderCount.id },
+      include: {
+        user: true,
+      },
     })
     .then((r) => ({ ...r, count: referralLeaderCount.count }));
 
@@ -167,6 +174,10 @@ export async function generateMainPageStats(supporterSession: SupporterSession) 
   const leadingSection = await prisma.section
     .findUnique({
       where: { id: leadingSectionCount.id },
+      include: {
+        Zone: true,
+        Address: true,
+      },
     })
     .then((r) => ({ ...r, count: leadingSectionCount.count }));
 

@@ -94,7 +94,19 @@ export async function fetchCampaignTeamMembers() {
 }
 
 export async function generateMainPageStats(data: any) {
-  return service.generateMainPageStats(data);
+  try {
+    const { request: parsedRequest } =
+      await UseMiddlewares(data).then(UserSessionMiddleware);
+
+    const mainStates = await service.generateMainPageStats(data);
+
+    return ActionResponse.success({
+      data: mainStates,
+      message: "Estatísticas geradas com sucesso!",
+    });
+  } catch (e) {
+    return ActionResponse.error(e);
+  }
 }
 
 export async function createCampaign(data: CreateCampaignDto) {

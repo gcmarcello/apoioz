@@ -1,18 +1,15 @@
 import { prisma } from "prisma/prisma";
 import { readZonesByCampaign } from "../../elections/zones/service";
-import {
-  contrastingColor,
-  generateRandomHexColor,
-} from "@/app/(frontend)/_shared/utils/colors";
+import { SupporterSession } from "@/middleware/functions/supporterSession.middleware";
 
-export async function createMapData(request) {
+export async function createMapData(request: { supporterSession: SupporterSession }) {
   const cityId = await prisma.campaign
     .findUnique({ where: { id: request.supporterSession.campaignId } })
     .then((campaign) => campaign!.cityId);
 
   if (!cityId) throw "City not found";
 
-  const mapData = await prisma.address.findMany({
+  const addresses = await prisma.address.findMany({
     where: { cityId },
     include: {
       Section: {
@@ -20,8 +17,12 @@ export async function createMapData(request) {
           Zone: { select: { id: true, number: true, stateId: true } },
           Supporter: {
             where: {
-              SupporterGroup: {
-                ownerId: request.supporterSession.id,
+              supporterGroupsMemberships: {
+                some: {
+                  supporterGroup: {
+                    ownerId: request.supporterSession.id,
+                  },
+                },
               },
             },
           },
@@ -36,5 +37,5 @@ export async function createMapData(request) {
     where: { cityId },
   });
 
-  return { addresses: mapData, zones, neighborhoods };
+  return { addresses, zones, neighborhoods };
 }

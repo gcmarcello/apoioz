@@ -107,7 +107,7 @@ export default function LatestSupportersTable({
     columnHelper.accessor("id", {
       id: "id",
       header: "Entrou em",
-      cell: (info) => <SupporterOverview supporter={info.row.original} />,
+      cell: (info) => <SupporterOverview supporter={info.row.original as any} />, //@todo
     }),
   ];
 

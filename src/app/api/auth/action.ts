@@ -73,6 +73,7 @@ export async function signUp() {
       data: null,
     });
   } catch (error) {
+    console.log(error);
     return ActionResponse.error(error);
   }
 }
@@ -87,6 +88,7 @@ export async function signUpAsSupporter(request: SignUpAsSupporterDto) {
       user: request.user,
       referralId: inviteCode.referralId,
       campaignId: inviteCode.campaignId,
+      poll: request.poll,
     });
 
     return ActionResponse.success({
@@ -94,6 +96,8 @@ export async function signUpAsSupporter(request: SignUpAsSupporterDto) {
       message: "Sucesso ao criar novo apoiador!",
     });
   } catch (error) {
+    console.log(error);
+
     return ActionResponse.error(error);
   }
 }
