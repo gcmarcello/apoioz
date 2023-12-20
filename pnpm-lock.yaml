@@ -8,6 +8,9 @@ dependencies:
   '@aws-sdk/client-s3':
     specifier: ^3.473.0
     version: 3.473.0
+  '@faker-js/faker':
+    specifier: ^8.2.0
+    version: 8.2.0
   '@floating-ui/react':
     specifier: ^0.26.1
     version: 0.26.1(react-dom@18.2.0)(react@18.2.0)
@@ -145,9 +148,6 @@ dependencies:
     version: 3.21.0
 
 devDependencies:
-  '@faker-js/faker':
-    specifier: ^8.2.0
-    version: 8.2.0
   '@jest/globals':
     specifier: ^29.7.0
     version: 29.7.0
@@ -1176,7 +1176,7 @@ packages:
   /@faker-js/faker@8.2.0:
     resolution: {integrity: sha512-VacmzZqVxdWdf9y64lDOMZNDMM/FQdtM9IsaOPKOm2suYwEatb8VkdHqOzXcDnZbk7YDE2BmsJmy/2Hmkn563g==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0, npm: '>=6.14.13'}
-    dev: true
+    dev: false
 
   /@floating-ui/core@1.5.0:
     resolution: {integrity: sha512-kK1h4m36DQ0UHGj5Ah4db7R0rHemTqqO0QLvUqi1/mUUp3LuAWbWxdxSIf/XsnH9VS6rRVPLJCncjRzUvyCLXg==}
