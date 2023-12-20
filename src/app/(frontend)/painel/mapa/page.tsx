@@ -1,7 +1,6 @@
 "use client";
 import { createMapData } from "@/app/api/panel/map/actions";
-import { Zone } from "prisma/generated/zod";
-import { Neighborhood } from "@prisma/client";
+import { Neighborhood, Zone } from "@prisma/client";
 import { Squares2X2Icon, FunnelIcon } from "@heroicons/react/24/solid";
 import MapDataProvider from "./providers/MapDataProvider";
 import { MapFilter } from "./components/MapFilter";
@@ -28,11 +27,6 @@ export default function MapPage() {
   }, []);
 
   if (!data) return;
-
-  console.log(
-    `kkkkkkkkkkkkk`,
-    data.addresses.find((a) => a.Section.find((s) => s.Supporter))
-  );
 
   return (
     <MapDataProvider value={data}>

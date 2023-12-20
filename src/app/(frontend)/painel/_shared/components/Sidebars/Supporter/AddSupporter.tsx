@@ -1,4 +1,3 @@
-import { Mocker } from "@/app/(frontend)/_shared/components/Mocker";
 import ErrorAlert from "@/app/(frontend)/_shared/components/alerts/errorAlert";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 import { AddSupporterDto, addSupporterDto } from "@/app/api/panel/supporters/dto";
@@ -99,8 +98,6 @@ export function AddSupporterForm({
     });
   }, [form]);
 
-  console.log(form.formState.errors);
-
   async function generateFakeData() {
     if (!zones) return;
     const zone = zones[Math.floor(Math.random() * zones.length)];
@@ -129,10 +126,6 @@ export function AddSupporterForm({
   return (
     <form>
       <div className="pb-4 pt-2">
-        <Mocker
-          mockData={generateFakeData}
-          submit={form.handleSubmit((data) => addSupporter(data))}
-        />
         <div className="space-y-3 divide-y">
           <div className="space-y-3">
             <div className="flex items-center"></div>

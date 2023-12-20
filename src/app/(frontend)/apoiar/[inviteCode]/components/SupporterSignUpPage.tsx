@@ -11,7 +11,6 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 import { BasicInfoSection } from "./BasicInfoSection";
 import { ElectionInfoSection } from "./ElectionInfoSection";
 import clsx from "clsx";
-import { Mocker } from "@/app/(frontend)/_shared/components/Mocker";
 import { faker } from "@faker-js/faker";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 import Loading from "@/app/(frontend)/loading";
@@ -229,7 +228,6 @@ export default function SupporterSignUpPage({
           </BottomNavigation>
         </form>
       </div>
-      <Mocker mockData={mockData} submit={form.handleSubmit((data) => signUp(data))} />
     </div>
   );
 }

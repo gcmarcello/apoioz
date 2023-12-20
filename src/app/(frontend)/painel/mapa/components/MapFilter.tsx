@@ -8,8 +8,6 @@ import Paragraph from "@/app/(frontend)/_shared/components/text/Paragraph";
 export function MapFilter() {
   const { neighborhoods, ...mapData } = useMapData();
 
-  console.log(`xd`);
-
   const { fields: zoneFields } = useFieldArray({
     control: mapData.control,
     name: "zones",

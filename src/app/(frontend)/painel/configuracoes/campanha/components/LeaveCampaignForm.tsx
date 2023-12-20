@@ -5,11 +5,11 @@ import Paragraph from "@/app/(frontend)/_shared/components/text/Paragraph";
 import Modal from "@/app/(frontend)/_shared/components/Modal";
 import { Dialog } from "@headlessui/react";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/solid";
-import { Campaign } from "prisma/generated/zod";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 import { leaveAsSupporter } from "@/app/api/panel/supporters/actions";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 import { useRouter } from "next/navigation";
+import { Campaign } from "@prisma/client";
 
 export default function LeaveCampaignForm({ campaign }: { campaign: Campaign }) {
   const [showCampaignLeaveModal, setShowCampaignLeaveModal] = useState(false);

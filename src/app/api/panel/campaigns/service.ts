@@ -275,8 +275,6 @@ export async function checkUserCanJoinCampaign({
     },
   });
 
-  console.log(conflictingSupporter);
-
   if (conflictingSupporter?.campaignId === campaign.id) return "sameCampaign";
 
   if (conflictingSupporter) return "otherCampaign";

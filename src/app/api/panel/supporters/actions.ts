@@ -63,8 +63,6 @@ export async function addSupporter(request: AddSupporterDto) {
       referralId: request.referralId,
     });
 
-    console.log(newSupporter);
-
     if (!newSupporter) throw "Erro ao criar novo apoiador.";
 
     revalidatePath("/painel");

@@ -21,8 +21,6 @@ export default async function PanelPage() {
 
   if (!latestSupporters) return;
 
-  console.log(latestSupporters);
-
   return (
     <>
       <MainStats />

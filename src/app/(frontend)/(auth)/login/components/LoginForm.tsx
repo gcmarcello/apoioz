@@ -1,6 +1,5 @@
 "use client";
 
-import { Mocker } from "@/app/(frontend)/_shared/components/Mocker";
 import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import ErrorAlert from "@/app/(frontend)/_shared/components/alerts/errorAlert";
 import { LoginDto, loginDto } from "@/app/api/auth/dto";
@@ -44,12 +43,6 @@ export default function LoginForm({ supportRedirect }: { supportRedirect?: strin
 
   return (
     <>
-      {/*  <div className="absolute bottom-0 right-0 p-4">
-        <Mocker
-          mockData={generateFakeData}
-          submit={handleSubmit((data) => loginAction(data))}
-        />
-      </div> */}
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <form
           className="mt-4 space-y-6"
