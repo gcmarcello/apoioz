@@ -259,6 +259,9 @@ export async function createSupporter(request: CreateSupporterDto) {
           email: request.user?.email,
         },
         {
+          phone: request.user?.phone,
+        },
+        {
           id: request?.userId,
         },
       ],
