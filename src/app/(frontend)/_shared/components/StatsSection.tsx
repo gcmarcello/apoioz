@@ -48,7 +48,7 @@ export default function StatsSection({ stats }: { stats: ReadPollsStats }) {
   return (
     <div>
       <dl
-        className={`mt-5 grid grid-cols-${stats.length} divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow md:grid-cols-${stats.length} md:divide-x md:divide-y-0`}
+        className={`mt-5 grid grid-cols-${stats.length} divide-y divide-gray-200 overflow-hidden rounded-lg bg-white shadow md:grid-cols-${stats.length} divide-x divide-y-0`}
       >
         {stats.map((item) => (
           <div key={item.name} className="px-4 py-5 sm:p-6">
@@ -61,7 +61,7 @@ export default function StatsSection({ stats }: { stats: ReadPollsStats }) {
                 </span>
               </div>
 
-              {
+              {item.change !== undefined && (
                 <div
                   className={clsx(
                     item.changeType === "increase"
@@ -87,11 +87,11 @@ export default function StatsSection({ stats }: { stats: ReadPollsStats }) {
                   )}
                   <span className="sr-only">
                     {" "}
-                    {item.changeType === "increase" ? "Increased" : "Decreased"} by{" "}
+                    {item.changeType === "increase" ? "Aumentou" : "Diminuiu"} em{" "}
                   </span>
                   {item.change}%
                 </div>
-              }
+              )}
             </dd>
           </div>
         ))}

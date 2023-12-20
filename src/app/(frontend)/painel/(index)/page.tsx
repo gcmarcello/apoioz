@@ -5,6 +5,7 @@ import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSess
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
 import LatestSupportersTable from "./components/LatestSupportersTable";
+import CookiePopup from "../../_shared/components/CookiePopup";
 
 export default async function PanelPage() {
   const {

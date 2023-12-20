@@ -17,13 +17,13 @@ export default function RelatoriosPage({}) {
         <div className="mx-4 mb-4 flex text-sm text-gray-600">
           <InformationCircleIcon className="me-1 h-5 w-5" />
           Nessa página você tem acesso a todos os apoiadores da sua rede.{" "}
-          <span
+          {/* <span
             className="ms-1 font-bold text-indigo-600 hover:text-indigo-400"
             role="button"
             onClick={() => setOpen(true)}
           >
             Como funciona?
-          </span>
+          </span> */}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 lg:divide-x ">
           <div className="col-span-1 flex flex-col justify-evenly lg:px-4">
