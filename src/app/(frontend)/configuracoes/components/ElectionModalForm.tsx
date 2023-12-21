@@ -1,8 +1,14 @@
 import { Transition, Dialog } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/24/solid";
-import { Fragment } from "react";
+import { Dispatch, Fragment, SetStateAction } from "react";
 
-export default function ElectionModalForm({ open, setOpen }) {
+export default function ElectionModalForm({
+  open,
+  setOpen,
+}: {
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+}) {
   return (
     <Transition.Root show={open} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={setOpen}>

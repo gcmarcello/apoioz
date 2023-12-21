@@ -23,11 +23,7 @@ export default function ReportsProvider({ children }: { children: any }) {
   });
 
   const openAsSupporter = async (supporter: any) => {
-    await fetchSupporters({
-      where: {
-        supporterId: supporter.id,
-      },
-    });
+    await fetchSupporters({ where: { supporterId: supporter.id } });
     setViewingAs(supporter);
     setGlobalFilter("");
   };

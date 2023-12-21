@@ -22,6 +22,9 @@ export default async function PesquisasPage() {
     });
 
   const activeCampaignId = cookies().get("activeCampaign")?.value;
+
+  if (!activeCampaignId) return redirect("/painel");
+
   const polls = await readPolls({ campaignId: activeCampaignId });
   const stats = await readPollsStats({ campaignId: activeCampaignId });
   return (

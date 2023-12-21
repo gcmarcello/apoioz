@@ -70,7 +70,7 @@ export default async function MainStats() {
     {
       name: "Seção Líder",
       stat: mainPageStats?.leadingSection.number,
-      previousStat: `Zona ${mainPageStats?.leadingSection.Zone?.number} - ${mainPageStats?.leadingSection.Address.location}`,
+      previousStat: `Zona ${mainPageStats?.leadingSection.Zone?.number} - ${mainPageStats?.leadingSection?.Address?.location}`,
       change: `${mainPageStats?.leadingSection.count}`,
       changeType: false,
     },

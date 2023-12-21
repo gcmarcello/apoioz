@@ -1,9 +1,8 @@
-"use client";
 import { Transition, Dialog } from "@headlessui/react";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Event } from "@prisma/client";
 import dayjs from "dayjs";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Dispatch, Fragment, SetStateAction, useEffect, useRef, useState } from "react";
 
 export function EventOverviewModal({
   event,
@@ -11,8 +10,8 @@ export function EventOverviewModal({
   setOpen,
 }: {
   event: Event;
-  open;
-  setOpen;
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
 }) {
   const cancelButtonRef = useRef(null);
 

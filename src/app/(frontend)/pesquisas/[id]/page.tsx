@@ -16,9 +16,13 @@ export default async function PesquisaExternalPage({
   }
   const campaign = await readCampaign({ campaignId: poll.campaignId });
 
-  if (
-    await verifyExistingVote({ ip: headers().get("X-Forwarded-For"), pollId: params.id })
-  ) {
+  if (!campaign) {
+    return redirect("/");
+  }
+
+  const ip = headers().get("X-Forwarded-For")!;
+
+  if (await verifyExistingVote({ ip, pollId: params.id })) {
     return (
       <div className="px-4 pb-20 pt-10">
         <PollHeader alreadyVoted={true} campaign={campaign} />

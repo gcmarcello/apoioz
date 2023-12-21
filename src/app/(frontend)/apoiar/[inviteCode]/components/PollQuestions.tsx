@@ -1,6 +1,7 @@
 import CheckboxInput from "@/app/(frontend)/_shared/components/fields/Checkbox";
 import RadioInput from "@/app/(frontend)/_shared/components/fields/Radio";
 import { TextAreaField } from "@/app/(frontend)/_shared/components/fields/Text";
+import { PollQuestion } from "@prisma/client";
 import { useFieldArray } from "react-hook-form";
 
 export function PollQuestions({ poll, form }: { poll: any; form: any }) {
@@ -12,7 +13,7 @@ export function PollQuestions({ poll, form }: { poll: any; form: any }) {
   return (
     <div className="my-4">
       {poll.PollQuestion.map(
-        (question, index) =>
+        (question: PollQuestion, index: number) =>
           question.question && (
             <div
               key={question.id}

@@ -36,7 +36,7 @@ export function AddSupporterForm({
   setMetaform,
 }: {
   campaign: Campaign;
-  setMetaform: Dispatch<SetStateAction<MetaForm>>;
+  setMetaform: Dispatch<SetStateAction<MetaForm | undefined>>;
 }) {
   const ref = useRef<null | HTMLDivElement>(null);
   const errRef = useRef<null | HTMLDivElement>(null);

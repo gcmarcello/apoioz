@@ -9,6 +9,7 @@ import { readEventsByCampaign } from "@/app/api/panel/events/actions";
 import { readCampaign } from "@/app/api/panel/campaigns/actions";
 import { CalendarContext } from "./contexts/calendar.ctx";
 import CalendarProvider from "./providers/CalendarProvider";
+import { redirect } from "next/navigation";
 dayjs.extend(customParseFormat);
 dayjs.extend(updateLocale);
 
@@ -27,6 +28,7 @@ export default async function CalendarPage() {
   const userId = headers().get("userId");
   if (!campaignId || !userId) return <div>Erro</div>;
   const campaign = await readCampaign({ campaignId });
+  if (!campaign) return redirect("/painel");
 
   const events = await readEventsByCampaign({
     where: {
