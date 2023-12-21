@@ -6,6 +6,7 @@ import { PollAnswerDto, UpsertPollDto } from "./dto";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import { headers } from "next/headers";
+import { UserWithoutPassword } from "prisma/types/User";
 
 dayjs.extend(isBetween);
 
@@ -192,7 +193,7 @@ export async function readPollWithAnswers(request: { id: string }) {
   return { poll, answers };
 }
 
-export async function readActivePoll(request) {
+export async function readActivePoll(request: { campaignId: string }) {
   const poll = await prisma.poll.findFirst({
     where: {
       campaignId: request.campaignId,
@@ -210,7 +211,7 @@ export async function readActivePoll(request) {
   return poll;
 }
 
-export async function readPolls(request) {
+export async function readPolls(request: { campaignId: string }) {
   const fetchPolls = await prisma.poll.findMany({
     where: { campaignId: request.campaignId },
     include: {
@@ -229,10 +230,14 @@ export async function readPolls(request) {
   return polls;
 }
 
-export async function updatePoll(request) {
+export async function updatePoll(
+  request: UpsertPollDto & { supporterSession: Supporter } & {
+    userSession: UserWithoutPassword;
+  }
+) {
   const { userSession, supporterSession, ...rest } = request;
   const operations = [];
-  let whereCondition: any = { campaignId: rest.campaignId };
+  let whereCondition: any = { campaignId: supporterSession.campaignId };
 
   if (rest.activeAtSignUp && rest.id) {
     whereCondition.id = { not: rest.id };
@@ -275,26 +280,28 @@ export async function updatePoll(request) {
     }
     operations.push(questionOperation);
 
-    for (const option of question.options) {
-      let optionOperation;
-      if (option.id) {
-        optionOperation = prisma.pollOption.update({
-          where: { id: option.id },
-          data: {
-            name: option.name,
-            active: option.active,
-          },
-        });
-      } else {
-        optionOperation = prisma.pollOption.create({
-          data: {
-            name: option.name,
-            active: true,
-            questionId: question.id || questionUUID,
-          },
-        });
+    if (question.options) {
+      for (const option of question.options) {
+        let optionOperation;
+        if (option.id) {
+          optionOperation = prisma.pollOption.update({
+            where: { id: option.id },
+            data: {
+              name: option.name,
+              active: option.active,
+            },
+          });
+        } else {
+          optionOperation = prisma.pollOption.create({
+            data: {
+              name: option.name,
+              active: true,
+              questionId: question.id || questionUUID,
+            },
+          });
+        }
+        operations.push(optionOperation);
       }
-      operations.push(optionOperation);
     }
   }
 
@@ -302,7 +309,7 @@ export async function updatePoll(request) {
   return poll;
 }
 
-export async function deletePoll(request) {
+export async function deletePoll(request: { id: string }) {
   const poll = await prisma.poll.delete({ where: { id: request.id } });
   return poll;
 }
@@ -357,14 +364,15 @@ export async function answerPoll(
 }
 
 function joinPollVotes(pollAnswers: PollAnswer[]): PollAnswer[] {
-  return pollAnswers.reduce((acc, curr) => {
+  return pollAnswers.reduce<PollAnswer[]>((acc, curr) => {
     const existingAnswer = acc.find(
       (answer) =>
         answer.pollId === curr.pollId &&
         (answer.supporterId === curr.supporterId || answer.ip === curr.ip)
     );
     if (existingAnswer) {
-      existingAnswer.answer += curr.answer;
+      existingAnswer.answer =
+        (Number(existingAnswer.answer) ?? 0) + (Number(curr.answer) ?? 0);
     } else {
       acc.push(curr);
     }
