@@ -1,7 +1,7 @@
 /* eslint-disable react/display-name */
 import clsx from "clsx";
 import React, { useId } from "react";
-import { Controller, Field, FieldValues } from "react-hook-form";
+import { Controller, FieldValues } from "react-hook-form";
 import { BaseProps, Field, fieldClasses, getErrorMessage } from "./Field";
 import InputMask from "react-input-mask";
 
@@ -123,7 +123,7 @@ export function TextAreaField<T extends FieldValues>(props: TextAreaFieldProps<T
   );
 }
 
-export function MaskedTextField<T>(_props: MaskedTextFieldProps<T>) {
+export function MaskedTextField<T extends FieldValues>(_props: MaskedTextFieldProps<T>) {
   const id = useId();
 
   const { mask, onChange, onBlur, ...props } = _props;
@@ -148,7 +148,7 @@ export function MaskedTextField<T>(_props: MaskedTextFieldProps<T>) {
     >
       <Controller
         name={props.name}
-        control={props.hform.control}
+        control={props.hform.control as any}
         render={({ field }) => (
           <InputMask
             mask={mask}
