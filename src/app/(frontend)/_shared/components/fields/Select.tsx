@@ -235,7 +235,7 @@ export function ComboboxField<
     trigger: fetchData,
     isMutating,
   } = useAction({
-    action: fetcher,
+    action: fetcher as any,
   });
 
   const options = useMemo(() => {
