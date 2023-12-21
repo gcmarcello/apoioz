@@ -3,13 +3,13 @@ import {
   MaskedTextField,
   TextField,
 } from "@/app/(frontend)/_shared/components/fields/Text";
-import { AddSupporterDto } from "@/app/api/panel/supporters/dto";
+import { SignUpAsSupporterDto } from "@/app/api/auth/dto";
 import { useForm } from "react-hook-form";
 
 export function BasicInfoSection({
   form,
 }: {
-  form: ReturnType<typeof useForm<AddSupporterDto>>;
+  form: ReturnType<typeof useForm<SignUpAsSupporterDto>>;
 }) {
   return (
     <>

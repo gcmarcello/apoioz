@@ -26,6 +26,9 @@ export default async function PesquisaExternalPage({
       PollQuestion: {
         select: {
           id: true,
+          allowFreeAnswer: true,
+          question: true,
+          allowMultipleAnswers: true,
           PollOption: true,
         },
       },
