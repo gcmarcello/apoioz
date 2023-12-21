@@ -1,21 +1,27 @@
 /* eslint-disable react/display-name */
 import clsx from "clsx";
-import React, { forwardRef, useId } from "react";
-import { Controller, Path, useForm } from "react-hook-form";
+import React, { useId } from "react";
+import { Controller, Field, FieldValues } from "react-hook-form";
 import { BaseProps, Field, fieldClasses, getErrorMessage } from "./Field";
 import InputMask from "react-input-mask";
 
-type TextFieldProps<Fields> = Omit<React.ComponentPropsWithoutRef<"input">, "id"> &
+type TextFieldProps<Fields extends FieldValues> = Omit<
+  React.ComponentPropsWithoutRef<"input">,
+  "id"
+> &
   BaseProps<Fields>;
 
-type TextAreaFieldProps<Fields> = Omit<React.ComponentPropsWithoutRef<"textarea">, "id"> &
+type TextAreaFieldProps<Fields extends FieldValues> = Omit<
+  React.ComponentPropsWithoutRef<"textarea">,
+  "id"
+> &
   BaseProps<Fields>;
 
-type MaskedTextFieldProps<Fields> = TextFieldProps<Fields> & {
+type MaskedTextFieldProps<Fields extends FieldValues> = TextFieldProps<Fields> & {
   mask: string;
 };
 
-export function TextField<T>(props: TextFieldProps<T>) {
+export function TextField<T extends FieldValues>(props: TextFieldProps<T>) {
   const id = useId();
 
   const errorMessage = getErrorMessage(props.hform, props.name);
@@ -47,7 +53,9 @@ export function TextField<T>(props: TextFieldProps<T>) {
   );
 }
 
-export function TextFieldWithAddon<T>(props: TextFieldProps<T> & { addon: string }) {
+export function TextFieldWithAddon<T extends FieldValues>(
+  props: TextFieldProps<T> & { addon: string }
+) {
   const id = useId();
 
   const errorMessage = getErrorMessage(props.hform, props.name);
@@ -84,7 +92,7 @@ export function TextFieldWithAddon<T>(props: TextFieldProps<T> & { addon: string
   );
 }
 
-export function TextAreaField<T>(props: TextAreaFieldProps<T>) {
+export function TextAreaField<T extends FieldValues>(props: TextAreaFieldProps<T>) {
   const id = useId();
 
   const errorMessage = getErrorMessage(props.hform, props.name);
