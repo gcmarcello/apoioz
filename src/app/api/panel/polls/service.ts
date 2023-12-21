@@ -2,7 +2,7 @@
 
 import { prisma } from "prisma/prisma";
 import { Poll, PollAnswer, Supporter } from "@prisma/client";
-import { PollAnswerDto, ReadPollsStats, UpsertPollDto } from "./dto";
+import { PollAnswerDto, UpsertPollDto } from "./dto";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import { headers } from "next/headers";
@@ -30,7 +30,7 @@ export async function createPoll(
           allowMultipleAnswers: question.allowMultipleAnswers,
           question: question.question,
           PollOption: {
-            create: question.options.map((option) => ({
+            create: question.options?.map((option) => ({
               name: option.name,
               active: true,
             })),
@@ -60,9 +60,7 @@ export async function readPoll(request: { id: string }) {
   return poll;
 }
 
-export async function readPollsStats(request: {
-  campaignId: string;
-}): Promise<ReadPollsStats> {
+export async function readPollsStats(request: { campaignId: string }) {
   const polls = await prisma.poll.findMany({
     where: { campaignId: request.campaignId },
     include: {
@@ -316,16 +314,6 @@ export async function answerPoll(
     where: { id: request.pollId },
     include: { PollQuestion: true },
   });
-
-  if (
-    !request.bypassIpCheck &&
-    (await verifyExistingVote({
-      ip: headers().get("X-Forwarded-For"),
-      pollId: request.pollId,
-    }))
-  ) {
-    throw new Error("Você já respondeu esta pesquisa!");
-  }
 
   if (!poll) {
     throw new Error("Pesquisa não encontrada");

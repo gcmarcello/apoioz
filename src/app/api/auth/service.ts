@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { LoginDto } from "./dto";
+import { LoginDto, PasswordResetDto, PasswordUpdateDto } from "./dto";
 import { User } from "@prisma/client";
 import { prisma } from "prisma/prisma";
 import dayjs from "dayjs";
@@ -19,7 +19,7 @@ export async function login(request: LoginDto & { user: User; isEmail: boolean }
 }
 
 export function createToken(request: { id: string }) {
-  const JWT_KEY = getEnv("JWT_KEY")
+  const JWT_KEY = getEnv("JWT_KEY");
   if (!JWT_KEY)
     throw "O serviço de autenticação se encontra fora do ar. ERROR: MISSING JWTKEY";
   return jwt.sign({ id: request.id }, JWT_KEY, { expiresIn: "7d" });
@@ -83,7 +83,7 @@ export async function checkRecoveryCode(code: string) {
   };
 }
 
-export async function resetPassword(request) {
+export async function updatePassword(request: PasswordUpdateDto) {
   const verifyCode = await checkRecoveryCode(request.code);
 
   await prisma.user.update({
