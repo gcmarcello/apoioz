@@ -20,6 +20,7 @@ import { Button } from "@/app/(frontend)/_shared/components/Button";
 import ErrorAlert from "@/app/(frontend)/_shared/components/alerts/errorAlert";
 import { signUpAsSupporter } from "@/app/api/auth/action";
 import { SignUpAsSupporterDto, signUpAsSupporterDto } from "@/app/api/auth/dto";
+import { PollWithQuestionsWithOptions } from "prisma/types/Poll";
 
 dayjs.extend(customParseFormat);
 
@@ -34,7 +35,7 @@ export default function SupporterSignUpPage({
   campaign: any;
   user: any;
   zones: any;
-  poll: any;
+  poll: PollWithQuestionsWithOptions;
 }) {
   const [success, setSuccess] = useState(false);
   const [stage, setStage] = useState("basicInfo");
