@@ -124,7 +124,7 @@ export async function readEventTimestamps(campaignId: string) {
 export async function readEventsAvailability(
   request: ReadEventsAvailability & { supporterSession: Supporter }
 ) {
-  const correctedTimeZoneDay = dayjs(request.where.day).add(3, "hour");
+  const correctedTimeZoneDay = dayjs(request.where?.day).add(3, "hour");
 
   const timeslots: dayjs.Dayjs[] = [];
 
@@ -159,7 +159,9 @@ export async function readEventsAvailability(
   };
 }
 
-export async function updateEventStatus(request) {
+export async function updateEventStatus(
+  request: { eventId: string; status: string } & { supporterSession: Supporter }
+) {
   if (request.supporterSession.level !== 4)
     throw "Você não tem permissão de alterar este evento";
   const event = await prisma.event.update({
