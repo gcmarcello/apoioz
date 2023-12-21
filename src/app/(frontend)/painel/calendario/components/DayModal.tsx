@@ -10,7 +10,7 @@ import {
 import { Campaign } from "@prisma/client";
 import clsx from "clsx";
 import dayjs from "dayjs";
-import { Dispatch, useRef, useState, useEffect, Fragment } from "react";
+import { Dispatch, useRef, useState, useEffect, Fragment, SetStateAction } from "react";
 import { Button } from "../../../_shared/components/Button";
 import { CalendarDay } from "../page";
 import SubmitEventRequest from "./DayModalForm";
@@ -23,7 +23,7 @@ export default function DayModal({
   userId,
 }: {
   show: boolean;
-  setShow: Dispatch<boolean>;
+  setShow: Dispatch<SetStateAction<boolean>>;
   selectedDay: CalendarDay;
   campaign: Campaign;
   userId: string;
