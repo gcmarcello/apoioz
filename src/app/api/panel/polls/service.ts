@@ -299,7 +299,7 @@ export async function updatePoll(request) {
       operations.push(optionOperation);
     }
   }
-  // Execute all operations in a transaction
+
   const poll = await prisma.$transaction<Poll>(operations as any);
   return poll;
 }

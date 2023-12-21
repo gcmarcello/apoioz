@@ -15,7 +15,7 @@ export async function CampaignLeaderMiddleware<T>({
     },
   });
 
-  if (supporter.level !== 4)
+  if (!supporter || supporter.level !== 4)
     throw "Você não tem permissão para acessar os dados dessa campanha.";
 
   return {
