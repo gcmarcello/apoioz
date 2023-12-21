@@ -83,6 +83,8 @@ export async function createEvent(
       templateId: "event_created_leader",
     });
   }
+
+  return event;
 }
 
 export async function readEventsByCampaign({

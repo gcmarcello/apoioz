@@ -10,6 +10,8 @@ import { CalendarDay } from "../page";
 import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { ListboxField } from "@/app/(frontend)/_shared/components/fields/Select";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
+import { CreateEventDto, createEventDto } from "@/app/api/panel/events/dto";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 dayjs.extend(isBetween);
 
@@ -20,7 +22,9 @@ export default function SubmitEventRequest({
   day: CalendarDay;
   setShow: Dispatch<SetStateAction<boolean>>;
 }) {
-  const form = useForm();
+  const form = useForm<CreateEventDto>({
+    resolver: zodResolver(createEventDto),
+  });
 
   const { data, trigger: fetchEventsAvailability } = useAction({
     action: readEventsAvailability,
@@ -62,7 +66,13 @@ export default function SubmitEventRequest({
     },
   });
 
-  const [endingAvailableTimes, setEndingAvailableTimes] = useState(null);
+  const [endingAvailableTimes, setEndingAvailableTimes] = useState<
+    {
+      id: number;
+      name: string;
+      value: dayjs.Dayjs;
+    }[]
+  >();
 
   useEffect(() => {
     fetchEventsAvailability({
@@ -102,7 +112,7 @@ export default function SubmitEventRequest({
         return true;
       });
     }
-    setEndingAvailableTimes(times || []);
+    setEndingAvailableTimes(times);
   };
 
   if (!data) return null;
