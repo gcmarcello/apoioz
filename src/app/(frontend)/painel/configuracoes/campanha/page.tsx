@@ -12,6 +12,8 @@ export default async function CampaignSettings() {
 
   const campaign = await readCampaign({ campaignId });
 
+  if (!campaign) return redirect("/painel");
+
   const supporter = await prisma.supporter.findFirst({
     where: {
       userId,

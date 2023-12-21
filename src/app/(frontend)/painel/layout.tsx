@@ -40,6 +40,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     where: { userId, campaignId: activeCampaign.id },
   });
 
+  if (!supporter) throw "Apoiador não encontrado.";
+
   const campaigns = await listCampaigns(user.id);
 
   return (

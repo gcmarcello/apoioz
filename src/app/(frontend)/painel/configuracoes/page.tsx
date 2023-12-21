@@ -9,6 +9,9 @@ export default async function SettingsPage() {
     return redirect("/painel");
   }
   const user = await readUser(userId);
+  if (!user) {
+    return redirect("/painel");
+  }
 
   return (
     <>
