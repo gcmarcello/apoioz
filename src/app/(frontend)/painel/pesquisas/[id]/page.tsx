@@ -7,6 +7,16 @@ import PollTable from "./components/pollTable";
 import { PollOption } from "@prisma/client";
 import { redirect } from "next/navigation";
 
+interface SupporterAnswers {
+  supporter: any;
+  answers: any[];
+  parsedAnswers: { [key: string]: any };
+}
+
+interface TableRowType {
+  [key: string]: SupporterAnswers;
+}
+
 export default async function PesquisaPage({ params }: { params: { id: string } }) {
   const poll = await readPollWithAnswers({ id: params.id });
 
@@ -34,7 +44,7 @@ export default async function PesquisaPage({ params }: { params: { id: string } 
     };
   });
 
-  const answers = poll.answers.reduce((acc, answer) => {
+  const answers = poll.answers.reduce<TableRowType>((acc, answer) => {
     const supporterId = (answer.supporter?.id || answer.ip)!;
 
     const questionId = answer.questionId;
@@ -53,9 +63,9 @@ export default async function PesquisaPage({ params }: { params: { id: string } 
     acc[supporterId].answers.push(answer);
     const answerString = (answer.answer as any).options
       .map(
-        (option) =>
-          poll.poll.PollQuestion.find((q) => q.id === questionId)?.PollOption.find(
-            (o) => o.id === option
+        (option: PollOption) =>
+          poll.poll?.PollQuestion.find((q) => q.id === questionId)?.PollOption.find(
+            (o) => o.id === option.id
           )?.name
       )
       .join(", ");
