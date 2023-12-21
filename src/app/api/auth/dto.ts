@@ -47,3 +47,12 @@ export const passwordResetDto = z.object({
 });
 
 export type PasswordResetDto = z.infer<typeof passwordResetDto>;
+
+export const passwordUpdateDto = z.object({
+  password: z.string().min(6),
+  confirmPassword: z.string().min(6),
+  code: z.string(),
+  userId: z.string(),
+});
+
+export type PasswordUpdateDto = z.infer<typeof passwordUpdateDto>;
