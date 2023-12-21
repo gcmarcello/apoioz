@@ -1,10 +1,6 @@
 "use client";
 import { Button } from "@/app/(frontend)/_shared/components/Button";
-import { PageSubtitle } from "@/app/(frontend)/_shared/components/text/PageSubtitle";
-import { PageTitle } from "@/app/(frontend)/_shared/components/text/PageTitle";
-import { ArrowLeftCircleIcon } from "@heroicons/react/20/solid";
 import { Campaign, PollQuestion, Prisma } from "@prisma/client";
-import Image from "next/image";
 import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { set, useFieldArray, useForm } from "react-hook-form";
 import { BottomNavigation } from "../../_shared/components/navigation/BottomNavigation";
@@ -28,16 +24,16 @@ interface PossibleStates {
 }
 
 interface PollFormProps<T extends keyof PossibleStates> {
-  data: {
-    id: string;
-    title: string;
-    activeAtSignUp: boolean;
-    PollQuestion: Prisma.PollQuestionGetPayload<{
-      include: {
-        PollOption: true;
+  data: Prisma.PollGetPayload<{
+    include: {
+      PollQuestion: {
+        select: {
+          id: true;
+          PollOption: true;
+        };
       };
-    }>[];
-  };
+    };
+  }>;
   mode: T;
   states?: PossibleStates[T];
   campaign: Campaign;
@@ -63,8 +59,8 @@ export function ExternalPollForm<T extends keyof PossibleStates>({
     resolver: zodResolver(pollAnswerDto),
   });
   const { fields } = useFieldArray({
-    control: form.control, // control props comes from useForm (optional: if you are using FormContext)
-    name: "questions", // unique name for your Field Array
+    control: form.control,
+    name: "questions",
   });
   const [success, setSuccess] = useState(false);
 

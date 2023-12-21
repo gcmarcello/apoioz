@@ -1,28 +1,55 @@
-import { readPoll, verifyExistingVote } from "@/app/api/panel/polls/service";
 import { ExternalPollForm } from "../components/ExternalPollForm";
 import { readCampaign } from "@/app/api/panel/campaigns/service";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { PollHeader } from "../components/PollHeader";
 import { notFound, redirect } from "next/navigation";
+import { AuthMiddleware } from "@/middleware/functions/auth.middleware";
+import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 
 export default async function PesquisaExternalPage({
   params,
 }: {
   params: { id: string };
 }) {
-  const poll = await readPoll({ id: params.id });
-  if (!poll) {
-    return notFound();
-  }
-  const campaign = await readCampaign({ campaignId: poll.campaignId });
-
-  if (!campaign) {
-    return redirect("/");
-  }
+  const userId = await UseMiddlewares(
+    { token: cookies().get("token")?.value },
+    {
+      roles: ["user"],
+    }
+  ).then(AuthMiddleware);
 
   const ip = headers().get("X-Forwarded-For")!;
 
-  if (await verifyExistingVote({ ip, pollId: params.id })) {
+  const _poll = await prisma.poll.findFirst({
+    where: { id: params.id },
+    include: {
+      PollQuestion: {
+        select: {
+          id: true,
+          PollOption: true,
+        },
+      },
+      PollAnswer: {
+        select: {
+          ip: true,
+          supporter: true,
+        },
+        where: {
+          OR: [{ supporter: { userId: userId } }, { ip: ip }],
+        },
+      },
+    },
+  });
+
+  if (!_poll) return notFound();
+
+  const { PollAnswer, ...poll } = _poll;
+
+  const pollHasAnswer = PollAnswer?.length || 0 > 0;
+
+  const campaign = (await readCampaign({ campaignId: poll.campaignId }))!;
+
+  if (pollHasAnswer) {
     return (
       <div className="px-4 pb-20 pt-10">
         <PollHeader alreadyVoted={true} campaign={campaign} />

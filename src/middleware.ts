@@ -7,9 +7,11 @@ export async function middleware(request: NextRequest) {
     return arg.test(request.nextUrl.pathname);
   };
 
+  const token = request.cookies.get("token")?.value;
+
   if (startsWith("/login")) {
     const isAuthenticated = await AuthMiddleware({
-      request,
+      request: { token },
       additionalArguments: { roles: ["user"] },
     });
 
@@ -19,7 +21,7 @@ export async function middleware(request: NextRequest) {
 
   if (startsWith("/painel")) {
     const userId = await AuthMiddleware({
-      request,
+      request: { token },
       additionalArguments: { roles: ["user"] },
     });
 
@@ -42,7 +44,7 @@ export async function middleware(request: NextRequest) {
 
   if (startsWith("/apoiar")) {
     const isAuthenticated = await AuthMiddleware({
-      request,
+      request: { token },
       additionalArguments: { roles: ["user"] },
     });
 
@@ -52,7 +54,7 @@ export async function middleware(request: NextRequest) {
 
   if (startsWith("/recuperar")) {
     const isAuthenticated = await AuthMiddleware({
-      request,
+      request: { token },
       additionalArguments: { roles: ["user"] },
     });
 
@@ -62,7 +64,7 @@ export async function middleware(request: NextRequest) {
 
   if (/^\/[^\/.]+[^.]$/.test(request.nextUrl.pathname)) {
     const userId = await AuthMiddleware({
-      request,
+      request: { token },
       additionalArguments: { roles: ["user"] },
     });
 

@@ -5,9 +5,7 @@ import { Poll, PollAnswer, Supporter } from "@prisma/client";
 import { PollAnswerDto, ReadPollsStats, UpsertPollDto } from "./dto";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
-import { ActionResponse } from "../../_shared/utils/ActionResponse";
-import { cookies, headers } from "next/headers";
-import { readSupporterFromUser } from "../supporters/service";
+import { headers } from "next/headers";
 
 dayjs.extend(isBetween);
 
@@ -115,8 +113,8 @@ export async function readPollsStats(request: {
     commentsInPollsChange > 0
       ? "increase"
       : commentsInPollsChange < 0
-      ? "decrease"
-      : false;
+        ? "decrease"
+        : false;
 
   return [
     {
@@ -368,44 +366,6 @@ export async function answerPoll(
   });
 
   return pollAnswer;
-}
-
-export async function verifyExistingVote(request: {
-  ip: string;
-  pollId: string;
-}): Promise<boolean> {
-  const ipUsedToVote = await prisma.pollAnswer.findFirst({
-    where: { AND: [{ ip: request.ip }, { pollId: request.pollId }] },
-  });
-  let supporterVote: undefined | PollAnswer;
-  let supporter: undefined | Supporter;
-
-  const token = cookies().get("token")?.value;
-  const url = process.env.NEXT_PUBLIC_SITE_URL;
-  const user = await fetch(`${url}/api/auth/verify`, {
-    headers: { Authorization: token },
-  }).then((res) => res.json());
-
-  if (user.id) {
-    const poll = await readPoll({ id: request.pollId });
-    if (!poll) throw new Error("Pesquisa não encontrada");
-    supporter = await readSupporterFromUser({
-      userId: user.id,
-      campaignId: poll.campaignId,
-    });
-
-    if (supporter) {
-      supporterVote = await prisma.pollAnswer.findFirst({
-        where: { AND: [{ supporterId: supporter.id }, { pollId: request.pollId }] },
-      });
-    }
-  }
-
-  if ((!supporter && ipUsedToVote) || (supporter && supporterVote)) {
-    return true;
-  }
-
-  return false;
 }
 
 function joinPollVotes(pollAnswers: PollAnswer[]): PollAnswer[] {
