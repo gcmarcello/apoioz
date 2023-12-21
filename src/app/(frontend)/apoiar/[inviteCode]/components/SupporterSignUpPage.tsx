@@ -35,7 +35,7 @@ export default function SupporterSignUpPage({
   campaign: any;
   user: any;
   zones: any;
-  poll: PollWithQuestionsWithOptions;
+  poll: PollWithQuestionsWithOptions | null;
 }) {
   const [success, setSuccess] = useState(false);
   const [stage, setStage] = useState("basicInfo");
