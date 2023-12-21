@@ -7,7 +7,6 @@ import Calendar from "../../../../app/(frontend)/painel/calendario/components/Ca
 import { cookies, headers } from "next/headers";
 import { readEventsByCampaign } from "@/app/api/panel/events/actions";
 import { readCampaign } from "@/app/api/panel/campaigns/actions";
-import { CalendarContext } from "./contexts/calendar.ctx";
 import CalendarProvider from "./providers/CalendarProvider";
 import { redirect } from "next/navigation";
 dayjs.extend(customParseFormat);

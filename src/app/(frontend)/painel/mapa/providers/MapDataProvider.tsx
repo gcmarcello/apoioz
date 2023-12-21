@@ -1,16 +1,52 @@
 "use client";
 
-import { FormProvider, useFieldArray, useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import { toProperCase } from "@/_shared/utils/format";
 import { generateRandomHexColor } from "@/app/(frontend)/_shared/utils/colors";
 import { ExtractSuccessResponse } from "@/app/api/_shared/utils/ActionResponse";
 import { createMapData } from "@/app/api/panel/map/actions";
+import { ReactNode } from "react";
+import { Neighborhood, Zone, Address, Prisma } from "@prisma/client";
+
+export type MapDataContext = {
+  neighborhoods: {
+    label: string | undefined;
+    color: string;
+    checked: boolean;
+    id: string;
+    name: string;
+    cityId: string;
+    geoJSON: Prisma.JsonValue;
+  }[];
+  zones: {
+    label: number;
+    color: string;
+    checked: boolean;
+    number: number;
+    id: string;
+    stateId: string;
+    geoJSON: Prisma.JsonValue;
+  }[];
+  addresses: {
+    address: string | null;
+    geocode: number[];
+    location: string | null;
+    neighborhood: string | null;
+    zone: number;
+    sectionsCount: number;
+    supportersCount: number;
+    id: string;
+  }[];
+  sections: {
+    showEmptySections: boolean;
+  };
+};
 
 export default function MapDataProvider({
   children,
   value: { zones, neighborhoods, addresses },
 }: {
-  children: any;
+  children: ReactNode;
   value: ExtractSuccessResponse<typeof createMapData>;
 }) {
   const parsedNeighborhoods = neighborhoods
@@ -48,7 +84,7 @@ export default function MapDataProvider({
     };
   });
 
-  const mapData = useForm({
+  const mapData = useForm<MapDataContext>({
     defaultValues: {
       addresses: parsedAddresses,
       zones: parsedZones,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap, GeoJSON } from "react-leaflet";
+import { MapContainer, TileLayer, Popup, useMap, GeoJSON } from "react-leaflet";
 import L, { LatLngBoundsExpression, LatLngExpression, MarkerCluster } from "leaflet";
 import React from "react";
 import clsx from "clsx";
@@ -12,6 +12,7 @@ import MarkerClusterGroup from "react-leaflet-cluster";
 import { retrieveBoundsFromGeoJSONS } from "../utils/coordinates";
 import { useFormContext } from "react-hook-form";
 import { useMapData } from "../hooks/useMapData";
+import { Marker } from "./Marker";
 
 const POSITION_CLASSES = {
   bottomleft: "leaflet-bottom leaflet-left",
@@ -27,7 +28,7 @@ export default function Map() {
   const [modalInfo, setModalInfo] = useState(null);
   const center = [0, 0];
 
-  const mapRef = useRef(null);
+  const mapRef = useRef<L.Map>();
 
   const handleMarkerClick = useCallback(
     (info: any) => {
@@ -41,7 +42,7 @@ export default function Map() {
 
   function FitBoundsComponent() {
     const map = useMap();
-    const markerCoords = addresses?.map((marker: { geocode: any }) => marker.geocode);
+    const markerCoords = addresses?.map(({ geocode }) => geocode);
     let geoJSONBounds: L.LatLngBounds | null = null;
 
     if (neighborhoods.filter((neighborhood) => neighborhood.checked).length) {
@@ -61,19 +62,18 @@ export default function Map() {
         mapRef.current = map;
       }
       const mapBounds = geoJSONBounds || markerCoords;
-      map.fitBounds(mapBounds);
+      map.fitBounds(mapBounds as any);
     }, [map, markerCoords]);
 
     return null;
   }
 
   const createClusterCustomIcon = function (cluster: MarkerCluster) {
-    const supporterCount = cluster
-      .getAllChildMarkers()
-      .reduce(
-        (acc, marker) => acc + marker["options" as any].customOptions.supportersCount,
-        0
-      );
+    const supporterCount = (
+      cluster.getAllChildMarkers() as (MarkerCluster & {
+        customOptions: { supportersCount: number };
+      })[]
+    ).reduce((acc, marker) => acc + marker.customOptions.supportersCount, 0);
 
     return L.divIcon({
       html: `<div class="relative text-white font-bold flex justify-center items-center w-12 h-12">
@@ -122,9 +122,9 @@ export default function Map() {
 
         <For each={zones}>
           {({ geoJSON, color, checked, id }, index) => {
-            if (!geoJSON) return null;
-            if (!checked && zones.some((zone) => zone.checked)) return null;
-            if (neighborhoods.some((neighborhood) => neighborhood.checked)) return null;
+            if (!geoJSON) return <></>;
+            if (!checked && zones.some((zone) => zone.checked)) return <></>;
+            if (neighborhoods.some((neighborhood) => neighborhood.checked)) return <></>;
             return (
               <GeoJSON key={`zone-${index}`} data={geoJSON as any} style={{ color }} />
             );
@@ -137,9 +137,9 @@ export default function Map() {
               !geoJSON ||
               !checked ||
               (neighborhoods.some((neighborhood) => neighborhood.checked) &&
-                !neighborhoods.find((neighborhood) => neighborhood.id === id).checked)
+                !neighborhoods.find((neighborhood) => neighborhood.id === id)?.checked)
             )
-              return null;
+              return <></>;
             return (
               <GeoJSON
                 key={`neighborhood-${index}`}
@@ -207,13 +207,13 @@ export default function Map() {
               ) => {
                 if (
                   !geocode ||
-                  (!zones.find((z) => z.number === zone).checked &&
+                  (!zones.find((z) => z.number === zone)?.checked &&
                     zones.some((z) => z.checked)) ||
-                  (!neighborhoods.find((n) => n.name === neighborhood).checked &&
+                  (!neighborhoods.find((n) => n.name === neighborhood)?.checked &&
                     neighborhoods.some((n) => n.checked)) ||
                   (!sections.showEmptySections && supportersCount === 0)
                 )
-                  return null;
+                  return <></>;
                 return (
                   <Marker
                     icon={createAddressCustomIcon(supportersCount)}
@@ -227,13 +227,15 @@ export default function Map() {
                     position={geocode as LatLngExpression}
                     title={location!}
                     eventHandlers={{
-                      mouseover: (event) => {
+                      mouseover: (event: MouseEvent) => {
                         if (closeTimeout) clearTimeout(closeTimeout);
-                        event.target.openPopup();
+                        const marker = event.target as any as L.MarkerCluster;
+                        marker.openPopup();
                       },
-                      mouseout: (event) => {
+                      mouseout: (event: MouseEvent) => {
+                        const marker = event.target as any as L.MarkerCluster;
                         closeTimeout = setTimeout(() => {
-                          event.target.closePopup();
+                          marker.closePopup();
                         }, 300);
                       },
                     }}
@@ -257,7 +259,7 @@ export default function Map() {
                               <div className="text-sm font-bold text-gray-900">
                                 {location}
                                 <div className="font mt-0.5 text-xs  text-gray-600">
-                                  {toProperCase(address)}
+                                  {toProperCase(address || "")}
                                 </div>
                               </div>
                             </div>
