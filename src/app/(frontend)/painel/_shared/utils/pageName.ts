@@ -22,7 +22,7 @@ export function getPageName(url: string, mobile: boolean = false): string {
       case "pesquisas":
         return "Pesquisas";
       default:
-        break;
+        return "";
     }
   } else {
     switch (pageName) {
@@ -45,7 +45,7 @@ export function getPageName(url: string, mobile: boolean = false): string {
       case "campanha":
         return "Configurações";
       default:
-        break;
+        return "";
     }
   }
 }

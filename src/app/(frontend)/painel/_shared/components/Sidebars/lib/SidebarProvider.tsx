@@ -36,8 +36,6 @@ export default function SidebarProvider({
         user,
         campaign,
         supporter,
-        primaryColor,
-        secondaryColor,
         campaigns,
       }}
     >

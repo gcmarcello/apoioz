@@ -1,5 +1,6 @@
 "use client";
 import { generateRandomHexColor } from "@/app/(frontend)/_shared/utils/colors";
+import { PollAnswer, PollOption } from "@prisma/client";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -43,8 +44,8 @@ export default function QuestionGraph({ question }: { question: any }) {
   };
 
   const voteCounts = {};
-  question.answers.forEach((answer) => {
-    answer.options.forEach((option) => {
+  question.answers.forEach((answer: PollAnswer) => {
+    answer.options.forEach((option: PollOption) => {
       if (voteCounts[option.id]) {
         voteCounts[option.id].count += 1;
       } else {

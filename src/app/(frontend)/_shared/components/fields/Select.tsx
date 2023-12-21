@@ -34,7 +34,7 @@ type SelectFieldProps<
 export function ListboxField<
   Fields extends FieldValues,
   Data extends Array<{ [key: string]: any }>,
->({ hform, name, data, ...props }: SelectFieldProps<Fields, Data>, ref) {
+>({ hform, name, data, ...props }: SelectFieldProps<Fields, Data>) {
   const id = useId();
 
   const errorMessage = getErrorMessage(hform, name);

@@ -10,8 +10,9 @@ import { useForm } from "react-hook-form";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 import ElectionModalForm from "./ElectionModalForm";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
+import { UserWithoutPassword } from "prisma/types/User";
 
-export default function ProfileUpdateForm({ user }: { user }) {
+export default function ProfileUpdateForm({ user }: { user: UserWithoutPassword }) {
   const [showFields, setShowFields] = useState({
     name: { label: "Nome", show: false },
     email: { label: "Endereço de Email", show: false },

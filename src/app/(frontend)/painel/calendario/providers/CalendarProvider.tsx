@@ -4,7 +4,7 @@ import Calendar from "../components/Calendar";
 import { CalendarContext } from "../contexts/calendar.ctx";
 import { Event } from "@prisma/client";
 
-export default function CalendarProvider({ children }) {
+export default function CalendarProvider({ children }: { children: React.ReactNode }) {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [showEventOverview, setShowEventOverview] = useState(false);
 

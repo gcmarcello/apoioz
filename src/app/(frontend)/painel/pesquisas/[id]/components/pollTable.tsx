@@ -11,7 +11,7 @@ import { toProperCase } from "@/_shared/utils/format";
 import { useState } from "react";
 import SupporterBall from "@/app/(frontend)/_shared/components/SupporterBall";
 
-export default function PollTable({ answers, poll }: { answers: any[]; poll }) {
+export default function PollTable({ answers, poll }: { answers: any[]; poll: Poll }) {
   const columnHelper = createColumnHelper<any>();
   const [globalFilter, setGlobalFilter] = useState("");
 

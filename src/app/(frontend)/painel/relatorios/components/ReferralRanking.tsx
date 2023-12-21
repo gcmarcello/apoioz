@@ -35,17 +35,22 @@ export function ReferralRanking() {
     },
   };
 
-  const labels = [];
+  const labels: { id: string; name: string; count: number; color: string }[] = [];
   supporters.data?.forEach((supporter) => {
-    if (supporter.referralId && labels.find((ref) => ref.id === supporter.referralId)) {
-      labels.find((ref) => ref.id === supporter.referralId).count += 1;
-    } else if (supporter.referralId) {
-      labels.push({
-        id: supporter.referralId,
-        name: supporter.referral?.user.name,
-        count: 1,
-        color: generateRandomHexColor(),
-      });
+    if (supporter.referralId) {
+      const foundLabel = labels.find((ref) => ref.id === supporter.referralId);
+      if (foundLabel) {
+        // If the label is found, increment its count
+        foundLabel.count += 1;
+      } else {
+        // If not found, add a new label
+        labels.push({
+          id: supporter.referralId,
+          name: supporter.referral?.user.name || "Anônimo",
+          count: 1,
+          color: generateRandomHexColor(),
+        });
+      }
     }
   });
   labels.sort((a, b) => b.count - a.count);

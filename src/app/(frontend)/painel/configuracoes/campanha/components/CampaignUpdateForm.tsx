@@ -9,32 +9,18 @@ import { getContrastRatioFromHex } from "@/app/(frontend)/_shared/utils/colors";
 import { updateCampaign } from "@/app/api/panel/campaigns/actions";
 import { updateCampaignDto } from "@/app/api/panel/campaigns/dto";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Campaign } from "@prisma/client";
+import { useForm } from "react-hook-form";
 
-export default function CampaignUpdateForm({ campaign }) {
+export default function CampaignUpdateForm({ campaign }: { campaign: Campaign }) {
   const form = useForm({
     defaultValues: {
       name: campaign.name,
       year: campaign.year,
-      options: {
-        primaryColor: campaign?.options?.primaryColor || "#000000",
-        secondaryColor: campaign?.options?.secondaryColor || "#FFFFFF",
-      },
       slug: campaign.slug,
     },
     resolver: zodResolver(updateCampaignDto),
   });
-  const [contrast, setContrast] = useState(null);
-
-  useEffect(() => {
-    setContrast(
-      getContrastRatioFromHex(
-        form.watch("options.primaryColor"),
-        form.watch("options.secondaryColor")
-      )
-    );
-  }, [form.watch("options.primaryColor"), form.watch("options.secondaryColor")]);
 
   const {
     data: supporter,
@@ -50,11 +36,11 @@ export default function CampaignUpdateForm({ campaign }) {
         title: "Dados atualizados",
       }),
   });
-//@todo 
+  //@todo
   return (
     <main className="px-2 sm:px-6 lg:flex-auto lg:px-0">
       <div className="mt-14 max-w-2xl space-y-16 sm:space-y-20 lg:mx-4 lg:max-w-none">
-        <form onSubmit={form.handleSubmit((data) => updateCampaignTrigger(data as any))}> 
+        <form onSubmit={form.handleSubmit((data) => updateCampaignTrigger(data as any))}>
           <div className="space-y-12">
             <div className="border-b border-gray-900/10 pb-8">
               <h2 className="text-base font-semibold leading-7 text-gray-900">

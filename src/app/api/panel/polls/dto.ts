@@ -41,7 +41,7 @@ export const readPollDto = z.object({
   }),
 });
 
-export const readPollsStats = z.array(
+export const readStatsDto = z.array(
   z.object({
     name: z.string(),
     stat: z.number(),
@@ -74,4 +74,3 @@ export const pollAnswerDto = z
 
 export type UpsertPollDto = z.infer<typeof upsertPollDto>;
 export type PollAnswerDto = z.infer<typeof pollAnswerDto>;
-export type ReadPollsStats = z.infer<typeof readPollsStats>;

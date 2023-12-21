@@ -1,26 +1,27 @@
-function isScrollable(element) {
+function isScrollable(element: HTMLElement) {
   const overflowY = window.getComputedStyle(element).overflowY;
   return overflowY === "scroll" || overflowY === "auto";
 }
 
-function getScrollableParent(element) {
+function getScrollableParent(element: HTMLElement | null) {
   while (element && element !== document.body) {
     if (isScrollable(element)) {
       return element;
     }
+
     element = element.parentElement;
   }
   return window;
 }
 
-export function scrollToElement(element, margin = 20) {
+export function scrollToElement(element: HTMLElement, margin = 20) {
   const dims = element.getBoundingClientRect();
   const scrollableParent = getScrollableParent(element);
 
   if (scrollableParent !== window) {
-    const containerDims = scrollableParent.getBoundingClientRect();
+    const containerDims = (scrollableParent as HTMLElement).getBoundingClientRect();
     const scrollPosition =
-      dims.top - containerDims.top + scrollableParent.scrollTop - margin;
+      dims.top - containerDims.top + (scrollableParent as HTMLElement).scrollTop - margin;
     setTimeout(() => {
       scrollableParent.scrollTo({
         top: scrollPosition,

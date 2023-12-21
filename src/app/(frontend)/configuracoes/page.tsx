@@ -9,7 +9,11 @@ import { ParagraphLink } from "../_shared/components/text/ParagraphLink";
 import { ArrowLeftCircleIcon } from "@heroicons/react/24/solid";
 
 export default async function SettingsPage() {
-  const user = await readUser(headers().get("userId"));
+  const userId = headers().get("userId");
+  if (!userId) {
+    redirect("/painel");
+  }
+  const user = await readUser(userId);
   if (!user) {
     redirect("/");
   }
