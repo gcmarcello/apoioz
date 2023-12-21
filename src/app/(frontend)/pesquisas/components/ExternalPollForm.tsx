@@ -29,6 +29,9 @@ interface PollFormProps<T extends keyof PossibleStates> {
       PollQuestion: {
         select: {
           id: true;
+          allowFreeAnswer: true;
+          allowMultipleAnswers: true;
+          question: true;
           PollOption: true;
         };
       };
@@ -64,7 +67,7 @@ export function ExternalPollForm<T extends keyof PossibleStates>({
   });
   const [success, setSuccess] = useState(false);
 
-  const refs = useRef([]);
+  const refs = useRef<HTMLTableCellElement[]>([]);
 
   function findQuestionById(id: string) {
     return data.PollQuestion.find((q) => q.id === id);
@@ -112,7 +115,11 @@ export function ExternalPollForm<T extends keyof PossibleStates>({
                           <th
                             scope="col"
                             className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
-                            ref={(el) => (refs.current[index] = el)}
+                            ref={(el) => {
+                              if (el) {
+                                refs.current[index] = el;
+                              }
+                            }}
                             onClick={() => scrollToElement(refs.current[index])}
                           >
                             <div className="font-semibold">
@@ -126,7 +133,7 @@ export function ExternalPollForm<T extends keyof PossibleStates>({
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200 bg-white">
-                        {findQuestionById(question.questionId).PollOption.map(
+                        {findQuestionById(question.questionId)?.PollOption.map(
                           (option, k) => {
                             const optionName = option.name;
                             return (
@@ -134,7 +141,7 @@ export function ExternalPollForm<T extends keyof PossibleStates>({
                                 <td className="flex items-center whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                                   {data.PollQuestion.find(
                                     (q) => q.id === question.questionId
-                                  ).allowMultipleAnswers ? (
+                                  )?.allowMultipleAnswers ? (
                                     <CheckboxInput
                                       hform={form}
                                       label={optionName}
@@ -155,13 +162,13 @@ export function ExternalPollForm<T extends keyof PossibleStates>({
                           }
                         )}
 
-                        {findQuestionById(question.questionId).allowFreeAnswer && (
+                        {findQuestionById(question.questionId)?.allowFreeAnswer && (
                           <tr>
                             <td className="p-4">
                               <TextAreaField
                                 hform={form}
                                 label={
-                                  findQuestionById(question.questionId).PollOption.length
+                                  findQuestionById(question.questionId)?.PollOption.length
                                     ? "Comentários:"
                                     : "Resposta:"
                                 }
