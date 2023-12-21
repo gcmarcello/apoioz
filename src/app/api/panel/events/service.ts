@@ -2,7 +2,6 @@
 import dayjs, { Dayjs } from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import utc from "dayjs/plugin/utc";
-import { cookies, headers } from "next/headers";
 import { Supporter, User } from "@prisma/client";
 import { prisma } from "prisma/prisma";
 import { sendEmail } from "../../emails/service";
@@ -30,7 +29,7 @@ export async function createEvent(
 
   const host = request.supporterSession;
 
-  const leader = await prisma.supporter.findFirst({
+  const leader = await prisma.supporter.findFirstOrThrow({
     where: { level: 4 },
     include: { user: { select: { email: true, name: true } } },
   });
@@ -40,14 +39,14 @@ export async function createEvent(
       where: { campaignId: event.campaignId },
       include: { user: { select: { email: true } } },
     });
-    const campaign = await prisma.campaign.findFirst({ where: { id: event.campaignId } });
+    const campaign = await prisma.campaign.findFirstOrThrow({
+      where: { id: request.supporterSession.campaignId },
+    });
     await sendEmail({
       to: getEnv("SENDGRID_EMAIL"),
-      bcc: [
-        ...supporters
-          .map((supporter) => supporter.user.email)
-          .filter((email) => email !== host.user.email),
-      ],
+      bcc: supporters
+        .map((supporter) => supporter.user.email)
+        .filter((email) => email !== host.user.email),
       dynamicData: {
         subject: `${event.name} confirmado! - ApoioZ`,
         eventName: event.name,
@@ -125,14 +124,14 @@ export async function readEventsAvailability(
 ) {
   const correctedTimeZoneDay = dayjs(request.where.day).add(3, "hour");
 
-  const timeslots = [];
+  const timeslots: dayjs.Dayjs[] = [];
 
   let time = dayjs(correctedTimeZoneDay).utcOffset(-3).startOf("day");
   for (let i = 0; i < 24; i++) {
-    timeslots.push(time.toISOString());
+    timeslots.push(dayjs(time.toISOString()));
     time = time.add(1, "hour");
   }
-  let availableTimeslots: dayjs.Dayjs[] = [...timeslots];
+  let availableTimeslots = [...timeslots];
 
   const eventTimestamps = await readEventTimestamps(request.supporterSession.campaignId);
 
@@ -166,7 +165,7 @@ export async function updateEventStatus(request) {
     data: { status: request.status },
   });
   if (request.status === "active") {
-    const host = await prisma.supporter.findFirst({
+    const host = await prisma.supporter.findFirstOrThrow({
       where: { id: event.hostId },
       include: { user: true },
     });
@@ -174,7 +173,9 @@ export async function updateEventStatus(request) {
       where: { campaignId: event.campaignId },
       include: { user: { select: { email: true } } },
     });
-    const campaign = await prisma.campaign.findFirst({ where: { id: event.campaignId } });
+    const campaign = await prisma.campaign.findFirstOrThrow({
+      where: { id: event.campaignId },
+    });
 
     await sendEmail({
       to: getEnv("SENDGRID_EMAIL"),

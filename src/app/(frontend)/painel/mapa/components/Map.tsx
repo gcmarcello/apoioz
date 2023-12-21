@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, Popup, useMap, GeoJSON } from "react-leaflet";
-import L, { LatLngBoundsExpression, LatLngExpression, MarkerCluster } from "leaflet";
+import L, { LatLngExpression, MarkerCluster } from "leaflet";
 import React from "react";
 import clsx from "clsx";
 import { toProperCase } from "@/_shared/utils/format";

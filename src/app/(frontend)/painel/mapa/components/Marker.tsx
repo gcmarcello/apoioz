@@ -1,4 +1,4 @@
-import { Marker } from "react-leaflet";
+import { Marker as _Marker } from "react-leaflet";
 
 import { ComponentProps, ReactNode } from "react";
 
@@ -10,6 +10,6 @@ export function Marker({
   customOptions: {
     supportersCount: number;
   };
-} & ComponentProps<typeof Marker>) {
+} & ComponentProps<typeof _Marker>) {
   return <Marker {...props}>{children}</Marker>;
 }

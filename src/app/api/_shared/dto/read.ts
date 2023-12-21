@@ -12,5 +12,5 @@ export type Pagination = z.infer<typeof paginationDto>;
 export const readDto = <W extends ZodTypeAny>(where: W) =>
   z.object({
     pagination: paginationDto.optional(),
-    where: where.optional(),
+    where: where,
   });
