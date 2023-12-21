@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, Popup, useMap, GeoJSON } from "react-leaflet";
-import L, { LatLngExpression, MarkerCluster } from "leaflet";
+import L, { LatLngExpression, LeafletMouseEvent, MarkerCluster } from "leaflet";
 import React from "react";
 import clsx from "clsx";
 import { toProperCase } from "@/_shared/utils/format";
@@ -227,12 +227,12 @@ export default function Map() {
                     position={geocode as LatLngExpression}
                     title={location!}
                     eventHandlers={{
-                      mouseover: (event: MouseEvent) => {
+                      mouseover: (event: LeafletMouseEvent) => {
                         if (closeTimeout) clearTimeout(closeTimeout);
                         const marker = event.target as any as L.MarkerCluster;
                         marker.openPopup();
                       },
-                      mouseout: (event: MouseEvent) => {
+                      mouseout: (event: LeafletMouseEvent) => {
                         const marker = event.target as any as L.MarkerCluster;
                         closeTimeout = setTimeout(() => {
                           marker.closePopup();
