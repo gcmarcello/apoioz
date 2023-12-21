@@ -105,7 +105,7 @@ export async function readSupporterBranches(request?: ReadSupporterBranchesDto) 
       data: supporters,
     });
   } catch (err) {
-    ActionResponse.error(err);
+    return ActionResponse.error(err);
   }
 }
 

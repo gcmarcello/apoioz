@@ -9,7 +9,6 @@ import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 import { SupporterWithReferred } from "prisma/types/Supporter";
-import { flattenSupporterWithReferred } from "../../_shared/utils/flattenSupporterTree";
 
 export default async function TimePage() {
   const { request: parsedRequest } = await UseMiddlewares()
@@ -21,7 +20,10 @@ export default async function TimePage() {
     where: {
       branches: 1,
     },
-  }).then((res) => flattenSupporterWithReferred(res));
+  }).then((res) => {
+    const { referred, ...rest } = res;
+    return [rest, ...referred];
+  });
 
   if (!tree) return;
 

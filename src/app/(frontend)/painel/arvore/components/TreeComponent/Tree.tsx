@@ -134,7 +134,9 @@ function ReactFlowPro({
 
   const nodeTypes = useMemo(
     () => ({
-      custom: (node) => <CustomNode {...node} customFlowContext={customFlowContext} />,
+      custom: (node: Node) => (
+        <CustomNode {...node} customFlowContext={customFlowContext} />
+      ),
     }),
     [customFlowContext]
   );

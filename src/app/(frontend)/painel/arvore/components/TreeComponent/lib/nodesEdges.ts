@@ -1,3 +1,5 @@
+import { ExtractSuccessResponse } from "@/app/api/_shared/utils/ActionResponse";
+import { readSupporterBranches } from "@/app/api/panel/supporters/actions";
 import { Supporter } from "@prisma/client";
 import { Edge, Node } from "reactflow";
 
@@ -26,7 +28,7 @@ export const createNode = (supporter: Supporter & { user: { name: string } }) =>
 export function processNodesEdges({
   supporters,
 }: {
-  supporters: (Supporter & { user: { name: string } })[];
+  supporters: Omit<ExtractSuccessResponse<typeof readSupporterBranches>, "referred">[];
   includeRoot?: boolean;
   expandNodes?: boolean;
 }) {

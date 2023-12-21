@@ -23,12 +23,11 @@ export async function createPoll(request: UpsertPollDto) {
     revalidatePath("/painel/pesquisas");
     return ActionResponse.success({ data: poll });
   } catch (error) {
-    console.log(error);
     return ActionResponse.error(error);
   }
 }
 
-export async function updatePoll(request) {
+export async function updatePoll(request: UpsertPollDto) {
   try {
     const { request: parsedRequest } = await UseMiddlewares(request)
       .then(UserSessionMiddleware)
@@ -41,10 +40,6 @@ export async function updatePoll(request) {
   } catch (error) {
     return ActionResponse.error(error);
   }
-}
-
-export async function readActivePoll(request) {
-  const poll = await service.readActivePoll(request);
 }
 
 export async function answerPoll(request: PollAnswerDto) {
