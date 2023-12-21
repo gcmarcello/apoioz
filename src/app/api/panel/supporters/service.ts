@@ -139,9 +139,9 @@ export async function readSupportersFromSupporterGroup({
         },
       },
       user: {
-        name: { contains: where?.user.name },
-        email: { contains: where?.user.email },
-        phone: { contains: where?.user.phone },
+        name: { contains: where?.user?.name },
+        email: { contains: where?.user?.email },
+        phone: { contains: where?.user?.phone },
       },
     },
     include: {
@@ -183,7 +183,7 @@ export async function readSupportersFromSupporterGroupWithRelation({
             id: where?.supporterId,
           },
         })
-        .then((s) => s.id)
+        .then((s) => s?.id)
     : supporterSession.id;
 
   const supporterList = await prisma.supporter.findMany({
