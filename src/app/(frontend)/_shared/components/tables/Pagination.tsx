@@ -40,7 +40,7 @@ export default function PaginationControl({
           <p className="text-sm text-gray-700">
             Mostrando{" "}
             <span className="font-medium">
-              {table.options.state.pagination?.pageSize > count
+              {table?.options?.state?.pagination?.pageSize || 0 > count
                 ? count
                 : table.options.state.pagination?.pageSize}
             </span>{" "}
