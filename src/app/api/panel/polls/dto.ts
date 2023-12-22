@@ -70,7 +70,7 @@ export const pollAnswerDto = z
       })
     ),
   })
-  .nullable();
+  .optional();
 
 export type UpsertPollDto = z.infer<typeof upsertPollDto>;
 export type PollAnswerDto = z.infer<typeof pollAnswerDto>;
