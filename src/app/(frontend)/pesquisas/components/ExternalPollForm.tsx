@@ -1,10 +1,6 @@
 "use client";
 import { Button } from "@/app/(frontend)/_shared/components/Button";
-import { PageSubtitle } from "@/app/(frontend)/_shared/components/text/PageSubtitle";
-import { PageTitle } from "@/app/(frontend)/_shared/components/text/PageTitle";
-import { ArrowLeftCircleIcon } from "@heroicons/react/20/solid";
 import { Campaign, PollQuestion, Prisma } from "@prisma/client";
-import Image from "next/image";
 import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { set, useFieldArray, useForm } from "react-hook-form";
 import { BottomNavigation } from "../../_shared/components/navigation/BottomNavigation";
@@ -28,16 +24,19 @@ interface PossibleStates {
 }
 
 interface PollFormProps<T extends keyof PossibleStates> {
-  data: {
-    id: string;
-    title: string;
-    activeAtSignUp: boolean;
-    PollQuestion: Prisma.PollQuestionGetPayload<{
-      include: {
-        PollOption: true;
+  data: Prisma.PollGetPayload<{
+    include: {
+      PollQuestion: {
+        select: {
+          id: true;
+          allowFreeAnswer: true;
+          allowMultipleAnswers: true;
+          question: true;
+          PollOption: true;
+        };
       };
-    }>[];
-  };
+    };
+  }>;
   mode: T;
   states?: PossibleStates[T];
   campaign: Campaign;
@@ -63,12 +62,12 @@ export function ExternalPollForm<T extends keyof PossibleStates>({
     resolver: zodResolver(pollAnswerDto),
   });
   const { fields } = useFieldArray({
-    control: form.control, // control props comes from useForm (optional: if you are using FormContext)
-    name: "questions", // unique name for your Field Array
+    control: form.control,
+    name: "questions",
   });
   const [success, setSuccess] = useState(false);
 
-  const refs = useRef([]);
+  const refs = useRef<HTMLTableCellElement[]>([]);
 
   function findQuestionById(id: string) {
     return data.PollQuestion.find((q) => q.id === id);
@@ -116,7 +115,11 @@ export function ExternalPollForm<T extends keyof PossibleStates>({
                           <th
                             scope="col"
                             className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
-                            ref={(el) => (refs.current[index] = el)}
+                            ref={(el) => {
+                              if (el) {
+                                refs.current[index] = el;
+                              }
+                            }}
                             onClick={() => scrollToElement(refs.current[index])}
                           >
                             <div className="font-semibold">
@@ -130,7 +133,7 @@ export function ExternalPollForm<T extends keyof PossibleStates>({
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200 bg-white">
-                        {findQuestionById(question.questionId).PollOption.map(
+                        {findQuestionById(question.questionId)?.PollOption.map(
                           (option, k) => {
                             const optionName = option.name;
                             return (
@@ -138,7 +141,7 @@ export function ExternalPollForm<T extends keyof PossibleStates>({
                                 <td className="flex items-center whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                                   {data.PollQuestion.find(
                                     (q) => q.id === question.questionId
-                                  ).allowMultipleAnswers ? (
+                                  )?.allowMultipleAnswers ? (
                                     <CheckboxInput
                                       hform={form}
                                       label={optionName}
@@ -159,13 +162,13 @@ export function ExternalPollForm<T extends keyof PossibleStates>({
                           }
                         )}
 
-                        {findQuestionById(question.questionId).allowFreeAnswer && (
+                        {findQuestionById(question.questionId)?.allowFreeAnswer && (
                           <tr>
                             <td className="p-4">
                               <TextAreaField
                                 hform={form}
                                 label={
-                                  findQuestionById(question.questionId).PollOption.length
+                                  findQuestionById(question.questionId)?.PollOption.length
                                     ? "Comentários:"
                                     : "Resposta:"
                                 }

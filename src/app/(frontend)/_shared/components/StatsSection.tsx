@@ -1,9 +1,22 @@
 "use client";
 import { ArrowDownIcon, ArrowUpIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
-import { ReadPollsStats } from "@/app/api/panel/polls/dto";
+import { z } from "zod";
 
-export default function StatsSection({ stats }: { stats: ReadPollsStats }) {
+export const readStatsDto = z.array(
+  z.object({
+    name: z.string(),
+    stat: z.number(),
+    previousStat: z.number().optional(),
+    change: z.number().or(z.string()).optional(),
+    changeType: z.string().or(z.boolean()).optional(),
+    changeText: z.string().optional(),
+  })
+);
+
+export type ReadStatsDto = z.infer<typeof readStatsDto>;
+
+export default function StatsSection({ stats }: { stats: ReadStatsDto }) {
   if (!stats)
     return (
       <div>

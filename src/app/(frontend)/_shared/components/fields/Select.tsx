@@ -34,7 +34,7 @@ type SelectFieldProps<
 export function ListboxField<
   Fields extends FieldValues,
   Data extends Array<{ [key: string]: any }>,
->({ hform, name, data, ...props }: SelectFieldProps<Fields, Data>, ref) {
+>({ hform, name, data, ...props }: SelectFieldProps<Fields, Data>) {
   const id = useId();
 
   const errorMessage = getErrorMessage(hform, name);
@@ -145,8 +145,8 @@ export function ListboxField<
                                 active
                                   ? "bg-indigo-600 text-white"
                                   : disabled
-                                  ? "bg-gray-100"
-                                  : "text-gray-900",
+                                    ? "bg-gray-100"
+                                    : "text-gray-900",
                                 "relative cursor-default select-none py-2 pl-3 pr-9"
                               )
                             }
@@ -235,7 +235,7 @@ export function ComboboxField<
     trigger: fetchData,
     isMutating,
   } = useAction({
-    action: fetcher,
+    action: fetcher as any,
   });
 
   const options = useMemo(() => {

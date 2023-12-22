@@ -1,13 +1,19 @@
-export const createEdge = (source, target) => ({
+import { ExtractSuccessResponse } from "@/app/api/_shared/utils/ActionResponse";
+import { readSupporterBranches } from "@/app/api/panel/supporters/actions";
+import { Supporter } from "@prisma/client";
+import { SupporterWithReferralWithUser } from "prisma/types/Supporter";
+import { Edge, Node } from "reactflow";
+
+export const createEdge = (source: string, target: string) => ({
   id: `e${source}->${target}`,
-  source: source.toString(),
-  target: target.toString(),
+  source: source,
+  target: target,
   type: "smoothstep",
 });
 
-export const createNode = (supporter: any, expanded = false) => {
+export const createNode = (supporter: SupporterWithReferralWithUser) => {
   return {
-    id: supporter.id.toString(),
+    id: supporter.id,
     type: "supporter",
     position: {
       x: 0,
@@ -23,12 +29,12 @@ export const createNode = (supporter: any, expanded = false) => {
 export function processNodesEdges({
   supporters,
 }: {
-  supporters: any;
+  supporters: SupporterWithReferralWithUser[];
   includeRoot?: boolean;
   expandNodes?: boolean;
 }) {
-  const edges = [];
-  const nodes = [];
+  const edges: Edge[] = [];
+  const nodes: Node[] = [];
 
   supporters.forEach((supporter) => {
     const shouldCreateSupporterNode = !nodes.some((n) => n.id === supporter.id);

@@ -8,12 +8,14 @@ import { createUserDto } from "../../user/dto";
 export const readSupportersDto = readDto(
   z.object({
     supporterId: z.string().optional(),
-    user: z.object({
-      id: z.string().optional(),
-      name: z.string().optional(),
-      email: z.string().optional(),
-      phone: z.string().optional(),
-    }),
+    user: z
+      .object({
+        id: z.string().optional(),
+        name: z.string().optional(),
+        email: z.string().optional(),
+        phone: z.string().optional(),
+      })
+      .optional(),
   })
 );
 
@@ -24,7 +26,7 @@ export const createSupporterDto = z.object({
   userId: z.string().optional(),
   referralId: z.string().optional(),
   campaignId: z.string(),
-  poll: pollAnswerDto.optional(),
+  poll: pollAnswerDto.nullable(),
   externalSupporter: z.boolean().optional(),
 });
 

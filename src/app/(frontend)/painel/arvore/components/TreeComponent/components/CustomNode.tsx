@@ -8,45 +8,39 @@ import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { processNodesEdges } from "../lib/nodesEdges";
 import { CustomFlowContext } from "../types/CustomFlowContext";
 import { readSupporterBranches } from "@/app/api/panel/supporters/actions";
-import { flattenSupporterWithReferred } from "@/app/(frontend)/_shared/utils/flattenSupporterTree";
+import { NodeData } from "../types/NodesEdges";
 
-type NodeData = {
-  expanded: boolean;
-  expandable: boolean;
-  label: string;
-  level: number;
-  hasChildren: boolean;
-};
-
-function getLabel(data: any): string {
+function getLabel(data: NodeData): string {
   return data.label.length > 15 ? `${data.label.slice(0, 15)}...` : data.label;
 }
 
-function getColor(data: any): string {
+function getColor(data: NodeData): string {
   const expandedColors = {
-    1: "!bg-red-800",
-    2: "!bg-blue-800",
-    3: "!bg-emerald-800",
-    4: "!bg-yellow-600",
+    "1": "!bg-red-800",
+    "2": "!bg-blue-800",
+    "3": "!bg-emerald-800",
+    "4": "!bg-yellow-600",
   };
 
   const expandableColors = {
-    1: "!bg-red-200",
-    2: "!bg-blue-200",
-    3: "!bg-emerald-200",
-    4: "!bg-yellow-200",
+    "1": "!bg-red-200",
+    "2": "!bg-blue-200",
+    "3": "!bg-emerald-200",
+    "4": "!bg-yellow-200",
   };
 
   if (data.level === 4) return "!bg-yellow-600";
 
-  const expandedColor = expandedColors[data.level];
-  const expandableColor = expandableColors[data.hasChildren];
+  const key = data.level.toString() as keyof typeof expandedColors;
+
+  const expandedColor = expandedColors[key];
+  const expandableColor = expandableColors[key];
 
   return data.expanded
     ? expandedColor
     : data.expandable
-    ? expandableColor
-    : expandedColor;
+      ? expandableColor
+      : expandedColor;
 }
 
 export function CustomNode({
@@ -62,9 +56,9 @@ export function CustomNode({
   } = useAction({
     action: readSupporterBranches,
     parser: (data) => {
-      if (data.referred.length < 1) throw "No referred found";
-
-      return flattenSupporterWithReferred(data);
+      if (data?.referred?.length || 0 < 1) throw "No referred found";
+      const { referred, ...rest } = data as any;
+      return [rest, ...referred];
     },
     onSuccess: ({ data }) => {
       const { nodes, edges } = processNodesEdges({ supporters: data });

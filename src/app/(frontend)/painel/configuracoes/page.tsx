@@ -1,9 +1,17 @@
 import { readUser } from "@/app/api/user/actions";
 import { headers } from "next/headers";
 import ProfileUpdateForm from "./components/ProfileUpdateForm";
+import { redirect } from "next/navigation";
 
 export default async function SettingsPage() {
-  const user = await readUser(headers().get("userId"));
+  const userId = headers().get("userId");
+  if (!userId) {
+    return redirect("/painel");
+  }
+  const user = await readUser(userId);
+  if (!user) {
+    return redirect("/painel");
+  }
 
   return (
     <>

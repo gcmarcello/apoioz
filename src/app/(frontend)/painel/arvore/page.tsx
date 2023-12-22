@@ -1,15 +1,10 @@
 import { readSupporterBranches } from "@/app/api/panel/supporters/service";
 import TreeComponent from "./components/TreeComponent";
-import {
-  createNode,
-  createEdge,
-  processNodesEdges,
-} from "./components/TreeComponent/lib/nodesEdges";
+import { processNodesEdges } from "./components/TreeComponent/lib/nodesEdges";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
-import { SupporterWithReferred } from "prisma/types/Supporter";
-import { flattenSupporterWithReferred } from "../../_shared/utils/flattenSupporterTree";
+import { SupporterWithReferralWithUser } from "prisma/types/Supporter";
 
 export default async function TimePage() {
   const { request: parsedRequest } = await UseMiddlewares()
@@ -21,7 +16,12 @@ export default async function TimePage() {
     where: {
       branches: 1,
     },
-  }).then((res) => flattenSupporterWithReferred(res));
+  }).then((res) => {
+    const { referred, ...rest } = res as any as SupporterWithReferralWithUser & {
+      referred: SupporterWithReferralWithUser[];
+    };
+    return [rest, ...referred];
+  });
 
   if (!tree) return;
 

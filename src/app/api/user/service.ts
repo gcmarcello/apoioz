@@ -61,11 +61,11 @@ export async function readUsers() {
 export async function readUser(userId: string) {
   try {
     if (!validateUUID(userId)) return null;
-    const users = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: userId },
       include: { info: true },
     });
-    return users;
+    return user;
   } catch (error) {
     return handlePrismaError("usuário", error);
   }

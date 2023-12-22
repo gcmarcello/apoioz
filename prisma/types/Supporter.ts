@@ -32,4 +32,19 @@ export type SupporterWithUser = Prisma.SupporterGetPayload<{
   };
 }>;
 
+export type SupporterWithReferralWithUser = Prisma.SupporterGetPayload<{
+  include: {
+    user: true;
+    referral: {
+      include: {
+        user: true;
+      };
+    };
+  };
+}>;
+
 export type SupporterWithReferred = Supporter & { referred: Supporter[] };
+
+export type RecursiveSupporterWithReferred = Supporter & {
+  referred: RecursiveSupporterWithReferred[] | undefined;
+};

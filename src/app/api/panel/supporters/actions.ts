@@ -89,7 +89,7 @@ export async function readSupporterTrail(request?: ReadSupporterBranchesDto) {
       data: supporters,
     });
   } catch (err) {
-    ActionResponse.error(err);
+    return ActionResponse.error(err);
   }
 }
 
@@ -105,7 +105,7 @@ export async function readSupporterBranches(request?: ReadSupporterBranchesDto) 
       data: supporters,
     });
   } catch (err) {
-    ActionResponse.error(err);
+    return ActionResponse.error(err);
   }
 }
 

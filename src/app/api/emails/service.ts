@@ -4,7 +4,7 @@ import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 
-sgMail.setApiKey(getEnv("SENDGRID_API_KEY"));
+sgMail.setApiKey(getEnv("SENDGRID_API_KEY") || "SENDGRID_API_KEY not set");
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const templatesDir = path.join(__dirname, "templates");
 
@@ -20,17 +20,20 @@ export async function sendEmail({
   dynamicData: any;
 }) {
   const template = await readEmailTemplate(templateId, dynamicData);
-  const msg = {
-    to,
-    bcc,
-    from: getEnv("SENDGRID_EMAIL"),
-    subject: template.subject,
-    html: template.body,
-  };
+
+  const sendGridEmail = getEnv("SENDGRID_EMAIL");
+
+  if (!sendGridEmail) throw "SENDGRID_EMAIL not set";
 
   isProd &&
     (await sgMail
-      .send(msg)
+      .send({
+        from: sendGridEmail,
+        to,
+        bcc,
+        subject: template.subject,
+        html: template.body,
+      })
       .then(() => console.log("Email sent"))
       .catch((err) => {
         console.log(err.response.body.errors);
@@ -38,7 +41,7 @@ export async function sendEmail({
       }));
 }
 
-async function readEmailTemplate(templateId, dynamicData) {
+async function readEmailTemplate(templateId: string, dynamicData: { subject: string }) {
   try {
     const templateString = await readTemplateFile(templateId);
     const populatedTemplate = replaceTemplatePlaceholders(templateString, dynamicData);
@@ -66,7 +69,7 @@ async function readTemplateFile(templateId: string): Promise<string> {
   return templateContent;
 }
 
-function replaceTemplatePlaceholders(templateString, dynamicData) {
+function replaceTemplatePlaceholders(templateString: string, dynamicData: any) {
   let populatedTemplate = templateString;
   Object.keys(dynamicData).forEach((key) => {
     populatedTemplate = populatedTemplate.replace(

@@ -10,8 +10,9 @@ import { useForm } from "react-hook-form";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 import ElectionModalForm from "./ElectionModalForm";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
+import { UserWithInfo } from "prisma/types/User";
 
-export default function ProfileUpdateForm({ user }: { user }) {
+export default function ProfileUpdateForm({ user }: { user: UserWithInfo }) {
   const [showFields, setShowFields] = useState({
     name: { label: "Nome", show: false },
     email: { label: "Endereço de Email", show: false },
@@ -28,8 +29,6 @@ export default function ProfileUpdateForm({ user }: { user }) {
       birthDate: dayjs(user.info.birthDate).add(3, "hour").format("DD/MM/YYYY"),
     },
   });
-
-  const fields = ["name", "email", "phone", "birthDate"];
 
   const {
     data: supporter,
@@ -48,6 +47,9 @@ export default function ProfileUpdateForm({ user }: { user }) {
       });
     },
   });
+
+  type fieldsType = "name" | "email" | "phone" | "birthDate";
+  const fields: fieldsType[] = ["name", "email", "phone", "birthDate"];
 
   return (
     <>
@@ -103,9 +105,9 @@ export default function ProfileUpdateForm({ user }: { user }) {
                       {field === "birthDate" ? (
                         <Date value={form.getValues(field)} />
                       ) : field === "phone" ? (
-                        formatPhone(form.getValues(field as "name" | "email" | "phone"))
+                        formatPhone(form.getValues(field) || "")
                       ) : (
-                        form.getValues(field as "name" | "email" | "phone")
+                        form.getValues(field)
                       )}
                     </div>
                   )}

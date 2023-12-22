@@ -27,7 +27,7 @@ export function ElectionInfoSection({
   poll: any;
 }) {
   const [showPassword, setShowPassword] = useState(false);
-  const [willAddPassword, setWillAddPassword] = useState(null);
+  const [willAddPassword, setWillAddPassword] = useState<boolean | null>(null);
   const ref = useRef<null | HTMLDivElement>(null);
   const formRef = useRef<null | HTMLDivElement>(null);
 
@@ -74,7 +74,7 @@ export function ElectionInfoSection({
             setWillAddPassword(true);
             form.resetField("user.password");
             setShowPassword(false);
-            scrollToElement(formRef.current, 12);
+            formRef.current && scrollToElement(formRef.current, 12);
           }}
           className={clsx(
             "mx-auto rounded-md px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 duration-200 lg:hover:bg-gray-50",
@@ -103,7 +103,7 @@ export function ElectionInfoSection({
             setWillAddPassword(false);
             form.resetField("user.password");
             setShowPassword(false);
-            scrollToElement(formRef.current, 12);
+            formRef.current && scrollToElement(formRef.current, 12);
           }}
           className={clsx(
             "mx-auto rounded-md px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 duration-200 lg:hover:bg-gray-50",
@@ -206,7 +206,9 @@ export function ElectionInfoSection({
                         Local de Votação
                       </dt>
                       <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                        {toProperCase(address?.location)}
+                        {address.location
+                          ? toProperCase(address.location)
+                          : "Colégio Eleitoral"}
                       </dd>
                     </div>
                     <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">

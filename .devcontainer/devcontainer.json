@@ -17,7 +17,8 @@
         "bradlc.vscode-tailwindcss",
         "GitHub.copilot",
         "rangav.vscode-thunder-client",
-        "eamodio.gitlens"
+        "eamodio.gitlens",
+        "yoavbls.pretty-ts-errors"
       ],
       "settings": {
         "extensions.autoCheckUpdates": false,

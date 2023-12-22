@@ -2,12 +2,19 @@ import { z } from "zod";
 import { readDto } from "../../_shared/dto/read";
 import { Event } from "@prisma/client";
 
+const timeSlotDto = z.object({
+  id: z.number(),
+  name: z.string(),
+  value: z.date(),
+});
+
 export const createEventDto = z.object({
   name: z.string(),
-  dateStart: z.string(),
-  dateEnd: z.string(),
+  dateStart: timeSlotDto,
+  dateEnd: timeSlotDto,
   description: z.string(),
   location: z.string(),
+  observations: z.string(),
 });
 
 export type CreateEventDto = z.infer<typeof createEventDto>;

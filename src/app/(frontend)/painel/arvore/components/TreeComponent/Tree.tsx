@@ -21,7 +21,6 @@ import useAnimatedNodes from "./lib/useAnimatedNodes";
 import useExpandCollapse from "./lib/useExpandCollapse";
 
 import "reactflow/dist/base.css";
-import { useForm } from "react-hook-form";
 import { NodeSearch } from "./components/NodeSearch";
 
 const proOptions = { account: "paid-pro", hideAttribution: true };
@@ -134,7 +133,9 @@ function ReactFlowPro({
 
   const nodeTypes = useMemo(
     () => ({
-      custom: (node) => <CustomNode {...node} customFlowContext={customFlowContext} />,
+      custom: (node: any) => (
+        <CustomNode {...node} customFlowContext={customFlowContext} />
+      ),
     }),
     [customFlowContext]
   );
@@ -162,7 +163,13 @@ function ReactFlowPro({
   );
 }
 
-export default function Tree({ initialNodes, initialEdges }) {
+export default function Tree({
+  initialNodes,
+  initialEdges,
+}: {
+  initialNodes: Node[];
+  initialEdges: Edge[];
+}) {
   return (
     <ReactFlowProvider>
       <ReactFlowPro initialNodes={initialNodes} initialEdges={initialEdges} />

@@ -4,17 +4,31 @@ import { PageTitle } from "@/app/(frontend)/_shared/components/text/PageTitle";
 import PageHeader from "@/app/(frontend)/_shared/components/PageHeader";
 import Footer from "../../_shared/components/Footer";
 import PollTable from "./components/pollTable";
+import { PollOption } from "@prisma/client";
+import { redirect } from "next/navigation";
+
+interface SupporterAnswers {
+  supporter: any;
+  answers: any[];
+  parsedAnswers: { [key: string]: any };
+}
+
+interface TableRowType {
+  [key: string]: SupporterAnswers;
+}
 
 export default async function PesquisaPage({ params }: { params: { id: string } }) {
   const poll = await readPollWithAnswers({ id: params.id });
 
-  const questionsWithAnswers = poll.poll.PollQuestion.map((question) => {
+  if (!poll) return redirect("/painel/pesquisas");
+
+  const questionsWithAnswers = poll.poll?.PollQuestion.map((question) => {
     const answers = question.PollAnswer.map((answer) => {
       return {
         supporter: { id: answer.supporter?.id, name: answer.supporter?.user.name },
-        options: (answer.answer as any).options.map((option) => ({
+        options: (answer.answer as any).options.map((option: PollOption) => ({
           id: option,
-          name: question.PollOption.find((o) => o.id === option)?.name,
+          name: question.PollOption.find((o) => o.id === option.id)?.name,
         })),
       };
     });
@@ -30,8 +44,9 @@ export default async function PesquisaPage({ params }: { params: { id: string } 
     };
   });
 
-  const answers = poll.answers.reduce((acc, answer, index) => {
-    const supporterId = answer.supporter?.id || answer.ip;
+  const answers = poll.answers.reduce<TableRowType>((acc, answer) => {
+    const supporterId = (answer.supporter?.id || answer.ip)!;
+
     const questionId = answer.questionId;
     if (!acc[supporterId]) {
       acc[supporterId] = {
@@ -48,9 +63,9 @@ export default async function PesquisaPage({ params }: { params: { id: string } 
     acc[supporterId].answers.push(answer);
     const answerString = (answer.answer as any).options
       .map(
-        (option) =>
-          poll.poll.PollQuestion.find((q) => q.id === questionId)?.PollOption.find(
-            (o) => o.id === option
+        (option: PollOption) =>
+          poll.poll?.PollQuestion.find((q) => q.id === questionId)?.PollOption.find(
+            (o) => o.id === option.id
           )?.name
       )
       .join(", ");
@@ -62,7 +77,7 @@ export default async function PesquisaPage({ params }: { params: { id: string } 
   }, {});
 
   const parsedPoll = {
-    title: poll.poll.title,
+    title: poll.poll?.title,
     questions: questionsWithAnswers,
   };
 
@@ -71,14 +86,14 @@ export default async function PesquisaPage({ params }: { params: { id: string } 
   return (
     <>
       <PageHeader
-        title={`${poll.poll.title} - Relatório`}
+        title={`${poll.poll?.title} - Relatório`}
         primaryButton={{ href: `./${params.id}/editar`, text: "Editar" }}
         secondaryButton={{ href: "../pesquisas/", text: "Voltar" }}
       />
       <div className="grid grid-cols-1 lg:grid-cols-3 lg:divide-x ">
         <div className="col-span-1 flex flex-col justify-evenly">
           <div className="me-4">
-            {parsedPoll.questions.map((question, index) => (
+            {parsedPoll.questions?.map((question, index) => (
               <QuestionGraph key={index} question={question} />
             ))}
           </div>

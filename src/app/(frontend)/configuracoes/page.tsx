@@ -1,15 +1,19 @@
 import { readUser } from "@/app/api/user/actions";
 import { headers } from "next/headers";
-import ProfileUpdateForm from "./components/ProfileUpdateForm";
 import { TopNavigation } from "../_shared/components/navigation/TopNavigation";
 import { SectionTitle } from "../_shared/components/text/SectionTitle";
 import ProfileDropdown from "../_shared/components/navigation/ProfileDropdown";
 import { redirect } from "next/navigation";
 import { ParagraphLink } from "../_shared/components/text/ParagraphLink";
 import { ArrowLeftCircleIcon } from "@heroicons/react/24/solid";
+import ProfileUpdateForm from "../painel/configuracoes/components/ProfileUpdateForm";
 
 export default async function SettingsPage() {
-  const user = await readUser(headers().get("userId"));
+  const userId = headers().get("userId");
+  if (!userId) {
+    redirect("/painel");
+  }
+  const user = await readUser(userId);
   if (!user) {
     redirect("/");
   }

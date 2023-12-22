@@ -2,7 +2,12 @@
 
 import * as authService from "./service";
 import { cookies } from "next/headers";
-import { LoginDto, PasswordResetDto, SignUpAsSupporterDto } from "./dto";
+import {
+  LoginDto,
+  PasswordResetDto,
+  PasswordUpdateDto,
+  SignUpAsSupporterDto,
+} from "./dto";
 import { ExistingUserMiddleware } from "./middlewares";
 import { ActionResponse } from "../_shared/utils/ActionResponse";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
@@ -51,9 +56,9 @@ export async function checkRecoveryCode(request: any) {
   }
 }
 
-export async function resetPassword(request: any) {
+export async function updatePassword(request: PasswordUpdateDto) {
   try {
-    await authService.resetPassword(request);
+    await authService.updatePassword(request);
     cookies().set("token", authService.createToken({ id: request.userId }));
     return ActionResponse.success({
       message: "Senha alterada com sucesso!",

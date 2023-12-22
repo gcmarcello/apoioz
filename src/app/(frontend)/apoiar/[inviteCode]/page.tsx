@@ -12,6 +12,9 @@ export default async function Apoiar({ params }: { params: { inviteCode: string 
     const { inviteCode } = params;
     const inviteCodeInfo = await validateInviteCode(inviteCode);
 
+    if (!inviteCodeInfo)
+      return <Error error={{ message: "Código de convite inválido" }} />;
+
     const campaign = await readCampaign({
       campaignId: inviteCodeInfo.campaignId,
     });

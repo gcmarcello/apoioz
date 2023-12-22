@@ -11,7 +11,34 @@ import { toProperCase } from "@/_shared/utils/format";
 import { useState } from "react";
 import SupporterBall from "@/app/(frontend)/_shared/components/SupporterBall";
 
-export default function PollTable({ answers, poll }: { answers: any[]; poll }) {
+type PollTable = {
+  title: string | undefined;
+  questions:
+    | {
+        questionId: string;
+        question: string;
+        options: {
+          id: string;
+          name: string;
+        }[];
+        answers: {
+          supporter: {
+            id: string | undefined;
+            name: string | undefined;
+          };
+          options: any;
+        }[];
+      }[]
+    | undefined;
+};
+
+export default function PollTable({
+  answers,
+  poll,
+}: {
+  answers: any[];
+  poll: PollTable;
+}) {
   const columnHelper = createColumnHelper<any>();
   const [globalFilter, setGlobalFilter] = useState("");
 
@@ -43,27 +70,29 @@ export default function PollTable({ answers, poll }: { answers: any[]; poll }) {
     }),
   ];
 
-  for (const question of poll.questions) {
-    columns.push(
-      columnHelper.accessor(`parsedAnswers.${question.questionId}`, {
-        id: question.questionId,
-        header: question.question,
-        enableSorting: true,
-        enableGlobalFilter: true,
-        cell: (info) => info.getValue(),
-      }),
-      columnHelper.accessor(`parsedAnswers.${question.questionId}_freeAnswer`, {
-        id: question.questionId + "_freeAnswer",
-        header: "Comentários",
-        enableSorting: true,
-        enableGlobalFilter: true,
-        cell: (info) => (
-          <div className="max-w-[156px]">
-            <p className="... truncate">{info.getValue()}</p>
-          </div>
-        ),
-      })
-    );
+  if (poll.questions) {
+    for (const question of poll.questions) {
+      columns.push(
+        columnHelper.accessor(`parsedAnswers.${question.questionId}`, {
+          id: question.questionId,
+          header: question.question,
+          enableSorting: true,
+          enableGlobalFilter: true,
+          cell: (info) => info.getValue(),
+        }),
+        columnHelper.accessor(`parsedAnswers.${question.questionId}_freeAnswer`, {
+          id: question.questionId + "_freeAnswer",
+          header: "Comentários",
+          enableSorting: true,
+          enableGlobalFilter: true,
+          cell: (info) => (
+            <div className="max-w-[156px]">
+              <p className="... truncate">{info.getValue()}</p>
+            </div>
+          ),
+        })
+      );
+    }
   }
 
   if (!answers || !poll)
