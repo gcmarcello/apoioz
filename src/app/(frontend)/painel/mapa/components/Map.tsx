@@ -119,7 +119,6 @@ export default function Map() {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://tile.openstreetmap.org/{z}/{x}/{y}.png	"
         />
-
         <For each={zones}>
           {({ geoJSON, color, checked, id }, index) => {
             if (!geoJSON) return <></>;
@@ -130,7 +129,6 @@ export default function Map() {
             );
           }}
         </For>
-
         <For each={neighborhoods}>
           {({ geoJSON, color, checked, name, id }, index) => {
             if (
@@ -185,121 +183,115 @@ export default function Map() {
             );
           }}
         </For>
-        {
-          <MarkerClusterGroup
-            chunkedLoading
-            maxClusterRadius={50}
-            showCoverageOnHover={false}
-            iconCreateFunction={createClusterCustomIcon}
-          >
-            <For each={addresses} fallback={<p>Loading...</p>}>
-              {(
-                {
-                  geocode,
-                  location,
-                  address,
-                  supportersCount,
-                  sectionsCount,
-                  zone,
-                  neighborhood,
-                },
-                index
-              ) => {
-                if (
-                  !geocode ||
-                  (!zones.find((z) => z.number === zone)?.checked &&
-                    zones.some((z) => z.checked)) ||
-                  (!neighborhoods.find((n) => n.name === neighborhood)?.checked &&
-                    neighborhoods.some((n) => n.checked)) ||
-                  (!sections.showEmptySections && supportersCount === 0)
-                )
-                  return <></>;
-                return (
-                  <Marker
-                    icon={createAddressCustomIcon(supportersCount)}
-                    key={index}
-                    {...{
-                      customOptions: {
-                        supportersCount,
-                      },
-                    }}
+        <MarkerClusterGroup
+          chunkedLoading
+          maxClusterRadius={50}
+          showCoverageOnHover={false}
+          iconCreateFunction={createClusterCustomIcon}
+        >
+          <For each={addresses} fallback={<p>Loading...</p>}>
+            {(
+              {
+                geocode,
+                location,
+                address,
+                supportersCount,
+                sectionsCount,
+                zone,
+                neighborhood,
+              },
+              index
+            ) => {
+              if (
+                !geocode ||
+                (!zones.find((z) => z.number === zone)?.checked &&
+                  zones.some((z) => z.checked)) ||
+                (!neighborhoods.find((n) => n.name === neighborhood)?.checked &&
+                  neighborhoods.some((n) => n.checked)) ||
+                (!sections.showEmptySections && supportersCount === 0)
+              )
+                return <></>;
+              return (
+                <Marker
+                  icon={createAddressCustomIcon(supportersCount)}
+                  key={index}
+                  customOptions={{ supportersCount }}
+                  interactive={true}
+                  position={geocode as LatLngExpression}
+                  title={location!}
+                  eventHandlers={{
+                    mouseover: (event: LeafletMouseEvent) => {
+                      if (closeTimeout) clearTimeout(closeTimeout);
+                      const marker = event.target as any as L.MarkerCluster;
+                      marker.openPopup();
+                    },
+                    mouseout: (event: LeafletMouseEvent) => {
+                      const marker = event.target as any as L.MarkerCluster;
+                      closeTimeout = setTimeout(() => {
+                        marker.closePopup();
+                      }, 300);
+                    },
+                  }}
+                >
+                  <Popup
                     interactive={true}
-                    position={geocode as LatLngExpression}
-                    title={location!}
+                    offset={[0, 0]}
                     eventHandlers={{
-                      mouseover: (event: LeafletMouseEvent) => {
+                      mouseover: (event) => {
                         if (closeTimeout) clearTimeout(closeTimeout);
-                        const marker = event.target as any as L.MarkerCluster;
-                        marker.openPopup();
                       },
-                      mouseout: (event: LeafletMouseEvent) => {
-                        const marker = event.target as any as L.MarkerCluster;
-                        closeTimeout = setTimeout(() => {
-                          marker.closePopup();
-                        }, 300);
+                      mouseout: (event) => {
+                        event.target._source.closePopup();
                       },
                     }}
                   >
-                    <Popup
-                      interactive={true}
-                      offset={[0, 0]}
-                      eventHandlers={{
-                        mouseover: (event) => {
-                          if (closeTimeout) clearTimeout(closeTimeout);
-                        },
-                        mouseout: (event) => {
-                          event.target._source.closePopup();
-                        },
-                      }}
-                    >
-                      {(() => {
-                        return (
-                          <article className="flex max-w-2xl flex-col items-start  gap-y-3 ">
-                            <div className="group relative">
-                              <div className="text-sm font-bold text-gray-900">
-                                {location}
-                                <div className="font mt-0.5 text-xs  text-gray-600">
-                                  {toProperCase(address || "")}
-                                </div>
+                    {(() => {
+                      return (
+                        <article className="flex max-w-2xl flex-col items-start  gap-y-3 ">
+                          <div className="group relative">
+                            <div className="text-sm font-bold text-gray-900">
+                              {location}
+                              <div className="font mt-0.5 text-xs  text-gray-600">
+                                {toProperCase(address || "")}
                               </div>
                             </div>
+                          </div>
 
-                            <div className="flex w-full items-center justify-start">
-                              <div className="font text-lg font-bold  text-gray-700 group-hover:text-gray-600">
-                                {supportersCount} Apoiador
-                              </div>
-                              <div className="relative z-10 ml-1 rounded-full bg-gray-200 px-2 py-1 text-xs font-medium  text-gray-600 hover:bg-gray-100">
-                                {sectionsCount} Seções
-                              </div>
+                          <div className="flex w-full items-center justify-start">
+                            <div className="font text-lg font-bold  text-gray-700 group-hover:text-gray-600">
+                              {supportersCount} Apoiador
                             </div>
+                            <div className="relative z-10 ml-1 rounded-full bg-gray-200 px-2 py-1 text-xs font-medium  text-gray-600 hover:bg-gray-100">
+                              {sectionsCount} Seções
+                            </div>
+                          </div>
 
-                            <div
-                              onClick={() =>
-                                handleMarkerClick({
-                                  geocode,
-                                  location,
-                                  address,
-                                  supportersCount,
-                                  sectionsCount,
-                                })
-                              }
-                              className={clsx(
-                                "bg-indigo-600 text-white shadow-sm hover:bg-indigo-500",
-                                "flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                              )}
-                            >
-                              Detalhes
-                            </div>
-                          </article>
-                        );
-                      })()}
-                    </Popup>
-                  </Marker>
-                );
-              }}
-            </For>
-          </MarkerClusterGroup>
-        }
+                          <div
+                            onClick={() =>
+                              handleMarkerClick({
+                                geocode,
+                                location,
+                                address,
+                                supportersCount,
+                                sectionsCount,
+                              })
+                            }
+                            className={clsx(
+                              "bg-indigo-600 text-white shadow-sm hover:bg-indigo-500",
+                              "flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                            )}
+                          >
+                            Detalhes
+                          </div>
+                        </article>
+                      );
+                    })()}
+                  </Popup>
+                </Marker>
+              );
+            }}
+          </For>
+        </MarkerClusterGroup>
         <FitBoundsComponent />
       </MapContainer>
       {/* <AddressDetailsModal open={open} setOpen={setOpen} modalInfo={modalInfo} /> */}

@@ -1,16 +1,16 @@
 "use server";
-import { CampaignHeader } from "../_shared/components/CampaignHeader";
+import { CampaignHeader } from "../../_shared/components/CampaignHeader";
 import {
   checkUserCanJoinCampaign,
   readCampaign,
 } from "@/app/api/panel/campaigns/service";
 import { notFound, redirect } from "next/navigation";
-import { Button } from "../_shared/components/Button";
-import ProfileDropdown from "../_shared/components/navigation/ProfileDropdown";
-import { TopNavigation } from "../_shared/components/navigation/TopNavigation";
-import { SectionTitle } from "../_shared/components/text/SectionTitle";
+import { Button } from "../../_shared/components/Button";
+import ProfileDropdown from "../../_shared/components/navigation/ProfileDropdown";
+import { TopNavigation } from "../../_shared/components/navigation/TopNavigation";
+import { SectionTitle } from "../../_shared/components/text/SectionTitle";
 import Link from "next/link";
-import ErrorAlert from "../_shared/components/alerts/errorAlert";
+import ErrorAlert from "../../_shared/components/alerts/errorAlert";
 import JoinCampaign from "./components/JoinCampaign";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";

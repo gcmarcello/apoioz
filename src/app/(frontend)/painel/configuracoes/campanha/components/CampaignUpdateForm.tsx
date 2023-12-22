@@ -70,7 +70,7 @@ export default function CampaignUpdateForm({ campaign }: { campaign: Campaign })
                   </div>
                   <div className="col-span-2 lg:col-span-1">
                     <TextFieldWithAddon
-                      addon="apoioz.com.br/"
+                      addon="apoioz.com.br/a/"
                       hform={form}
                       label="Slug (link da campanha)"
                       name="slug"
