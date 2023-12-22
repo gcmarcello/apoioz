@@ -1,5 +1,5 @@
 import { Supporter } from "@prisma/client";
-import { UserWithoutPassword } from "prisma/types/User";
+import { UserWithInfo, UserWithoutPassword } from "prisma/types/User";
 import { getEnv } from "@/_shared/utils/settings";
 import dayjs from "dayjs";
 var customParseFormat = require("dayjs/plugin/customParseFormat");
@@ -14,6 +14,7 @@ import {
 } from "./dto";
 import { hashInfo } from "@/_shared/utils/bCrypt";
 import { answerPoll } from "../polls/service";
+import { RecursiveSupporterWithReferred } from "prisma/types/Supporter";
 
 export async function readSupporterBranches({
   supporterSession,
@@ -22,7 +23,7 @@ export async function readSupporterBranches({
   userSession: UserWithoutPassword;
   supporterSession: Supporter;
 }) {
-  function generateReferredObject(branches: any): any {
+  function generateReferredObject(branches: number): any {
     if (branches === 0) {
       return {
         referral: { include: { user: { include: { info: true } } } },
@@ -79,7 +80,7 @@ export async function readSupporterBranches({
 
   if (!supporterTree) throw "Você não tem permissão para acessar este apoiador";
 
-  return supporterTree;
+  return supporterTree as any as RecursiveSupporterWithReferred & { user: UserWithInfo };
 }
 
 export async function readSupporterTrail({

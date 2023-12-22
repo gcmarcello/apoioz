@@ -1,6 +1,7 @@
 import { ExtractSuccessResponse } from "@/app/api/_shared/utils/ActionResponse";
 import { readSupporterBranches } from "@/app/api/panel/supporters/actions";
 import { Supporter } from "@prisma/client";
+import { SupporterWithReferralWithUser } from "prisma/types/Supporter";
 import { Edge, Node } from "reactflow";
 
 export const createEdge = (source: string, target: string) => ({
@@ -10,7 +11,7 @@ export const createEdge = (source: string, target: string) => ({
   type: "smoothstep",
 });
 
-export const createNode = (supporter: Supporter & { user: { name: string } }) => {
+export const createNode = (supporter: SupporterWithReferralWithUser) => {
   return {
     id: supporter.id,
     type: "supporter",
@@ -28,7 +29,7 @@ export const createNode = (supporter: Supporter & { user: { name: string } }) =>
 export function processNodesEdges({
   supporters,
 }: {
-  supporters: Omit<ExtractSuccessResponse<typeof readSupporterBranches>, "referred">[];
+  supporters: SupporterWithReferralWithUser[];
   includeRoot?: boolean;
   expandNodes?: boolean;
 }) {
