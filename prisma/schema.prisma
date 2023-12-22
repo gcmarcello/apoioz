@@ -22,13 +22,15 @@ model User {
   campaign         Campaign[]
   PasswordRecovery PasswordRecovery[]
   supporter        Supporter[]        @relation("UserToSupporter")
-  info             UserInfo?
+  info             UserInfo           @relation(fields: [infoId], references: [id])
+  infoId           String             @unique @db.Uuid
 
   @@schema("public")
 }
 
 model UserInfo {
-  userId    String    @id @unique @default(uuid()) @db.Uuid
+  id        String    @id @default(uuid()) @db.Uuid
+  user      User?
   partyId   String?
   zoneId    String?   @db.Uuid
   sectionId String?   @db.Uuid
@@ -37,7 +39,6 @@ model UserInfo {
   updatedAt DateTime? @updatedAt
   party     Party?    @relation(fields: [partyId], references: [id])
   Section   Section?  @relation(fields: [sectionId], references: [id])
-  user      User      @relation(fields: [userId], references: [id])
   Zone      Zone?     @relation(fields: [zoneId], references: [id])
 
   @@schema("public")

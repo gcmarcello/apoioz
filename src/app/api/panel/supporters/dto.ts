@@ -26,7 +26,7 @@ export const createSupporterDto = z.object({
   userId: z.string().optional(),
   referralId: z.string().optional(),
   campaignId: z.string(),
-  poll: pollAnswerDto.optional(),
+  poll: pollAnswerDto.nullable(),
   externalSupporter: z.boolean().optional(),
 });
 

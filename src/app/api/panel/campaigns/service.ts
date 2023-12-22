@@ -275,7 +275,7 @@ export async function checkUserCanJoinCampaign({
   if (conflictingSupporter) return "otherCampaign";
 
   const userInfo = await prisma.userInfo.findFirst({
-    where: { userId },
+    where: { user: { id: userId } },
   });
 
   if (!userInfo) throw "Usuário não encontrado";
