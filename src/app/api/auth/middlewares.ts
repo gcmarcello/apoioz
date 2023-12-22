@@ -7,7 +7,7 @@ export async function ExistingUserMiddleware({ request }: { request: LoginDto })
     where: isEmail ? { email: request.identifier } : { name: request.identifier },
   });
 
-  console.log(isEmail, user);
+  console.log(isEmail, user, request.identifier);
 
   if (!user) throw `Usuário não encontrado`;
 
