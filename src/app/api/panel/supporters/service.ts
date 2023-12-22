@@ -353,19 +353,16 @@ export async function createSupporter(request: CreateSupporterDto) {
         },
       },
       SupporterGroup: {
-        create: {},
-      },
-      supporterGroupsMemberships: {
-        create: [
-          {
-            supporterGroup: {
-              connect: {
-                ownerId: supporterId,
-              },
+        create: {
+          memberships: {
+            create: {
+              supporterId,
             },
           },
-          ...createSupporterGroupMembershipQuery,
-        ],
+        },
+      },
+      supporterGroupsMemberships: {
+        create: [...createSupporterGroupMembershipQuery],
       },
     },
   });
