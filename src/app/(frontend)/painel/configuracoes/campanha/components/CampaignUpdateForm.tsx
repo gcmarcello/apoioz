@@ -1,4 +1,5 @@
 "use client";
+import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 import {
   TextField,
@@ -10,6 +11,8 @@ import { updateCampaign } from "@/app/api/panel/campaigns/actions";
 import { updateCampaignDto } from "@/app/api/panel/campaigns/dto";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Campaign } from "@prisma/client";
+import clsx from "clsx";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 export default function CampaignUpdateForm({ campaign }: { campaign: Campaign }) {
@@ -21,21 +24,28 @@ export default function CampaignUpdateForm({ campaign }: { campaign: Campaign })
     },
     resolver: zodResolver(updateCampaignDto),
   });
+  const router = useRouter();
 
   const {
     data: supporter,
     trigger: updateCampaignTrigger,
+    isMutating: isUpdating,
     error,
   } = useAction({
     action: updateCampaign,
-    onError: (err) => showToast({ message: err, title: "Erro", variant: "error" }),
-    onSuccess: (res) =>
+    onError: (err) => {
+      showToast({ message: err, title: "Erro", variant: "error" });
+    },
+    onSuccess: (res) => {
+      router.push("/painel");
       showToast({
         message: `Informações atualizadas com sucesso!`,
         variant: "success",
         title: "Dados atualizados",
-      }),
+      });
+    },
   });
+
   //@todo
   return (
     <main className="px-2 sm:px-6 lg:flex-auto lg:px-0">
@@ -186,9 +196,12 @@ export default function CampaignUpdateForm({ campaign }: { campaign: Campaign })
             </button> */}
             <button
               type="submit"
-              className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              className={clsx(
+                "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600",
+                isUpdating && "cursor-not-allowed opacity-50"
+              )}
             >
-              Salvar
+              <div className="flex gap-2">Salvar {isUpdating && <ButtonSpinner />}</div>
             </button>
           </div>
         </form>

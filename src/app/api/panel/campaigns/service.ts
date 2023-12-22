@@ -33,7 +33,7 @@ export async function updateCampaign(request: any) {
     const { userSession, supporterSession, ...data } = request;
 
     const slugAvailability = await prisma.campaign.findFirst({
-      where: { slug: data.slug },
+      where: { AND: [{ slug: data.slug }, { NOT: { id: supporterSession.campaignId } }] },
     });
 
     if (slugAvailability) throw "Slug já está em uso por outra campanha.";
