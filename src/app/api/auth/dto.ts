@@ -4,7 +4,7 @@ import { pollAnswerDto } from "../panel/polls/dto";
 
 export const signUpAsSupporterDto = z.object({
   user: createUserDto,
-  poll: pollAnswerDto.optional(),
+  poll: pollAnswerDto.nullable(),
   inviteCodeId: z.string(),
 });
 
