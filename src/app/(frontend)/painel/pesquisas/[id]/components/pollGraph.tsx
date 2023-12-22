@@ -43,9 +43,16 @@ export default function QuestionGraph({ question }: { question: any }) {
     },
   };
 
-  const voteCounts = {};
-  question.answers.forEach((answer: PollAnswer) => {
-    answer.options.forEach((option: PollOption) => {
+  const voteCounts: {
+    [key: string]: {
+      name: string;
+      count: number;
+      color: string;
+    };
+  } = {};
+
+  question.answers.forEach((answer: any) => {
+    answer.options.forEach((option: any) => {
       if (voteCounts[option.id]) {
         voteCounts[option.id].count += 1;
       } else {

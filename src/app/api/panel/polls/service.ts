@@ -335,16 +335,19 @@ export async function answerPoll(
       throw new Error("Pergunta não encontrada");
     }
 
-    if (typeof question.answers.options === "object") {
-      const filteredAnswers = Object.keys(question.answers.options).filter(
-        (key) => question.answers.options[key]
-      );
+    if (
+      typeof question.answers.options === "object" &&
+      !Array.isArray(question.answers.options)
+    ) {
+      const options = question.answers.options as Record<string, boolean>;
+
+      const filteredAnswers = Object.keys(options).filter((key) => options[key]);
+
       if (filteredAnswers.length > 1 && !questionInfo.allowMultipleAnswers) {
         throw new Error("Você só pode selecionar uma opção para essa pergunta");
       }
+
       question.answers.options = filteredAnswers;
-    } else {
-      question.answers.options = [question.answers.options];
     }
 
     return {
