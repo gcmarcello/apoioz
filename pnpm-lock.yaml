@@ -50,6 +50,12 @@ dependencies:
   '@types/bcryptjs':
     specifier: ^2.4.6
     version: 2.4.6
+  '@types/d3-hierarchy':
+    specifier: ^3.1.6
+    version: 3.1.6
+  '@types/d3-timer':
+    specifier: ^3.0.2
+    version: 3.0.2
   '@types/jest':
     specifier: ^29.5.11
     version: 29.5.11

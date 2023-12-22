@@ -28,11 +28,10 @@ export function NodeSearch({
       saveEdges(edges);
       toggleNodesVisibility(nodes as any);
       setTimeout(() => {
-        const node = nodes.find((node) => searchForm.getValues("supporter") === node.id);
+        const node = nodes.find((node) => searchForm.getValues("supporter") === node.id)!;
         fitView({
           duration: 2500,
           padding: 1,
-          nodes: [node],
         });
       }, 200);
     },
