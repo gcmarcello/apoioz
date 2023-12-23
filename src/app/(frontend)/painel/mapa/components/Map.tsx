@@ -185,7 +185,7 @@ export default function Map() {
         </For>
         <MarkerClusterGroup
           chunkedLoading
-          maxClusterRadius={50}
+          maxClusterRadius={Math.min(100, Math.log(addresses.length) * 100)}
           showCoverageOnHover={false}
           iconCreateFunction={createClusterCustomIcon}
         >
