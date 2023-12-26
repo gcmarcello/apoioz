@@ -7,6 +7,7 @@ import { UserWithoutPassword } from "prisma/types/User";
 
 export async function UserSessionMiddleware<P>({ request }: MiddlewareArguments<P>) {
   const userId = headers().get("userId")!;
+
   if (!userId) throw "Usuário não encontrado";
 
   const user = await prisma.user
