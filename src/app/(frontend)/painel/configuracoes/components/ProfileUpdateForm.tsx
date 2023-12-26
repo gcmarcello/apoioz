@@ -48,6 +48,24 @@ export default function ProfileUpdateForm({ user }: { user: UserWithInfo }) {
     },
   });
 
+  /* const {
+    data: password,
+    trigger: updatePasswordTrigger,
+    error: passwordError,
+  } = useAction({
+    action: updateUser,
+    onError: (err) => {
+      showToast({ message: err, variant: "error", title: "Erro" });
+    },
+    onSuccess: (res) => {
+      showToast({
+        message: `Informações atualizadas com sucesso!`,
+        variant: "success",
+        title: "Dados atualizados",
+      });
+    },
+  }); */
+
   type fieldsType = "name" | "email" | "phone" | "birthDate";
   const fields: fieldsType[] = ["name", "email", "phone", "birthDate"];
 
@@ -168,6 +186,20 @@ export default function ProfileUpdateForm({ user }: { user: UserWithInfo }) {
                 onClick={() => setShowElectionModal(true)}
               >
                 Atualizar (Em Breve)
+              </button>
+            </dd>
+          </div>
+          <div className="pt-6 sm:flex">
+            <dt className="font-medium  sm:w-64 sm:flex-none sm:pr-6">Senha</dt>
+            <dd className="mt-1 flex justify-between gap-x-6 sm:mt-0 sm:flex-auto">
+              <p className="mt-1 text-sm leading-6 "></p>
+              <button
+                disabled
+                type="button"
+                className="font-semibold text-indigo-600 hover:text-indigo-500"
+                onClick={() => setShowElectionModal(true)}
+              >
+                Atualizar
               </button>
             </dd>
           </div>
