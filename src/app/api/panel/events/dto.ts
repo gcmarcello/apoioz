@@ -10,8 +10,8 @@ const timeSlotDto = z.object({
 
 export const createEventDto = z.object({
   name: z.string(),
-  dateStart: timeSlotDto,
-  dateEnd: timeSlotDto,
+  dateStart: z.string(),
+  dateEnd: z.string(),
   description: z.string(),
   location: z.string(),
   observations: z.string(),

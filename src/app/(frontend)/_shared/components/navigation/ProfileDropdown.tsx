@@ -80,10 +80,12 @@ export default function ProfileDropdown({ user }: { user: UserWithoutPassword })
             {({ active }: { active: any }) => (
               <a
                 href={"/login"}
-                onClick={() =>
-                  (document.cookie =
-                    "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;")
-                }
+                onClick={() => {
+                  document.cookie =
+                    "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                  document.cookie =
+                    "activeCampaign=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                }}
                 className={clsx(
                   active ? "bg-gray-50" : "",
                   "block px-3 py-1 text-sm leading-6 text-gray-900"

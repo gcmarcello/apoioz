@@ -44,11 +44,11 @@ export default function SubmitEventRequest({
 
   const { trigger: submitEvent, isMutating: loading } = useAction({
     action: createEvent,
-    onSuccess: () => {
+    onSuccess: (response) => {
       showToast({
-        message: `Evento solicitado com sucesso!`,
+        message: response?.message || "Evento solicitado com sucesso",
         variant: "success",
-        title: "Confirmado",
+        title: "Confirmado!",
       });
       setShow(false);
     },
@@ -70,7 +70,7 @@ export default function SubmitEventRequest({
     {
       id: number;
       name: string;
-      value: dayjs.Dayjs;
+      value: string;
     }[]
   >();
 
@@ -89,13 +89,16 @@ export default function SubmitEventRequest({
     form.setValue("observations", fakerPT_BR.lorem.paragraph());
   };
 
-  const onDateStartChange = () => {
+  const onDateStartChange = (data: { value: string }) => {
     form.resetField("dateEnd");
-    const selectedTime = dayjs(form.watch("dateStart")?.value);
+    const rawSelectedTime = data.value;
+    const selectedTime = dayjs(rawSelectedTime);
+
     let times = availableTimes?.filter((time) => {
       const timeDate = dayjs(time.value);
       return timeDate.isAfter(selectedTime);
     });
+
     if (dateEvents) {
       times = times?.filter((time) => {
         const selectedEndTime = dayjs(time.value);

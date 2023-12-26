@@ -17,9 +17,14 @@ export async function createEvent(request: CreateEventDto) {
     revalidatePath("/painel/calendario");
 
     const event = await service.createEvent(parsedRequest);
+    console.log(event);
 
     return ActionResponse.success({
       data: event,
+      message:
+        parsedRequest.supporterSession.level === 4
+          ? "Evento criado com sucesso!"
+          : "Evento solicitado com sucesso! Aguarde a resposta da coordenação.",
     });
   } catch (err) {
     return ActionResponse.error(err);
@@ -45,6 +50,7 @@ export async function readEventsAvailability(request: ReadEventsAvailability) {
       .then((res) => SupporterSessionMiddleware(res));
 
     const eventsAvailability = await service.readEventsAvailability(parsedRequest);
+
     return ActionResponse.success({
       data: eventsAvailability,
     });
