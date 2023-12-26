@@ -1,3 +1,4 @@
+import { getEnv, isDev } from "@/_shared/utils/settings";
 import { Pagination } from "../dto/read";
 
 export interface SuccessResponse<T> {
@@ -31,12 +32,14 @@ export class ActionResponse {
   }
 
   public static error(message: unknown = "Operação falhou"): ErrorResponse {
-    if (typeof message != "string" && !Array.isArray(message)) {
-      message = "Operação falhou";
-    }
+    if (!isDev) {
+      if (typeof message != "string" && !Array.isArray(message)) {
+        message = "Operação falhou";
+      }
 
-    if (Array.isArray(message)) {
-      message = message.join(", ");
+      if (Array.isArray(message)) {
+        message = message.join(", ");
+      }
     }
 
     return { message: message as string, error: true };
