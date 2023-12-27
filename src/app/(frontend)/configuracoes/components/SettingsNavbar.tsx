@@ -3,7 +3,11 @@ import clsx from "clsx";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export default function SettingsNavbar() {
+export default function SettingsNavbar({
+  disableCampaign,
+}: {
+  disableCampaign?: boolean;
+}) {
   const pathname = usePathname();
 
   const secondaryNavigation = [
@@ -12,12 +16,15 @@ export default function SettingsNavbar() {
       href: "/painel/configuracoes",
       current: pathname === "/painel/configuracoes",
     },
-    {
+  ];
+
+  if (!disableCampaign) {
+    secondaryNavigation.push({
       name: "Campanha Ativa",
       href: "/painel/configuracoes/campanha",
       current: pathname === "/painel/configuracoes/campanha",
-    },
-  ];
+    });
+  }
 
   return (
     <header className="border-gray/5 sm:-px-6 fixed -mx-4 -my-4 w-full border-b bg-white lg:-mx-8 lg:-my-8">

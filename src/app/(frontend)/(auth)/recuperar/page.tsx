@@ -10,12 +10,12 @@ import { ArrowLeftCircleIcon } from "@heroicons/react/24/outline";
 import SuccessAlert from "../../_shared/components/alerts/successAlert";
 import { useAction } from "../../_shared/hooks/useAction";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PasswordResetDto, passwordResetDto } from "@/app/api/auth/dto";
+import { PasswordResetRequestDto, passwordResetRequestDto } from "@/app/api/auth/dto";
 import Image from "next/image";
 
 export default function RecoverPasswordPage() {
-  const form = useForm<PasswordResetDto>({
-    resolver: zodResolver(passwordResetDto),
+  const form = useForm<PasswordResetRequestDto>({
+    resolver: zodResolver(passwordResetRequestDto),
   });
 
   const handleMask = () => {
