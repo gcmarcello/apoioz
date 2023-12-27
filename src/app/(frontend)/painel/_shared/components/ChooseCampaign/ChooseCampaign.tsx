@@ -9,6 +9,7 @@ import { TopNavigation } from "@/app/(frontend)/_shared/components/navigation/To
 import ProfileDropdown from "@/app/(frontend)/_shared/components/navigation/ProfileDropdown";
 import { SectionTitle } from "@/app/(frontend)/_shared/components/text/SectionTitle";
 import Paragraph from "@/app/(frontend)/_shared/components/text/Paragraph";
+/* import { BottomRightMocker } from "@/app/(frontend)/_shared/components/Mocker"; */
 
 export default async function ChooseCampaign({
   user,
@@ -24,7 +25,7 @@ export default async function ChooseCampaign({
     await createCampaign({
       name: fakerPT_BR.person.fullName() + " " + date.format("YYYY"),
       type: "vereador",
-      cityId: "3548500",
+      cityId: "3550308",
       slug: fakerPT_BR.word.noun(),
       year: date.format("YYYY"),
     });

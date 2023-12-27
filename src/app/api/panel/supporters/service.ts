@@ -313,7 +313,7 @@ export async function createSupporter(request: CreateSupporterDto) {
 
   const user = existingUser || request.user!;
 
-  const userId = request.userId || crypto.randomUUID();
+  const userId = request?.userId || crypto.randomUUID();
 
   const supporterId = crypto.randomUUID();
 

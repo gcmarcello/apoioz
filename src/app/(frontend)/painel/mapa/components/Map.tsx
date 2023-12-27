@@ -71,9 +71,9 @@ export default function Map() {
   const createClusterCustomIcon = function (cluster: MarkerCluster) {
     const supporterCount = (
       cluster.getAllChildMarkers() as (MarkerCluster & {
-        customOptions: { supportersCount: number };
+        options: { customOptions: { supportersCount: number } };
       })[]
-    ).reduce((acc, marker) => acc + marker.customOptions.supportersCount, 0);
+    ).reduce((acc, marker) => acc + marker.options.customOptions.supportersCount, 0);
 
     return L.divIcon({
       html: `<div class="relative text-white font-bold flex justify-center items-center w-12 h-12">
@@ -185,7 +185,7 @@ export default function Map() {
         </For>
         <MarkerClusterGroup
           chunkedLoading
-          maxClusterRadius={50}
+          maxClusterRadius={Math.min(100, Math.log(addresses.length) * 100)}
           showCoverageOnHover={false}
           iconCreateFunction={createClusterCustomIcon}
         >
