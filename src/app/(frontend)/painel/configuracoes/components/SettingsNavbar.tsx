@@ -20,7 +20,7 @@ export default function SettingsNavbar() {
   ];
 
   return (
-    <header className="border-gray/5 sm:-px-6 fixed -mx-4 -my-4 w-full border-b bg-white lg:-mx-8 lg:-my-8">
+    <header className="border-gray/5 sm:-px-6 fixed -mx-4 -my-4  w-full border-b bg-white lg:-mx-8 lg:-my-8">
       {/* Secondary navigation */}
       <nav className="flex overflow-x-auto bg-white py-4">
         <ul

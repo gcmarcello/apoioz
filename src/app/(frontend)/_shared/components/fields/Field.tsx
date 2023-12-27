@@ -12,7 +12,7 @@ interface FieldProps {
 }
 
 export interface BaseProps<Fields extends FieldValues> {
-  label: string;
+  label?: string;
   hform: ReturnType<typeof useForm<Fields>>;
   name: Path<Fields>;
   relative?: JSX.Element;
@@ -21,6 +21,9 @@ export interface BaseProps<Fields extends FieldValues> {
 
 export const fieldClasses =
   "block w-full appearance-none rounded-md border border-gray-200  px-3 py-1.5 text-gray-900 placeholder-gray-400 focus:outline-none sm:text-sm";
+
+export const passwordFieldClasses =
+  "block w-full appearance-none rounded-s-md border border-gray-200  px-3 py-1.5 text-gray-900 placeholder-gray-400 focus:outline-none sm:text-sm";
 
 export const getErrorMessage = (form: any, name: string) => {
   const path = name.split(".");
@@ -54,7 +57,7 @@ export const Field = ({ children, errorMessage, relative, label, id }: FieldProp
         )}
       >
         <div className="flex h-full w-full items-center pr-2">
-          {errorMessage ? (
+          {errorMessage && !relative ? (
             <ExclamationCircleIcon className="h-5 w-5 text-red-500" aria-hidden="true" />
           ) : (
             relative
