@@ -65,9 +65,6 @@ async function readTemplateFile(templateId: string): Promise<string> {
     "templates",
     `${templateId}.html`
   );
-  console.log(
-    await fs.readdir(path.join(process.cwd(), "src", "app", "api", "emails", "templates"))
-  );
   const templateContent = await fs.readFile(templatePath, "utf8");
   return templateContent;
 }
