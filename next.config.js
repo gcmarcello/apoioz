@@ -16,7 +16,6 @@ const nextConfig = {
       },
     ],
   },
-  outputFileTracing: true,
 };
 
 module.exports = nextConfig;

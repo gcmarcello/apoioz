@@ -69,6 +69,7 @@ export async function createEvent(
       },
       templateId: "event_created",
     });
+
     await sendEmail({
       to: leader.user.email,
       dynamicData: {

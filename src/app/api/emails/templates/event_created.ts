@@ -1,4 +1,4 @@
-<!doctype html>
+export const event_created = `<!doctype html>
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
@@ -81,3 +81,4 @@
     </div>
   </body>
 </html>
+`;
