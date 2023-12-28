@@ -25,7 +25,7 @@ export async function sendEmail({
 
   if (!sendGridEmail) throw "SENDGRID_EMAIL not set";
 
-  isProd &&
+  true &&
     (await sgMail
       .send({
         from: sendGridEmail,
@@ -51,7 +51,7 @@ async function readEmailTemplate(templateId: string, dynamicData: { subject: str
     };
   } catch (error) {
     console.error("Error getting email template:", error);
-    throw new Error("Failed to get email template");
+    throw "Failed to get email template";
   }
 }
 
@@ -65,6 +65,7 @@ async function readTemplateFile(templateId: string): Promise<string> {
     "templates",
     `${templateId}.html`
   );
+  console.log(templatePath);
   const templateContent = await fs.readFile(templatePath, "utf8");
   return templateContent;
 }
