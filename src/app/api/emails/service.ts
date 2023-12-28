@@ -58,7 +58,10 @@ async function readEmailTemplate(templateId: string, dynamicData: { subject: str
 async function readTemplateFile(templateId: string): Promise<string> {
   const templatePath = path.join(
     process.cwd(),
-    "public",
+    "src",
+    "app",
+    "api",
+    "emails",
     "templates",
     `${templateId}.html`
   );

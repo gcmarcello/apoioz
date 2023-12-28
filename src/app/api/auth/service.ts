@@ -56,7 +56,7 @@ export async function createPasswordRecovery(identifier: string) {
 
   await sendEmail({
     to: potentialUser.email,
-    templateId: "password_reset",
+    templateId: "recover_pass",
     dynamicData: {
       name: potentialUser.name,
       recoveryLink: `${getEnv("NEXT_PUBLIC_SITE_URL")}/recuperar/${recovery.id}`,
