@@ -43,7 +43,7 @@ export const signupDto = z.object({
 export type SignupDto = z.infer<typeof signupDto>;
 
 export const passwordResetRequestDto = z.object({
-  identifier: z.string().email(),
+  identifier: z.string(), //@gcmarcello todo: add correct validation
 });
 
 export type PasswordResetRequestDto = z.infer<typeof passwordResetRequestDto>;
