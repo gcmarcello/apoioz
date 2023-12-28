@@ -3,7 +3,7 @@
 import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
-import { updatePassword } from "@/app/api/auth/action";
+import { resetPassword, updatePassword } from "@/app/api/auth/action";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -35,7 +35,7 @@ export default function NewPasswordForm({
     trigger: submitPasswordReset,
     isMutating: loading,
   } = useAction({
-    action: updatePassword,
+    action: resetPassword,
     onSuccess: () => {
       router.push("/painel");
     },
