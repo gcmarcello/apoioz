@@ -30,6 +30,8 @@ import { SidebarContext } from "../lib/sidebar.ctx";
 import { scrollToElement } from "@/app/(frontend)/_shared/utils/scroll";
 import clsx from "clsx";
 import DisclosureAccordion from "@/app/(frontend)/_shared/components/Disclosure";
+import { LoadingSpinner } from "@/app/(frontend)/_shared/components/Spinners";
+import { Mocker } from "@/app/(frontend)/_shared/components/Mocker";
 
 export function AddSupporterForm({
   campaign,
@@ -60,7 +62,11 @@ export function AddSupporterForm({
     action: readAddressBySection,
   });
 
-  const { data: supporter, trigger: addSupporterTrigger } = useAction({
+  const {
+    data: supporter,
+    trigger: addSupporterTrigger,
+    isMutating,
+  } = useAction({
     action: addSupporter,
     onError: (err) => showToast({ message: err, variant: "error", title: "Erro" }),
     onSuccess: ({ data }) => {
@@ -95,8 +101,9 @@ export function AddSupporterForm({
     setMetaform({
       submit: addSupporterTrigger,
       form: form,
+      isSubmitting: isMutating,
     });
-  }, [form]);
+  }, [form, isMutating]);
 
   async function generateFakeData() {
     if (!zones) return;
@@ -121,21 +128,26 @@ export function AddSupporterForm({
     form.trigger("user.name");
   }
 
-  if (!zones || !form) return <></>;
+  if (!zones || !form)
+    return (
+      <div className="flex h-[350px] items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
 
   return (
     <form>
       <div className="pb-4 pt-2">
         <div className="space-y-3 divide-y">
           <div className="space-y-3">
-            <div className="flex items-center"></div>
             {form.formState.errors.root?.serverError.message ? (
               <div ref={errRef} className="scroll-mt-64">
                 <ErrorAlert
-                  errors={[form.formState.errors.root.serverError.message as string]}
+                  errors={[form?.formState?.errors?.root?.serverError?.message as string]}
                 />
               </div>
             ) : null}
+            {/* <Mocker mockData={generateFakeData} submit={addSupporterTrigger} /> */}
             <TextField label="Nome do Apoiador" hform={form} name={"user.name"} />
             <TextField label="Email" hform={form} name={"user.email"} />
             <MaskedTextField

@@ -9,6 +9,8 @@ import { AddSupporterForm } from "./AddSupporter";
 import { useSidebar } from "../lib/useSidebar";
 import { useForm } from "react-hook-form";
 import { useMetaForm } from "@/app/(frontend)/_shared/hooks/useMetaform";
+import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
+import { Button } from "@/app/(frontend)/_shared/components/Button";
 
 export type FormContext = {
   form: ReturnType<typeof useForm>;
@@ -18,7 +20,7 @@ export type FormContext = {
 export default function SupporterSideBar() {
   const { user, campaign, visibility, setVisibility } = useSidebar();
   const [option, setOption] = useState("start");
-  const { submit, setMetaform } = useMetaForm();
+  const { submit, setMetaform, isSubmitting } = useMetaForm();
 
   return (
     <>
@@ -84,8 +86,8 @@ export default function SupporterSideBar() {
                               {option === "start"
                                 ? "Escolha como aumentar sua rede."
                                 : option === "share"
-                                ? "Envie um link de convite para o apoiador."
-                                : "Complete os campos e faça parte da transformação."}
+                                  ? "Envie um link de convite para o apoiador."
+                                  : "Complete os campos e faça parte da transformação."}
                             </p>
                           </div>
                         </div>
@@ -141,12 +143,15 @@ export default function SupporterSideBar() {
                           Voltar
                         </button>
                         {option === "add" && (
-                          <button
-                            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm ring-1 ring-inset ring-indigo-500 hover:bg-indigo-500"
+                          <Button
+                            disabled={isSubmitting}
                             onClick={submit}
+                            variant="primary"
                           >
-                            Adicionar
-                          </button>
+                            <div className="flex items-center gap-2">
+                              Adicionar {isSubmitting && <ButtonSpinner />}
+                            </div>
+                          </Button>
                         )}
                       </div>
                     </div>
