@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { TextField } from "@/app/(frontend)/_shared/components/fields/Text";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
+import { Button } from "@/app/(frontend)/_shared/components/Button";
 
 export default function LoginForm({ supportRedirect }: { supportRedirect?: string }) {
   const form = useForm<LoginDto>({
@@ -68,13 +69,20 @@ export default function LoginForm({ supportRedirect }: { supportRedirect?: strin
           />
 
           <div>
-            <button
+            <Button
+              className="w-full"
               disabled={isLoading}
+              variant="primary"
               type="submit"
-              className="flex min-h-[36px] w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm duration-200 hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
             >
-              {isLoading ? <ButtonSpinner /> : "Login"}
-            </button>
+              {isLoading ? (
+                <div className="flex items-center">
+                  <ButtonSpinner size="medium" />
+                </div>
+              ) : (
+                "Login"
+              )}
+            </Button>
           </div>
         </form>
       </div>
