@@ -1,4 +1,8 @@
-import clsx from "clsx";
+const sizeVariants = {
+  small: { height: "h-[16px]", width: "w-[16px]" },
+  medium: { height: "h-[20px]", width: "w-[20px]" },
+  large: { height: "h-[24px]", width: "w-[24px]" },
+};
 
 export function LoadingSpinner() {
   return (
@@ -22,10 +26,10 @@ export function LoadingSpinner() {
   );
 }
 
-export function ButtonSpinner({ height = 16 }: { height?: number }) {
+export function ButtonSpinner({ size = "small" }: { size?: keyof typeof sizeVariants }) {
   return (
-    <div className={clsx(`flex h-[${height}px]`)}>
-      <svg className="w-4 animate-spin" viewBox="0 0 24 24">
+    <div className={`flex ${sizeVariants[size]?.height}`}>
+      <svg className={`${sizeVariants[size]?.width} animate-spin`} viewBox="0 0 24 24">
         <circle
           className="opacity-25"
           cx="12"
