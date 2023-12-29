@@ -42,6 +42,6 @@ export class ActionResponse {
       }
     }
 
-    return { message: message as string, error: true };
+    return { message: JSON.stringify(message) as string, error: true };
   }
 }

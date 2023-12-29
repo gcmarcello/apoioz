@@ -15,7 +15,7 @@ import {
 import { hashInfo } from "@/_shared/utils/bCrypt";
 import { answerPoll } from "../polls/service";
 import { RecursiveSupporterWithReferred } from "prisma/types/Supporter";
-import { normalizePhone } from "@/_shared/utils/format";
+import { normalizeEmail, normalizePhone } from "@/_shared/utils/format";
 
 export async function readSupporterBranches({
   supporterSession,
@@ -338,7 +338,7 @@ export async function createSupporter(request: CreateSupporterDto) {
           },
           create: {
             id: userId,
-            email: user.email,
+            email: normalizeEmail(user.email),
             name: user.name,
             phone: normalizePhone(user.phone),
             password: user.password ? await hashInfo(user.password) : undefined,
