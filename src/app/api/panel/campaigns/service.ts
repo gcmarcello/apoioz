@@ -270,9 +270,11 @@ export async function checkUserCanJoinCampaign({
     },
   });
 
-  if (conflictingSupporter?.campaignId === campaign.id) return "sameCampaign";
+  if (conflictingSupporter?.campaignId === campaign.id)
+    return "Este email ou telefone já estão cadastrados nesta campanha.";
 
-  if (conflictingSupporter) return "otherCampaign";
+  if (conflictingSupporter)
+    return "Este email ou telefone já estão cadastrados em outra campanha da mesma cidade, tipo e ano.";
 
   const userInfo = await prisma.userInfo.findFirst({
     where: { user: { id: userId } },
@@ -286,5 +288,5 @@ export async function checkUserCanJoinCampaign({
 
   const userIsFromRegion = campaignZones.some((zone) => zone.id === userInfo.zoneId);
 
-  return userIsFromRegion ? "canJoin" : "notFromRegion";
+  return userIsFromRegion ? "canJoin" : "Este usuário não é da região da campanha.";
 }
