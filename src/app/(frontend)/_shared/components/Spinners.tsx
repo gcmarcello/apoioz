@@ -1,3 +1,5 @@
+import clsx from "clsx";
+
 export function LoadingSpinner() {
   return (
     <div className="h-[72px]">
@@ -20,9 +22,9 @@ export function LoadingSpinner() {
   );
 }
 
-export function ButtonSpinner() {
+export function ButtonSpinner({ height = 16 }: { height?: number }) {
   return (
-    <div className="flex h-[24px]">
+    <div className={clsx(`flex h-[${height}px]`)}>
       <svg className="w-4 animate-spin" viewBox="0 0 24 24">
         <circle
           className="opacity-25"
