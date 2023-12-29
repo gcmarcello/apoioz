@@ -55,7 +55,8 @@ export default async function CampaignLandingPage({
           campaign={campaign}
           subtitle={
             userCanJoinCampaign != "canJoin"
-              ? userCanJoinCampaign === "sameCampaign"
+              ? userCanJoinCampaign ===
+                "Este email ou telefone já estão cadastrados nesta campanha."
                 ? "Você já faz parte da nossa rede, muito obrigado pelo apoio!"
                 : ""
               : "Seja um apoiador da nossa campanha!"
@@ -68,7 +69,8 @@ export default async function CampaignLandingPage({
         )}
 
         {userCanJoinCampaign != "canJoin" &&
-          (userCanJoinCampaign === "otherCampaign" ? (
+          (userCanJoinCampaign ===
+          "Este email ou telefone já estão cadastrados em outra campanha da mesma cidade, tipo e ano." ? (
             <div className="mx-4 my-3">
               <ErrorAlert
                 errors={["Você já está cadastrado numa campanha dessa região."]}
