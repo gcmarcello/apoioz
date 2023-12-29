@@ -26,7 +26,7 @@ export async function sendEmail({
 
   if (!sendGridEmail) throw "SENDGRID_EMAIL not set";
 
-  true &&
+  isProd &&
     (await sgMail
       .send({
         from: sendGridEmail,
