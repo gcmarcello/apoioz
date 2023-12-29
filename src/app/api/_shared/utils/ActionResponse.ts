@@ -1,5 +1,6 @@
 import { getEnv, isDev } from "@/_shared/utils/settings";
 import { Pagination } from "../dto/read";
+import { isString } from "lodash";
 
 export interface SuccessResponse<T> {
   data: T;
@@ -42,6 +43,9 @@ export class ActionResponse {
       }
     }
 
-    return { message: JSON.stringify(message) as string, error: true };
+    return {
+      message: isString(message) ? message : (JSON.stringify(message) as string),
+      error: true,
+    };
   }
 }
