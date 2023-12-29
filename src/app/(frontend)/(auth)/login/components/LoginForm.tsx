@@ -76,7 +76,7 @@ export default function LoginForm({ supportRedirect }: { supportRedirect?: strin
               type="submit"
             >
               {isLoading ? (
-                <div className="flex items-center">
+                <div className="flex items-center justify-center">
                   <ButtonSpinner size="medium" />
                 </div>
               ) : (
