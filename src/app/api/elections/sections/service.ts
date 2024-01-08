@@ -16,6 +16,18 @@ export async function readSectionsByZone(zoneId: string) {
   });
 }
 
+export async function readSectionsByAddress(addressId: string) {
+  const sections = await prisma.section.findMany({
+    where: { addressId },
+    orderBy: { number: "asc" },
+    select: {
+      Supporter: { select: { user: { select: { name: true } } } },
+      number: true,
+    },
+  });
+  return sections;
+}
+
 export async function readSectionsByCity(cityId: string) {
   const addresses = await prisma.address.findMany({
     where: { cityId },
@@ -46,7 +58,9 @@ export async function readSectionsByCampaign(campaignId: string) {
     });
 
     if (campaign?.city) {
-      return campaign.city.City_To_Zone.flatMap((cityToZone) => cityToZone.Zone.Section);
+      return campaign.city.City_To_Zone.flatMap(
+        (cityToZone) => cityToZone.Zone.Section
+      );
     }
   } catch (error) {
     console.log(error);

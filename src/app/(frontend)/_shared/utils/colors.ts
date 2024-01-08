@@ -62,95 +62,39 @@ export function contrastingColor(): [string, string] {
   return [bgColorStr, textColorStr];
 }
 
-export function generateContrastingColorsArray(
-  count: number,
-  baseColors = [],
-  contrastThreshold = 4.5,
-  poolSize = 1000
-) {
-  // Generate a large pool of random colors
-  let colorPool = Array.from({ length: poolSize }, generateRandomHexColor);
-
-  let colors = [];
-  for (let i = 0; i < count; i++) {
-    let index, newColor;
-    let attempts = 0;
-
-    do {
-      // If we're running out of colors, regenerate the pool
-      if (colorPool.length === 0) {
-        colorPool = Array.from({ length: poolSize }, generateRandomHexColor);
-        attempts = 0;
-      }
-
-      index = Math.floor(Math.random() * colorPool.length);
-      newColor = colorPool[index];
-      attempts++;
-
-      // Remove the selected color from the pool to avoid repetition
-      colorPool.splice(index, 1);
-
-      // If we've made too many attempts, break to avoid infinite loop
-      if (attempts > 50) {
-        console.warn(
-          "Struggling to find contrasting colors. Relaxing contrast requirements."
-        );
-        break;
-      }
-    } while (
-      !isContrastingWithNeighborsAndBaseColors(
-        newColor,
-        colors,
-        baseColors,
-        contrastThreshold
-      )
-    );
-
-    colors.push(newColor);
-  }
-  return colors;
-}
-
-function isContrastingWithNeighborsAndBaseColors(
-  newColor: string,
-  existingColors: string | any[],
-  baseColors: any[],
-  threshold: number
-) {
-  const lastIndex = existingColors.length - 1;
-  // Check contrast with the last color in the array
-  if (
-    lastIndex >= 0 &&
-    getContrastRatioFromHex(existingColors[lastIndex], newColor) < threshold
-  ) {
-    return false;
-  }
-  // Check contrast with the second last color in the array
-  if (
-    lastIndex >= 1 &&
-    getContrastRatioFromHex(existingColors[lastIndex - 1], newColor) < threshold
-  ) {
-    return false;
-  }
-  // Check contrast with each base color
-  for (const baseColor of baseColors) {
-    if (getContrastRatioFromHex(baseColor, newColor) < threshold) {
-      return false;
-    }
-  }
-  return true;
-}
-
-export function generateRandomHexColor(): string {
+export function generateRandomHexColor(
+  contrastColors: string[] = [],
+  minContrastRatio: number = 6,
+  checkContrast: boolean = false
+): string {
   let color = "#";
   const maxComponentValue = 200; // Limiting the maximum value to keep the color darker
 
-  for (let i = 0; i < 3; i++) {
-    // Generate a value between 0 and maxComponentValue, then convert to a hex string
-    const component = Math.floor(Math.random() * maxComponentValue).toString(16);
-    // Ensure each component has two digits
-    color += component.length === 1 ? "0" + component : component;
-  }
+  do {
+    color = "#";
+    for (let i = 0; i < 3; i++) {
+      // Generate a value between 0 and maxComponentValue, then convert to a hex string
+      const component = Math.floor(Math.random() * maxComponentValue).toString(
+        16
+      );
+      // Ensure each component has two digits
+      color += component.length === 1 ? "0" + component : component;
+    }
+  } while (
+    checkContrast &&
+    !isContrastingEnough(color, contrastColors, minContrastRatio)
+  );
 
   return color;
+}
+
+function isContrastingEnough(
+  color: string,
+  contrastColors: string[],
+  minContrastRatio: number
+): boolean {
+  return contrastColors.every(
+    (contrastColor) =>
+      getContrastRatioFromHex(color, contrastColor) >= minContrastRatio
+  );
 }

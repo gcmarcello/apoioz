@@ -4,9 +4,10 @@ import CheckboxInput from "@/app/(frontend)/_shared/components/fields/Checkbox";
 import { useMapData } from "../hooks/useMapData";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import Paragraph from "@/app/(frontend)/_shared/components/text/Paragraph";
+import { For } from "@/app/(frontend)/_shared/components/For";
 
 export function MapFilter() {
-  const { neighborhoods, ...mapData } = useMapData();
+  const { neighborhoods, zones, ...mapData } = useMapData();
 
   const { fields: zoneFields } = useFieldArray({
     control: mapData.control,
@@ -33,7 +34,7 @@ export function MapFilter() {
                 onChange={() =>
                   mapData.setValue(
                     "neighborhoods",
-                    mapData.watch("neighborhoods").map((n) => ({ ...n, checked: false }))
+                    neighborhoods.map((n) => ({ ...n, checked: false }))
                   )
                 }
                 label={
@@ -57,36 +58,83 @@ export function MapFilter() {
       <DisclosureAccordion title={"Bairros"}>
         <div className="max-h-96 overflow-y-auto ps-1">
           {neighborhoods.every((n) => n.geoJSON) ? (
-            neighborhoodFields.map(
-              (
-                field: any,
-                index // @todo
-              ) => (
-                <CheckboxInput
-                  key={`filter-${index}`}
-                  hform={mapData}
-                  onChange={() =>
-                    mapData.setValue(
-                      "zones",
-                      mapData.watch("zones").map((n) => ({ ...n, checked: false }))
-                    )
-                  }
-                  label={
-                    <span className="flex items-center gap-2 space-x-2">
-                      {field.color && (
-                        <span
-                          style={{ backgroundColor: field.color }}
-                          className="min-h-[16px] min-w-[16px] rounded"
-                        ></span>
-                      )}
-                      {field.label}
-                    </span>
-                  }
-                  data={field.id}
-                  name={`neighborhoods.${index}.checked`}
-                />
-              )
-            )
+            <>
+              <CheckboxInput
+                key={`filter-all`}
+                hform={mapData}
+                onChange={() => {
+                  neighborhoods.forEach((n, i) => {
+                    mapData.setValue(`neighborhoods.${i}.checked`, false);
+                  });
+
+                  mapData.setValue(
+                    "neighborhoods",
+                    neighborhoods.map((n) => ({
+                      ...n,
+                      checked: mapData.getValues(
+                        "neighborhoods.all.checked" as any
+                      ),
+                    }))
+                  );
+                }}
+                label={
+                  <span className="flex items-center gap-2 space-x-2">
+                    <span className="min-h-[16px] min-w-[16px] rounded bg-slate-600"></span>
+                    Selecionar Todos
+                  </span>
+                }
+                data={"all"}
+                name={`neighborhoods.all.checked`}
+              />
+              <For each={neighborhoodFields}>
+                {(
+                  field: any,
+                  index //@todo
+                ) => (
+                  <CheckboxInput
+                    key={`filter-${index}`}
+                    hform={mapData}
+                    onChange={() => {
+                      mapData.setValue(
+                        "zones",
+                        zones.map((n) => ({ ...n, checked: false }))
+                      );
+
+                      if (
+                        mapData.getValues("neighborhoods.all.checked" as any)
+                      ) {
+                        console.log(field);
+                        mapData.setValue(
+                          "neighborhoods",
+                          neighborhoods.map((n) => ({
+                            ...n,
+                            checked: field.name === n?.name, //@todo
+                          }))
+                        );
+                      }
+
+                      mapData.setValue(
+                        "neighborhoods.all.checked" as any,
+                        false
+                      );
+                    }}
+                    label={
+                      <span className="flex items-center gap-2 space-x-2">
+                        {field.color && (
+                          <span
+                            style={{ backgroundColor: field.color }}
+                            className="min-h-[16px] min-w-[16px] rounded"
+                          ></span>
+                        )}
+                        {field.label}
+                      </span>
+                    }
+                    data={field.id}
+                    name={`neighborhoods.${index}.checked`}
+                  />
+                )}
+              </For>
+            </>
           ) : (
             <Paragraph className="text-center">Bairros em breve</Paragraph>
           )}

@@ -1,18 +1,26 @@
 "use client";
-import { Neighborhood, Zone, Address } from "@prisma/client";
 import { useFormContext } from "react-hook-form";
-import { MapDataContext } from "../providers/MapDataProvider";
+import { MapContextProps } from "../providers/MapDataProvider";
 
 export const useMapData = () => {
-  const mapData = useFormContext<MapDataContext>();
+  const form = useFormContext<MapContextProps>();
 
-  const neighborhoods = mapData.watch("neighborhoods");
+  const neighborhoods = form.watch("neighborhoods");
 
-  const zones = mapData.watch("zones");
+  const zones = form.watch("zones");
 
-  const addresses = mapData.watch("addresses");
+  const addresses = form.watch("addresses");
 
-  const sections = mapData.watch("sections");
+  const sections = form.watch("sections");
 
-  return { neighborhoods, zones, addresses, sections, ...mapData };
+  const supporterSession = form.watch("supporterSession");
+
+  return {
+    sections: sections,
+    addresses,
+    neighborhoods,
+    zones,
+    supporterSession,
+    ...form,
+  };
 };

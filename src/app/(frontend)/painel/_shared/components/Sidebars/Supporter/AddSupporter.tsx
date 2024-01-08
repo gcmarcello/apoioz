@@ -1,6 +1,9 @@
 import ErrorAlert from "@/app/(frontend)/_shared/components/alerts/errorAlert";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
-import { AddSupporterDto, addSupporterDto } from "@/app/api/panel/supporters/dto";
+import {
+  AddSupporterDto,
+  addSupporterDto,
+} from "@/app/api/panel/supporters/dto";
 import {
   addSupporter,
   readSupportersFromSupporterGroup,
@@ -8,7 +11,14 @@ import {
 import { fakerPT_BR } from "@faker-js/faker";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Campaign } from "@prisma/client";
-import { Dispatch, SetStateAction, useContext, useEffect, useRef } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+} from "react";
 import { useForm } from "react-hook-form";
 import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 import { toProperCase } from "@/_shared/utils/format";
@@ -31,7 +41,7 @@ import { scrollToElement } from "@/app/(frontend)/_shared/utils/scroll";
 import clsx from "clsx";
 import DisclosureAccordion from "@/app/(frontend)/_shared/components/Disclosure";
 import { LoadingSpinner } from "@/app/(frontend)/_shared/components/Spinners";
-import { Mocker } from "@/app/(frontend)/_shared/components/Mocker";
+import { Mocker, useMocker } from "@/app/(frontend)/_shared/components/Mocker";
 
 export function AddSupporterForm({
   campaign,
@@ -68,7 +78,8 @@ export function AddSupporterForm({
     isMutating,
   } = useAction({
     action: addSupporter,
-    onError: (err) => showToast({ message: err, variant: "error", title: "Erro" }),
+    onError: (err) =>
+      showToast({ message: err, variant: "error", title: "Erro" }),
     onSuccess: ({ data }) => {
       showToast({
         message: `${data.user.name} adicionado a campanha`,
@@ -105,28 +116,29 @@ export function AddSupporterForm({
     });
   }, [form, isMutating]);
 
-  async function generateFakeData() {
-    if (!zones) return;
-    const zone = zones[Math.floor(Math.random() * zones.length)];
+  useMocker({
+    form,
+    data: async () => {
+      const { data: zones } = await fetchZones(campaign.id);
 
-    const { data: sections } = await fetchSections(zone.id);
-    if (!sections) return;
+      const zone = zones![Math.floor(Math.random() * zones!.length)];
 
-    form.setValue("user.name", fakerPT_BR.person.fullName());
-    form.setValue("user.email", fakerPT_BR.internet.email());
-    form.setValue("user.phone", fakerPT_BR.phone.number());
-    form.setValue("user.info.zoneId", zone.id);
-    form.setValue(
-      "user.info.sectionId",
-      sections[Math.round(Math.random() * sections.length)].id
-    );
-    form.setValue(
-      "user.info.birthDate",
-      dayjs(fakerPT_BR.date.past({ refDate: 1 }).toISOString()).format("DD/MM/YYYY")
-    );
-    form.setValue("externalSupporter", false);
-    form.trigger("user.name");
-  }
+      const { data: sections } = await fetchSections(zone.id);
+
+      return {
+        "user.name": fakerPT_BR.person.fullName(),
+        "user.email": fakerPT_BR.internet.email(),
+        "user.phone": fakerPT_BR.phone.number(),
+        "user.info.zoneId": zone.id,
+        "user.info.sectionId":
+          sections[Math.round(Math.random() * sections.length)].id,
+        "user.info.birthDate": dayjs(
+          fakerPT_BR.date.past({ refDate: 1 }).toISOString()
+        ).format("DD/MM/YYYY"),
+        externalSupporter: false,
+      };
+    },
+  });
 
   if (!zones || !form)
     return (
@@ -143,16 +155,23 @@ export function AddSupporterForm({
             {form.formState.errors.root?.serverError.message ? (
               <div ref={errRef} className="scroll-mt-64">
                 <ErrorAlert
-                  errors={[form?.formState?.errors?.root?.serverError?.message as string]}
+                  errors={[
+                    form?.formState?.errors?.root?.serverError
+                      ?.message as string,
+                  ]}
                 />
               </div>
             ) : null}
-            {/* <Mocker mockData={generateFakeData} submit={addSupporterTrigger} /> */}
-            <TextField label="Nome do Apoiador" hform={form} name={"user.name"} />
+            <TextField
+              label="Nome do Apoiador"
+              hform={form}
+              name={"user.name"}
+            />
             <TextField label="Email" hform={form} name={"user.email"} />
             <MaskedTextField
               label="Celular"
               hform={form}
+              inputMode="numeric"
               name={"user.phone"}
               mask="(99) 99999-9999"
             />
@@ -160,6 +179,7 @@ export function AddSupporterForm({
               hform={form}
               label="Data de Nascimento"
               mask="99/99/9999"
+              inputMode="numeric"
               name={"user.info.birthDate"}
             />
             {!form.watch("externalSupporter") && (
@@ -193,7 +213,10 @@ export function AddSupporterForm({
             )}
           </div>
           {userSupporter.level >= 4 && (
-            <DisclosureAccordion title="Opções de Administrador" scrollToContent={true}>
+            <DisclosureAccordion
+              title="Opções de Administrador"
+              scrollToContent={true}
+            >
               <div className="space-y-8">
                 <ComboboxField
                   label="Indicado Por"
@@ -232,7 +255,9 @@ export function AddSupporterForm({
                 </dd>
               </div>
               <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                <dt className="text-sm font-medium leading-6 text-gray-900">Endereço</dt>
+                <dt className="text-sm font-medium leading-6 text-gray-900">
+                  Endereço
+                </dt>
                 <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                   {toProperCase(address?.address + ", " + address?.City?.name)}
                 </dd>
