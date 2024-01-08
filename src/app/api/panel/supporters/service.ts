@@ -428,7 +428,6 @@ export async function createSupporter(request: CreateSupporterDto) {
   const { data: ws } = await axios.get(wsUrl, {
     headers: { Authorization: getEnv("NEXT_PUBLIC_WS_TOKEN") },
   });
-  console.log(wsUrl, ws);
 
   await sendEmail({
     to: user.email,
