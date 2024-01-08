@@ -47,7 +47,9 @@ export default function Map() {
   });
 
   useSWRSubscription(
-    "ws://" + process.env.NEXT_PUBLIC_WS_SERVER,
+    process.env.NODE_ENV === "development"
+      ? "ws"
+      : "wss" + "://" + process.env.NEXT_PUBLIC_WS_SERVER,
     (key, { next }) => {
       const socket = new WebSocket(key);
       socket.addEventListener("open", () => {
