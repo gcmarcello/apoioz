@@ -42,7 +42,7 @@ export function MapIndex({ data }: { data: RawMapData }) {
         </div>
         <section aria-labelledby="products-heading" className="pb-24">
           <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-12">
-            <div className="lg:col-span-3">
+            <div className="lg:col-span-3 xl:col-span-2">
               {!openMobileFilter && ( //@todo
                 <div className="hidden lg:block">
                   <MapFilter />
@@ -50,7 +50,7 @@ export function MapIndex({ data }: { data: RawMapData }) {
               )}
               <MapDataStats />
             </div>
-            <div className="lg:col-span-9">
+            <div className="lg:col-span-9 xl:col-span-10">
               <NoSsrMap />
             </div>
           </div>

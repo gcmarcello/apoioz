@@ -19,6 +19,7 @@ import { hashInfo } from "@/_shared/utils/bCrypt";
 import { answerPoll } from "../polls/service";
 import { RecursiveSupporterWithReferred } from "prisma/types/Supporter";
 import { normalizeEmail, normalizePhone } from "@/_shared/utils/format";
+import axios from "axios";
 
 export async function readSupporterBranches({
   supporterSession,
@@ -424,9 +425,10 @@ export async function createSupporter(request: CreateSupporterDto) {
     "NEXT_PUBLIC_WS_SERVER"
   )}/campaign/${campaign.id}/supporter`;
 
-  await fetch(wsUrl, {
-    headers: { Authorization: getEnv("WS_SERVER_TOKEN") || "" },
+  const { data: ws } = await axios.get(wsUrl, {
+    headers: { Authorization: getEnv("NEXT_PUBLIC_WS_TOKEN") },
   });
+  console.log(wsUrl, ws);
 
   await sendEmail({
     to: user.email,

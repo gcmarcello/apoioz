@@ -18,6 +18,8 @@ import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 import { parseAddresses } from "../utils/parseAddresses";
 import AddressDetailsModal from "./AddressDetailsModal";
 import { MapAddressType, MapContextProps } from "../providers/MapDataProvider";
+import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
+import SupporterBall from "@/app/(frontend)/_shared/components/SupporterBall";
 
 const POSITION_CLASSES = {
   bottomleft: "leaflet-bottom leaflet-left",
@@ -35,6 +37,7 @@ export default function Map() {
     supporterSession,
     ...mapData
   } = useMapData();
+  const [wsConnected, setWsConnected] = useState(false);
 
   const [selectedAddress, setSelectedAddress] = useState<
     MapAddressType | undefined
@@ -50,13 +53,17 @@ export default function Map() {
     (process.env.NODE_ENV === "development" ? "ws" : "wss") +
     "://" +
     process.env.NEXT_PUBLIC_WS_SERVER;
-  console.log(socketUrl);
 
   useSWRSubscription(socketUrl, (key, { next }) => {
     const socket = new WebSocket(key);
     socket.addEventListener("open", () => {
+      setWsConnected(true);
       socket.send(`campaign:${supporterSession.campaignId}`);
     });
+    socket.addEventListener("close", () => {
+      setWsConnected(false);
+    });
+    socket.addEventListener("error", () => setWsConnected(false));
 
     socket.addEventListener("message", (event) => {
       trigger();
@@ -357,6 +364,17 @@ export default function Map() {
         </MarkerClusterGroup>
         <FitBoundsComponent />
       </MapContainer>
+      <div className="mt-1.5 flex items-center justify-end gap-1.5 text-xs italic text-gray-400">
+        {wsConnected ? (
+          <>
+            <SupporterBall level={3} /> ApoioZ© websockets server
+          </>
+        ) : (
+          <>
+            <SupporterBall level={1} /> Desconectado do servidor de mapas.
+          </>
+        )}
+      </div>
       <AddressDetailsModal
         address={selectedAddress}
         setSelectedAddress={setSelectedAddress}
