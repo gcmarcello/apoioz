@@ -229,7 +229,7 @@ export default function CampaignUpdateForm({
                   <TextField
                     hform={form}
                     label="Link do Twitter"
-                    name="options.instagram"
+                    name="options.twitter"
                   />
                 </div>
               </div>
