@@ -1,4 +1,3 @@
-"use client";
 import SupportersTable from "./components/SupportersTable";
 import { SupportersLastMonth } from "./components/SupportersLastMonth";
 import { ReferralRanking } from "./components/ReferralRanking";
@@ -6,14 +5,11 @@ import { InformationCircleIcon } from "@heroicons/react/24/solid";
 import ReportsProvider from "./providers/ReportsProvider";
 import Footer from "../_shared/components/Footer";
 import Modal from "../../_shared/components/Modal";
-import { useState } from "react";
 
 export default function RelatoriosPage({}) {
-  const [open, setOpen] = useState(false);
   return (
     <>
       <ReportsProvider>
-        <Modal open={open} setOpen={setOpen} />
         <div className="mx-4 mb-4 flex text-sm text-gray-600">
           <InformationCircleIcon className="me-1 h-5 w-5" />
           Nessa página você tem acesso a todos os apoiadores da sua rede.{" "}
