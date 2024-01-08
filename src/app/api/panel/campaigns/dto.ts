@@ -30,6 +30,13 @@ export const updateCampaignDto = z.object({
   slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
     message: "Formato inválido para o link.",
   }),
+  options: z
+    .object({
+      facebook: z.string().optional(),
+      instagram: z.string().optional(),
+      twitter: z.string().optional(),
+    })
+    .optional(),
 });
 
 export type UpdateCampaignDto = z.infer<typeof updateCampaignDto>;
