@@ -22,7 +22,7 @@ export function SupporterTopBar() {
       (async () => {
         setVisibility((prev) => ({
           ...prev,
-          supporterSidebar: !true,
+          supporterSidebar: !prev.supporterSidebar,
         }));
       })();
     }
@@ -30,7 +30,6 @@ export function SupporterTopBar() {
 
   useEffect(() => {
     window.addEventListener("keydown", (e) => handleKeyDown(e));
-    console.log("e");
     return () => {
       window.removeEventListener("keydown", (e) => handleKeyDown(e));
     };
