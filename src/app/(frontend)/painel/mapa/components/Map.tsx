@@ -46,23 +46,24 @@ export default function Map() {
     },
   });
 
-  useSWRSubscription(
-    process.env.NODE_ENV === "development"
-      ? "ws"
-      : "wss" + "://" + process.env.NEXT_PUBLIC_WS_SERVER,
-    (key, { next }) => {
-      const socket = new WebSocket(key);
-      socket.addEventListener("open", () => {
-        socket.send(`campaign:${supporterSession.campaignId}`);
-      });
+  const socketUrl =
+    (process.env.NODE_ENV === "development" ? "ws" : "wss") +
+    "://" +
+    process.env.NEXT_PUBLIC_WS_SERVER;
+  console.log(socketUrl);
 
-      socket.addEventListener("message", (event) => {
-        trigger();
-      });
+  useSWRSubscription(socketUrl, (key, { next }) => {
+    const socket = new WebSocket(key);
+    socket.addEventListener("open", () => {
+      socket.send(`campaign:${supporterSession.campaignId}`);
+    });
 
-      return () => socket.close();
-    }
-  );
+    socket.addEventListener("message", (event) => {
+      trigger();
+    });
+
+    return () => socket.close();
+  });
 
   const center = [0, 0];
 
