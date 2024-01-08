@@ -299,10 +299,10 @@ export async function createSupporter(request: CreateSupporterDto) {
     where: {
       OR: [
         {
-          email: request.user?.email,
+          email: normalizeEmail(request.user.email),
         },
         {
-          phone: request.user?.phone,
+          phone: normalizePhone(request.user.phone),
         },
         {
           id: request?.userId,
@@ -423,6 +423,8 @@ export async function createSupporter(request: CreateSupporterDto) {
   const wsUrl = `${isProd ? "https" : "http"}://${getEnv(
     "NEXT_PUBLIC_WS_SERVER"
   )}/campaign/${campaign.id}/supporter`;
+
+  console.log(wsUrl);
 
   await fetch(wsUrl, {
     headers: { Authorization: getEnv("WS_SERVER_TOKEN") || "" },

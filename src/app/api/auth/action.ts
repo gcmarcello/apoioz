@@ -18,7 +18,9 @@ import { UserSessionMiddleware } from "@/middleware/functions/userSession.middle
 
 export async function login(request: LoginDto) {
   try {
-    const parsedRequest = await UseMiddlewares(request).then(ExistingUserMiddleware);
+    const parsedRequest = await UseMiddlewares(request).then(
+      ExistingUserMiddleware
+    );
 
     const token = await authService.login(parsedRequest);
 
@@ -73,8 +75,9 @@ export async function resetPassword(request: PasswordResetDto) {
 
 export async function updatePassword(request: PasswordUpdateDto) {
   try {
-    const { request: parsedRequest } =
-      await UseMiddlewares(request).then(UserSessionMiddleware);
+    const { request: parsedRequest } = await UseMiddlewares(request).then(
+      UserSessionMiddleware
+    );
     await authService.updatePassword(parsedRequest);
     return ActionResponse.success({
       message: "Senha alterada com sucesso!",

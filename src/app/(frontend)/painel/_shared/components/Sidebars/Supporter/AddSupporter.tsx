@@ -42,6 +42,7 @@ import clsx from "clsx";
 import DisclosureAccordion from "@/app/(frontend)/_shared/components/Disclosure";
 import { LoadingSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { Mocker, useMocker } from "@/app/(frontend)/_shared/components/Mocker";
+import Link from "next/link";
 
 export function AddSupporterForm({
   campaign,
@@ -149,7 +150,7 @@ export function AddSupporterForm({
 
   return (
     <form>
-      <div className="pb-4 pt-2">
+      <div className="pb-4 pt-4">
         <div className="space-y-3 divide-y">
           <div className="space-y-3">
             {form.formState.errors.root?.serverError.message ? (
@@ -208,6 +209,18 @@ export function AddSupporterForm({
                       fetchAddress(value.id);
                     }}
                   />
+                </div>
+                <div className="col-span-2">
+                  <span className="text-sm text-gray-500">
+                    Não sabe sua zona e seção?{" "}
+                    <Link
+                      target="_blank"
+                      className="underline"
+                      href="https://www.tse.jus.br/servicos-eleitorais/titulo-e-local-de-votacao/titulo-e-local-de-votacao"
+                    >
+                      Consulte o TSE.
+                    </Link>
+                  </span>
                 </div>
               </div>
             )}
