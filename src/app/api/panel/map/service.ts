@@ -2,7 +2,9 @@ import { prisma } from "prisma/prisma";
 import { readZonesByCampaign } from "../../elections/zones/service";
 import { SupporterSession } from "@/middleware/functions/supporterSession.middleware";
 
-export async function createMapData(request: { supporterSession: SupporterSession }) {
+export async function createMapData(request: {
+  supporterSession: SupporterSession;
+}) {
   const cityId = await prisma.campaign
     .findUnique({ where: { id: request.supporterSession.campaignId } })
     .then((campaign) => campaign!.cityId);
@@ -31,7 +33,10 @@ export async function createMapData(request: { supporterSession: SupporterSessio
     },
   });
 
-  const zones = await readZonesByCampaign(request.supporterSession.campaignId, true);
+  const zones = await readZonesByCampaign(
+    request.supporterSession.campaignId,
+    true
+  );
 
   const neighborhoods = await prisma.neighborhood.findMany({
     where: { cityId },

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MapContainer, TileLayer, Popup, useMap, GeoJSON } from "react-leaflet";
 import L, { LatLngExpression, LeafletMouseEvent, MarkerCluster } from "leaflet";
 import React from "react";
@@ -10,9 +10,14 @@ import { For } from "@/app/(frontend)/_shared/components/For";
 import { FullscreenControl } from "react-leaflet-fullscreen";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import { retrieveBoundsFromGeoJSONS } from "../utils/coordinates";
-import { useFormContext } from "react-hook-form";
 import { useMapData } from "../hooks/useMapData";
 import { Marker } from "./Marker";
+import useSWRSubscription from "swr/subscription";
+import { createMapData } from "@/app/api/panel/map/actions";
+import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
+import { parseAddresses } from "../utils/parseAddresses";
+import AddressDetailsModal from "./AddressDetailsModal";
+import { MapAddressType, MapContextProps } from "../providers/MapDataProvider";
 
 const POSITION_CLASSES = {
   bottomleft: "leaflet-bottom leaflet-left",
@@ -22,58 +27,96 @@ const POSITION_CLASSES = {
 };
 
 export default function Map() {
-  const { neighborhoods, addresses, zones, sections, ...mapData } = useMapData();
+  const {
+    neighborhoods,
+    addresses,
+    zones,
+    sections,
+    supporterSession,
+    ...mapData
+  } = useMapData();
 
-  const [open, setOpen] = useState(false);
-  const [modalInfo, setModalInfo] = useState(null);
+  const [selectedAddress, setSelectedAddress] = useState<
+    MapAddressType | undefined
+  >(undefined);
+  const { trigger } = useAction({
+    action: createMapData,
+    parser: ({ addresses }) => {
+      mapData.setValue("addresses", parseAddresses(addresses) as any);
+    },
+  });
+
+  useSWRSubscription(
+    "ws://" + process.env.NEXT_PUBLIC_WS_SERVER,
+    (key, { next }) => {
+      const socket = new WebSocket(key);
+      socket.addEventListener("open", () => {
+        socket.send(`campaign:${supporterSession.campaignId}`);
+      });
+
+      socket.addEventListener("message", (event) => {
+        trigger();
+      });
+
+      return () => socket.close();
+    }
+  );
+
   const center = [0, 0];
 
   const mapRef = useRef<L.Map>();
 
-  const handleMarkerClick = useCallback(
-    (info: any) => {
-      setModalInfo(info);
-      setOpen(true);
-    },
-    [setModalInfo, setOpen]
-  );
-
-  let closeTimeout: string | number | NodeJS.Timeout | null | undefined = null;
+  const [wasFitted, setWasFitted] = useState(false);
 
   function FitBoundsComponent() {
     const map = useMap();
-    const markerCoords = addresses?.map(({ geocode }) => geocode);
-    let geoJSONBounds: L.LatLngBounds | null = null;
 
-    if (neighborhoods.filter((neighborhood) => neighborhood.checked).length) {
-      geoJSONBounds = retrieveBoundsFromGeoJSONS(
-        neighborhoods
-          .filter((neighborhood) => neighborhood.checked)
-          .map((neighborhood) => neighborhood.geoJSON)
-      );
-    } else if (zones.filter((zone) => zone.checked).length) {
-      geoJSONBounds = retrieveBoundsFromGeoJSONS(
-        zones.filter((zone) => zone.checked).map((zone) => zone.geoJSON)
-      );
-    }
+    useEffect(() => {
+      if (wasFitted) return;
+      setWasFitted(true);
+    }, []);
 
     useEffect(() => {
       if (!mapRef.current) {
         mapRef.current = map;
       }
-      const mapBounds = geoJSONBounds || markerCoords;
+
+      const markerCoords = addresses?.map(({ geocode }) => geocode);
+      let geoJSONBounds: L.LatLngBounds | null = null;
+
+      if (neighborhoods.filter((neighborhood) => neighborhood.checked).length) {
+        geoJSONBounds = retrieveBoundsFromGeoJSONS(
+          neighborhoods
+            .filter((neighborhood) => neighborhood.checked)
+            .map((neighborhood) => neighborhood.geoJSON)
+        );
+      } else if (zones.filter((zone) => zone.checked).length) {
+        geoJSONBounds = retrieveBoundsFromGeoJSONS(
+          zones.filter((zone) => zone.checked).map((zone) => zone.geoJSON)
+        );
+      }
+
+      const mapBounds = (!wasFitted && markerCoords) || geoJSONBounds;
+
+      if (!mapBounds) return;
+
       map.fitBounds(mapBounds as any);
-    }, [map, markerCoords]);
+    }, [map]);
 
     return null;
   }
+
+  let closeTimeout: string | number | NodeJS.Timeout | null | undefined = null;
 
   const createClusterCustomIcon = function (cluster: MarkerCluster) {
     const supporterCount = (
       cluster.getAllChildMarkers() as (MarkerCluster & {
         options: { customOptions: { supportersCount: number } };
       })[]
-    ).reduce((acc, marker) => acc + marker.options.customOptions.supportersCount, 0);
+    ).reduce(
+      (acc, marker) => acc + marker.options.customOptions.supportersCount,
+      0
+    );
 
     return L.divIcon({
       html: `<div class="relative text-white font-bold flex justify-center items-center w-12 h-12">
@@ -108,6 +151,7 @@ export default function Map() {
       <MapContainer
         className="z-0 h-[450px] w-full lg:h-[600px]"
         center={center as LatLngExpression}
+        zoom={1}
         scrollWheelZoom={true}
       >
         <FullscreenControl
@@ -119,23 +163,29 @@ export default function Map() {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://tile.openstreetmap.org/{z}/{x}/{y}.png	"
         />
-        <For each={zones}>
+        <For identifier="zones" each={zones}>
           {({ geoJSON, color, checked, id }, index) => {
             if (!geoJSON) return <></>;
             if (!checked && zones.some((zone) => zone.checked)) return <></>;
-            if (neighborhoods.some((neighborhood) => neighborhood.checked)) return <></>;
+            if (neighborhoods.some((neighborhood) => neighborhood.checked))
+              return <></>;
             return (
-              <GeoJSON key={`zone-${index}`} data={geoJSON as any} style={{ color }} />
+              <GeoJSON
+                key={`zone-${index}`}
+                data={geoJSON as any}
+                style={{ color }}
+              />
             );
           }}
         </For>
-        <For each={neighborhoods}>
+        <For identifier="neighborhoods" each={neighborhoods}>
           {({ geoJSON, color, checked, name, id }, index) => {
             if (
               !geoJSON ||
               !checked ||
               (neighborhoods.some((neighborhood) => neighborhood.checked) &&
-                !neighborhoods.find((neighborhood) => neighborhood.id === id)?.checked)
+                !neighborhoods.find((neighborhood) => neighborhood.id === id)
+                  ?.checked)
             )
               return <></>;
             return (
@@ -184,12 +234,17 @@ export default function Map() {
           }}
         </For>
         <MarkerClusterGroup
+          key={JSON.stringify(addresses)}
           chunkedLoading
-          maxClusterRadius={Math.min(100, Math.log(addresses.length) * 100)}
+          maxClusterRadius={80}
           showCoverageOnHover={false}
           iconCreateFunction={createClusterCustomIcon}
         >
-          <For each={addresses} fallback={<p>Loading...</p>}>
+          <For
+            identifier="addresses"
+            each={addresses}
+            fallback={<p>Loading...</p>}
+          >
             {(
               {
                 geocode,
@@ -199,6 +254,7 @@ export default function Map() {
                 sectionsCount,
                 zone,
                 neighborhood,
+                id,
               },
               index
             ) => {
@@ -211,6 +267,7 @@ export default function Map() {
                 (!sections.showEmptySections && supportersCount === 0)
               )
                 return <></>;
+
               return (
                 <Marker
                   icon={createAddressCustomIcon(supportersCount)}
@@ -268,12 +325,15 @@ export default function Map() {
 
                           <div
                             onClick={() =>
-                              handleMarkerClick({
+                              setSelectedAddress({
                                 geocode,
                                 location,
                                 address,
                                 supportersCount,
                                 sectionsCount,
+                                zone,
+                                neighborhood,
+                                id,
                               })
                             }
                             className={clsx(
@@ -294,7 +354,10 @@ export default function Map() {
         </MarkerClusterGroup>
         <FitBoundsComponent />
       </MapContainer>
-      {/* <AddressDetailsModal open={open} setOpen={setOpen} modalInfo={modalInfo} /> */}
+      <AddressDetailsModal
+        address={selectedAddress}
+        setSelectedAddress={setSelectedAddress}
+      />
     </>
   );
 }

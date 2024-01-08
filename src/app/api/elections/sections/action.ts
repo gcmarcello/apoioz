@@ -11,3 +11,12 @@ export async function readSectionsByZone(zoneId: string) {
     return ActionResponse.error(err);
   }
 }
+
+export async function readSectionsByAddress(addressId: string) {
+  try {
+    const sections = await service.readSectionsByAddress(addressId);
+    return ActionResponse.success({ data: sections });
+  } catch (err) {
+    return ActionResponse.error(err);
+  }
+}

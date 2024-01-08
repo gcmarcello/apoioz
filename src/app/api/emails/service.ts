@@ -1,4 +1,4 @@
-import { getEnv, isProd } from "@/_shared/utils/settings";
+import { getEnv, isDev, isProd } from "@/_shared/utils/settings";
 import sgMail from "@sendgrid/mail";
 import fs from "fs/promises";
 import path from "path";
@@ -20,26 +20,27 @@ export async function sendEmail({
   templateId: keyof typeof templates;
   dynamicData: any;
 }) {
+  if (isDev) return;
+
   const template = await readEmailTemplate(templateId, dynamicData);
 
   const sendGridEmail = getEnv("SENDGRID_EMAIL");
 
   if (!sendGridEmail) throw "SENDGRID_EMAIL not set";
 
-  isProd &&
-    (await sgMail
-      .send({
-        from: sendGridEmail,
-        to,
-        bcc,
-        subject: template.subject,
-        html: template.body,
-      })
-      .then(() => console.log("Email sent"))
-      .catch((err) => {
-        console.log(err.response.body.errors);
-        throw "Failed to send email";
-      }));
+  await sgMail
+    .send({
+      from: sendGridEmail,
+      to,
+      bcc,
+      subject: template.subject,
+      html: template.body,
+    })
+    .then(() => console.log("Email sent"))
+    .catch((err) => {
+      console.log(err.response.body.errors);
+      throw "Failed to send email";
+    });
 }
 
 async function readEmailTemplate(
