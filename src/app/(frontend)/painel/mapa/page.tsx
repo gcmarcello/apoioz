@@ -5,7 +5,7 @@ import { Squares2X2Icon, FunnelIcon } from "@heroicons/react/24/solid";
 import MapDataProvider from "./providers/MapDataProvider";
 import { MapFilter } from "./components/MapFilter";
 import { useEffect, useState } from "react";
-import { useAction } from "../../_shared/hooks/useAction";
+import { useAction } from "@odinkit/hooks/useAction";
 import { NoSsrMap } from "./components/NoSsrMap";
 import { MapDataStats } from "./components/MapDataStats";
 import SlideOver from "../../_shared/components/SlideOver";

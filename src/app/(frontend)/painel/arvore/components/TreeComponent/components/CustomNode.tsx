@@ -3,7 +3,7 @@ import { Edge, Handle, Node, NodeProps, Position, useReactFlow } from "reactflow
 import clsx from "clsx";
 
 import { ChevronDownIcon, MinusCircleIcon } from "@heroicons/react/24/outline";
-import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
+import { useAction } from "@odinkit/hooks/useAction";
 import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { processNodesEdges } from "../lib/nodesEdges";
 import { CustomFlowContext } from "../types/CustomFlowContext";
@@ -55,7 +55,7 @@ export function CustomNode({
     error: error,
   } = useAction({
     action: readSupporterBranches,
-    parser: (data) => {
+    responseParser: (data) => {
       if (data?.referred?.length || 0 < 1) throw "No referred found";
       const { referred, ...rest } = data as any;
       return [rest, ...referred];

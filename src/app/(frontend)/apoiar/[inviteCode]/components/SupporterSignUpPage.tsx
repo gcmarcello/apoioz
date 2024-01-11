@@ -12,7 +12,7 @@ import { BasicInfoSection } from "./BasicInfoSection";
 import { ElectionInfoSection } from "./ElectionInfoSection";
 import clsx from "clsx";
 import { faker } from "@faker-js/faker";
-import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
+import { useAction } from "@odinkit/hooks/useAction";
 import Loading from "@/app/(frontend)/loading";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { BottomNavigation } from "@/app/(frontend)/_shared/components/navigation/BottomNavigation";
@@ -95,7 +95,7 @@ export default function SupporterSignUpPage({
     isMutating: isSigningUp,
     reset: resetSignUp,
   } = useAction({
-    formatter: (data) => {
+    requestParser: (data) => {
       data.user.phone = normalizePhone(data.user.phone);
       return data;
     },

@@ -22,7 +22,8 @@
     ],
     "baseUrl": "./",
     "paths": {
-      "@/*": ["src/*"],
+      "@odinkit/*": ["./src/packages/odinkit/*"],
+      "@/*": ["./src/*"],
       "prisma/*": ["prisma/*"]
     },
     "forceConsistentCasingInFileNames": true

@@ -10,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Campaign } from "@prisma/client";
 import { Dispatch, SetStateAction, useContext, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
-import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
+import { useAction } from "@odinkit/hooks/useAction";
 import { toProperCase } from "@/_shared/utils/format";
 import { MetaForm } from "@/app/(frontend)/_shared/hooks/useMetaform";
 import {
