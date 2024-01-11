@@ -8,7 +8,7 @@ import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 import { readSupportersFromSupporterGroupWithRelation } from "@/app/api/panel/supporters/actions";
 
 export default function ReportsProvider({ children }: { children: any }) {
-  const [viewingAs, setViewingAs] = useState<User | undefined>(undefined);
+  const [viewingAs, setViewingAs] = useState<any>(undefined);
   const [globalFilter, setGlobalFilter] = useState("");
 
   const {
@@ -17,9 +17,6 @@ export default function ReportsProvider({ children }: { children: any }) {
     pagination,
   } = useAction({
     action: readSupportersFromSupporterGroupWithRelation,
-    onSuccess: (data) => {
-      console.log(`data`, data);
-    },
   });
 
   const openAsSupporter = async (supporter: any) => {
@@ -52,13 +49,16 @@ export default function ReportsProvider({ children }: { children: any }) {
         setGlobalFilter,
       }}
     >
-      <div className={clsx(viewingAs && "rounded-md border-4 border-orange-500")}>
+      <div
+        className={clsx(viewingAs && "rounded-md border-4 border-orange-500")}
+      >
         <div className={clsx(viewingAs && "m-4")}>
           {viewingAs && (
             <div className="my-4 flex items-center gap-x-2">
               <EyeIcon className="h-10 w-10 text-orange-500" />{" "}
               <span className="">
-                Você está visualizando como <strong>{viewingAs.name}</strong>.{" "}
+                Você está visualizando como{" "}
+                <strong>{viewingAs.user.name}</strong>.{" "}
                 <span
                   role="button"
                   onClick={() => restoreView()}
