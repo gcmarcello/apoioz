@@ -3,7 +3,7 @@
 import { Logo } from "@/app/(frontend)/_shared/components/Logo";
 import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
-import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
+import { useAction } from "@odinkit/hooks/useAction";
 import { resetPassword, updatePassword } from "@/app/api/auth/action";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import { useRouter } from "next/navigation";
@@ -40,7 +40,8 @@ export default function NewPasswordForm({
     onSuccess: () => {
       router.push("/painel");
     },
-    onError: (err) => showToast({ message: err, title: "Erro", variant: "error" }),
+    onError: (err) =>
+      showToast({ message: err, title: "Erro", variant: "error" }),
   });
 
   return (
@@ -55,8 +56,8 @@ export default function NewPasswordForm({
 
       <div className="my-2 flex flex-col justify-end space-y-4 sm:mx-auto sm:w-full sm:max-w-sm">
         <p className="mb-2 text-center text-sm text-gray-500">
-          Digite e confime sua nova senha abaixo para reaver o acesso ao painel de
-          controle das redes de apoio que você participa!
+          Digite e confime sua nova senha abaixo para reaver o acesso ao painel
+          de controle das redes de apoio que você participa!
         </p>
         <form
           onSubmit={form.handleSubmit((data) => submitPasswordReset(data))}
@@ -89,7 +90,10 @@ export default function NewPasswordForm({
                   aria-hidden="true"
                 />
               ) : (
-                <EyeIcon className="-ml-0.5 h-5 w-5 text-gray-400" aria-hidden="true" />
+                <EyeIcon
+                  className="-ml-0.5 h-5 w-5 text-gray-400"
+                  aria-hidden="true"
+                />
               )}
             </button>
           </div>

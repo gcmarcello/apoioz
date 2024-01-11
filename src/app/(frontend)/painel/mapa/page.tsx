@@ -7,7 +7,9 @@ import { createMapData } from "@/app/api/panel/map/service";
 export default async function MapPage() {
   const {
     request: { supporterSession },
-  } = await UseMiddlewares().then(UserSessionMiddleware).then(SupporterSessionMiddleware);
+  } = await UseMiddlewares()
+    .then(UserSessionMiddleware)
+    .then(SupporterSessionMiddleware);
 
   const geoData = await createMapData({ supporterSession });
 

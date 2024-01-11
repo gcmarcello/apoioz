@@ -9,7 +9,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 import ElectionModalForm from "./ElectionModalForm";
-import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
+import { useAction } from "@odinkit/hooks/useAction";
 import { UserWithInfo } from "prisma/types/User";
 import {
   PasswordField,
