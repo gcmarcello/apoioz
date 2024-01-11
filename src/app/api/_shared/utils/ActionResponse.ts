@@ -44,7 +44,9 @@ export class ActionResponse {
     }
 
     return {
-      message: isString(message) ? message : (JSON.stringify(message) as string),
+      message: isString(message)
+        ? message
+        : (JSON.stringify(message) as string),
       error: true,
     };
   }

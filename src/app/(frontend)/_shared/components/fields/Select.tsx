@@ -17,8 +17,12 @@ import {
 import { BaseProps, Field, fieldClasses, getErrorMessage } from "./Field";
 import { Controller, FieldValues, Path } from "react-hook-form";
 import { useAction } from "@odinkit/hooks/useAction";
-import { ErrorResponse, SuccessResponse } from "@/app/api/_shared/utils/ActionResponse";
+import {
+  ErrorResponse,
+  SuccessResponse,
+} from "@/app/api/_shared/utils/ActionResponse";
 import { ButtonSpinner } from "../Spinners";
+import { ActionResponseType } from "@odinkit/api/ActionResponse";
 
 type SelectFieldProps<
   Fields extends FieldValues,
@@ -130,7 +134,10 @@ export function ListboxField<
                                     "absolute inset-y-0 right-0 flex items-center pr-4"
                                   )}
                                 >
-                                  <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                  <CheckIcon
+                                    className="h-5 w-5"
+                                    aria-hidden="true"
+                                  />
                                 </span>
                               ) : null}
                             </>
@@ -169,7 +176,10 @@ export function ListboxField<
                                       "absolute inset-y-0 right-0 flex items-center pr-4"
                                     )}
                                   >
-                                    <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                    <CheckIcon
+                                      className="h-5 w-5"
+                                      aria-hidden="true"
+                                    />
                                   </span>
                                 ) : null}
                               </>
@@ -198,7 +208,7 @@ export function ComboboxField<
   debounce = 500,
   ...props
 }: SelectFieldProps<Fields, Data> & {
-  fetcher?: (query: any) => Promise<ErrorResponse | SuccessResponse<Data>>;
+  fetcher?: (query: any) => Promise<ActionResponseType<Data>>;
   debounce?: number;
 }) {
   const id = useId();
@@ -249,7 +259,10 @@ export function ComboboxField<
     return query === ""
       ? initialOptions
       : generateOptions(data).filter((option: any) =>
-          option.displayValue.toString().toLowerCase().includes(query.toLowerCase())
+          option.displayValue
+            .toString()
+            .toLowerCase()
+            .includes(query.toLowerCase())
         );
   }, [fetchedData, initialOptions, query]);
 
@@ -356,7 +369,10 @@ export function ComboboxField<
                                 active ? "text-white" : "text-indigo-600"
                               )}
                             >
-                              <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                              <CheckIcon
+                                className="h-5 w-5"
+                                aria-hidden="true"
+                              />
                             </span>
                           )}
                         </>

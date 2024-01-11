@@ -50,10 +50,6 @@ export default function ProfileUpdateForm({ user }: { user: UserWithInfo }) {
     trigger: updateUserTrigger,
     error,
   } = useAction({
-    formatter: (data) => {
-      console.log(data);
-      return data;
-    },
     action: updateUser,
     onError: (err) => {
       showToast({ message: err, variant: "error", title: "Erro" });
@@ -106,7 +102,9 @@ export default function ProfileUpdateForm({ user }: { user: UserWithInfo }) {
       </form>
       <form
         className="mt-6 space-y-6 divide-y divide-gray-100 border-t border-gray-100 text-sm leading-6"
-        onSubmit={passwordForm.handleSubmit((data) => updatePasswordTrigger(data))}
+        onSubmit={passwordForm.handleSubmit((data) =>
+          updatePasswordTrigger(data)
+        )}
       >
         <ProfileUpdateField
           field={showFields.password}
@@ -115,7 +113,10 @@ export default function ProfileUpdateForm({ user }: { user: UserWithInfo }) {
           trigger={updateUserTrigger}
         />
       </form>
-      <ElectionModalForm open={showElectionModal} setOpen={setShowElectionModal} />
+      <ElectionModalForm
+        open={showElectionModal}
+        setOpen={setShowElectionModal}
+      />
     </>
   );
 }

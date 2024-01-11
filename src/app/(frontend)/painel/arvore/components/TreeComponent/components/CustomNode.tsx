@@ -70,7 +70,7 @@ export function CustomNode({
     },
     onSuccess: ({ data }) => {
       console.log(data);
-      const { nodes, edges } = processNodesEdges({ supporters: data });
+      const { nodes, edges } = processNodesEdges({ supporters: data as any }); //@todo
       saveNodes(nodes);
       saveEdges(edges);
       toggleNodesVisibility(node as any);

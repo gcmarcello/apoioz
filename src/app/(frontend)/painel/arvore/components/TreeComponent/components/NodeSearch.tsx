@@ -22,7 +22,7 @@ export function NodeSearch({
     action: readSupporterTrail,
     onSuccess: ({ data }) => {
       const { nodes, edges } = processNodesEdges({
-        supporters: data,
+        supporters: data as any, //@todo
       });
       saveNodes(nodes);
       saveEdges(edges);

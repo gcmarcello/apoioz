@@ -14,10 +14,10 @@ import { useMapData } from "../hooks/useMapData";
 import { Marker } from "./Marker";
 import useSWRSubscription from "swr/subscription";
 import { createMapData } from "@/app/api/panel/map/actions";
-import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
 import { parseAddresses } from "../utils/parseAddresses";
 import AddressDetailsModal from "./AddressDetailsModal";
 import { MapAddressType, MapContextProps } from "../providers/MapDataProvider";
+import { useAction } from "@odinkit/hooks/useAction";
 
 const POSITION_CLASSES = {
   bottomleft: "leaflet-bottom leaflet-left",
@@ -41,7 +41,7 @@ export default function Map() {
   >(undefined);
   const { trigger } = useAction({
     action: createMapData,
-    parser: ({ addresses }) => {
+    responseParser: ({ addresses }) => {
       mapData.setValue("addresses", parseAddresses(addresses) as any);
     },
   });

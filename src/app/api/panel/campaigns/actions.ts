@@ -33,9 +33,17 @@ export async function joinCampaign(request: JoinCampaignDto) {
 
     if (!campaignOwnerSupporter) throw "Campanha não encontrada.";
 
+    const user = (await prisma.user.findUnique({
+      where: { id: userSession.id },
+      include: {
+        info: true,
+      },
+    }))!;
+
     const supporter = await createSupporter({
+      user: user as any, //@todo
       campaignId: request.campaignId,
-      userId: userSession.id,
+      userId: user.id,
       referralId: campaignOwnerSupporter.id,
     });
 
