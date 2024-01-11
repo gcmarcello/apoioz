@@ -19,6 +19,7 @@ import { hashInfo } from "@/_shared/utils/bCrypt";
 import { answerPoll } from "../polls/service";
 import { RecursiveSupporterWithReferred } from "prisma/types/Supporter";
 import { normalizeEmail, normalizePhone } from "@/_shared/utils/format";
+import { zoneWithoutGeoJSON } from "prisma/query/Zone";
 
 export async function readSupporterBranches({
   supporterSession,
@@ -31,7 +32,11 @@ export async function readSupporterBranches({
     if (branches === 0) {
       return {
         referral: { include: { user: { include: { info: true } } } },
-        user: { include: { info: { include: { Section: true, Zone: true } } } },
+        user: {
+          include: {
+            info: { include: { Section: true, Zone: zoneWithoutGeoJSON } },
+          },
+        },
       };
     } else {
       return {
@@ -39,7 +44,9 @@ export async function readSupporterBranches({
           include: {
             referral: { include: { user: { include: { info: true } } } },
             user: {
-              include: { info: { include: { Section: true, Zone: true } } },
+              include: {
+                info: { include: { Section: true, Zone: zoneWithoutGeoJSON } },
+              },
             },
             ...generateReferredObject(branches - 1),
           },
@@ -64,7 +71,9 @@ export async function readSupporterBranches({
                 referral: { include: { user: { include: { info: true } } } },
                 user: {
                   include: {
-                    info: { include: { Section: true, Zone: true } },
+                    info: {
+                      include: { Section: true, Zone: zoneWithoutGeoJSON },
+                    },
                   },
                 },
                 ...generateReferredObject(branches - 1),
@@ -72,7 +81,7 @@ export async function readSupporterBranches({
             },
             user: {
               include: {
-                info: { include: { Section: true, Zone: true } },
+                info: { include: { Section: true, Zone: zoneWithoutGeoJSON } },
               },
             },
             referral: { include: { user: { include: { info: true } } } },
@@ -218,14 +227,7 @@ export async function readSupportersFromSupporterGroupWithRelation({
           info: {
             include: {
               Section: true,
-              Zone: {
-                select: {
-                  geoJSON: false,
-                  id: true,
-                  number: true,
-                  stateId: true,
-                },
-              },
+              Zone: zoneWithoutGeoJSON,
             },
           },
           name: true,
@@ -240,14 +242,7 @@ export async function readSupportersFromSupporterGroupWithRelation({
               info: {
                 include: {
                   Section: true,
-                  Zone: {
-                    select: {
-                      geoJSON: false,
-                      id: true,
-                      number: true,
-                      stateId: true,
-                    },
-                  },
+                  Zone: zoneWithoutGeoJSON,
                 },
               },
               name: true,
@@ -262,14 +257,7 @@ export async function readSupportersFromSupporterGroupWithRelation({
                   info: {
                     include: {
                       Section: true,
-                      Zone: {
-                        select: {
-                          geoJSON: false,
-                          id: true,
-                          number: true,
-                          stateId: true,
-                        },
-                      },
+                      Zone: zoneWithoutGeoJSON,
                     },
                   },
                   name: true,

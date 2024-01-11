@@ -10,7 +10,7 @@ import {
   SignUpAsSupporterDto,
 } from "./dto";
 import { ExistingUserMiddleware } from "./middlewares";
-import { ActionResponse } from "../_shared/utils/ActionResponse";
+import { ActionResponse } from "@odinkit/api/ActionResponse";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { createSupporter } from "../panel/supporters/service";
 import { validateInviteCode } from "./invites/service";
@@ -27,14 +27,14 @@ export async function login(request: LoginDto) {
     if (!token) throw `Erro ao efetuar login.`;
 
     cookies().set("token", token);
-
-    return ActionResponse.success({
-      data: token,
-      message: "Login realizado com sucesso!",
-    });
   } catch (err: any) {
     return ActionResponse.error(err);
   }
+
+  return ActionResponse.success({
+    redirect: "/painel",
+    message: "Login realizado com sucesso!",
+  });
 }
 
 export async function createPasswordRecovery(request: PasswordResetRequestDto) {

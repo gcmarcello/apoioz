@@ -1,6 +1,7 @@
 import { prisma } from "prisma/prisma";
 import { readZonesByCampaign } from "../../elections/zones/service";
 import { SupporterSession } from "@/middleware/functions/supporterSession.middleware";
+import { zoneWithoutGeoJSON } from "prisma/query/Zone";
 
 export async function createMapData(request: {
   supporterSession: SupporterSession;
@@ -16,7 +17,7 @@ export async function createMapData(request: {
     include: {
       Section: {
         include: {
-          Zone: { select: { id: true, number: true, stateId: true } },
+          Zone: zoneWithoutGeoJSON,
           Supporter: {
             where: {
               supporterGroupsMemberships: {

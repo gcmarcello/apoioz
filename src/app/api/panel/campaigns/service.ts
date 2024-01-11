@@ -4,12 +4,16 @@ import { NextResponse } from "next/server";
 import crypto from "crypto";
 
 import { prisma } from "prisma/prisma";
-import { readZonesByCity, readZonesByState } from "../../elections/zones/actions";
+import {
+  readZonesByCity,
+  readZonesByState,
+} from "../../elections/zones/actions";
 import { readZonesByCampaign } from "../../elections/zones/service";
 import { getEnv } from "@/_shared/utils/settings";
 import { SupporterSession } from "@/middleware/functions/supporterSession.middleware";
 import { CreateCampaignDto } from "./dto";
 import { UserSession } from "@/middleware/functions/userSession.middleware";
+import { zoneWithoutGeoJSON } from "prisma/query/Zone";
 
 export async function findCampaignById(campaignId: string) {
   return await prisma.campaign.findFirst({
@@ -33,7 +37,12 @@ export async function updateCampaign(request: any) {
     const { userSession, supporterSession, ...data } = request;
 
     const slugAvailability = await prisma.campaign.findFirst({
-      where: { AND: [{ slug: data.slug }, { NOT: { id: supporterSession.campaignId } }] },
+      where: {
+        AND: [
+          { slug: data.slug },
+          { NOT: { id: supporterSession.campaignId } },
+        ],
+      },
     });
 
     if (slugAvailability) throw "Slug já está em uso por outra campanha.";
@@ -48,9 +57,14 @@ export async function updateCampaign(request: any) {
   }
 }
 
-export async function readCampaign(request: { campaignId?: string; slug?: string }) {
+export async function readCampaign(request: {
+  campaignId?: string;
+  slug?: string;
+}) {
   const campaign = await prisma.campaign.findFirst({
-    where: request.campaignId ? { id: request.campaignId } : { slug: request.slug },
+    where: request.campaignId
+      ? { id: request.campaignId }
+      : { slug: request.slug },
   });
 
   return campaign;
@@ -84,7 +98,9 @@ export async function readCampaignBasicInfo(campaignId: string) {
   }
 }
 
-export async function generateMainPageStats(supporterSession: SupporterSession) {
+export async function generateMainPageStats(
+  supporterSession: SupporterSession
+) {
   const totalSupporters = await prisma.supporter.count({
     where: {
       campaignId: supporterSession.campaignId,
@@ -170,7 +186,7 @@ export async function generateMainPageStats(supporterSession: SupporterSession) 
     .findFirst({
       where: { id: leadingSectionCount.id },
       include: {
-        Zone: true,
+        Zone: zoneWithoutGeoJSON,
         Address: true,
       },
     })
@@ -190,7 +206,7 @@ export async function readCampaignTeamMembers(campaignId: string) {
   const teamMembers = await prisma.supporter.findMany({
     where: { campaignId: campaignId, level: { gt: 1 } },
     include: {
-      user: { include: { info: { include: { Zone: true } } } },
+      user: { include: { info: { include: { Zone: zoneWithoutGeoJSON } } } },
     },
   });
 
@@ -286,7 +302,11 @@ export async function checkUserCanJoinCampaign({
 
   if (!campaignZones) throw "Campanha não encontrada";
 
-  const userIsFromRegion = campaignZones.some((zone) => zone.id === userInfo.zoneId);
+  const userIsFromRegion = campaignZones.some(
+    (zone) => zone.id === userInfo.zoneId
+  );
 
-  return userIsFromRegion ? "canJoin" : "Este usuário não é da região da campanha.";
+  return userIsFromRegion
+    ? "canJoin"
+    : "Este usuário não é da região da campanha.";
 }

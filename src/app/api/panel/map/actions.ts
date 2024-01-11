@@ -4,7 +4,7 @@ import { UserSessionMiddleware } from "@/middleware/functions/userSession.middle
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 import * as service from "./service";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
-import { ActionResponse } from "../../_shared/utils/ActionResponse";
+import { ActionResponse } from "@odinkit/api/ActionResponse";
 import { revalidatePath } from "next/cache";
 
 export async function createMapData() {
@@ -16,7 +16,6 @@ export async function createMapData() {
     const mapData = await service.createMapData(parsedRequest);
     return ActionResponse.success({ data: mapData });
   } catch (err) {
-    console.log(err);
     return ActionResponse.error(err);
   }
 }

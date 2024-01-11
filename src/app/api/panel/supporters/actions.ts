@@ -4,12 +4,18 @@ import { UserSessionMiddleware } from "@/middleware/functions/userSession.middle
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 import { revalidatePath } from "next/cache";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
-import { ActionResponse } from "../../_shared/utils/ActionResponse";
+import { ActionResponse } from "@odinkit/api/ActionResponse";
 import { cookies } from "next/headers";
 import * as service from "./service";
-import { ReadSupportersDto, ReadSupporterBranchesDto, AddSupporterDto } from "./dto";
+import {
+  ReadSupportersDto,
+  ReadSupporterBranchesDto,
+  AddSupporterDto,
+} from "./dto";
 
-export async function readSupportersFromSupporterGroup(request?: ReadSupportersDto) {
+export async function readSupportersFromSupporterGroup(
+  request?: ReadSupportersDto
+) {
   try {
     const { request: parsedRequest } = await UseMiddlewares(request)
       .then(UserSessionMiddleware)
@@ -94,7 +100,9 @@ export async function readSupporterTrail(request?: ReadSupporterBranchesDto) {
   }
 }
 
-export async function readSupporterBranches(request?: ReadSupporterBranchesDto) {
+export async function readSupporterBranches(
+  request?: ReadSupporterBranchesDto
+) {
   try {
     const { request: parsedRequest } = await UseMiddlewares(request)
       .then(UserSessionMiddleware)
@@ -116,7 +124,8 @@ export async function leaveAsSupporter() {
       .then(UserSessionMiddleware)
       .then(SupporterSessionMiddleware);
 
-    const deleteSupporter = await service.deleteSupporterAsSupporter(parsedRequest);
+    const deleteSupporter =
+      await service.deleteSupporterAsSupporter(parsedRequest);
 
     cookies().delete("activeCampaign");
 

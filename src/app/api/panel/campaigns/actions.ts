@@ -5,7 +5,7 @@ import * as service from "./service";
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
-import { ActionResponse } from "../../_shared/utils/ActionResponse";
+import { ActionResponse } from "@odinkit/api/ActionResponse";
 import { CampaignLeaderMiddleware } from "@/middleware/functions/campaignLeader.middleware";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -64,7 +64,10 @@ export async function readCampaign(request: { campaignId: string }) {
   return campaign;
 }
 
-export async function updateCampaign(request: { campaignId: string; data: any }) {
+export async function updateCampaign(request: {
+  campaignId: string;
+  data: any;
+}) {
   try {
     const { request: parsedRequest } = await UseMiddlewares(request)
       .then(UserSessionMiddleware)
@@ -95,8 +98,9 @@ export async function fetchCampaignTeamMembers() {
 
 export async function generateMainPageStats(data: any) {
   try {
-    const { request: parsedRequest } =
-      await UseMiddlewares(data).then(UserSessionMiddleware);
+    const { request: parsedRequest } = await UseMiddlewares(data).then(
+      UserSessionMiddleware
+    );
 
     const mainStates = await service.generateMainPageStats(data);
 
@@ -111,8 +115,9 @@ export async function generateMainPageStats(data: any) {
 
 export async function createCampaign(data: CreateCampaignDto) {
   try {
-    const { request: parsedRequest } =
-      await UseMiddlewares(data).then(UserSessionMiddleware);
+    const { request: parsedRequest } = await UseMiddlewares(data).then(
+      UserSessionMiddleware
+    );
 
     const campaign = await service.createCampaign(parsedRequest);
 

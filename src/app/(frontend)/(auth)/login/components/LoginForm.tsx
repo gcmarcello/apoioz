@@ -30,15 +30,13 @@ export default function LoginForm({
 
   const { trigger: loginAction, isMutating: isLoading } = useAction({
     action: login,
-    onSuccess: () => {
-      router.push(supportRedirect ? `/${supportRedirect}` : "/painel");
-    },
     onError: (error) => {
       form.setError("root.serverError", {
         type: "400",
         message: (error as string) || "Erro inesperado",
       });
     },
+    redirect: true,
   });
 
   const generateFakeData = () => {

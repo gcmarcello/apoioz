@@ -5,7 +5,7 @@ import { UserSessionMiddleware } from "@/middleware/functions/userSession.middle
 import { revalidatePath } from "next/cache";
 import { CreateEventDto, ReadEventsAvailability, ReadEventsDto } from "./dto";
 import * as service from "./service";
-import { ActionResponse } from "../../_shared/utils/ActionResponse";
+import { ActionResponse } from "@odinkit/api/ActionResponse";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 
 export async function createEvent(request: CreateEventDto) {
@@ -49,7 +49,8 @@ export async function readEventsAvailability(request: ReadEventsAvailability) {
       .then((res) => UserSessionMiddleware(res))
       .then((res) => SupporterSessionMiddleware(res));
 
-    const eventsAvailability = await service.readEventsAvailability(parsedRequest);
+    const eventsAvailability =
+      await service.readEventsAvailability(parsedRequest);
 
     return ActionResponse.success({
       data: eventsAvailability,
@@ -59,9 +60,12 @@ export async function readEventsAvailability(request: ReadEventsAvailability) {
   }
 }
 
-export async function updateEventStatus(request: { eventId: string; status: string }) {
-  const parsedRequest = await UserSessionMiddleware({ request }).then((request) =>
-    SupporterSessionMiddleware(request)
+export async function updateEventStatus(request: {
+  eventId: string;
+  status: string;
+}) {
+  const parsedRequest = await UserSessionMiddleware({ request }).then(
+    (request) => SupporterSessionMiddleware(request)
   );
 
   await service.updateEventStatus(parsedRequest.request);
