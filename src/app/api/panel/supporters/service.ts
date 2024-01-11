@@ -22,7 +22,6 @@ import { normalizeEmail, normalizePhone } from "@/_shared/utils/format";
 import axios from "axios";
 import { zoneWithoutGeoJSON } from "prisma/query/Zone";
 
-
 export async function readSupporterBranches({
   supporterSession,
   where: { branches = 0, supporterId = null } = {},
@@ -423,7 +422,7 @@ export async function createSupporter(request: CreateSupporterDto) {
   )}/campaign/${campaign.id}/supporter`;
 
   const { data: ws } = await axios.get(wsUrl, {
-    headers: { Authorization: getEnv("NEXT_PUBLIC_WS_TOKEN") },
+    headers: { Authorization: getEnv("WS_SERVER_TOKEN") },
   });
 
   await sendEmail({
