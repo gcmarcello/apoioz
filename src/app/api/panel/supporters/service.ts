@@ -55,7 +55,7 @@ export async function readSupporterBranches({
     }
   }
 
-  const supporterTree = await prisma.supporterGroupMembership
+  const supporterBranches = await prisma.supporterGroupMembership
     .findFirst({
       where: {
         supporterId: supporterId || supporterSession.id,
@@ -91,9 +91,12 @@ export async function readSupporterBranches({
     })
     .then((m) => m?.supporter);
 
-  if (!supporterTree) throw "Você não tem permissão para acessar este apoiador";
+  if (!supporterBranches)
+    throw "Você não tem permissão para acessar este apoiador";
 
-  return supporterTree as any as RecursiveSupporterWithReferred & {
+  console.log(supporterBranches);
+
+  return supporterBranches as any as RecursiveSupporterWithReferred & {
     user: UserWithInfo;
   };
 }
@@ -108,6 +111,11 @@ export async function readSupporterTrail({
   const supporterSupporterGroupsOwners = await prisma.supporterGroup
     .findMany({
       where: {
+        ownerId: {
+          not: {
+            equals: supporterSession.referralId || undefined,
+          },
+        },
         memberships: {
           some: {
             supporterId: supporterId || supporterSession.id,

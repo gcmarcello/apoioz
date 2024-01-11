@@ -27,9 +27,13 @@ export function NodeSearch({
       saveNodes(nodes);
       saveEdges(edges);
       toggleNodesVisibility(nodes as any);
+      console.log(data);
       setTimeout(() => {
-        const node = nodes.find((node) => searchForm.getValues("supporter") === node.id)!;
+        const node = nodes.find(
+          (node) => searchForm.getValues("supporter") === node.id
+        )!;
         fitView({
+          nodes: [node],
           duration: 2500,
           padding: 1,
         });

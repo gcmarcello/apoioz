@@ -9,6 +9,8 @@ export function getPageName(url: string, mobile: boolean = false): string {
         return "Painel";
       case "time":
         return "Time";
+      case "arvore":
+        return "Árvore";
       case "calendario":
         return "Calendário";
       case "relatorios":
@@ -36,6 +38,8 @@ export function getPageName(url: string, mobile: boolean = false): string {
         return "Calendário de Eventos";
       case "relatorios":
         return "Relatórios de Apoiador";
+      case "arvore":
+        return "Árvore";
       case "pesquisas":
         return "Painel de Pesquisas";
       case "whatsapp":

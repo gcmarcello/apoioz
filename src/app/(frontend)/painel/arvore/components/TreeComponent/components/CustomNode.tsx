@@ -1,4 +1,11 @@
-import { Edge, Handle, Node, NodeProps, Position, useReactFlow } from "reactflow";
+import {
+  Edge,
+  Handle,
+  Node,
+  NodeProps,
+  Position,
+  useReactFlow,
+} from "reactflow";
 
 import clsx from "clsx";
 
@@ -56,11 +63,13 @@ export function CustomNode({
   } = useAction({
     action: readSupporterBranches,
     responseParser: (data) => {
-      if (data?.referred?.length || 0 < 1) throw "No referred found";
+      if (!data?.referred?.length || data?.referred?.length < 1)
+        throw "No referred found";
       const { referred, ...rest } = data as any;
       return [rest, ...referred];
     },
     onSuccess: ({ data }) => {
+      console.log(data);
       const { nodes, edges } = processNodesEdges({ supporters: data });
       saveNodes(nodes);
       saveEdges(edges);
@@ -104,7 +113,9 @@ export function CustomNode({
         onClick={() => {
           node.data.hasChildren
             ? toggleNodesVisibility(node as any)
-            : fetchSupporterReferred({ where: { supporterId: node.id, branches: 1 } });
+            : fetchSupporterReferred({
+                where: { supporterId: node.id, branches: 1 },
+              });
         }}
       >
         {isFetching ? (
