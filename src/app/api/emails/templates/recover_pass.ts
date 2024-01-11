@@ -1,9 +1,9 @@
-<!doctype html>
+export const recover_pass = `<!doctype html>
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Boas-Vindas - ApoioZ</title>
+    <title>Recuperação de Senha - ApoioZ</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -49,18 +49,18 @@
   <body>
     <div class="email-container">
       <div class="email-header">
-        <h1>Bem-vindo(a) ao ApoioZ!</h1>
+        <h1>Recuperação de Senha - ApoioZ</h1>
       </div>
       <div class="email-content">
-        <p>Olá {{name}}!</p>
-        <p>Bem vindo à campanha {{campaignName}} no sistema da ApoioZ.</p>
-        <p style="text-align: center">
-          <a href="{{siteLink}}" class="button">Acesse o Site</a>
-        </p>
+        <p>Olá, {{name}}!</p>
         <p>
-          Descubra todos os recursos que o sistema tem a oferecer. Participe e ajude sua
-          rede de apoio a crescer!
+          Você solicitou a recuperação de sua senha no site ApoioZ. Clique no botão abaixo
+          para redefinir sua senha:
         </p>
+        <p style="text-align: center">
+          <a href="{{recoveryLink}}" class="button">Redefinir Senha</a>
+        </p>
+        <p>Se você não solicitou a recuperação de senha, por favor ignore este e-mail.</p>
         <p>Atenciosamente,<br />Equipe ApoioZ</p>
       </div>
       <div class="email-footer">
@@ -69,3 +69,4 @@
     </div>
   </body>
 </html>
+`;

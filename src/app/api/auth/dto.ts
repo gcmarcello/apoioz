@@ -4,7 +4,7 @@ import { pollAnswerDto } from "../panel/polls/dto";
 
 export const signUpAsSupporterDto = z.object({
   user: createUserDto,
-  poll: pollAnswerDto.optional(),
+  poll: pollAnswerDto.nullable(),
   inviteCodeId: z.string(),
 });
 
@@ -42,17 +42,35 @@ export const signupDto = z.object({
 
 export type SignupDto = z.infer<typeof signupDto>;
 
-export const passwordResetDto = z.object({
-  identifier: z.string().email(),
+export const passwordResetRequestDto = z.object({
+  identifier: z.string(), //@gcmarcello todo: add correct validation
 });
+
+export type PasswordResetRequestDto = z.infer<typeof passwordResetRequestDto>;
+
+export const passwordResetDto = z
+  .object({
+    password: z.string().min(6, { message: "A senha deve ter no mínimo 6 caracteres" }),
+    confirmPassword: z
+      .string()
+      .min(6, { message: "A senha deve ter no mínimo 6 caracteres" }),
+    code: z.string(),
+    userId: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword);
 
 export type PasswordResetDto = z.infer<typeof passwordResetDto>;
 
-export const passwordUpdateDto = z.object({
-  password: z.string().min(6),
-  confirmPassword: z.string().min(6),
-  code: z.string(),
-  userId: z.string(),
-});
+export const passwordUpdateDto = z
+  .object({
+    password: z.string().min(6, { message: "A senha deve ter no mínimo 6 caracteres" }),
+    confirmPassword: z
+      .string()
+      .min(6, { message: "A senha deve ter no mínimo 6 caracteres" }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "As senhas não são iguais",
+  });
 
 export type PasswordUpdateDto = z.infer<typeof passwordUpdateDto>;

@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import {
   LoginDto,
   PasswordResetDto,
+  PasswordResetRequestDto,
   PasswordUpdateDto,
   SignUpAsSupporterDto,
 } from "./dto";
@@ -13,10 +14,13 @@ import { ActionResponse } from "../_shared/utils/ActionResponse";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { createSupporter } from "../panel/supporters/service";
 import { validateInviteCode } from "./invites/service";
+import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
 
 export async function login(request: LoginDto) {
   try {
-    const parsedRequest = await UseMiddlewares(request).then(ExistingUserMiddleware);
+    const parsedRequest = await UseMiddlewares(request).then(
+      ExistingUserMiddleware
+    );
 
     const token = await authService.login(parsedRequest);
 
@@ -33,7 +37,7 @@ export async function login(request: LoginDto) {
   }
 }
 
-export async function createPasswordRecovery(request: PasswordResetDto) {
+export async function createPasswordRecovery(request: PasswordResetRequestDto) {
   try {
     return ActionResponse.success({
       data: await authService.createPasswordRecovery(request.identifier),
@@ -56,10 +60,25 @@ export async function checkRecoveryCode(request: any) {
   }
 }
 
+export async function resetPassword(request: PasswordResetDto) {
+  try {
+    await authService.resetPassword(request);
+    cookies().set("token", authService.createToken({ id: request.userId }));
+    return ActionResponse.success({
+      message: "Senha alterada com sucesso!",
+      data: null,
+    });
+  } catch (error) {
+    return ActionResponse.error(error);
+  }
+}
+
 export async function updatePassword(request: PasswordUpdateDto) {
   try {
-    await authService.updatePassword(request);
-    cookies().set("token", authService.createToken({ id: request.userId }));
+    const { request: parsedRequest } = await UseMiddlewares(request).then(
+      UserSessionMiddleware
+    );
+    await authService.updatePassword(parsedRequest);
     return ActionResponse.success({
       message: "Senha alterada com sucesso!",
       data: null,

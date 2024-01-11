@@ -2,14 +2,26 @@
 import clsx from "clsx";
 import React, { useId } from "react";
 import { Controller, FieldValues } from "react-hook-form";
-import { BaseProps, Field, fieldClasses, getErrorMessage } from "./Field";
+import {
+  BaseProps,
+  Field,
+  fieldClasses,
+  getErrorMessage,
+  passwordFieldClasses,
+} from "./Field";
 import InputMask from "react-input-mask";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 
 type TextFieldProps<Fields extends FieldValues> = Omit<
   React.ComponentPropsWithoutRef<"input">,
   "id"
 > &
   BaseProps<Fields>;
+
+type PasswordFieldProps<Fields extends FieldValues> = Omit<
+  React.ComponentPropsWithoutRef<"input"> & BaseProps<Fields>,
+  "type" | "id"
+>;
 
 type TextAreaFieldProps<Fields extends FieldValues> = Omit<
   React.ComponentPropsWithoutRef<"textarea">,
@@ -30,7 +42,7 @@ export function TextField<T extends FieldValues>(props: TextFieldProps<T>) {
     fieldClasses,
     props.className,
     errorMessage
-      ? "border-red-500 ring-red-500"
+      ? "focus:border-red-400 focus:ring-red-400 border-red-500 ring-red-500"
       : "focus:border-indigo-500 focus:ring-indigo-500 ",
     "pr-8"
   );
@@ -50,6 +62,35 @@ export function TextField<T extends FieldValues>(props: TextFieldProps<T>) {
         className={className}
       />
     </Field>
+  );
+}
+
+export function PasswordField<T extends FieldValues>(props: PasswordFieldProps<T>) {
+  const id = useId();
+  const [showPassword, setShowPassword] = React.useState(false);
+
+  const errorMessage = getErrorMessage(props.hform, props.name);
+
+  return (
+    <TextField
+      {...props}
+      type={showPassword ? "text" : "password"}
+      relative={
+        <button onClick={() => setShowPassword((prev) => !prev)} type="button">
+          <div
+            className={clsx(
+              "-ml-0.5 h-5 w-5",
+              props.hform.formState.errors[props.name]?.message
+                ? "text-red-400"
+                : "text-gray-400"
+            )}
+            aria-hidden="true"
+          >
+            {showPassword ? <EyeSlashIcon /> : <EyeIcon />}
+          </div>
+        </button>
+      }
+    />
   );
 }
 

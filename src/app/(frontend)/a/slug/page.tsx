@@ -1,16 +1,16 @@
 "use server";
-import { CampaignHeader } from "../_shared/components/CampaignHeader";
+import { CampaignHeader } from "../../_shared/components/CampaignHeader";
 import {
   checkUserCanJoinCampaign,
   readCampaign,
 } from "@/app/api/panel/campaigns/service";
 import { notFound, redirect } from "next/navigation";
-import { Button } from "../_shared/components/Button";
-import ProfileDropdown from "../_shared/components/navigation/ProfileDropdown";
-import { TopNavigation } from "../_shared/components/navigation/TopNavigation";
-import { SectionTitle } from "../_shared/components/text/SectionTitle";
+import { Button } from "../../_shared/components/Button";
+import ProfileDropdown from "../../_shared/components/navigation/ProfileDropdown";
+import { TopNavigation } from "../../_shared/components/navigation/TopNavigation";
+import { SectionTitle } from "../../_shared/components/text/SectionTitle";
 import Link from "next/link";
-import ErrorAlert from "../_shared/components/alerts/errorAlert";
+import ErrorAlert from "../../_shared/components/alerts/errorAlert";
 import JoinCampaign from "./components/JoinCampaign";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
@@ -55,7 +55,8 @@ export default async function CampaignLandingPage({
           campaign={campaign}
           subtitle={
             userCanJoinCampaign != "canJoin"
-              ? userCanJoinCampaign === "sameCampaign"
+              ? userCanJoinCampaign ===
+                "Este email ou telefone já estão cadastrados nesta campanha."
                 ? "Você já faz parte da nossa rede, muito obrigado pelo apoio!"
                 : ""
               : "Seja um apoiador da nossa campanha!"
@@ -68,7 +69,8 @@ export default async function CampaignLandingPage({
         )}
 
         {userCanJoinCampaign != "canJoin" &&
-          (userCanJoinCampaign === "otherCampaign" ? (
+          (userCanJoinCampaign ===
+          "Este email ou telefone já estão cadastrados em outra campanha da mesma cidade, tipo e ano." ? (
             <div className="mx-4 my-3">
               <ErrorAlert
                 errors={["Você já está cadastrado numa campanha dessa região."]}

@@ -1,9 +1,9 @@
-<!doctype html>
+export const event_confirmed = `<!doctype html>
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Evento Criado com Sucesso - ApoioZ</title>
+    <title>{{eventName}} - {{campaignName}}</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -49,29 +49,27 @@
   <body>
     <div class="email-container">
       <div class="email-header">
-        <h1>Seu evento foi criado com sucesso!</h1>
+        <h1>{{eventName}}</h1>
       </div>
       <div class="email-content">
-        <p>Olá {{organizerName}},</p>
+        <p>Olá,</p>
         <p>
-          Seu evento "{{eventName}}" foi criado com sucesso no ApoioZ! Ele está agora sob
-          análise pela equipe de campanha.
+          Temos o prazer de anunciar que o evento "{{eventName}}" foi confirmado e estamos
+          ansiosos para a sua participação!
         </p>
-        <p>Aqui estão os detalhes do seu evento:</p>
+        <p>Aqui estão os detalhes do evento:</p>
         <ul>
-          <li>Nome do Evento: {{eventName}}</li>
           <li>Data: {{eventDate}}</li>
           <li>Local: {{eventLocation}}</li>
-          <li>Descrição: {{eventDescription}}</li>
         </ul>
         <p style="text-align: center">
           <a href="https://apoioz.com.br/painel/calendario" class="button"
-            >Ver Detalhes do Evento</a
+            >Mais Informações</a
           >
         </p>
         <p>
-          Caso o evento seja confirmado, você receberá um e-mail com a confirmação do
-          evento e um contato por meio da equipe de campanha.
+          Prepare-se para uma experiência incrível e não hesite em entrar em contato
+          conosco para mais informações.
         </p>
         <p>Atenciosamente,<br />Equipe ApoioZ</p>
       </div>
@@ -81,3 +79,4 @@
     </div>
   </body>
 </html>
+`;

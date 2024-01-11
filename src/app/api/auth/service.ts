@@ -7,6 +7,10 @@ import { sendEmail } from "../emails/service";
 import { compareHash, hashInfo } from "@/_shared/utils/bCrypt";
 import { normalizePhone, maskEmail, normalizeEmail } from "@/_shared/utils/format";
 import { getEnv } from "@/_shared/utils/settings";
+import {
+  UserSession,
+  UserSessionMiddleware,
+} from "@/middleware/functions/userSession.middleware";
 
 export async function login(request: LoginDto & { user: User; isEmail: boolean }) {
   if (!request.user.password)
@@ -52,7 +56,7 @@ export async function createPasswordRecovery(identifier: string) {
 
   await sendEmail({
     to: potentialUser.email,
-    templateId: "password_recovery",
+    templateId: "recover_pass",
     dynamicData: {
       name: potentialUser.name,
       recoveryLink: `${getEnv("NEXT_PUBLIC_SITE_URL")}/recuperar/${recovery.id}`,
@@ -83,7 +87,7 @@ export async function checkRecoveryCode(code: string) {
   };
 }
 
-export async function updatePassword(request: PasswordUpdateDto) {
+export async function resetPassword(request: PasswordResetDto) {
   const verifyCode = await checkRecoveryCode(request.code);
 
   await prisma.user.update({
@@ -94,5 +98,14 @@ export async function updatePassword(request: PasswordUpdateDto) {
   await prisma.passwordRecovery.update({
     where: { id: verifyCode.code },
     data: { expiresAt: dayjs().toISOString() },
+  });
+}
+
+export async function updatePassword(
+  request: PasswordUpdateDto & { userSession: UserSession }
+) {
+  await prisma.user.update({
+    data: { password: await hashInfo(request.password) },
+    where: { id: request.userSession.id },
   });
 }

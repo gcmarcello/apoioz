@@ -1,94 +1,68 @@
 "use client";
 
 import { FormProvider, useForm } from "react-hook-form";
-import { toProperCase } from "@/_shared/utils/format";
-import { generateRandomHexColor } from "@/app/(frontend)/_shared/utils/colors";
-import { ExtractSuccessResponse } from "@/app/api/_shared/utils/ActionResponse";
-import { createMapData } from "@/app/api/panel/map/actions";
 import { ReactNode } from "react";
 import { Neighborhood, Zone, Address, Prisma } from "@prisma/client";
+import { parsedNeighborhoods } from "../utils/parseNeighborhoods";
+import { parseZones } from "../utils/parseZones";
+import { parseAddresses } from "../utils/parseAddresses";
+import { RawMapData } from "../types/RawMapData";
+import { SupporterSession } from "@/middleware/functions/supporterSession.middleware";
 
-export type MapDataContext = {
-  neighborhoods: {
-    label: string | undefined;
-    color: string;
-    checked: boolean;
-    id: string;
-    name: string;
-    cityId: string;
-    geoJSON: Prisma.JsonValue;
-  }[];
-  zones: {
-    label: number;
-    color: string;
-    checked: boolean;
-    number: number;
-    id: string;
-    stateId: string;
-    geoJSON: Prisma.JsonValue;
-  }[];
-  addresses: {
-    address: string | null;
-    geocode: number[];
-    location: string | null;
-    neighborhood: string | null;
-    zone: number;
-    sectionsCount: number;
-    supportersCount: number;
-    id: string;
-  }[];
+export type MapNeighborhoodType = {
+  label: string | undefined;
+  color: string;
+  checked: boolean;
+  id: string;
+  name: string;
+  cityId: string;
+  geoJSON: Prisma.JsonValue;
+};
+
+export type MapZoneType = {
+  label: number;
+  color: string;
+  checked: boolean;
+  number: number;
+  id: string;
+  stateId: string;
+  geoJSON: Prisma.JsonValue;
+};
+
+export type MapAddressType = {
+  address: string | null;
+  geocode: number[];
+  location: string | null;
+  neighborhood: string | null;
+  zone: number;
+  sectionsCount: number;
+  supportersCount: number;
+  id: string;
+};
+
+export type MapContextProps = {
+  neighborhoods: MapNeighborhoodType[];
+  zones: MapZoneType[];
+  addresses: MapAddressType[];
   sections: {
     showEmptySections: boolean;
   };
+  supporterSession: SupporterSession;
 };
 
 export default function MapDataProvider({
   children,
-  value: { zones, neighborhoods, addresses },
+  value,
 }: {
   children: ReactNode;
-  value: ExtractSuccessResponse<typeof createMapData>;
+  value: RawMapData;
 }) {
-  const parsedNeighborhoods = neighborhoods
-    .map((n) => ({
-      ...n,
-      label: toProperCase(n.name),
-      color: generateRandomHexColor(),
-      checked: false,
-    }))
-    .sort((a: any, b: any) => a.label - b.label);
-
-  const parsedZones = zones!
-    .map((z) => ({
-      ...z,
-      label: z.number,
-      color: generateRandomHexColor(),
-      checked: false,
-    }))
-    .sort((a: any, b: any) => a.label - b.label);
-
-  const parsedAddresses = addresses.map((a) => {
-    const sectionsCount = a.Section.length;
-    const supportersCount = a.Section.reduce((accumulator, section) => {
-      return accumulator + section.Supporter.length;
-    }, 0);
-    return {
-      address: a.address,
-      geocode: [Number(a.lat), Number(a.lng)],
-      location: a.location,
-      neighborhood: a.neighborhood,
-      zone: a.Section[0].Zone.number,
-      sectionsCount,
-      supportersCount,
-      id: a.id,
-    };
-  });
-
-  const mapData = useForm<MapDataContext>({
+  const form = useForm<MapContextProps>({
     defaultValues: {
-      addresses: parsedAddresses,
-      zones: parsedZones,
-      neighborhoods: parsedNeighborhoods,
+      neighborhoods: parsedNeighborhoods(value.neighborhoods),
+      zones: parseZones(value.zones),
+      addresses: parseAddresses(value.addresses),
+      supporterSession: value.supporterSession,
       sections: {
         showEmptySections: false,
       },
@@ -96,5 +70,5 @@ export default function MapDataProvider({
     mode: "onChange",
   });
 
-  return <FormProvider {...mapData}>{children}</FormProvider>;
+  return <FormProvider {...form}>{children}</FormProvider>;
 }

@@ -1,9 +1,9 @@
-<!doctype html>
+export const event_created = `<!doctype html>
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Recuperação de Senha - ApoioZ</title>
+    <title>Evento Criado com Sucesso - ApoioZ</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -49,18 +49,30 @@
   <body>
     <div class="email-container">
       <div class="email-header">
-        <h1>Recuperação de Senha - ApoioZ</h1>
+        <h1>Seu evento foi criado com sucesso!</h1>
       </div>
       <div class="email-content">
-        <p>Olá, {{name}}</p>
+        <p>Olá {{organizerName}},</p>
         <p>
-          Você solicitou a recuperação de sua senha no site ApoioZ. Clique no botão abaixo
-          para redefinir sua senha:
+          Seu evento "{{eventName}}" foi criado com sucesso no ApoioZ! Ele está agora sob
+          análise pela equipe de campanha.
         </p>
+        <p>Aqui estão os detalhes do seu evento:</p>
+        <ul>
+          <li>Nome do Evento: {{eventName}}</li>
+          <li>Data: {{eventDate}}</li>
+          <li>Local: {{eventLocation}}</li>
+          <li>Descrição: {{eventDescription}}</li>
+        </ul>
         <p style="text-align: center">
-          <a href="{{recoveryLink}}" class="button">Redefinir Senha</a>
+          <a href="https://apoioz.com.br/painel/calendario" class="button"
+            >Ver Detalhes do Evento</a
+          >
         </p>
-        <p>Se você não solicitou a recuperação de senha, por favor ignore este e-mail.</p>
+        <p>
+          Caso o evento seja confirmado, você receberá um e-mail com a confirmação do
+          evento e um contato por meio da equipe de campanha.
+        </p>
         <p>Atenciosamente,<br />Equipe ApoioZ</p>
       </div>
       <div class="email-footer">
@@ -69,3 +81,4 @@
     </div>
   </body>
 </html>
+`;

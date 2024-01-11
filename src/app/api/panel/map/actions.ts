@@ -5,6 +5,7 @@ import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSess
 import * as service from "./service";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { ActionResponse } from "../../_shared/utils/ActionResponse";
+import { revalidatePath } from "next/cache";
 
 export async function createMapData() {
   try {
@@ -18,4 +19,8 @@ export async function createMapData() {
     console.log(err);
     return ActionResponse.error(err);
   }
+}
+
+export async function revalidateMapData() {
+  revalidatePath("/painel/mapa");
 }

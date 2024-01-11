@@ -1,9 +1,10 @@
 "use client";
 
+import { Logo } from "@/app/(frontend)/_shared/components/Logo";
 import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 import { useAction } from "@odinkit/hooks/useAction";
-import { updatePassword } from "@/app/api/auth/action";
+import { resetPassword, updatePassword } from "@/app/api/auth/action";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -35,21 +36,18 @@ export default function NewPasswordForm({
     trigger: submitPasswordReset,
     isMutating: loading,
   } = useAction({
-    action: updatePassword,
+    action: resetPassword,
     onSuccess: () => {
       router.push("/painel");
     },
-    onError: (err) => showToast({ message: err, title: "Erro", variant: "error" }),
+    onError: (err) =>
+      showToast({ message: err, title: "Erro", variant: "error" }),
   });
 
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center bg-white px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <img
-          className="mx-auto h-10 w-auto"
-          src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-          alt="Your Company"
-        />
+        <Logo color="indigo" height={150} width={150} className="mx-auto" />
 
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-700">
           Olá {resetInfo.userName}!
@@ -58,8 +56,8 @@ export default function NewPasswordForm({
 
       <div className="my-2 flex flex-col justify-end space-y-4 sm:mx-auto sm:w-full sm:max-w-sm">
         <p className="mb-2 text-center text-sm text-gray-500">
-          Digite e confime sua nova senha abaixo para reaver o acesso ao painel de
-          controle das redes de apoio que você participa!
+          Digite e confime sua nova senha abaixo para reaver o acesso ao painel
+          de controle das redes de apoio que você participa!
         </p>
         <form
           onSubmit={form.handleSubmit((data) => submitPasswordReset(data))}
@@ -92,7 +90,10 @@ export default function NewPasswordForm({
                   aria-hidden="true"
                 />
               ) : (
-                <EyeIcon className="-ml-0.5 h-5 w-5 text-gray-400" aria-hidden="true" />
+                <EyeIcon
+                  className="-ml-0.5 h-5 w-5 text-gray-400"
+                  aria-hidden="true"
+                />
               )}
             </button>
           </div>

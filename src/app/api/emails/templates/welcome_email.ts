@@ -1,9 +1,9 @@
-<!doctype html>
+export const welcome_email = `<!doctype html>
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Convite Aceito - ApoioZ</title>
+    <title>Boas-Vindas - ApoioZ</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -49,21 +49,17 @@
   <body>
     <div class="email-container">
       <div class="email-header">
-        <h1>Parabéns, seu convite foi aceito!</h1>
+        <h1>Bem-vindo(a) ao ApoioZ!</h1>
       </div>
       <div class="email-content">
-        <p>Olá,</p>
-        <p>
-          Boas notícias! {{supporterName}} entrou na campanha {{campaignName}} no ApoioZ
-          usando o seu link de convite. Agradecemos por ajudar a crescer a nossa
-          comunidade!
-        </p>
+        <p>Olá {{name}}!</p>
+        <p>Bem vindo à campanha {{campaignName}} no sistema da ApoioZ.</p>
         <p style="text-align: center">
-          <a href="{{siteLink}}" class="button">Veja seu Progresso</a>
+          <a href="{{siteLink}}" class="button">Acesse o Site</a>
         </p>
         <p>
-          Continue aumentando sua rede e aproveite as vantagens de ser um membro ativo da
-          comunidade.
+          Descubra todos os recursos que o sistema tem a oferecer. Participe e ajude sua
+          rede de apoio a crescer!
         </p>
         <p>Atenciosamente,<br />Equipe ApoioZ</p>
       </div>
@@ -73,3 +69,4 @@
     </div>
   </body>
 </html>
+`;

@@ -1,4 +1,6 @@
+import { getEnv, isDev } from "@/_shared/utils/settings";
 import { Pagination } from "../dto/read";
+import { isString } from "lodash";
 
 export interface SuccessResponse<T> {
   data: T;
@@ -31,14 +33,19 @@ export class ActionResponse {
   }
 
   public static error(message: unknown = "Operação falhou"): ErrorResponse {
-    if (typeof message != "string" && !Array.isArray(message)) {
-      message = "Operação falhou";
+    if (!isDev) {
+      if (typeof message != "string" && !Array.isArray(message)) {
+        message = "Operação falhou";
+      }
+
+      if (Array.isArray(message)) {
+        message = message.join(", ");
+      }
     }
 
-    if (Array.isArray(message)) {
-      message = message.join(", ");
-    }
-
-    return { message: message as string, error: true };
+    return {
+      message: isString(message) ? message : (JSON.stringify(message) as string),
+      error: true,
+    };
   }
 }

@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { ParagraphLink } from "../_shared/components/text/ParagraphLink";
 import { ArrowLeftCircleIcon } from "@heroicons/react/24/solid";
 import ProfileUpdateForm from "../painel/configuracoes/components/ProfileUpdateForm";
+import SettingsNavbar from "./components/SettingsNavbar";
 
 export default async function SettingsPage() {
   const userId = headers().get("userId");
@@ -20,7 +21,7 @@ export default async function SettingsPage() {
 
   return (
     <>
-      <main className="px-4 sm:px-6 lg:flex-auto lg:px-0">
+      <main className="ms-6 px-4 sm:px-6 lg:flex-auto lg:px-0">
         <TopNavigation className="flex justify-between p-4 shadow-md">
           <div className="block">
             <ParagraphLink href="/painel">
@@ -33,6 +34,7 @@ export default async function SettingsPage() {
           </div>
           <ProfileDropdown user={user} />
         </TopNavigation>
+
         <div className="mb-10 mt-24 max-w-2xl space-y-16 sm:space-y-20 lg:mx-4 lg:max-w-none">
           <div className="lg:px-20">
             <h2 className="text-base font-semibold leading-7 text-gray-900">Perfil</h2>

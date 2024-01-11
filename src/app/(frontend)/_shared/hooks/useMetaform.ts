@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 export type MetaForm = {
   form: any;
   submit: any;
+  isSubmitting: any;
 };
 
 export const useMetaForm = () => {
@@ -15,5 +16,7 @@ export const useMetaForm = () => {
 
   const reset = metaForm?.form?.reset;
 
-  return { submit, reset, isValid, setMetaform };
+  const isSubmitting = metaForm?.isSubmitting;
+
+  return { submit, reset, isValid, setMetaform, isSubmitting };
 };

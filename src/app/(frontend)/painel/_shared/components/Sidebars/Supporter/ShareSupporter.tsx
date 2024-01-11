@@ -76,13 +76,18 @@ export function ShareSupporter({
       </div>
 
       <div className="w-[300px] space-y-4">
-        {`${window.location.origin}/apoiar/${inviteCode?.id}`}
         <button
           onClick={(e) => {
             e.preventDefault();
             navigator.clipboard
               .writeText(`${window.location.origin}/apoiar/${inviteCode?.id}`)
               .catch((err) => console.log(err));
+
+            showToast({
+              variant: "success",
+              title: "Link copiado",
+              message: "O link foi copiado para a área de transferência",
+            });
           }}
           className="w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
         >
@@ -105,8 +110,8 @@ export function ShareSupporter({
           </div>
         </Link>
         <div className="text-center text-sm text-gray-500">
-          O QR Code e links são válidos por 10 minutos. Após este período, clique no botão
-          acima para gerar novos.
+          O QR Code e links são válidos por 10 minutos. Após este período,
+          clique no botão acima para gerar novos.
         </div>
       </div>
     </div>

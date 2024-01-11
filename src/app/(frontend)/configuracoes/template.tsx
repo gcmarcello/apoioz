@@ -14,7 +14,6 @@ export const metadata: Metadata = {
 export default async function RootTemplate({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <SettingsNavbar />
       <main>{children}</main>
     </>
   );

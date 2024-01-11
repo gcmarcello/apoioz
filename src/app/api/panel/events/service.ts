@@ -18,8 +18,8 @@ export async function createEvent(
     data: {
       name: request.name,
       campaignId: request.supporterSession.campaignId,
-      dateStart: request.dateStart.value,
-      dateEnd: request.dateEnd.value,
+      dateStart: request.dateStart,
+      dateEnd: request.dateEnd,
       description: request.description,
       location: request.location,
       status: request.supporterSession.level === 4 ? "active" : "pending",
@@ -69,6 +69,7 @@ export async function createEvent(
       },
       templateId: "event_created",
     });
+
     await sendEmail({
       to: leader.user.email,
       dynamicData: {
@@ -154,7 +155,7 @@ export async function readEventsAvailability(
   });
 
   return {
-    availableTimes: availableTimeslots,
+    availableTimes: availableTimeslots.map((slot) => slot.toISOString()),
     eventsTimestamps: eventTimestamps,
   };
 }

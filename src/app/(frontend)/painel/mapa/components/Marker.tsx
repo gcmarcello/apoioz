@@ -7,9 +7,9 @@ export function Marker({
   ...props
 }: {
   children: ReactNode;
-  customOptions: {
-    supportersCount: number;
+  customOptions?: {
+    supportersCount?: number;
   };
 } & ComponentProps<typeof _Marker>) {
-  return <Marker {...props}>{children}</Marker>;
+  return <_Marker {...props}>{children}</_Marker>;
 }

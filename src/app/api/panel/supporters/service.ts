@@ -1,11 +1,14 @@
 import { Supporter } from "@prisma/client";
 import { UserWithInfo, UserWithoutPassword } from "prisma/types/User";
-import { getEnv } from "@/_shared/utils/settings";
+import { getEnv, isProd } from "@/_shared/utils/settings";
 import dayjs from "dayjs";
 var customParseFormat = require("dayjs/plugin/customParseFormat");
 dayjs.extend(customParseFormat);
 import { sendEmail } from "../../emails/service";
-import { checkUserCanJoinCampaign, findCampaignById } from "../campaigns/service";
+import {
+  checkUserCanJoinCampaign,
+  findCampaignById,
+} from "../campaigns/service";
 import {
   AddSupporterDto,
   CreateSupporterDto,
@@ -15,6 +18,7 @@ import {
 import { hashInfo } from "@/_shared/utils/bCrypt";
 import { answerPoll } from "../polls/service";
 import { RecursiveSupporterWithReferred } from "prisma/types/Supporter";
+import { normalizeEmail, normalizePhone } from "@/_shared/utils/format";
 
 export async function readSupporterBranches({
   supporterSession,
@@ -80,7 +84,9 @@ export async function readSupporterBranches({
 
   if (!supporterTree) throw "Você não tem permissão para acessar este apoiador";
 
-  return supporterTree as any as RecursiveSupporterWithReferred & { user: UserWithInfo };
+  return supporterTree as any as RecursiveSupporterWithReferred & {
+    user: UserWithInfo;
+  };
 }
 
 export async function readSupporterTrail({
@@ -209,7 +215,19 @@ export async function readSupportersFromSupporterGroupWithRelation({
     include: {
       user: {
         select: {
-          info: { include: { Section: true, Zone: true } },
+          info: {
+            include: {
+              Section: true,
+              Zone: {
+                select: {
+                  geoJSON: false,
+                  id: true,
+                  number: true,
+                  stateId: true,
+                },
+              },
+            },
+          },
           name: true,
           email: true,
           phone: true,
@@ -219,7 +237,19 @@ export async function readSupportersFromSupporterGroupWithRelation({
         include: {
           user: {
             select: {
-              info: { include: { Section: true, Zone: true } },
+              info: {
+                include: {
+                  Section: true,
+                  Zone: {
+                    select: {
+                      geoJSON: false,
+                      id: true,
+                      number: true,
+                      stateId: true,
+                    },
+                  },
+                },
+              },
               name: true,
               email: true,
               phone: true,
@@ -229,7 +259,19 @@ export async function readSupportersFromSupporterGroupWithRelation({
             include: {
               user: {
                 select: {
-                  info: { include: { Section: true, Zone: true } },
+                  info: {
+                    include: {
+                      Section: true,
+                      Zone: {
+                        select: {
+                          geoJSON: false,
+                          id: true,
+                          number: true,
+                          stateId: true,
+                        },
+                      },
+                    },
+                  },
                   name: true,
                   email: true,
                   phone: true,
@@ -257,10 +299,10 @@ export async function createSupporter(request: CreateSupporterDto) {
     where: {
       OR: [
         {
-          email: request.user?.email,
+          email: normalizeEmail(request.user.email),
         },
         {
-          phone: request.user?.phone,
+          phone: normalizePhone(request.user.phone),
         },
         {
           id: request?.userId,
@@ -313,7 +355,7 @@ export async function createSupporter(request: CreateSupporterDto) {
 
   const user = existingUser || request.user!;
 
-  const userId = request.userId || crypto.randomUUID();
+  const userId = request?.userId || crypto.randomUUID();
 
   const supporterId = crypto.randomUUID();
 
@@ -323,7 +365,9 @@ export async function createSupporter(request: CreateSupporterDto) {
       id: supporterId,
       level: 1,
       Section: {
-        connect: user?.info?.sectionId ? { id: user?.info?.sectionId } : undefined,
+        connect: user?.info?.sectionId
+          ? { id: user?.info?.sectionId }
+          : undefined,
       },
       Zone: {
         connect: user?.info?.zoneId ? { id: user?.info?.zoneId } : undefined,
@@ -337,13 +381,16 @@ export async function createSupporter(request: CreateSupporterDto) {
           },
           create: {
             id: userId,
-            email: user.email,
+            email: normalizeEmail(user.email),
             name: user.name,
-            phone: user.phone,
+            phone: normalizePhone(user.phone),
             password: user.password ? await hashInfo(user.password) : undefined,
             info: {
               create: {
-                birthDate: dayjs(user.info?.birthDate, "DD/MM/YYYY").toISOString(),
+                birthDate: dayjs(
+                  user.info?.birthDate,
+                  "DD/MM/YYYY"
+                ).toISOString(),
                 zoneId: user.info?.zoneId,
                 sectionId: user.info?.sectionId,
               },
@@ -353,19 +400,16 @@ export async function createSupporter(request: CreateSupporterDto) {
         },
       },
       SupporterGroup: {
-        create: {},
-      },
-      supporterGroupsMemberships: {
-        create: [
-          {
-            supporterGroup: {
-              connect: {
-                ownerId: supporterId,
-              },
+        create: {
+          memberships: {
+            create: {
+              supporterId,
             },
           },
-          ...createSupporterGroupMembershipQuery,
-        ],
+        },
+      },
+      supporterGroupsMemberships: {
+        create: [...createSupporterGroupMembershipQuery],
       },
     },
   });
@@ -376,6 +420,15 @@ export async function createSupporter(request: CreateSupporterDto) {
     }
     await answerPoll({ ...request.poll, bypassIpCheck: true });
   }
+  const wsUrl = `${isProd ? "https" : "http"}://${getEnv(
+    "NEXT_PUBLIC_WS_SERVER"
+  )}/campaign/${campaign.id}/supporter`;
+
+  console.log(wsUrl);
+
+  await fetch(wsUrl, {
+    headers: { Authorization: getEnv("WS_SERVER_TOKEN") || "" },
+  });
 
   await sendEmail({
     to: user.email,
@@ -420,7 +473,8 @@ export async function deleteSupporterAsSupporter({
   });
 
   if (!supporter) throw "Apoiador não encontrado";
-  if (supporter.level === 4) throw "Você não pode sair da campanha sendo o líder.";
+  if (supporter.level === 4)
+    throw "Você não pode sair da campanha sendo o líder.";
 
   const deletedSupporter = await prisma.supporter.update({
     where: { id: supporter.id },

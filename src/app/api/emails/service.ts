@@ -1,8 +1,9 @@
-import { getEnv, isProd } from "@/_shared/utils/settings";
+import { getEnv, isDev, isProd } from "@/_shared/utils/settings";
 import sgMail from "@sendgrid/mail";
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
+import * as templates from "./templates";
 
 sgMail.setApiKey(getEnv("SENDGRID_API_KEY") || "SENDGRID_API_KEY not set");
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -16,34 +17,38 @@ export async function sendEmail({
 }: {
   to?: string | string[];
   bcc?: string | string[];
-  templateId: string;
+  templateId: keyof typeof templates;
   dynamicData: any;
 }) {
+  if (isDev) return;
+
   const template = await readEmailTemplate(templateId, dynamicData);
 
   const sendGridEmail = getEnv("SENDGRID_EMAIL");
 
   if (!sendGridEmail) throw "SENDGRID_EMAIL not set";
 
-  isProd &&
-    (await sgMail
-      .send({
-        from: sendGridEmail,
-        to,
-        bcc,
-        subject: template.subject,
-        html: template.body,
-      })
-      .then(() => console.log("Email sent"))
-      .catch((err) => {
-        console.log(err.response.body.errors);
-        throw "Failed to send email";
-      }));
+  await sgMail
+    .send({
+      from: sendGridEmail,
+      to,
+      bcc,
+      subject: template.subject,
+      html: template.body,
+    })
+    .then(() => console.log("Email sent"))
+    .catch((err) => {
+      console.log(err.response.body.errors);
+      throw "Failed to send email";
+    });
 }
 
-async function readEmailTemplate(templateId: string, dynamicData: { subject: string }) {
+async function readEmailTemplate(
+  templateId: keyof typeof templates,
+  dynamicData: { subject: string }
+) {
   try {
-    const templateString = await readTemplateFile(templateId);
+    const templateString = templates[templateId];
     const populatedTemplate = replaceTemplatePlaceholders(templateString, dynamicData);
     return {
       subject: dynamicData.subject,
@@ -51,22 +56,8 @@ async function readEmailTemplate(templateId: string, dynamicData: { subject: str
     };
   } catch (error) {
     console.error("Error getting email template:", error);
-    throw new Error("Failed to get email template");
+    throw "Failed to get email template";
   }
-}
-
-async function readTemplateFile(templateId: string): Promise<string> {
-  const templatePath = path.join(
-    process.cwd(),
-    "src",
-    "app",
-    "api",
-    "emails",
-    "templates",
-    `${templateId}.html`
-  );
-  const templateContent = await fs.readFile(templatePath, "utf8");
-  return templateContent;
 }
 
 function replaceTemplatePlaceholders(templateString: string, dynamicData: any) {

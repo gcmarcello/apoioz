@@ -1,9 +1,9 @@
-<!doctype html>
+export const event_confirmed_host = `<!doctype html>
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{eventName}} - {{campaignName}}</title>
+    <title>Evento Confirmado - ApoioZ</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -49,14 +49,11 @@
   <body>
     <div class="email-container">
       <div class="email-header">
-        <h1>{{eventName}}</h1>
+        <h1>Evento Confirmado: {{eventName}}</h1>
       </div>
       <div class="email-content">
         <p>Olá,</p>
-        <p>
-          Temos o prazer de anunciar que o evento "{{eventName}}" foi confirmado e estamos
-          ansiosos para a sua participação!
-        </p>
+        <p>Temos o prazer de anunciar que o evento "{{eventName}}" foi confirmado!</p>
         <p>Aqui estão os detalhes do evento:</p>
         <ul>
           <li>Data: {{eventDate}}</li>
@@ -79,3 +76,4 @@
     </div>
   </body>
 </html>
+`;

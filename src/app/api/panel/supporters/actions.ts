@@ -57,10 +57,12 @@ export async function addSupporter(request: AddSupporterDto) {
     if (parsedRequest.supporterSession.level < 4 && request.referralId)
       throw "Você não pode cadastrar um apoiador para um apoiador.";
 
+    const referralId = request.referralId || parsedRequest.supporterSession.id;
+
     const newSupporter = await service.createSupporter({
       campaignId: parsedRequest.supporterSession.campaignId,
       user: request.user,
-      referralId: request.referralId,
+      referralId,
     });
 
     if (!newSupporter) throw "Erro ao criar novo apoiador.";
@@ -72,7 +74,6 @@ export async function addSupporter(request: AddSupporterDto) {
       message: "Sucesso ao criar novo apoiador!",
     });
   } catch (err: any) {
-    console.log(err);
     return ActionResponse.error(err);
   }
 }

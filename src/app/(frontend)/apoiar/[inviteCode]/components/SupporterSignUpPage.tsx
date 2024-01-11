@@ -5,13 +5,17 @@ import { useForm } from "react-hook-form";
 
 import { UserIcon } from "@heroicons/react/24/outline";
 import AddSupporterSuccess from "./AddSupporterSuccess";
-import { normalizeEmail, normalizePhone, toProperCase } from "@/_shared/utils/format";
+import {
+  normalizeEmail,
+  normalizePhone,
+  toProperCase,
+} from "@/_shared/utils/format";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { BasicInfoSection } from "./BasicInfoSection";
 import { ElectionInfoSection } from "./ElectionInfoSection";
 import clsx from "clsx";
-import { faker } from "@faker-js/faker";
+import { faker, fakerPT_BR } from "@faker-js/faker";
 import { useAction } from "@odinkit/hooks/useAction";
 import Loading from "@/app/(frontend)/loading";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,6 +25,9 @@ import ErrorAlert from "@/app/(frontend)/_shared/components/alerts/errorAlert";
 import { signUpAsSupporter } from "@/app/api/auth/action";
 import { SignUpAsSupporterDto, signUpAsSupporterDto } from "@/app/api/auth/dto";
 import { PollWithQuestionsWithOptions } from "prisma/types/Poll";
+import { readSectionsByZone } from "@/app/api/elections/sections/action";
+import { useMocker } from "@/app/(frontend)/_shared/components/Mocker";
+import { readZonesByCampaign } from "@/app/api/elections/zones/actions";
 
 dayjs.extend(customParseFormat);
 
@@ -67,27 +74,34 @@ export default function SupporterSignUpPage({
     mode: "onChange",
   });
 
-  const mockData = async () => {
-    if (!zones) return;
-    const phone = faker.phone.number();
-    const data = {
-      name: faker.person.fullName(),
-      email: normalizeEmail(faker.internet.email()),
-      phone: normalizePhone(phone),
-      zoneId: "5a9734d8-0068-41de-ac51-ccb81f22b821",
-      sectionId: "827a0c56-1a47-442e-bd9c-222d8a8b33a2",
-      birthDate: dayjs(faker.date.birthdate()).format("DD/MM/YYYY"),
-      campaignId: campaign.id,
-    };
-    form.setValue("user.name", data.name);
-    form.setValue("user.email", data.email);
-    form.setValue("user.phone", data.phone);
-    form.setValue("user.info.zoneId", data.zoneId);
-    form.setValue("user.info.sectionId", data.sectionId);
-    form.setValue("user.info.birthDate", data.birthDate);
+  const { data: campaignZones, trigger: fetchZones } = useAction({
+    action: readZonesByCampaign,
+  });
 
-    return data;
-  };
+  const { data: sections, trigger: fetchSections } = useAction({
+    action: readSectionsByZone,
+  });
+
+  useMocker({
+    form,
+    data: async () => {
+      const { data: zones } = await fetchZones(campaign?.id);
+      const zone = zones![Math.floor(Math.random() * zones!.length)];
+      const { data: sections } = await fetchSections(zone.id);
+
+      return {
+        "user.name": fakerPT_BR.person.fullName(),
+        "user.email": fakerPT_BR.internet.email(),
+        "user.phone": fakerPT_BR.phone.number(),
+        "user.info.zoneId": zone.id,
+        "user.info.sectionId":
+          sections?.[Math.round(Math.random() * sections?.length)].id,
+        "user.info.birthDate": dayjs(
+          fakerPT_BR.date.past({ refDate: 1 }).toISOString()
+        ).format("DD/MM/YYYY"),
+      };
+    },
+  });
 
   const {
     data: signUpData,
@@ -95,10 +109,6 @@ export default function SupporterSignUpPage({
     isMutating: isSigningUp,
     reset: resetSignUp,
   } = useAction({
-    requestParser: (data) => {
-      data.user.phone = normalizePhone(data.user.phone);
-      return data;
-    },
     action: signUpAsSupporter,
     onSuccess: (res) => {
       setTimeout(() => {
@@ -140,11 +150,14 @@ export default function SupporterSignUpPage({
         </p>
         {user && (
           <div className="my-4 inline-flex text-gray-500 hover:text-gray-600">
-            <UserIcon className="me-2 h-6 w-6" /> <p>Convidado por {user.name}</p>
+            <UserIcon className="me-2 h-6 w-6" />{" "}
+            <p>Convidado por {user.name}</p>
           </div>
         )}
         {form.formState.errors?.root?.serverError?.message && (
-          <ErrorAlert errors={[form.formState.errors?.root?.serverError?.message]} />
+          <ErrorAlert
+            errors={[form.formState.errors?.root?.serverError?.message]}
+          />
         )}
         <form
           className="flex h-full flex-col  divide-gray-200  text-left"
@@ -200,18 +213,25 @@ export default function SupporterSignUpPage({
           <BottomNavigation className="block p-2 lg:hidden">
             <div className="flex justify-between">
               {stage === "electionInfo" && (
-                <Button variant="secondary" onClick={() => setStage("basicInfo")}>
+                <Button
+                  variant="secondary"
+                  onClick={() => setStage("basicInfo")}
+                >
                   Voltar
                 </Button>
               )}
 
               {stage === "basicInfo" ? (
                 <Button
-                  onClick={() => setStage("electionInfo")}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setStage("electionInfo");
+                  }}
+                  type="button"
                   variant="primary"
                   className="w-full"
                 >
-                  Inscrever
+                  Próximo
                 </Button>
               ) : (
                 <Button

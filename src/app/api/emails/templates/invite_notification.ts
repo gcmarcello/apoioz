@@ -1,9 +1,9 @@
-<!doctype html>
+export const invite_notification = `<!doctype html>
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Evento Confirmado - ApoioZ</title>
+    <title>Convite Aceito - ApoioZ</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -49,24 +49,21 @@
   <body>
     <div class="email-container">
       <div class="email-header">
-        <h1>Evento Confirmado: {{eventName}}</h1>
+        <h1>Parabéns, seu convite foi aceito!</h1>
       </div>
       <div class="email-content">
         <p>Olá,</p>
-        <p>Temos o prazer de anunciar que o evento "{{eventName}}" foi confirmado!</p>
-        <p>Aqui estão os detalhes do evento:</p>
-        <ul>
-          <li>Data: {{eventDate}}</li>
-          <li>Local: {{eventLocation}}</li>
-        </ul>
+        <p>
+          Boas notícias! {{supporterName}} entrou na campanha {{campaignName}} no ApoioZ
+          usando o seu link de convite. Agradecemos por ajudar a crescer a nossa
+          comunidade!
+        </p>
         <p style="text-align: center">
-          <a href="https://apoioz.com.br/painel/calendario" class="button"
-            >Mais Informações</a
-          >
+          <a href="{{siteLink}}" class="button">Veja seu Progresso</a>
         </p>
         <p>
-          Prepare-se para uma experiência incrível e não hesite em entrar em contato
-          conosco para mais informações.
+          Continue aumentando sua rede e aproveite as vantagens de ser um membro ativo da
+          comunidade.
         </p>
         <p>Atenciosamente,<br />Equipe ApoioZ</p>
       </div>
@@ -76,3 +73,4 @@
     </div>
   </body>
 </html>
+`;

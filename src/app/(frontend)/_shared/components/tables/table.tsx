@@ -52,7 +52,13 @@ function DebouncedInput({
     };
   }, [value, debounce, onChange]);
 
-  return <input {...props} value={value} onChange={(e) => setValue(e.target.value)} />;
+  return (
+    <input
+      {...props}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+    />
+  );
 }
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
@@ -122,8 +128,8 @@ export function DefaultTable({
           globalFilter !== undefined
             ? "justify-between"
             : disableXlsx
-            ? ""
-            : "justify-end"
+              ? ""
+              : "justify-end"
         )}
       >
         {setGlobalFilter === undefined && TableHeader && <TableHeader />}
@@ -135,8 +141,10 @@ export function DefaultTable({
             <DebouncedInput
               setIsLoading={setIsLoading}
               value={globalFilter ?? ""}
-              onChange={(value) => setGlobalFilter && setGlobalFilter(String(value))}
-              className="block w-full rounded-lg border border-gray-200 bg-white py-1.5 pl-11 pr-5  placeholder-gray-400/70 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 rtl:pl-5 rtl:pr-11   dark:focus:border-blue-300 md:w-80"
+              onChange={(value) =>
+                setGlobalFilter && setGlobalFilter(String(value))
+              }
+              className="block w-full rounded-lg border border-gray-200 bg-white py-1.5 pl-11 pr-5  placeholder-gray-400/70 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 md:w-80 rtl:pl-5   rtl:pr-11 dark:focus:border-blue-300"
               placeholder="Procurar"
             />
             {dataSetter}
@@ -171,7 +179,8 @@ export function DefaultTable({
                                     className: header.column.getCanSort()
                                       ? "cursor-pointer select-none"
                                       : "",
-                                    onClick: header.column.getToggleSortingHandler(),
+                                    onClick:
+                                      header.column.getToggleSortingHandler(),
                                   }}
                                 >
                                   {flexRender(
@@ -181,7 +190,8 @@ export function DefaultTable({
                                   {{
                                     asc: " 🔼",
                                     desc: " 🔽",
-                                  }[header.column.getIsSorted() as string] ?? null}
+                                  }[header.column.getIsSorted() as string] ??
+                                    null}
                                 </div>
                               )}
                             </th>
@@ -200,7 +210,10 @@ export function DefaultTable({
                             key={cell.id}
                             className="whitespace-nowrap px-4 py-4 text-sm"
                           >
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
                           </td>
                         ))}
                       </tr>
@@ -238,7 +251,6 @@ export function DefaultTable({
                 <PaginationControl
                   count={count}
                   pageIndex={table.getState().pagination.pageIndex}
-                  pages={Array.from({ length: table.getPageCount() }, (_, i) => i)}
                   table={table}
                 />
               )}
