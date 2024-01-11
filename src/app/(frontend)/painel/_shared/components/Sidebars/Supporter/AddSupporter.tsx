@@ -20,7 +20,7 @@ import {
   useRef,
 } from "react";
 import { useForm } from "react-hook-form";
-import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
+import { useAction } from "@odinkit/hooks/useAction";
 import { toProperCase } from "@/_shared/utils/format";
 import { MetaForm } from "@/app/(frontend)/_shared/hooks/useMetaform";
 import {
@@ -82,6 +82,7 @@ export function AddSupporterForm({
     onError: (err) =>
       showToast({ message: err, variant: "error", title: "Erro" }),
     onSuccess: ({ data }) => {
+      if (!data) return;
       showToast({
         message: `${data.user.name} adicionado a campanha`,
         variant: "success",
@@ -132,7 +133,7 @@ export function AddSupporterForm({
         "user.phone": fakerPT_BR.phone.number(),
         "user.info.zoneId": zone.id,
         "user.info.sectionId":
-          sections[Math.round(Math.random() * sections.length)].id,
+          sections?.[Math.round(Math.random() * sections.length)].id,
         "user.info.birthDate": dayjs(
           fakerPT_BR.date.past({ refDate: 1 }).toISOString()
         ).format("DD/MM/YYYY"),

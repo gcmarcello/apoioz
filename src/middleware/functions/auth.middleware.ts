@@ -1,5 +1,5 @@
 import { getEnv } from "@/_shared/utils/settings";
-import { ActionResponse } from "@/app/api/_shared/utils/ActionResponse";
+import { ActionResponse } from "@odinkit/api/ActionResponse";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function AuthMiddleware({

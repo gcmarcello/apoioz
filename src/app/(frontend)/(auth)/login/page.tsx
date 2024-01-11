@@ -30,7 +30,7 @@ export default async function LoginPage({
       </div>
 
       <LoginForm supportRedirect={searchParams.support} />
-      <div className="my-2 flex justify-center sm:mx-auto sm:w-full sm:max-w-sm">
+      <div className="my-2 flex justify-start sm:mx-auto sm:w-full sm:max-w-sm">
         <p className="text-center text-sm text-gray-500">
           Esqueceu a senha ou não configurou?{" "}
           <Link

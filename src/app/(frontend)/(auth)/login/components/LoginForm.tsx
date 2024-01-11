@@ -9,10 +9,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { TextField } from "@/app/(frontend)/_shared/components/fields/Text";
-import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
+import { useAction } from "@odinkit/hooks/useAction";
 import { Button } from "@/app/(frontend)/_shared/components/Button";
 
-export default function LoginForm({ supportRedirect }: { supportRedirect?: string }) {
+export default function LoginForm({
+  supportRedirect,
+}: {
+  supportRedirect?: string;
+}) {
   const form = useForm<LoginDto>({
     mode: "onChange",
     resolver: zodResolver(loginDto),
@@ -26,15 +30,13 @@ export default function LoginForm({ supportRedirect }: { supportRedirect?: strin
 
   const { trigger: loginAction, isMutating: isLoading } = useAction({
     action: login,
-    onSuccess: () => {
-      router.push(supportRedirect ? `/${supportRedirect}` : "/painel");
-    },
     onError: (error) => {
       form.setError("root.serverError", {
         type: "400",
         message: (error as string) || "Erro inesperado",
       });
     },
+    redirect: true,
   });
 
   const generateFakeData = () => {

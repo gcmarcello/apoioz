@@ -5,7 +5,7 @@ import * as service from "./service";
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 import { revalidatePath } from "next/cache";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
-import { ActionResponse } from "../_shared/utils/ActionResponse";
+import { ActionResponse } from "@odinkit/api/ActionResponse";
 
 export async function readUser(userId: string) {
   return service.readUser(userId);
@@ -17,8 +17,9 @@ export async function readUserFromSupporter(supporterId: string) {
 
 export async function updateUser(request: any) {
   try {
-    const { request: parsedRequest } =
-      await UseMiddlewares(request).then(UserSessionMiddleware);
+    const { request: parsedRequest } = await UseMiddlewares(request).then(
+      UserSessionMiddleware
+    );
 
     revalidatePath("/painel/configuracoes");
 

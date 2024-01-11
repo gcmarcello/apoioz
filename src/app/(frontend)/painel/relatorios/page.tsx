@@ -21,13 +21,13 @@ export default function RelatoriosPage({}) {
             Como funciona?
           </span> */}
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 lg:divide-x ">
-          <div className="col-span-1 flex flex-col justify-evenly lg:px-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 lg:divide-x ">
+          <div className="col-span-1 flex flex-col justify-evenly md:col-span-2 lg:px-4">
             <SupportersLastMonth />
             <ReferralRanking />
           </div>
 
-          <div className="col-span-2 px-2 lg:px-8">
+          <div className="col-span-1 px-2 md:col-span-3 lg:pe-0 lg:ps-8">
             <SupportersTable />
           </div>
         </div>

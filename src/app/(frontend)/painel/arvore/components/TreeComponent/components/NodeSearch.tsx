@@ -1,5 +1,5 @@
 import { ComboboxField } from "@/app/(frontend)/_shared/components/fields/Select";
-import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
+import { useAction } from "@odinkit/hooks/useAction";
 import {
   readSupportersFromSupporterGroup,
   readSupporterTrail,
@@ -22,14 +22,18 @@ export function NodeSearch({
     action: readSupporterTrail,
     onSuccess: ({ data }) => {
       const { nodes, edges } = processNodesEdges({
-        supporters: data,
+        supporters: data as any, //@todo
       });
       saveNodes(nodes);
       saveEdges(edges);
       toggleNodesVisibility(nodes as any);
+      console.log(data);
       setTimeout(() => {
-        const node = nodes.find((node) => searchForm.getValues("supporter") === node.id)!;
+        const node = nodes.find(
+          (node) => searchForm.getValues("supporter") === node.id
+        )!;
         fitView({
+          nodes: [node],
           duration: 2500,
           padding: 1,
         });

@@ -9,7 +9,7 @@ import { Button } from "../../../_shared/components/Button";
 import { CalendarDay } from "../page";
 import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { ListboxField } from "@/app/(frontend)/_shared/components/fields/Select";
-import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
+import { useAction } from "@odinkit/hooks/useAction";
 import { CreateEventDto, createEventDto } from "@/app/api/panel/events/dto";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -28,7 +28,7 @@ export default function SubmitEventRequest({
 
   const { data, trigger: fetchEventsAvailability } = useAction({
     action: readEventsAvailability,
-    parser: (data) => {
+    responseParser: (data) => {
       return {
         dateEvents: data.eventsTimestamps,
         availableTimes: data.availableTimes.map((string, index) => ({

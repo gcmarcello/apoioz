@@ -1,4 +1,4 @@
-import { ExtractSuccessResponse } from "@/app/api/_shared/utils/ActionResponse";
+import { ExtractSuccessResponse } from "@odinkit/api/ActionResponse";
 import { readSupportersFromSupporterGroupWithRelation } from "@/app/api/panel/supporters/actions";
 import { User } from "@prisma/client";
 import { Dispatch, createContext } from "react";
@@ -6,7 +6,9 @@ import { Dispatch, createContext } from "react";
 export class ReportsContextProps {
   supporters: {
     pagination: any;
-    data: ExtractSuccessResponse<typeof readSupportersFromSupporterGroupWithRelation>;
+    data: ExtractSuccessResponse<
+      typeof readSupportersFromSupporterGroupWithRelation
+    >;
   };
   openAsSupporter: (supporterId: string) => void;
   restoreView: () => void;

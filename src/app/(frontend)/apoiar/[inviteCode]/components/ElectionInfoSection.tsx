@@ -7,7 +7,7 @@ import { readAddressBySection } from "@/app/api/elections/locations/actions";
 import { toProperCase } from "@/_shared/utils/format";
 import { PresentationChartBarIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
+import { useAction } from "@odinkit/hooks/useAction";
 import {
   ComboboxField,
   ListboxField,
@@ -38,7 +38,7 @@ export function ElectionInfoSection({
     trigger: fetchSections,
   } = useAction({
     action: readSectionsByZone,
-    parser: (data) => {
+    responseParser: (data) => {
       resetAddress();
       form.resetField("user.info.sectionId");
       return data;

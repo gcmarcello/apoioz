@@ -10,7 +10,7 @@ import {
   TextField,
   MaskedTextField,
 } from "@/app/(frontend)/_shared/components/fields/Text";
-import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
+import { useAction } from "@odinkit/hooks/useAction";
 import { Button } from "@/app/(frontend)/_shared/components/Button";
 import { SignupDto, signupDto } from "@/app/api/auth/dto";
 import { readCitiesByState } from "@/app/api/elections/locations/actions";
@@ -98,7 +98,7 @@ export default function RegisterPage({
       resetZones();
       resetSections();
     },
-    parser: (data) =>
+    responseParser: (data) =>
       data.map((city) => ({ id: city.id, name: city.name, value: city.id })),
   });
 
@@ -111,7 +111,7 @@ export default function RegisterPage({
     onSuccess: () => {
       resetSections();
     },
-    parser: (data) =>
+    responseParser: (data) =>
       data.zones.map((zone) => ({
         id: zone.id,
         name: zone.number,
@@ -125,7 +125,7 @@ export default function RegisterPage({
     reset: resetSections,
   } = useAction({
     action: readSectionsByZone,
-    parser: (data) =>
+    responseParser: (data) =>
       data.map((section) => ({
         id: section.id,
         name: section.number,

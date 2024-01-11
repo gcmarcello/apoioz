@@ -1,9 +1,16 @@
-import { Edge, Handle, Node, NodeProps, Position, useReactFlow } from "reactflow";
+import {
+  Edge,
+  Handle,
+  Node,
+  NodeProps,
+  Position,
+  useReactFlow,
+} from "reactflow";
 
 import clsx from "clsx";
 
 import { ChevronDownIcon, MinusCircleIcon } from "@heroicons/react/24/outline";
-import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
+import { useAction } from "@odinkit/hooks/useAction";
 import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { processNodesEdges } from "../lib/nodesEdges";
 import { CustomFlowContext } from "../types/CustomFlowContext";
@@ -55,13 +62,15 @@ export function CustomNode({
     error: error,
   } = useAction({
     action: readSupporterBranches,
-    parser: (data) => {
-      if (data?.referred?.length || 0 < 1) throw "No referred found";
+    responseParser: (data) => {
+      if (!data?.referred?.length || data?.referred?.length < 1)
+        throw "No referred found";
       const { referred, ...rest } = data as any;
       return [rest, ...referred];
     },
     onSuccess: ({ data }) => {
-      const { nodes, edges } = processNodesEdges({ supporters: data });
+      console.log(data);
+      const { nodes, edges } = processNodesEdges({ supporters: data as any }); //@todo
       saveNodes(nodes);
       saveEdges(edges);
       toggleNodesVisibility(node as any);
@@ -104,7 +113,9 @@ export function CustomNode({
         onClick={() => {
           node.data.hasChildren
             ? toggleNodesVisibility(node as any)
-            : fetchSupporterReferred({ where: { supporterId: node.id, branches: 1 } });
+            : fetchSupporterReferred({
+                where: { supporterId: node.id, branches: 1 },
+              });
         }}
       >
         {isFetching ? (

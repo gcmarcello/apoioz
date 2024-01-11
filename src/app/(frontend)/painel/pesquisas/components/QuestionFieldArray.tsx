@@ -16,7 +16,7 @@ import { PollForm } from "./PollForm";
 import { useState } from "react";
 import clsx from "clsx";
 import { ArrowLeftCircleIcon } from "@heroicons/react/20/solid";
-import { useAction } from "@/app/(frontend)/_shared/hooks/useAction";
+import { useAction } from "@odinkit/hooks/useAction";
 import { createPoll, updatePoll } from "@/app/api/panel/polls/action";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 import { useRouter } from "next/navigation";

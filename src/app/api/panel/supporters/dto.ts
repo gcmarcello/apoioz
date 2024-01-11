@@ -22,7 +22,7 @@ export const readSupportersDto = readDto(
 export type ReadSupportersDto = z.infer<typeof readSupportersDto>;
 
 export const createSupporterDto = z.object({
-  user: createUserDto.optional(),
+  user: createUserDto,
   userId: z.string().optional(),
   referralId: z.string().optional(),
   campaignId: z.string(),

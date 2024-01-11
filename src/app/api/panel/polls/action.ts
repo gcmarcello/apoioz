@@ -1,7 +1,7 @@
 "use server";
 import { cookies } from "next/headers";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
-import { ActionResponse } from "../../_shared/utils/ActionResponse";
+import { ActionResponse } from "@odinkit/api/ActionResponse";
 import * as service from "./service";
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
@@ -44,7 +44,8 @@ export async function updatePoll(request: UpsertPollDto) {
 
 export async function answerPoll(request: PollAnswerDto) {
   try {
-    const { request: parsedRequest } = await UseMiddlewares(request).then(IpMiddleware);
+    const { request: parsedRequest } =
+      await UseMiddlewares(request).then(IpMiddleware);
 
     const token = cookies().get("token")?.value;
     if (token) {
