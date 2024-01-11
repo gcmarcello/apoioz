@@ -12,7 +12,7 @@ export default function PaginationControl({
   count: number;
 }) {
   const pagesArray = Array.from({ length: table.getPageCount() }, (_, i) => i);
-  console.log(table.getPageCount());
+
   const visiblePages = (() => {
     const totalVisiblePages = window.innerWidth > 768 ? 5 : 3; // Adjust visible pages based on screen width
     const halfRange = Math.floor(totalVisiblePages / 2);
@@ -35,13 +35,11 @@ export default function PaginationControl({
       <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
         <div>
           <p className="text-sm text-gray-700">
-            Showing{" "}
+            Mostrando{" "}
             <span className="font-medium">
-              {table?.options?.state?.pagination?.pageSize || 0 > count
-                ? count
-                : table.options.state.pagination?.pageSize}
+              {table.getRowModel().rows.length}
             </span>{" "}
-            of <span className="font-medium">{count}</span>
+            de <span className="font-medium">{count}</span>
           </p>
         </div>
         <div>
