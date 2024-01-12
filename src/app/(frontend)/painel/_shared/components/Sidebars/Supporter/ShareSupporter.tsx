@@ -110,8 +110,8 @@ export function ShareSupporter({
           </div>
         </Link>
         <div className="text-center text-sm text-gray-500">
-          O QR Code e links são válidos por 10 minutos. Após este período,
-          clique no botão acima para gerar novos.
+          O QR Code e links são válidos por 1 hora. Após este período, clique no
+          botão acima para gerar novos.
         </div>
       </div>
     </div>

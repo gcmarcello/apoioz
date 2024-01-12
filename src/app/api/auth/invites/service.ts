@@ -11,12 +11,19 @@ export async function createInviteCode({
 }) {
   if (!campaignId || !referralId) throw "Missing campaignId or referralId";
 
+  const existingCode = await prisma.inviteCode.findFirst({
+    where: { campaignId, referralId },
+  });
+
+  if (dayjs(existingCode?.expiresAt).isAfter(dayjs().subtract(10, "minutes")))
+    return existingCode;
+
   const code = await prisma.inviteCode.create({
     data: {
       campaignId,
       referralId,
       expiresAt: dayjs()
-        .add(isProd ? 10 : 200, "minutes")
+        .add(isProd ? 60 : 200, "minutes")
         .toISOString(),
     },
   });
@@ -25,11 +32,14 @@ export async function createInviteCode({
 }
 
 export async function validateInviteCode(code: string) {
-  const inviteCode = await prisma.inviteCode.findUnique({ where: { id: code } });
+  const inviteCode = await prisma.inviteCode.findUnique({
+    where: { id: code },
+  });
 
   if (!inviteCode) throw "Código de convite inválido";
 
-  if (dayjs(inviteCode.expiresAt).isBefore(dayjs())) throw "Código de convite expirado";
+  if (dayjs(inviteCode.expiresAt).isBefore(dayjs()))
+    throw "Código de convite expirado";
 
   await prisma.inviteCode.update({
     where: { id: code },
@@ -40,9 +50,12 @@ export async function validateInviteCode(code: string) {
 }
 
 export async function useInviteCode(code: string) {
-  const inviteCode = await prisma.inviteCode.findUnique({ where: { id: code } });
+  const inviteCode = await prisma.inviteCode.findUnique({
+    where: { id: code },
+  });
   if (!inviteCode) throw "Código de convite inválido";
-  if (dayjs(inviteCode.expiresAt).isBefore(dayjs())) throw "Código de convite expirado";
+  if (dayjs(inviteCode.expiresAt).isBefore(dayjs()))
+    throw "Código de convite expirado";
   if (inviteCode.submittedAt) throw "Código de convite expirado";
 
   const updatedInviteCode = await prisma.inviteCode.update({
