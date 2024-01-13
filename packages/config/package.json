@@ -1,5 +1,6 @@
 {
   "name": "@repo/config",
+  "private": true,
   "files": [
     ".eslintrc.js",
     ".prettierrc.js",

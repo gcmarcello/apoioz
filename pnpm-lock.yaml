@@ -26,6 +26,9 @@ importers:
       '@faker-js/faker':
         specifier: ^8.3.1
         version: 8.3.1
+      '@ferstack/on-env':
+        specifier: 0.0.1
+        version: 0.0.1
       '@floating-ui/react':
         specifier: ^0.26.4
         version: 0.26.5(react-dom@18.2.0)(react@18.2.0)
@@ -150,8 +153,8 @@ importers:
         specifier: 14.0.5-canary.7
         version: 14.0.5-canary.7(@babel/core@7.23.7)(react-dom@18.2.0)(react@18.2.0)
       odinkit:
-        specifier: workspace:*
-        version: link:../../packages/odinkit
+        specifier: git+https://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:x-oauth-basic@github.com/Fgc17/odinkit.git
+        version: git@github.com+Fgc17/odinkit/4581fe25cab8b69d328c48b5d6aee99bff407983(@babel/core@7.23.7)(@types/react@18.2.21)(react-dom@18.2.0)(react@18.2.0)
       prisma:
         specifier: latest
         version: 5.8.0
@@ -276,18 +279,36 @@ importers:
 
   packages/odinkit:
     dependencies:
+      '@ferstack/on-env':
+        specifier: 0.0.1
+        version: 0.0.1
       '@headlessui/react':
         specifier: 2.0.0-alpha.3
         version: 2.0.0-alpha.3(react-dom@18.2.0)(react@18.2.0)
       '@types/bcrypt':
         specifier: ^5.0.2
         version: 5.0.2
+      '@types/react':
+        specifier: 18.2.21
+        version: 18.2.21
+      '@types/react-dom':
+        specifier: 18.2.7
+        version: 18.2.7
       bcrypt:
         specifier: 5.1.1
         version: 5.1.1
+      clsx:
+        specifier: ^2.0.0
+        version: 2.1.0
       next:
         specifier: 14.0.5-canary.7
         version: 14.0.5-canary.7(@babel/core@7.23.7)(react-dom@18.2.0)(react@18.2.0)
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.2.0(react@18.2.0)
       react-hook-form:
         specifier: ^7.49.2
         version: 7.49.3(react@18.2.0)
@@ -1298,6 +1319,11 @@ packages:
   /@faker-js/faker@8.3.1:
     resolution: {integrity: sha512-FdgpFxY6V6rLZE9mmIBb9hM0xpfvQOSNOLnzolzKwsE1DH+gC7lEKV1p1IbR0lAYyvYd5a4u3qWJzowUkw1bIw==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0, npm: '>=6.14.13'}
+    dev: false
+
+  /@ferstack/on-env@0.0.1:
+    resolution: {integrity: sha512-zt9ILgORUOQ9jhoTqZtEhz9YvD0uNDwNDKeFXc3QV1ou0+jehXwuLQTIHBFeZbl3qaejkai73W+bYNSdhwNulQ==}
+    hasBin: true
     dev: false
 
   /@floating-ui/core@1.5.3:
@@ -9069,4 +9095,32 @@ packages:
       '@types/react': 18.2.21
       react: 18.2.0
       use-sync-external-store: 1.2.0(react@18.2.0)
+    dev: false
+
+  git@github.com+Fgc17/odinkit/4581fe25cab8b69d328c48b5d6aee99bff407983(@babel/core@7.23.7)(@types/react@18.2.21)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {commit: 4581fe25cab8b69d328c48b5d6aee99bff407983, repo: git@github.com:Fgc17/odinkit.git, type: git}
+    id: git@github.com+Fgc17/odinkit/4581fe25cab8b69d328c48b5d6aee99bff407983
+    name: odinkit
+    version: 0.0.1
+    dependencies:
+      '@headlessui/react': 2.0.0-alpha.3(react-dom@18.2.0)(react@18.2.0)
+      '@types/bcrypt': 5.0.2
+      bcrypt: 5.1.1
+      next: 14.0.5-canary.7(@babel/core@7.23.7)(react-dom@18.2.0)(react@18.2.0)
+      react-hook-form: 7.49.3(react@18.2.0)
+      swr: 2.2.4(react@18.2.0)
+      typescript: 5.3.2
+      zod: 3.21.0
+      zustand: 4.4.7(@types/react@18.2.21)(react@18.2.0)
+    transitivePeerDependencies:
+      - '@babel/core'
+      - '@opentelemetry/api'
+      - '@types/react'
+      - babel-plugin-macros
+      - encoding
+      - immer
+      - react
+      - react-dom
+      - sass
+      - supports-color
     dev: false
