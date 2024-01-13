@@ -1,0 +1,22 @@
+{
+  "name": "@repo/config",
+  "files": [
+    ".eslintrc.js",
+    ".prettierrc.js",
+    "postcss.config.js",
+    "tailwind.config.js"
+  ],
+  "dependencies": {
+    "prettier-plugin-tailwindcss": "^0.5.9",
+    "eslint-config-next": "13.4.19",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-no-front-services": "link:eslint/no-front-services",
+    "eslint-plugin-prettier": "^5.1.1",
+    "@typescript-eslint/eslint-plugin": "6.9.0",
+    "postcss": "8.4.28",
+    "tailwindcss": "^3.4.0",
+    "@tailwindcss/forms": "0.5.7",
+    "@tailwindcss/aspect-ratio": "0.4.2",
+    "@types/node": "20.11.0"
+  }
+}

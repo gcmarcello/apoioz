@@ -18,7 +18,8 @@
         "GitHub.copilot",
         "rangav.vscode-thunder-client",
         "eamodio.gitlens",
-        "yoavbls.pretty-ts-errors"
+        "yoavbls.pretty-ts-errors",
+        "IronGeek.vscode-env"
       ],
       "settings": {
         "git.repositoryScanMaxDepth": 5,
@@ -42,7 +43,7 @@
         "prettier.configPath": "./.prettierrc.js",
         "prettier.prettierPath": "./node_modules/prettier",
         "typescript.tsdk": "node_modules/typescript/lib",
-        "eslint.workingDirectories": ["./"],
+        "eslint.workingDirectories": [{ "mode": "auto" }],
         "explorer.compactFolders": false,
         "typescript.preferences.importModuleSpecifier": "shortest",
         "workbench.tree.indent": 20
