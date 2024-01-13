@@ -22,7 +22,7 @@
     ],
     "baseUrl": "./",
     "paths": {
-      "@odinkit/*": ["./src/packages/odinkit/*"],
+      "odinkit/*": ["./src/packages/odinkit/*"],
       "@/*": ["./src/*"],
       "prisma/*": ["prisma/*"]
     },

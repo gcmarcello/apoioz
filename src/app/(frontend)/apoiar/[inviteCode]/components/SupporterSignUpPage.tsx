@@ -16,7 +16,7 @@ import { BasicInfoSection } from "./BasicInfoSection";
 import { ElectionInfoSection } from "./ElectionInfoSection";
 import clsx from "clsx";
 import { faker, fakerPT_BR } from "@faker-js/faker";
-import { useAction } from "@odinkit/hooks/useAction";
+import { useAction } from "odinkit/hooks/useAction";
 import Loading from "@/app/(frontend)/loading";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { BottomNavigation } from "@/app/(frontend)/_shared/components/navigation/BottomNavigation";

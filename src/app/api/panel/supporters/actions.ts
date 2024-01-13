@@ -4,7 +4,7 @@ import { UserSessionMiddleware } from "@/middleware/functions/userSession.middle
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 import { revalidatePath } from "next/cache";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
-import { ActionResponse } from "@odinkit/api/ActionResponse";
+import { ActionResponse } from "odinkit/api/ActionResponse";
 import { cookies } from "next/headers";
 import * as service from "./service";
 import {

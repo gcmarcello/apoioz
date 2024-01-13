@@ -20,7 +20,7 @@ import {
   useRef,
 } from "react";
 import { useForm } from "react-hook-form";
-import { useAction } from "@odinkit/hooks/useAction";
+import { useAction } from "odinkit/hooks/useAction";
 import { toProperCase } from "@/_shared/utils/format";
 import { MetaForm } from "@/app/(frontend)/_shared/hooks/useMetaform";
 import {

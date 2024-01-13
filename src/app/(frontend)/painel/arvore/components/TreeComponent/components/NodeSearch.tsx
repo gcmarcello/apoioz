@@ -1,5 +1,5 @@
 import { ComboboxField } from "@/app/(frontend)/_shared/components/fields/Select";
-import { useAction } from "@odinkit/hooks/useAction";
+import { useAction } from "odinkit/hooks/useAction";
 import {
   readSupportersFromSupporterGroup,
   readSupporterTrail,

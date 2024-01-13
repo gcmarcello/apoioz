@@ -16,13 +16,13 @@ import {
 } from "@heroicons/react/24/solid";
 import { BaseProps, Field, fieldClasses, getErrorMessage } from "./Field";
 import { Controller, FieldValues, Path } from "react-hook-form";
-import { useAction } from "@odinkit/hooks/useAction";
+import { useAction } from "odinkit/hooks/useAction";
 import {
   ErrorResponse,
   SuccessResponse,
 } from "@/app/api/_shared/utils/ActionResponse";
 import { ButtonSpinner } from "../Spinners";
-import { ActionResponseType } from "@odinkit/api/ActionResponse";
+import { ActionResponseType } from "odinkit/api/ActionResponse";
 
 type SelectFieldProps<
   Fields extends FieldValues,
