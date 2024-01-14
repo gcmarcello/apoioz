@@ -12,7 +12,7 @@
     "lint": "next lint",
     "test": "jest",
     "fix": "eslint --ext .ts,.tsx",
-    "preinstall": "on-env development pnpm link --dir /workspaces/pnpm/odinkit odinkit"
+    "postinstall": "on-env development pnpm link --dir /workspaces/pnpm/odinkit odinkit"
   },
   "dependencies": {
     "odinkit": "0.0.2",
@@ -77,6 +77,6 @@
     "typescript": "5.3.2",
     "ts-jest": "^29.1.1",
     "@repo/config": "workspace:*",
-    "@ferstack/on-env": "0.0.1"
+    "@ferstack/on-env": "0.0.2"
   }
 }

@@ -27,8 +27,8 @@ importers:
         specifier: ^8.3.1
         version: 8.3.1
       '@ferstack/on-env':
-        specifier: 0.0.1
-        version: 0.0.1
+        specifier: 0.0.2
+        version: 0.0.2
       '@floating-ui/react':
         specifier: ^0.26.4
         version: 0.26.5(react-dom@18.2.0)(react@18.2.0)
@@ -1273,8 +1273,8 @@ packages:
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0, npm: '>=6.14.13'}
     dev: false
 
-  /@ferstack/on-env@0.0.1:
-    resolution: {integrity: sha512-zt9ILgORUOQ9jhoTqZtEhz9YvD0uNDwNDKeFXc3QV1ou0+jehXwuLQTIHBFeZbl3qaejkai73W+bYNSdhwNulQ==}
+  /@ferstack/on-env@0.0.2:
+    resolution: {integrity: sha512-rdtM6NLsYJ0vBaO8rLnu5ME4P1QsWDIcCZGRYeovW6egsOWuKOn/bbZG4V2xCPv8e2z5v7SB3/hbEVoH8SfT/A==}
     hasBin: true
     dev: false
 
