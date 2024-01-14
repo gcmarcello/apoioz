@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "@repo/config": "workspace:*",
-    "prettier": "^3.2.1",
+    "prettier": "^3.2.2",
     "turbo": "1.10.4"
   },
   "engines": {
