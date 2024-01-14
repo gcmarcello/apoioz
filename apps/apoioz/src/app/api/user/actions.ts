@@ -5,7 +5,7 @@ import * as service from "./service";
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 import { revalidatePath } from "next/cache";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
-import { ActionResponse } from "odinkit/api/ActionResponse";
+import { ActionResponse } from "@odinkit/api/ActionResponse";
 
 export async function readUser(userId: string) {
   return service.readUser(userId);

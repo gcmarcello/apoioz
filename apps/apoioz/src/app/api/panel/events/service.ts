@@ -106,7 +106,8 @@ export async function readEventsByCampaign({
   });
 
   const allActiveEvents = allEvents.filter(
-    (event) => event.status === "active"
+    (event) =>
+      event.status === "active" && dayjs(event.dateEnd).isAfter(dayjs())
   );
   const allPendingEvents = allEvents.filter(
     (event) => event.status === "pending"

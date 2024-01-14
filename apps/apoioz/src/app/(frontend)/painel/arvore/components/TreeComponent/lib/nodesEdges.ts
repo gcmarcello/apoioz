@@ -1,4 +1,4 @@
-import { ExtractSuccessResponse } from "odinkit/api/ActionResponse";
+import { ExtractSuccessResponse } from "@odinkit/api/ActionResponse";
 import { readSupporterBranches } from "@/app/api/panel/supporters/actions";
 import { Supporter } from "@prisma/client";
 import { SupporterWithReferralWithUser } from "prisma/types/Supporter";

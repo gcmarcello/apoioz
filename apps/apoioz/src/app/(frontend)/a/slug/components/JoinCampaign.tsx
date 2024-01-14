@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/app/(frontend)/_shared/components/Button";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
-import { useAction } from "odinkit/hooks/useAction";
+import { useAction } from "@odinkit/hooks/useAction";
 import { joinCampaign } from "@/app/api/panel/campaigns/actions";
 import { useRouter } from "next/navigation";
 

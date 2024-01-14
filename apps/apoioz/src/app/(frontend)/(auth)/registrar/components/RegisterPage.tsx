@@ -10,7 +10,7 @@ import {
   TextField,
   MaskedTextField,
 } from "@/app/(frontend)/_shared/components/fields/Text";
-import { useAction } from "odinkit/hooks/useAction";
+import { useAction } from "@odinkit/hooks/useAction";
 import { Button } from "@/app/(frontend)/_shared/components/Button";
 import { SignupDto, signupDto } from "@/app/api/auth/dto";
 import { readCitiesByState } from "@/app/api/elections/locations/actions";

@@ -35,16 +35,6 @@ export default async function CalendarPage() {
     },
   });
 
-  /* async function createMockEvent() {
-    createEvent(await mockEvent(campaign.id));
-    console.log(
-      await getAvailableTimesByDay({
-        campaignId: campaign.id,
-        day: dayjs().toISOString(),
-      })
-    );
-  } */
-
   return (
     <CalendarProvider>
       <div>

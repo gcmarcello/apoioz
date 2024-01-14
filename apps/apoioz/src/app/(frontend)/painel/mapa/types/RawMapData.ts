@@ -1,4 +1,4 @@
-import { ExtractSuccessResponse } from "odinkit/api/ActionResponse";
+import { ExtractSuccessResponse } from "@odinkit/api/ActionResponse";
 import { createMapData } from "@/app/api/panel/map/actions";
 import { SupporterSession } from "@/middleware/functions/supporterSession.middleware";
 

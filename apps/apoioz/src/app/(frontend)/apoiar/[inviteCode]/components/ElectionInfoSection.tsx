@@ -7,7 +7,7 @@ import { readAddressBySection } from "@/app/api/elections/locations/actions";
 import { toProperCase } from "@/_shared/utils/format";
 import { PresentationChartBarIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import { useAction } from "odinkit/hooks/useAction";
+import { useAction } from "@odinkit/hooks/useAction";
 import {
   ComboboxField,
   ListboxField,

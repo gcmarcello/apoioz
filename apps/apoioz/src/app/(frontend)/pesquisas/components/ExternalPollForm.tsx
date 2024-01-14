@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { pollAnswerDto } from "@/app/api/panel/polls/dto";
 import CheckboxInput from "../../_shared/components/fields/Checkbox";
 import RadioInput from "../../_shared/components/fields/Radio";
-import { useAction } from "odinkit/hooks/useAction";
+import { useAction } from "@odinkit/hooks/useAction";
 import { answerPoll } from "@/app/api/panel/polls/action";
 import { showToast } from "../../_shared/components/alerts/toast";
 import { TextAreaField } from "../../_shared/components/fields/Text";

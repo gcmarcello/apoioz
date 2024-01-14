@@ -21,6 +21,7 @@ import { RecursiveSupporterWithReferred } from "prisma/types/Supporter";
 import { normalizeEmail, normalizePhone } from "@/_shared/utils/format";
 import axios from "axios";
 import { zoneWithoutGeoJSON } from "prisma/query/Zone";
+import { fullTextSearch } from "@odinkit/api/fullTextSearch";
 
 export async function readSupporterBranches({
   supporterSession,
@@ -143,6 +144,57 @@ export async function readSupporterTrail({
   }, []);
 
   return trail;
+}
+
+export async function readSupportersFulltext({
+  pagination,
+  where,
+  supporterSession,
+}: ReadSupportersDto & {
+  supporterSession: Supporter;
+}) {
+  const searchQuery = where?.user?.name ? `'${where?.user?.name}':*` : "";
+
+  const query = await fullTextSearch({
+    table: ["Supporter"],
+    tableAlias: "s",
+    joins: [
+      `INNER JOIN 
+      "User" u ON s."userId" = u.id`,
+      `LEFT JOIN 
+      "UserInfo" u_info ON u."infoId" = u_info.id`,
+      `INNER JOIN 
+      "SupporterGroupMembership" sgm ON s.id = sgm."supporterId"`,
+      `INNER JOIN 
+      "SupporterGroup" sg ON sgm."supporterGroupId" = sg.id`,
+    ],
+    where: [
+      `s."campaignId" = '${supporterSession.campaignId}'`,
+      `sg."ownerId" = '${supporterSession.id}'`,
+    ],
+    searchField: ["u", "name"],
+    orderBy: ["s", "id"],
+  });
+
+  const supporters = await prisma
+    .$queryRawUnsafe<any[]>(query, searchQuery, 10)
+    .catch((err) => console.log(err));
+
+  if (!supporters || supporters.length < 1) throw "Apoiador não encontrado";
+
+  const parsedSupporters = supporters.map((s) => ({
+    id: s.id,
+    name: s.name,
+    email: s.email,
+    phone: s.phone,
+  }));
+
+  return {
+    data: parsedSupporters,
+    pagination: {
+      count: supporters.length + 1,
+    },
+  };
 }
 
 export async function readSupportersFromSupporterGroup({

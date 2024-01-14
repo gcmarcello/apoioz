@@ -1,6 +1,6 @@
 "use server";
 
-import { ActionResponse } from "odinkit/api/ActionResponse";
+import { ActionResponse } from "@odinkit/api/ActionResponse";
 import * as service from "./service";
 
 export async function readSectionsByZone(zoneId: string) {

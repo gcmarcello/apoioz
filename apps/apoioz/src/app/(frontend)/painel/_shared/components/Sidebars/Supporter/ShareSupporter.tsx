@@ -9,7 +9,7 @@ import { useSidebar } from "../lib/useSidebar";
 import { set } from "react-hook-form";
 import { LoadingSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { UserWithoutPassword } from "prisma/types/User";
-import { useAction } from "odinkit/hooks/useAction";
+import { useAction } from "@odinkit/hooks/useAction";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 
 export function ShareSupporter({
@@ -64,7 +64,7 @@ export function ShareSupporter({
           <div className="flex justify-center">
             <QRCode
               className=" h-[250px] w-[250px] rounded-md"
-              value={`${window.location.origin}/apoiar/${inviteCode.id}`}
+              value={`${window.location.origin}/apoiar/${inviteCode?.id}`}
             />
           </div>
         )}
@@ -94,7 +94,7 @@ export function ShareSupporter({
           Copiar Link
         </button>
         <Link
-          href={`https://wa.me/?text=${window.location.href}/apoiar/${inviteCode?.id}`}
+          href={`https://wa.me/?text=${window.location.origin}/apoiar/${inviteCode?.id}`}
           target="_blank"
         >
           <div className="my-4 flex justify-center space-x-2 rounded-md bg-green-500 px-3 py-2 text-sm font-semibold text-white hover:bg-green-400">

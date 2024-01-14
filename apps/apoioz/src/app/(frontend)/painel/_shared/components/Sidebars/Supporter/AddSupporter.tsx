@@ -6,7 +6,7 @@ import {
 } from "@/app/api/panel/supporters/dto";
 import {
   addSupporter,
-  readSupportersFromSupporterGroup,
+  readSupportersFulltext,
 } from "@/app/api/panel/supporters/actions";
 import { fakerPT_BR } from "@faker-js/faker";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,7 +20,7 @@ import {
   useRef,
 } from "react";
 import { useForm } from "react-hook-form";
-import { useAction } from "odinkit/hooks/useAction";
+import { useAction } from "@odinkit/hooks/useAction";
 import { toProperCase } from "@/_shared/utils/format";
 import { MetaForm } from "@/app/(frontend)/_shared/hooks/useMetaform";
 import {
@@ -41,7 +41,7 @@ import { scrollToElement } from "@/app/(frontend)/_shared/utils/scroll";
 import clsx from "clsx";
 import DisclosureAccordion from "@/app/(frontend)/_shared/components/Disclosure";
 import { LoadingSpinner } from "@/app/(frontend)/_shared/components/Spinners";
-import { Mocker, useMocker } from "@/app/(frontend)/_shared/components/Mocker";
+import { useMocker } from "@/app/(frontend)/_shared/components/Mocker";
 import Link from "next/link";
 
 export function AddSupporterForm({
@@ -236,8 +236,8 @@ export function AddSupporterForm({
                   label="Indicado Por"
                   hform={form}
                   name={"referralId"}
-                  fetcher={readSupportersFromSupporterGroup}
-                  displayValueKey={"user.name"}
+                  fetcher={readSupportersFulltext}
+                  displayValueKey={"name"}
                 />
 
                 <SwitchInput

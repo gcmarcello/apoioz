@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { TextField } from "@/app/(frontend)/_shared/components/fields/Text";
-import { useAction } from "odinkit/hooks/useAction";
+import { useAction } from "@odinkit/hooks/useAction";
 import { Button } from "@/app/(frontend)/_shared/components/Button";
 
 export default function LoginForm({

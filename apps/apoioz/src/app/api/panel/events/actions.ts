@@ -5,7 +5,7 @@ import { UserSessionMiddleware } from "@/middleware/functions/userSession.middle
 import { revalidatePath } from "next/cache";
 import { CreateEventDto, ReadEventsAvailability, ReadEventsDto } from "./dto";
 import * as service from "./service";
-import { ActionResponse } from "odinkit/api/ActionResponse";
+import { ActionResponse } from "@odinkit/api/ActionResponse";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 
 export async function createEvent(request: CreateEventDto) {

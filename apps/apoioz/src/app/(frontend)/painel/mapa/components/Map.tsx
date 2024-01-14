@@ -19,7 +19,7 @@ import AddressDetailsModal from "./AddressDetailsModal";
 import { MapAddressType, MapContextProps } from "../providers/MapDataProvider";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 import SupporterBall from "@/app/(frontend)/_shared/components/SupporterBall";
-import { useAction } from "odinkit/hooks/useAction";
+import { useAction } from "@odinkit/hooks/useAction";
 
 const POSITION_CLASSES = {
   bottomleft: "leaflet-bottom leaflet-left",

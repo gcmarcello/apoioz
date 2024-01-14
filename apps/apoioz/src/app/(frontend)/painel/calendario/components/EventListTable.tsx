@@ -21,6 +21,7 @@ export default async function EventListTable({ events }: { events: Event[] }) {
     const letters = name.split("");
     return (letters[0] + letters[1]).toLocaleUpperCase();
   }
+
   return (
     <ol className="divide-y divide-gray-100 text-sm leading-6 ">
       {events.map((event) => {

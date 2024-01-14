@@ -4,7 +4,7 @@ import { UserSessionMiddleware } from "@/middleware/functions/userSession.middle
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 import { revalidatePath } from "next/cache";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
-import { ActionResponse } from "odinkit/api/ActionResponse";
+import { ActionResponse } from "@odinkit/api/ActionResponse";
 import { cookies } from "next/headers";
 import * as service from "./service";
 import {
@@ -12,6 +12,24 @@ import {
   ReadSupporterBranchesDto,
   AddSupporterDto,
 } from "./dto";
+
+export async function readSupportersFulltext(request?: ReadSupportersDto) {
+  try {
+    const { request: parsedRequest } = await UseMiddlewares(request)
+      .then(UserSessionMiddleware)
+      .then(SupporterSessionMiddleware);
+
+    const { data, pagination } =
+      await service.readSupportersFulltext(parsedRequest);
+
+    return ActionResponse.success({
+      data,
+      pagination,
+    });
+  } catch (err) {
+    return ActionResponse.error(err);
+  }
+}
 
 export async function readSupportersFromSupporterGroup(
   request?: ReadSupportersDto

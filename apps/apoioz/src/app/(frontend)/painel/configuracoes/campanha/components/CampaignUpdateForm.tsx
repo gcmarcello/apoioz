@@ -5,7 +5,7 @@ import {
   TextField,
   TextFieldWithAddon,
 } from "@/app/(frontend)/_shared/components/fields/Text";
-import { useAction } from "odinkit/hooks/useAction";
+import { useAction } from "@odinkit/hooks/useAction";
 import { getContrastRatioFromHex } from "@/app/(frontend)/_shared/utils/colors";
 import { updateCampaign } from "@/app/api/panel/campaigns/actions";
 import {

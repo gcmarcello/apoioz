@@ -15,7 +15,10 @@ export async function createInviteCode({
     where: { campaignId, referralId },
   });
 
-  if (dayjs(existingCode?.expiresAt).isAfter(dayjs().subtract(10, "minutes")))
+  if (
+    existingCode &&
+    dayjs(existingCode?.expiresAt).isAfter(dayjs().subtract(10, "minutes"))
+  )
     return existingCode;
 
   const code = await prisma.inviteCode.create({
