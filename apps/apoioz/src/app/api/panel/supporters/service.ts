@@ -176,17 +176,23 @@ export async function readSupportersFulltext({
     orderBy: ["s", "id"],
   });
 
+  console.log(query);
+
   const supporters = await prisma
     .$queryRawUnsafe<any[]>(query, searchQuery, 10)
     .catch((err) => console.log(err));
+
+  console.log(supporters, "xd");
 
   if (!supporters || supporters.length < 1) throw "Apoiador não encontrado";
 
   const parsedSupporters = supporters.map((s) => ({
     id: s.id,
-    name: s.name,
-    email: s.email,
-    phone: s.phone,
+    user: {
+      name: s.name,
+      email: s.email,
+      phone: s.phone,
+    },
   }));
 
   return {
