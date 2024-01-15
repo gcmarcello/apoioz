@@ -34,6 +34,9 @@
         "editor.codeActionsOnSave": {
           "source.fixAll.eslint": true
         },
+        "material-icon-theme.files.associations": {
+          ".kanban": "Mjml"
+        },
         "material-icon-theme.folders.associations": {
           "_shared": "shared"
         },
