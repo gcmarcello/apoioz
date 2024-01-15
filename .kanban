@@ -2,7 +2,7 @@
   "lists": [
     {
       "id": "0ee08a82-6e88-44e8-a579-f0fc369ec846",
-      "title": "A fazer",
+      "title": "To do",
       "cards": [
         {
           "id": "9fcff6e4-0f9d-48ba-b26e-f1b361a5bc61",
@@ -35,6 +35,15 @@
           "id": "5340bbef-000b-4385-85c0-f5604fef7e79",
           "listId": "0ee08a82-6e88-44e8-a579-f0fc369ec846",
           "title": "Remover senha dos reads de usuário",
+          "description": "",
+          "labels": [],
+          "checkboxes": [],
+          "comments": []
+        },
+        {
+          "id": "c7a60f9a-9b81-4bff-aba5-e5c5332aad60",
+          "listId": "0ee08a82-6e88-44e8-a579-f0fc369ec846",
+          "title": "Remover opção de \"quero escolher tal coisa\" no formulario de registro",
           "description": "",
           "labels": [],
           "checkboxes": [],
