@@ -237,7 +237,7 @@ export function AddSupporterForm({
                   hform={form}
                   name={"referralId"}
                   fetcher={readSupportersFulltext}
-                  displayValueKey={"name"}
+                  displayValueKey={"user.name"}
                 />
 
                 <SwitchInput

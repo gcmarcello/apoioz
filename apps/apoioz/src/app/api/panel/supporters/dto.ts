@@ -1,8 +1,6 @@
 import { z } from "zod";
-import { phoneValidator } from "@/_shared/utils/validators/phone.validator";
 import { readDto } from "../../_shared/dto/read";
 import { pollAnswerDto } from "../polls/dto";
-import { birthDateValidator } from "@/_shared/utils/validators/birthDate.validator";
 import { createUserDto } from "../../user/dto";
 
 export const readSupportersDto = readDto(
