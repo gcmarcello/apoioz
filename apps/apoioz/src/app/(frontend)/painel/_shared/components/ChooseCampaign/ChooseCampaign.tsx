@@ -46,24 +46,13 @@ export default async function ChooseCampaign({
         </TopNavigation>
 
         <div className="mt-20">
-          <h2 className="text-sm font-medium text-gray-900">
-            Redes de Apoio Ativas
-          </h2>
-          <ul
-            role="list"
-            className={clsx(
-              "grid grid-cols-1 gap-4 empty:hidden sm:grid-cols-2 sm:gap-6 xl:grid-cols-4",
-              campaigns.length ? "mt-3" : "mt-1"
-            )}
-          >
-            {campaigns.length ? (
-              <CampaignList campaigns={campaigns} />
-            ) : (
-              <Paragraph>
-                Você não está participando de nenhuma campanha!
-              </Paragraph>
-            )}
-          </ul>
+          {campaigns.length ? (
+            <CampaignList campaigns={campaigns} />
+          ) : (
+            <Paragraph>
+              Você não está participando de nenhuma campanha!
+            </Paragraph>
+          )}
         </div>
       </div>
     </>
