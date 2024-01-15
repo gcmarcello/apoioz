@@ -1,13 +1,10 @@
 import { ComboboxField } from "@/app/(frontend)/_shared/components/fields/Select";
 import { useAction } from "@odinkit/hooks/useAction";
-import {
-  readSupportersFromSupporterGroup,
-  readSupporterTrail,
-} from "@/app/api/panel/supporters/actions";
 import { processNodesEdges } from "../lib/nodesEdges";
 import { CustomFlowContext } from "../types/CustomFlowContext";
 import { useForm } from "react-hook-form";
 import { useReactFlow } from "reactflow";
+import { readSupportersFulltext } from "@/app/api/panel/supporters/actions";
 
 export function NodeSearch({
   customFlowContext: { saveEdges, saveNodes, toggleNodesVisibility },
@@ -46,7 +43,7 @@ export function NodeSearch({
       label="Encontre um apoiador"
       hform={searchForm}
       name={"supporter"}
-      fetcher={readSupportersFromSupporterGroup}
+      fetcher={readSupportersFulltext}
       onChange={(value) => {
         fetchSupporterTrail({
           where: {
