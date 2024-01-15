@@ -59,7 +59,7 @@
     "leaflet.markercluster": "^1.5.3",
     "lodash": "^4.17.21",
     "next": "14.0.5-canary.7",
-    "odinkit": "^0.0.3",
+    "odinkit": "^0.1.0",
     "prisma": "latest",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",

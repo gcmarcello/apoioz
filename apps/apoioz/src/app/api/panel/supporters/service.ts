@@ -96,8 +96,6 @@ export async function readSupporterBranches({
   if (!supporterBranches)
     throw "Você não tem permissão para acessar este apoiador";
 
-  console.log(supporterBranches);
-
   return supporterBranches as any as RecursiveSupporterWithReferred & {
     user: UserWithInfo;
   };
@@ -161,7 +159,7 @@ export async function readSupportersFulltext({
     joins: [
       `INNER JOIN 
       "User" u ON s."userId" = u.id`,
-      `LEFT JOIN 
+      `LEFT JOIN
       "UserInfo" u_info ON u."infoId" = u_info.id`,
       `INNER JOIN 
       "SupporterGroupMembership" sgm ON s.id = sgm."supporterId"`,
@@ -172,15 +170,17 @@ export async function readSupportersFulltext({
       `s."campaignId" = '${supporterSession.campaignId}'`,
       `sg."ownerId" = '${supporterSession.id}'`,
     ],
+    select: [
+      ["s", "id"],
+      ["u", "name"],
+    ],
     searchField: ["u", "name"],
     orderBy: ["s", "id"],
   });
 
-  console.log(query);
-
   const supporters = await prisma
     .$queryRawUnsafe<any[]>(query, searchQuery, 10)
-    .catch((err) => console.log(err));
+    .catch((err) => console.log(query, err));
 
   console.log(supporters, "xd");
 
@@ -194,6 +194,8 @@ export async function readSupportersFulltext({
       phone: s.phone,
     },
   }));
+
+  console.log(parsedSupporters);
 
   return {
     data: parsedSupporters,
