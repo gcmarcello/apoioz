@@ -19,7 +19,8 @@
         "rangav.vscode-thunder-client",
         "eamodio.gitlens",
         "yoavbls.pretty-ts-errors",
-        "IronGeek.vscode-env"
+        "IronGeek.vscode-env",
+        "harehare.portable-kanban"
       ],
       "settings": {
         "git.repositoryScanMaxDepth": 5,
