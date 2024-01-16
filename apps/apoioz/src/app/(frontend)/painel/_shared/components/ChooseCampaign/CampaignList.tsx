@@ -9,6 +9,7 @@ export function CampaignList({ campaigns }: { campaigns: Campaign[] }) {
   const { trigger: activateCampaignTrigger, isMutating: isLoadingCampaign } =
     useAction({
       action: activateCampaign,
+      redirect: true,
     });
 
   if (isLoadingCampaign)

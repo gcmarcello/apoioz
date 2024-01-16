@@ -65,6 +65,7 @@ export async function readCampaign(request: {
     where: request.campaignId
       ? { id: request.campaignId }
       : { slug: request.slug },
+      include: {city: {include: {State: true}}, state: true,}
   });
 
   return campaign;

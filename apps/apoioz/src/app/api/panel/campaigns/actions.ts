@@ -60,6 +60,9 @@ export async function joinCampaign(request: JoinCampaignDto) {
 
 export async function activateCampaign(campaignId: string) {
   cookies().set("activeCampaign", campaignId);
+  return ActionResponse.success({
+    redirect: "/painel",
+  });
 }
 
 export async function listCampaigns(userId: string) {
