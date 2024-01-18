@@ -182,8 +182,6 @@ export async function readSupportersFulltext({
     .$queryRawUnsafe<any[]>(query, searchQuery, 10)
     .catch((err) => console.log(query, err));
 
-  console.log(supporters, "xd");
-
   if (!supporters || supporters.length < 1) throw "Apoiador não encontrado";
 
   const parsedSupporters = supporters.map((s) => ({
@@ -194,8 +192,6 @@ export async function readSupportersFulltext({
       phone: s.phone,
     },
   }));
-
-  console.log(parsedSupporters);
 
   return {
     data: parsedSupporters,

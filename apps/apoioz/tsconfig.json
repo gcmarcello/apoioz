@@ -17,17 +17,17 @@
     "jsx": "preserve",
     "plugins": [
       {
-        "name": "next"
-      }
+        "name": "next",
+      },
     ],
     "baseUrl": "./",
     "paths": {
       "@odinkit/*": ["node_modules/odinkit/src/*"],
       "@/*": ["src/*"],
-      "prisma/*": ["prisma/*"]
+      "prisma/*": ["prisma/*"],
     },
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
   },
   "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
 }

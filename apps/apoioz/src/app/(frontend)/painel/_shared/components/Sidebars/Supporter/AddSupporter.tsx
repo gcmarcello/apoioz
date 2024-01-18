@@ -1,28 +1,11 @@
 import ErrorAlert from "@/app/(frontend)/_shared/components/alerts/errorAlert";
-import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
-import {
-  AddSupporterDto,
-  addSupporterDto,
-} from "@/app/api/panel/supporters/dto";
-import {
-  addSupporter,
-  readSupportersFulltext,
-} from "@/app/api/panel/supporters/actions";
+import { readSupportersFulltext } from "@/app/api/panel/supporters/actions";
 import { fakerPT_BR } from "@faker-js/faker";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Campaign } from "@prisma/client";
-import {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-} from "react";
-import { useForm } from "react-hook-form";
+import { useContext, useEffect, useMemo, useRef } from "react";
+import { useFormContext } from "react-hook-form";
 import { useAction } from "@odinkit/hooks/useAction";
 import { toProperCase } from "@/_shared/utils/format";
-import { MetaForm } from "@/app/(frontend)/_shared/hooks/useMetaform";
 import {
   ComboboxField,
   ListboxField,
@@ -43,23 +26,31 @@ import DisclosureAccordion from "@/app/(frontend)/_shared/components/Disclosure"
 import { LoadingSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { useMocker } from "@/app/(frontend)/_shared/components/Mocker";
 import Link from "next/link";
+import { Combobox } from "@odinkit/components/Form/Select";
+import {
+  FieldGroup,
+  Fieldset,
+  Label,
+  createField,
+} from "@odinkit/components/Form/Form";
+import { addSupporterDto } from "@/app/api/panel/supporters/dto";
 
-export function AddSupporterForm({
-  campaign,
-  setMetaform,
-}: {
-  campaign: Campaign;
-  setMetaform: Dispatch<SetStateAction<MetaForm | undefined>>;
-}) {
+export function AddSupporterForm({ campaign }: { campaign: Campaign }) {
   const ref = useRef<null | HTMLDivElement>(null);
   const errRef = useRef<null | HTMLDivElement>(null);
 
-  const { supporter: userSupporter } = useContext(SidebarContext);
+  const form = useFormContext();
 
-  const form = useForm<AddSupporterDto>({
-    resolver: zodResolver(addSupporterDto),
-    mode: "onChange",
-  });
+  const Field = useMemo(
+    () =>
+      createField({
+        zodObject: addSupporterDto,
+        enableAsterisk: true,
+      }),
+    []
+  );
+
+  const { supporter: userSupporter } = useContext(SidebarContext);
 
   const { data: zones, trigger: fetchZones } = useAction({
     action: readZonesByCampaign,
@@ -71,25 +62,6 @@ export function AddSupporterForm({
 
   const { data: address, trigger: fetchAddress } = useAction({
     action: readAddressBySection,
-  });
-
-  const {
-    data: supporter,
-    trigger: addSupporterTrigger,
-    isMutating,
-  } = useAction({
-    action: addSupporter,
-    onError: (err) =>
-      showToast({ message: err, variant: "error", title: "Erro" }),
-    onSuccess: ({ data }) => {
-      if (!data) return;
-      showToast({
-        message: `${data.user.name} adicionado a campanha`,
-        variant: "success",
-        title: "Apoiador Adicionado",
-      });
-      form.reset();
-    },
   });
 
   useEffect(() => {
@@ -108,15 +80,6 @@ export function AddSupporterForm({
       form.setValue("user.info.sectionId", undefined);
     }
   }, [form.watch("externalSupporter")]);
-
-  useEffect(() => {
-    if (!form) return;
-    setMetaform({
-      submit: addSupporterTrigger,
-      form: form,
-      isSubmitting: isMutating,
-    });
-  }, [form, isMutating]);
 
   useMocker({
     form,
@@ -142,7 +105,11 @@ export function AddSupporterForm({
     },
   });
 
-  if (!zones || !form)
+  const { data: supporterList, trigger: fetchSupporterList } = useAction({
+    action: readSupportersFulltext,
+  });
+
+  if (!zones)
     return (
       <div className="flex h-[350px] items-center justify-center">
         <LoadingSpinner />
@@ -150,9 +117,9 @@ export function AddSupporterForm({
     );
 
   return (
-    <form>
-      <div className="pb-4 pt-4">
-        <div className="space-y-3 divide-y">
+    <Fieldset>
+      <FieldGroup>
+        <div className="mt-4 space-y-3 divide-y">
           <div className="space-y-3">
             {form.formState.errors.root?.serverError.message ? (
               <div ref={errRef} className="scroll-mt-64">
@@ -232,13 +199,22 @@ export function AddSupporterForm({
               scrollToContent={true}
             >
               <div className="space-y-8">
-                <ComboboxField
-                  label="Indicado Por"
-                  hform={form}
-                  name={"referralId"}
-                  fetcher={readSupportersFulltext}
-                  displayValueKey={"user.name"}
-                />
+                <Field name="referralId">
+                  <Label>Indicado Por</Label>
+                  <Combobox
+                    data={supporterList}
+                    setData={(query) =>
+                      fetchSupporterList({
+                        where: {
+                          user: {
+                            name: query,
+                          },
+                        },
+                      })
+                    }
+                    displayValueKey="user.name"
+                  />
+                </Field>
 
                 <SwitchInput
                   control={form.control}
@@ -249,37 +225,39 @@ export function AddSupporterForm({
               </div>
             </DisclosureAccordion>
           )}
-        </div>
 
-        {!form.watch("externalSupporter") && (
-          <div
-            ref={ref}
-            className={clsx(
-              "mt-6 border-t border-gray-100",
-              address ? "block" : "hidden"
-            )}
-          >
-            <dl className="divide-y divide-gray-100">
-              <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                <dt className="text-sm font-medium leading-6 text-gray-900">
-                  Local de Votação
-                </dt>
-                <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                  {toProperCase(address?.location || "")}
-                </dd>
-              </div>
-              <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                <dt className="text-sm font-medium leading-6 text-gray-900">
-                  Endereço
-                </dt>
-                <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                  {toProperCase(address?.address + ", " + address?.City?.name)}
-                </dd>
-              </div>
-            </dl>
-          </div>
-        )}
-      </div>
-    </form>
+          {!form.watch("externalSupporter") && (
+            <div
+              ref={ref}
+              className={clsx(
+                "mt-6 border-t border-gray-100",
+                address ? "block" : "hidden"
+              )}
+            >
+              <dl className="divide-y divide-gray-100">
+                <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                  <dt className="text-sm font-medium leading-6 text-gray-900">
+                    Local de Votação
+                  </dt>
+                  <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                    {toProperCase(address?.location || "")}
+                  </dd>
+                </div>
+                <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                  <dt className="text-sm font-medium leading-6 text-gray-900">
+                    Endereço
+                  </dt>
+                  <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                    {toProperCase(
+                      address?.address + ", " + address?.City?.name
+                    )}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          )}
+        </div>
+      </FieldGroup>
+    </Fieldset>
   );
 }

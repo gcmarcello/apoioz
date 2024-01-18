@@ -1,6 +1,3 @@
-# Packages
-/packages/odinkit/
-
 # Dependencies
 node_modules
 .pnp
