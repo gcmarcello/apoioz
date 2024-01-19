@@ -25,9 +25,7 @@ export default async function SettingsPage() {
               Informações pessoais do apoiador. Elas são compartilhadas entre as
               redes de apoio que você participa.
             </p>
-            <div className="ms-10">
-              <ProfileUpdateForm user={user} />
-            </div>
+            <ProfileUpdateForm user={user} />
           </div>
         </div>
       </main>

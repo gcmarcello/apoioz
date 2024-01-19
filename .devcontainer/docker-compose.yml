@@ -18,20 +18,36 @@ services:
 
     ports:
       - 3000:3000
+      - 5000:5000
+      - 8080:8080
 
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-  db:
+  db-dash:
     image: postgres:latest
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - apoioz-dash-database:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres
     ports:
       - 5432:5432
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+  db-wa:
+    image: postgres:latest
+    volumes:
+      - apoioz-wa-database:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - 5433:5433
+    command: -p 5433
     extra_hosts:
       - host.docker.internal:host-gateway
 
@@ -50,5 +66,6 @@ services:
       - "host.docker.internal:host-gateway"
 
 volumes:
-  postgres-data:
+  apoioz-dash-database:
+  apoioz-wa-database:
   cloudbeaver:

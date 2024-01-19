@@ -141,7 +141,7 @@ function ProfileUpdateButtons({
   form: UseFormReturn<any, any, any>;
 }) {
   return (
-    <div className="flex flex-col justify-evenly space-x-4 lg:flex-row">
+    <div className="flex flex-col justify-evenly gap-y-3 space-x-3 lg:flex-row">
       {field.show && (
         <button
           type="button"

@@ -17,6 +17,7 @@ export interface BaseProps<Fields extends FieldValues> {
   name: Path<Fields>;
   relative?: JSX.Element;
   disabled?: boolean;
+  description?: string;
 }
 
 export const fieldClasses =

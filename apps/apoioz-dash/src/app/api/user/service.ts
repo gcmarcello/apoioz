@@ -88,6 +88,7 @@ export async function updateUser(request: any) {
         },
       },
     });
+    return data;
   } catch (error) {
     console.log(error);
     throw handlePrismaError("email", error);

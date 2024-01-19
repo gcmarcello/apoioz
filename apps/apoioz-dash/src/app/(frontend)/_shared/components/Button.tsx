@@ -2,7 +2,7 @@ import clsx from "clsx";
 import React, { cloneElement } from "react";
 
 interface ExtraButtonProps {
-  variant?: "primary" | "secondary" | "danger" | "excel";
+  variant?: "primary" | "secondary" | "danger" | "excel" | "success";
 }
 
 type ButtonProps = ExtraButtonProps & React.ComponentProps<"button">;
@@ -19,6 +19,8 @@ const buttonDictionary = {
     "bg-white hover:bg-gray-50 disabled:opacity-50 text-gray-900 focus-visible:outline-white ring-gray-300",
   danger:
     "bg-red-600 hover:bg-red-700 disabled:opacity-70 text-white focus-visible:outline-white ring-red-700",
+  success:
+    "bg-green-500 hover:bg-green-600 disabled:opacity-70 text-white focus-visible:outline-white ring-green-500",
   excel:
     "bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50 text-white focus-visible:outline-white ring-emerald-500",
 };

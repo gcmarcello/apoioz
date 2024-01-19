@@ -7,7 +7,7 @@ import Image from "next/image";
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: { error?: string; support?: string };
+  searchParams: { error?: string; support?: string; email?: string };
 }) {
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center bg-white px-6 py-12 lg:px-8">
@@ -29,7 +29,10 @@ export default async function LoginPage({
         )}
       </div>
 
-      <LoginForm supportRedirect={searchParams.support} />
+      <LoginForm
+        supportRedirect={searchParams.support}
+        email={searchParams.email}
+      />
       <div className="my-2 flex justify-start sm:mx-auto sm:w-full sm:max-w-sm">
         <p className="text-center text-sm text-gray-500">
           Esqueceu a senha ou não configurou?{" "}

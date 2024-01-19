@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
-import { useForm } from "react-hook-form";
+import { Field, FieldValues, useForm } from "react-hook-form";
 
 import { UserIcon } from "@heroicons/react/24/outline";
 import AddSupporterSuccess from "./AddSupporterSuccess";
@@ -28,6 +28,8 @@ import { PollWithQuestionsWithOptions } from "prisma/types/Poll";
 import { readSectionsByZone } from "@/app/api/elections/sections/action";
 import { useMocker } from "@/app/(frontend)/_shared/components/Mocker";
 import { readZonesByCampaign } from "@/app/api/elections/zones/actions";
+import { Transition } from "@headlessui/react";
+import { scrollToElement } from "@/app/(frontend)/_shared/utils/scroll";
 
 dayjs.extend(customParseFormat);
 
@@ -45,7 +47,7 @@ export default function SupporterSignUpPage({
   poll: PollWithQuestionsWithOptions | null;
 }) {
   const [success, setSuccess] = useState(false);
-  const [stage, setStage] = useState("basicInfo");
+  const [stage, setStage] = useState<string | null>("basicInfo");
   const form = useForm<SignUpAsSupporterDto>({
     defaultValues: {
       user: {
@@ -73,6 +75,7 @@ export default function SupporterSignUpPage({
     resolver: zodResolver(signUpAsSupporterDto),
     mode: "onChange",
   });
+  const errorRef = useRef(null);
 
   const { data: campaignZones, trigger: fetchZones } = useAction({
     action: readZonesByCampaign,
@@ -117,15 +120,38 @@ export default function SupporterSignUpPage({
       setSuccess(true);
     },
     onError: (err) => {
-      form.setError("root.serverError", {
+      setStage("basicInfo");
+
+      form.setError("user.email", {
         type: "400",
         message: err.toString() || "Erro inesperado",
       });
+      form.setError("user.phone", {
+        type: "400",
+        message: err.toString() || "Erro inesperado",
+      });
+      setTimeout(() => {
+        if (errorRef.current) {
+          scrollToElement(errorRef.current, 12);
+        }
+      }, 350);
     },
   });
 
+  function verifyStep(fields: string[]) {
+    const formFields = fields.map((field) => form.getFieldState(field as any)); //@todo
+
+    return formFields.every((field) => !field.invalid && field.isDirty);
+  }
+
   if (isSigningUp) return <Loading />;
-  if (success) return <AddSupporterSuccess campaign={campaign} />;
+  if (success)
+    return (
+      <AddSupporterSuccess
+        campaign={campaign}
+        email={form.watch("user.email")}
+      />
+    );
 
   return (
     <div className=" isolate bg-white px-6 pt-8 lg:px-8">
@@ -145,6 +171,13 @@ export default function SupporterSignUpPage({
         <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
           {campaign.name}
         </h2>
+        <h3 className="text-xl font-bold  tracking-tight text-zinc-700">
+          {campaign.state?.name || (
+            <>
+              {campaign.city?.name}, {campaign.city.State?.code}
+            </>
+          )}
+        </h3>
         <p className="mt-2 text-lg leading-8 text-gray-600">
           Preencha seus dados abaixo para fazer parte da nossa rede de apoio!
         </p>
@@ -154,27 +187,47 @@ export default function SupporterSignUpPage({
             <p>Convidado por {user.name}</p>
           </div>
         )}
-        {form.formState.errors?.root?.serverError?.message && (
+        {/* {form.formState.errors?.root?.serverError?.message && (
           <ErrorAlert
+            ref={errorRef}
             errors={[form.formState.errors?.root?.serverError?.message]}
           />
-        )}
+        )} */}
         <form
-          className="flex h-full flex-col  divide-gray-200  text-left"
+          className="flex h-full flex-col  divide-gray-200  text-left "
           onSubmit={form.handleSubmit((data) => signUp(data))}
         >
           <div className={clsx("mb-4 space-y-2 pb-2")}>
-            {stage === "basicInfo" && <BasicInfoSection form={form} />}
-
-            {stage === "electionInfo" && (
+            <Transition
+              show={stage === "basicInfo"}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-0 scale-100"
+              leaveTo="opacity-0 scale-95"
+            >
+              <BasicInfoSection form={form} />
+            </Transition>
+            <Transition
+              show={stage === "electionInfo"}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-50 scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
+            >
               <ElectionInfoSection form={form} zones={zones} poll={poll} />
-            )}
+            </Transition>
           </div>
           <div className="hidden justify-between lg:flex">
             {stage === "electionInfo" && (
               <button
-                role="button"
-                onClick={() => setStage("basicInfo")}
+                type="button"
+                onClick={() => {
+                  setStage("basicInfo");
+                }}
                 className={clsx(
                   "rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 lg:w-auto",
                   !form.formState.isValid ? "w-full" : "w-1/2"
@@ -187,23 +240,36 @@ export default function SupporterSignUpPage({
             {stage === "basicInfo" ? (
               <button
                 type="button"
-                onClick={(e) => {
-                  e.preventDefault();
+                disabled={
+                  !verifyStep([
+                    "user.name",
+                    "user.email",
+                    "user.info.birthDate",
+                    "user.phone",
+                  ])
+                }
+                onClick={() => {
                   setStage("electionInfo");
                 }}
                 className={clsx(
                   "inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-indigo-300"
                 )}
               >
-                Inscrever
+                Próximo
               </button>
             ) : (
               <button
-                disabled={!form.formState.isValid}
+                disabled={
+                  !verifyStep([
+                    "user.info.zoneId",
+                    "user.info.sectionId",
+                    "user.password",
+                  ])
+                }
                 type="submit"
                 className={clsx(
                   "inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-indigo-300",
-                  stage === "basicInfo" ? "w-full" : "ms-2 w-1/2"
+                  "ms-2 w-1/2"
                 )}
               >
                 Inscrever
@@ -215,7 +281,11 @@ export default function SupporterSignUpPage({
               {stage === "electionInfo" && (
                 <Button
                   variant="secondary"
-                  onClick={() => setStage("basicInfo")}
+                  role="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setStage("basicInfo");
+                  }}
                 >
                   Voltar
                 </Button>
@@ -227,19 +297,30 @@ export default function SupporterSignUpPage({
                     e.preventDefault();
                     setStage("electionInfo");
                   }}
-                  type="button"
+                  role="button"
                   variant="primary"
                   className="w-full"
+                  disabled={
+                    !verifyStep([
+                      "user.name",
+                      "user.email",
+                      "user.info.birthDate",
+                      "user.phone",
+                    ])
+                  }
                 >
                   Próximo
                 </Button>
               ) : (
                 <Button
-                  onClick={() => {
-                    setStage("electionInfo");
-                  }}
                   variant="primary"
-                  disabled={!form.formState.isValid}
+                  disabled={
+                    !verifyStep([
+                      "user.info.zoneId",
+                      "user.info.sectionId",
+                      "user.password",
+                    ])
+                  }
                   type="submit"
                 >
                   Inscrever

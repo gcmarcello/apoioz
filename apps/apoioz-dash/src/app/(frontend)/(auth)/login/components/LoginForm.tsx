@@ -14,12 +14,18 @@ import { Button } from "@/app/(frontend)/_shared/components/Button";
 
 export default function LoginForm({
   supportRedirect,
+  email,
 }: {
   supportRedirect?: string;
+  email?: string;
 }) {
   const form = useForm<LoginDto>({
     mode: "onChange",
     resolver: zodResolver(loginDto),
+    defaultValues: {
+      identifier: email || "",
+      password: "",
+    },
   });
   const router = useRouter();
 

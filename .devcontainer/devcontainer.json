@@ -3,7 +3,7 @@
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-  "forwardPorts": [5432, 5430, 4040, 3000],
+  "forwardPorts": [5432, 5430, 4040, 8080, 3000],
   "customizations": {
     "vscode": {
       "extensions": [
@@ -40,7 +40,7 @@
         "material-icon-theme.folders.associations": {
           "_shared": "shared"
         },
-        "material-icon-theme.activeIconPack": "none",
+        "material-icon-theme.activeIconPack": "nest",
         "editor.formatOnSave": true,
         "editor.formatOnPaste": false,
         "prettier.useEditorConfig": false,

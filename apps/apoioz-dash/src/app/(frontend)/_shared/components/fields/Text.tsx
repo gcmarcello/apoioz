@@ -62,6 +62,9 @@ export function TextField<T extends FieldValues>(props: TextFieldProps<T>) {
         {...props}
         className={className}
       />
+      <p className="mt-2 text-sm text-gray-500" id="email-description">
+        {props.description}
+      </p>
     </Field>
   );
 }

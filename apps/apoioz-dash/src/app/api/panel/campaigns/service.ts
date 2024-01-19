@@ -22,18 +22,13 @@ export async function findCampaignById(campaignId: string) {
 }
 
 export async function listCampaigns(userId: string) {
-  try {
     return await prisma.campaign.findMany({
       where: { OR: [{ supporters: { some: { userId: userId } } }, { userId }] },
       include: { _count: { select: { supporters: true } } },
     });
-  } catch (error) {
-    throw error;
-  }
 }
 
 export async function updateCampaign(request: any) {
-  try {
     const { userSession, supporterSession, ...data } = request;
 
     const slugAvailability = await prisma.campaign.findFirst({
@@ -52,9 +47,6 @@ export async function updateCampaign(request: any) {
       data,
     });
     return updatedCampaign;
-  } catch (error) {
-    throw error;
-  }
 }
 
 export async function readCampaign(request: {
@@ -65,6 +57,7 @@ export async function readCampaign(request: {
     where: request.campaignId
       ? { id: request.campaignId }
       : { slug: request.slug },
+    include: { city: { include: { State: true } }, state: true },
   });
 
   return campaign;
