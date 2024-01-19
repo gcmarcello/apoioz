@@ -1,33 +1,98 @@
 "use client";
-import { Dispatch, Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useId } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { UserPlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { LinkIcon } from "@heroicons/react/20/solid";
-import toast, { Toaster } from "react-hot-toast";
 import { ShareSupporter } from "./ShareSupporter";
 import { AddSupporterForm } from "./AddSupporter";
 import { useSidebar } from "../lib/useSidebar";
 import { useForm } from "react-hook-form";
-import { useMetaForm } from "@/app/(frontend)/_shared/hooks/useMetaform";
 import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { Button } from "@/app/(frontend)/_shared/components/Button";
-
-export type FormContext = {
-  form: ReturnType<typeof useForm>;
-  submit: () => void;
-};
+import { useSteps } from "odinkit/hooks/useSteps";
+import { Form } from "odinkit/components/Form/Form";
+import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
+import { addSupporter } from "@/app/api/panel/supporters/actions";
+import {
+  AddSupporterDto,
+  addSupporterDto,
+} from "@/app/api/panel/supporters/dto";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useAction } from "odinkit/hooks/useAction";
 
 export default function SupporterSideBar() {
   const { user, campaign, visibility, setVisibility } = useSidebar();
-  const [option, setOption] = useState("start");
-  const { submit, setMetaform, isSubmitting } = useMetaForm();
+
+  const addSupporterForm = useForm<AddSupporterDto>({
+    resolver: zodResolver(addSupporterDto),
+    mode: "onChange",
+    defaultValues: {},
+  });
+
+  const addSupporterFormId = useId();
+
+  const {
+    data: supporter,
+    trigger: addSupporterTrigger,
+    isMutating,
+  } = useAction({
+    action: addSupporter,
+    onError: (err) =>
+      showToast({ message: err, variant: "error", title: "Erro" }),
+    onSuccess: ({ data }) => {
+      if (!data) return;
+      showToast({
+        message: `${data.user.name} adicionado a campanha`,
+        variant: "success",
+        title: "Apoiador Adicionado",
+      });
+      addSupporterForm.reset();
+    },
+  });
+
+  const { activeStep, setActiveStep } = useSteps(
+    ["start", "share", "add"],
+    "start",
+    (step, setStep) => ({
+      start: (
+        <div className="flex flex-col gap-8 pb-4 pt-20">
+          <button
+            onClick={() => setStep("add")}
+            type="button"
+            className="mx-auto rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+          >
+            <UserPlusIcon className="h-30 w-30 text-indigo-500 group-hover:text-indigo-900" />
+            Adicionar Apoiador
+          </button>
+          <button
+            onClick={() => setStep("share")}
+            type="button"
+            className="mx-auto rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+          >
+            <LinkIcon className="h-30 w-30 text-gray-400 group-hover:text-gray-500" />
+            Compartilhar Link
+          </button>
+        </div>
+      ),
+      share: <ShareSupporter user={user} campaign={campaign} />,
+      add: (
+        <Form
+          id={addSupporterFormId}
+          hform={addSupporterForm}
+          onSubmit={addSupporterTrigger}
+        >
+          <AddSupporterForm campaign={campaign} />
+        </Form>
+      ),
+    })
+  );
 
   return (
     <>
       <Transition.Root
         show={visibility.supporterSidebar}
         afterLeave={() => {
-          setOption("start");
+          setActiveStep("start");
         }}
         as={Fragment}
       >
@@ -86,9 +151,9 @@ export default function SupporterSideBar() {
 
                           <div className="mt-1">
                             <p className="text-sm text-indigo-300">
-                              {option === "start"
+                              {activeStep.key === "start"
                                 ? "Escolha como aumentar sua rede."
-                                : option === "share"
+                                : activeStep.key === "share"
                                   ? "Envie um link de convite para o apoiador."
                                   : "Complete os campos e faça parte da transformação."}
                             </p>
@@ -96,35 +161,7 @@ export default function SupporterSideBar() {
                         </div>
                         <div className="flex flex-1 flex-col justify-between">
                           <div className="divide-y divide-gray-200 px-4 sm:px-6">
-                            {option === "start" && (
-                              <div className="flex flex-col gap-8 pb-4 pt-20">
-                                <button
-                                  onClick={() => setOption("add")}
-                                  type="button"
-                                  className="mx-auto rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                                >
-                                  <UserPlusIcon className="h-30 w-30 text-indigo-500 group-hover:text-indigo-900" />
-                                  Adicionar Apoiador
-                                </button>
-                                <button
-                                  onClick={() => setOption("share")}
-                                  type="button"
-                                  className="mx-auto rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                                >
-                                  <LinkIcon className="h-30 w-30 text-gray-400 group-hover:text-gray-500" />
-                                  Compartilhar Link
-                                </button>
-                              </div>
-                            )}
-                            {option === "share" && (
-                              <ShareSupporter user={user} campaign={campaign} />
-                            )}
-                            {option === "add" && (
-                              <AddSupporterForm
-                                campaign={campaign}
-                                setMetaform={setMetaform}
-                              />
-                            )}
+                            {activeStep.value}
                           </div>
                         </div>
                       </div>
@@ -133,26 +170,29 @@ export default function SupporterSideBar() {
                           type="button"
                           className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                           onClick={() => {
-                            if (option === "start") {
+                            if (activeStep.key === "start") {
                               setVisibility((prev) => ({
                                 ...prev,
                                 supporterSidebar: false,
                               }));
                             } else {
-                              setOption("start");
+                              setActiveStep("start");
                             }
                           }}
                         >
                           Voltar
                         </button>
-                        {option === "add" && (
+                        {activeStep.key === "add" && (
                           <Button
-                            disabled={isSubmitting}
-                            onClick={submit}
+                            disabled={addSupporterForm.formState.isSubmitting}
                             variant="primary"
+                            form={addSupporterFormId}
                           >
                             <div className="flex items-center gap-2">
-                              Adicionar {isSubmitting && <ButtonSpinner />}
+                              Adicionar{" "}
+                              {addSupporterForm.formState.isSubmitting && (
+                                <ButtonSpinner />
+                              )}
                             </div>
                           </Button>
                         )}

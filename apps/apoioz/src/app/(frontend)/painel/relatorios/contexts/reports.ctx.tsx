@@ -1,4 +1,4 @@
-import { ExtractSuccessResponse } from "@odinkit/api/ActionResponse";
+import { ExtractSuccessResponse } from "odinkit/api/ActionResponse";
 import { readSupportersFromSupporterGroupWithRelation } from "@/app/api/panel/supporters/actions";
 import { User } from "@prisma/client";
 import { Dispatch, createContext } from "react";

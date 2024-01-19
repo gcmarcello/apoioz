@@ -9,7 +9,7 @@ import { useSidebar } from "../lib/useSidebar";
 import { set } from "react-hook-form";
 import { LoadingSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { UserWithoutPassword } from "prisma/types/User";
-import { useAction } from "@odinkit/hooks/useAction";
+import { useAction } from "odinkit/hooks/useAction";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 
 export function ShareSupporter({

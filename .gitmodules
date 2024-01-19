@@ -1,0 +1,3 @@
+[submodule "packages/odinkit"]
+	path = packages/odinkit
+	url = https://github.com/Fgc17/odinkit

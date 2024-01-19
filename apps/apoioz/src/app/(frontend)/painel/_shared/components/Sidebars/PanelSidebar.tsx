@@ -14,16 +14,12 @@ import {
   ClipboardDocumentListIcon,
   UserGroupIcon,
 } from "@heroicons/react/24/outline";
-import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import clsx from "clsx";
-import SupporterSideBar from "./Supporter/SupporterSidebars";
 import { usePathname, useRouter } from "next/navigation";
-import { Campaign, User } from "@prisma/client";
 import { useSidebar } from "./lib/useSidebar";
 import Link from "next/link";
 import WhatsAppIcon from "@/app/(frontend)/_shared/components/icons/WhatsAppIcon";
 import { activateCampaign } from "@/app/api/panel/campaigns/actions";
-import Image from "next/image";
 import { Logo } from "@/app/(frontend)/_shared/components/Logo";
 import { For } from "@/app/(frontend)/_shared/components/For";
 

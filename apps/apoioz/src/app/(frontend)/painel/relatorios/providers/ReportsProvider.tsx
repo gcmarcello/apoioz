@@ -4,7 +4,7 @@ import { User } from "@prisma/client";
 import { ReportsContext } from "../contexts/reports.ctx";
 import clsx from "clsx";
 import { ArrowLeftIcon, EyeIcon } from "@heroicons/react/24/outline";
-import { useAction } from "@odinkit/hooks/useAction";
+import { useAction } from "odinkit/hooks/useAction";
 import { readSupportersFromSupporterGroupWithRelation } from "@/app/api/panel/supporters/actions";
 
 export default function ReportsProvider({ children }: { children: any }) {

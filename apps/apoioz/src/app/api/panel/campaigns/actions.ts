@@ -5,7 +5,7 @@ import * as service from "./service";
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
-import { ActionResponse } from "@odinkit/api/ActionResponse";
+import { ActionResponse } from "odinkit/api/ActionResponse";
 import { CampaignLeaderMiddleware } from "@/middleware/functions/campaignLeader.middleware";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";

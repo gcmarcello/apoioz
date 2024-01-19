@@ -1,5 +1,5 @@
 import { ComboboxField } from "@/app/(frontend)/_shared/components/fields/Select";
-import { useAction } from "@odinkit/hooks/useAction";
+import { useAction } from "odinkit/hooks/useAction";
 import { processNodesEdges } from "../lib/nodesEdges";
 import { CustomFlowContext } from "../types/CustomFlowContext";
 import { useForm } from "react-hook-form";

@@ -6,7 +6,7 @@ import { readSectionsByAddress } from "@/app/api/elections/sections/action";
 import { MapAddressType } from "../providers/MapDataProvider";
 import { toProperCase } from "@/_shared/utils/format";
 import { For } from "@/app/(frontend)/_shared/components/For";
-import { useAction } from "@odinkit/hooks/useAction";
+import { useAction } from "odinkit/hooks/useAction";
 
 export default function AddressDetailsModal({
   address,

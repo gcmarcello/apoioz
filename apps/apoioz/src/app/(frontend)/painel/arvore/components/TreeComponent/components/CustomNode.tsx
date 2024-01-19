@@ -10,7 +10,7 @@ import {
 import clsx from "clsx";
 
 import { ChevronDownIcon, MinusCircleIcon } from "@heroicons/react/24/outline";
-import { useAction } from "@odinkit/hooks/useAction";
+import { useAction } from "odinkit/hooks/useAction";
 import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { processNodesEdges } from "../lib/nodesEdges";
 import { CustomFlowContext } from "../types/CustomFlowContext";
