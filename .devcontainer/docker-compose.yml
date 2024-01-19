@@ -46,8 +46,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_DB: postgres
     ports:
-      - 5433:5433
-    command: -p 5433
+      - 5440:5440
+    command: -p 5440
     extra_hosts:
       - host.docker.internal:host-gateway
 
@@ -68,4 +68,3 @@ services:
 volumes:
   apoioz-dash-database:
   apoioz-wa-database:
-  cloudbeaver:

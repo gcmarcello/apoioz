@@ -7,7 +7,7 @@ export class WhatsappClient extends Client {
   constructor() {
     super({
       authStrategy: new RemoteAuth({
-        clientId: `apoioz-session-${new Date().toISOString()}}`,
+        clientId: `apoioz-session-${new Date().getTime()}`,
         dataPath: "./.wwebjs_auth",
         store: waStore,
         backupSyncIntervalMs: 600000,
