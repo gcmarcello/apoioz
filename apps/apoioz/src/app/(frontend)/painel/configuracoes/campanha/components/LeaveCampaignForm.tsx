@@ -5,7 +5,7 @@ import Paragraph from "@/app/(frontend)/_shared/components/text/Paragraph";
 import Modal from "@/app/(frontend)/_shared/components/Modal";
 import { Dialog } from "@headlessui/react";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/solid";
-import { useAction } from "@odinkit/hooks/useAction";
+import { useAction } from "odinkit/hooks/useAction";
 import { leaveAsSupporter } from "@/app/api/panel/supporters/actions";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 import { useRouter } from "next/navigation";

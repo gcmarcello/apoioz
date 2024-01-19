@@ -4,7 +4,7 @@ import { fakerPT_BR } from "@faker-js/faker";
 import { Campaign } from "@prisma/client";
 import { useContext, useEffect, useMemo, useRef } from "react";
 import { useFormContext } from "react-hook-form";
-import { useAction } from "@odinkit/hooks/useAction";
+import { useAction } from "odinkit/hooks/useAction";
 import { toProperCase } from "@/_shared/utils/format";
 import {
   ComboboxField,
@@ -26,13 +26,15 @@ import DisclosureAccordion from "@/app/(frontend)/_shared/components/Disclosure"
 import { LoadingSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { useMocker } from "@/app/(frontend)/_shared/components/Mocker";
 import Link from "next/link";
-import { Combobox } from "@odinkit/components/Form/Select";
+import { Combobox, Select } from "odinkit/components/Form/Select";
 import {
+  ErrorMessage,
   FieldGroup,
   Fieldset,
   Label,
   createField,
-} from "@odinkit/components/Form/Form";
+} from "odinkit/components/Form/Form";
+import { Input } from "odinkit/components/Form/Input";
 import { addSupporterDto } from "@/app/api/panel/supporters/dto";
 
 export function AddSupporterForm({ campaign }: { campaign: Campaign }) {
@@ -45,7 +47,7 @@ export function AddSupporterForm({ campaign }: { campaign: Campaign }) {
     () =>
       createField({
         zodObject: addSupporterDto,
-        enableAsterisk: true,
+        enableAsterisk: false,
       }),
     []
   );
@@ -88,15 +90,15 @@ export function AddSupporterForm({ campaign }: { campaign: Campaign }) {
 
       const zone = zones![Math.floor(Math.random() * zones!.length)];
 
-      const { data: sections } = await fetchSections(zone.id);
+      const { data: sections } = await fetchSections(zone?.id || "");
 
       return {
         "user.name": fakerPT_BR.person.fullName(),
         "user.email": fakerPT_BR.internet.email(),
         "user.phone": fakerPT_BR.phone.number(),
-        "user.info.zoneId": zone.id,
+        "user.info.zoneId": zone?.id,
         "user.info.sectionId":
-          sections?.[Math.round(Math.random() * sections.length)].id,
+          sections?.[Math.round(Math.random() * sections.length)]?.id,
         "user.info.birthDate": dayjs(
           fakerPT_BR.date.past({ refDate: 1 }).toISOString()
         ).format("DD/MM/YYYY"),
@@ -121,7 +123,7 @@ export function AddSupporterForm({ campaign }: { campaign: Campaign }) {
       <FieldGroup>
         <div className="mt-4 space-y-3 divide-y">
           <div className="space-y-3">
-            {form.formState.errors.root?.serverError.message ? (
+            {form.formState.errors.root?.serverError?.message ? (
               <div ref={errRef} className="scroll-mt-64">
                 <ErrorAlert
                   errors={[
@@ -131,11 +133,12 @@ export function AddSupporterForm({ campaign }: { campaign: Campaign }) {
                 />
               </div>
             ) : null}
-            <TextField
-              label="Nome do Apoiador"
-              hform={form}
-              name={"user.name"}
-            />
+            <Field name="user.name">
+              <Label>Nome do apoiador</Label>
+              <Input />
+              <ErrorMessage />
+            </Field>
+
             <TextField label="Email" hform={form} name={"user.email"} />
             <MaskedTextField
               label="Celular"
@@ -213,6 +216,74 @@ export function AddSupporterForm({ campaign }: { campaign: Campaign }) {
                       })
                     }
                     displayValueKey="user.name"
+                  />
+                </Field>
+                <Field name="externalSupporter">
+                  <Label>Teste</Label>
+                  <Select
+                    displayValueKey="nome"
+                    data={[
+                      {
+                        id: 1,
+                        nome: "Fernando",
+                      },
+                      {
+                        id: 2,
+                        nome: "Gabriel",
+                      },
+                      {
+                        id: 3,
+                        nome: "João",
+                      },
+                      {
+                        id: 4,
+                        nome: "Maria",
+                      },
+                      {
+                        id: 5,
+                        nome: "Pedro",
+                      },
+                      {
+                        id: 6,
+                        nome: "Rafael",
+                      },
+                      {
+                        id: 7,
+                        nome: "Ricardo",
+                      },
+                      {
+                        id: 8,
+                        nome: "Rodrigo",
+                      },
+                      {
+                        id: 9,
+                        nome: "Thiago",
+                      },
+                      {
+                        id: 10,
+                        nome: "Vinicius",
+                      },
+                      {
+                        id: 11,
+                        nome: "Vitor",
+                      },
+                      {
+                        id: 12,
+                        nome: "Wagner",
+                      },
+                      {
+                        id: 13,
+                        nome: "William",
+                      },
+                      {
+                        id: 14,
+                        nome: "Yuri",
+                      },
+                      {
+                        id: 15,
+                        nome: "Zé",
+                      },
+                    ]}
                   />
                 </Field>
 

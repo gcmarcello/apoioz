@@ -10,7 +10,7 @@ import {
   SignUpAsSupporterDto,
 } from "./dto";
 import { ExistingUserMiddleware } from "./middlewares";
-import { ActionResponse } from "@odinkit/api/ActionResponse";
+import { ActionResponse } from "odinkit/api/ActionResponse";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { createSupporter } from "../panel/supporters/service";
 import { validateInviteCode } from "./invites/service";

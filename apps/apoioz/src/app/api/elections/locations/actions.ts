@@ -3,7 +3,7 @@
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
 import * as service from "./service";
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
-import { ActionResponse } from "@odinkit/api/ActionResponse";
+import { ActionResponse } from "odinkit/api/ActionResponse";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 
 export async function readCitiesByState(data: string) {

@@ -9,8 +9,8 @@ import { useSidebar } from "../lib/useSidebar";
 import { useForm } from "react-hook-form";
 import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { Button } from "@/app/(frontend)/_shared/components/Button";
-import { useSteps } from "@odinkit/hooks/useSteps";
-import { Form } from "@odinkit/components/Form/Form";
+import { useSteps } from "odinkit/hooks/useSteps";
+import { Form } from "odinkit/components/Form/Form";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 import { addSupporter } from "@/app/api/panel/supporters/actions";
 import {
@@ -18,7 +18,7 @@ import {
   addSupporterDto,
 } from "@/app/api/panel/supporters/dto";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAction } from "@odinkit/hooks/useAction";
+import { useAction } from "odinkit/hooks/useAction";
 
 export default function SupporterSideBar() {
   const { user, campaign, visibility, setVisibility } = useSidebar();

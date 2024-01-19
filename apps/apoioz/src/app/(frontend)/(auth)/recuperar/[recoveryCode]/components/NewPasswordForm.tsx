@@ -3,7 +3,7 @@
 import { Logo } from "@/app/(frontend)/_shared/components/Logo";
 import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
-import { useAction } from "@odinkit/hooks/useAction";
+import { useAction } from "odinkit/hooks/useAction";
 import { resetPassword, updatePassword } from "@/app/api/auth/action";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/solid";
 import { useRouter } from "next/navigation";

@@ -4,7 +4,7 @@ import { UserSessionMiddleware } from "@/middleware/functions/userSession.middle
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 import * as service from "./service";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
-import { ActionResponse } from "@odinkit/api/ActionResponse";
+import { ActionResponse } from "odinkit/api/ActionResponse";
 import { revalidatePath } from "next/cache";
 
 export async function createMapData() {

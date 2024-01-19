@@ -21,7 +21,7 @@ import { RecursiveSupporterWithReferred } from "prisma/types/Supporter";
 import { normalizeEmail, normalizePhone } from "@/_shared/utils/format";
 import axios from "axios";
 import { zoneWithoutGeoJSON } from "prisma/query/Zone";
-import { fullTextSearch } from "@odinkit/api/fullTextSearch";
+import { fullTextSearch } from "odinkit/api/fullTextSearch";
 
 export async function readSupporterBranches({
   supporterSession,

@@ -8,7 +8,7 @@ import { showToast } from "../../_shared/components/alerts/toast";
 import Link from "next/link";
 import { ArrowLeftCircleIcon } from "@heroicons/react/24/outline";
 import SuccessAlert from "../../_shared/components/alerts/successAlert";
-import { useAction } from "@odinkit/hooks/useAction";
+import { useAction } from "odinkit/hooks/useAction";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   PasswordResetRequestDto,
