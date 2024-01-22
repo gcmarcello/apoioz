@@ -11,7 +11,7 @@ export const signUpAsSupporterDto = z.object({
 export type SignUpAsSupporterDto = z.infer<typeof signUpAsSupporterDto>;
 
 export const loginDto = z.object({
-  identifier: z.string(),
+  identifier: z.string().email(),
   password: z
     .string()
     .min(6, { message: "A senha tem no mínimo 6 caracteres" }),

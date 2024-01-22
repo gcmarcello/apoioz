@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import dayjs from "dayjs";
-import { hashInfo } from "odinkit/src/utils/bCrypt";
+import { hashInfo } from "odinkit/utils/bCrypt";
 const prisma = new PrismaClient();
 
 async function main() {}

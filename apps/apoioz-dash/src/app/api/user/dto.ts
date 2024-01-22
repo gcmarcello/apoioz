@@ -8,8 +8,18 @@ export const createUserDto = z.object({
   password: z.string().nullable().optional(),
   phone: z.custom(phoneValidator as any, { message: "Telefone inválido" }),
   info: z.object({
-    zoneId: z.string().uuid().optional(),
-    sectionId: z.string().uuid().optional(),
+    zoneId: z
+      .string()
+      .uuid({
+        message: "Zona inválida",
+      })
+      .optional(),
+    sectionId: z
+      .string()
+      .uuid({
+        message: "Seção inválida",
+      })
+      .optional(),
     birthDate: z.custom(birthDateValidator as any, {
       message: "Data de nascimento inválida",
     }),

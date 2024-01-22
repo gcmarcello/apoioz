@@ -1,16 +1,24 @@
 "use client";
 
-import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
-import ErrorAlert from "@/app/(frontend)/_shared/components/alerts/errorAlert";
-import { LoginDto, loginDto } from "@/app/api/auth/dto";
+import { loginDto } from "@/app/api/auth/dto";
 import { login } from "@/app/api/auth/action";
 import { fakerPT_BR } from "@faker-js/faker";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { TextField } from "@/app/(frontend)/_shared/components/fields/Text";
 import { useAction } from "odinkit/hooks/useAction";
-import { Button } from "@/app/(frontend)/_shared/components/Button";
+import { List } from "odinkit/components/List";
+import { Alertbox } from "odinkit/components/Alertbox";
+import {
+  ErrorMessage,
+  Fieldset,
+  Form,
+  Label,
+  useForm,
+} from "odinkit/components/Form/Form";
+import { Container } from "odinkit/components/Containers";
+import { Input } from "odinkit/components/Form/Input";
+import { Button } from "odinkit/components/Button";
+import { ButtonSpinner } from "odinkit/components/Spinners";
+import { useMemo } from "react";
+import { If } from "odinkit/components/If";
 
 export default function LoginForm({
   supportRedirect,
@@ -19,20 +27,21 @@ export default function LoginForm({
   supportRedirect?: string;
   email?: string;
 }) {
-  const form = useForm<LoginDto>({
+  const form = useForm({
     mode: "onChange",
-    resolver: zodResolver(loginDto),
+    schema: loginDto,
     defaultValues: {
       identifier: email || "",
       password: "",
     },
+    fieldOptions: {
+      enableAsterisk: false,
+    },
   });
-  const router = useRouter();
 
-  const {
-    formState: { errors },
-    handleSubmit,
-  } = form;
+  const errors = form.formState.errors;
+
+  const Field = form.createField();
 
   const { trigger: loginAction, isMutating: isLoading } = useAction({
     action: login,
@@ -45,55 +54,50 @@ export default function LoginForm({
     redirect: true,
   });
 
-  const generateFakeData = () => {
-    form.setValue("identifier", fakerPT_BR.internet.email());
-    form.setValue("password", fakerPT_BR.internet.password());
-  };
-
   return (
-    <>
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <form
-          className="mt-4 space-y-6"
-          onSubmit={handleSubmit((data) => loginAction(data))}
-        >
-          {errors.root?.serverError.message ? (
-            <ErrorAlert errors={[errors.root.serverError.message]} />
-          ) : null}
+    <Container className="mx-auto w-full max-w-sm">
+      <Form onSubmit={loginAction} className="mt-4" hform={form}>
+        <If
+          if={errors.root?.serverError?.message}
+          then={
+            <Alertbox type="error">
+              <List data={[errors.root?.serverError?.message as string]} />
+            </Alertbox>
+          }
+          else={null}
+        />
 
-          <TextField
-            hform={form}
-            label="Email"
-            name="identifier"
-            placeholder="seu_email@email.com"
-          />
+        <Fieldset className={"space-y-3"}>
+          <Field name="identifier">
+            <Label>Email</Label>
+            <Input placeholder="seu_email@email.com" />
+            <ErrorMessage />
+          </Field>
 
-          <TextField
-            hform={form}
-            label="Senha"
-            name="password"
-            type={"password"}
-            placeholder="•••••••••••"
-          />
+          <Field name="password">
+            <Label>Senha</Label>
+            <Input type="password" placeholder="•••••••••••" />
+            <ErrorMessage />
+          </Field>
 
-          <div>
-            <Button
-              className="w-full"
-              disabled={isLoading}
-              variant="primary"
-              type="submit"
-            >
-              {isLoading ? (
+          <Button
+            className="mt-3 w-full"
+            disabled={isLoading}
+            color="indigo"
+            type="submit"
+          >
+            <If
+              if={isLoading}
+              then={
                 <div className="flex items-center justify-center">
                   <ButtonSpinner size="medium" />
                 </div>
-              ) : (
-                "Login"
-              )}
-            </Button>
-          </div>
-        </form>
-      </div>
-    </>
+              }
+              else={"Login"}
+            />
+          </Button>
+        </Fieldset>
+      </Form>
+    </Container>
   );
 }

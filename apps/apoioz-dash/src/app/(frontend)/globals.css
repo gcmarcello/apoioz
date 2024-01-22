@@ -19,6 +19,6 @@
 [multiple]:focus,
 textarea:focus,
 select:focus {
-  --tw-ring-color: var(--primary-color);
-  border-color: var(--primary-color);
+  --tw-ring-color: "transparent";
+  border-color: "transparent";
 }

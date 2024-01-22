@@ -21,7 +21,7 @@ import {
 } from "@/app/api/panel/whatsapp/dto";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { upsertWhatsapp } from "@/app/api/panel/whatsapp/action";
-import { useAction } from "odinkit/src/hooks/useAction";
+import { useAction } from "odinkit/hooks/useAction";
 import { For } from "@/app/(frontend)/_shared/components/For";
 import {
   ButtonSpinner,

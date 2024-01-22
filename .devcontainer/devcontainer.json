@@ -20,7 +20,8 @@
         "eamodio.gitlens",
         "yoavbls.pretty-ts-errors",
         "IronGeek.vscode-env",
-        "harehare.portable-kanban"
+        "harehare.portable-kanban",
+        "alefragnani.Bookmarks"
       ],
       "settings": {
         "git.repositoryScanMaxDepth": 5,

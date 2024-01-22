@@ -1,32 +1,27 @@
 "use client";
-import { Fragment, useId } from "react";
+import { Fragment, useId, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { UserPlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { LinkIcon } from "@heroicons/react/20/solid";
 import { ShareSupporter } from "./ShareSupporter";
 import { AddSupporterForm } from "./AddSupporter";
 import { useSidebar } from "../lib/useSidebar";
-import { useForm } from "react-hook-form";
 import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
-import { Button } from "@/app/(frontend)/_shared/components/Button";
 import { useSteps } from "odinkit/hooks/useSteps";
-import { Form } from "odinkit/components/Form/Form";
+import { Form, useForm } from "odinkit/components/Form/Form";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 import { addSupporter } from "@/app/api/panel/supporters/actions";
-import {
-  AddSupporterDto,
-  addSupporterDto,
-} from "@/app/api/panel/supporters/dto";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { addSupporterDto } from "@/app/api/panel/supporters/dto";
 import { useAction } from "odinkit/hooks/useAction";
+import { Button } from "odinkit/components/Button";
+import { If } from "odinkit/components/If";
 
 export default function SupporterSideBar() {
   const { user, campaign, visibility, setVisibility } = useSidebar();
 
-  const addSupporterForm = useForm<AddSupporterDto>({
-    resolver: zodResolver(addSupporterDto),
+  const addSupporterForm = useForm({
+    schema: addSupporterDto,
     mode: "onChange",
-    defaultValues: {},
   });
 
   const addSupporterFormId = useId();
@@ -92,27 +87,27 @@ export default function SupporterSideBar() {
       <Transition.Root
         show={visibility.supporterSidebar}
         afterLeave={() => {
+          addSupporterForm.reset();
           setActiveStep("start");
         }}
-        as={Fragment}
+        as={"div"}
       >
-        <Dialog
-          as="div"
-          className="relative z-50"
-          onClose={() =>
-            setVisibility((prev) => ({
-              ...prev,
-              supporterSidebar: false,
-            }))
-          }
-        >
-          <div className="fixed inset-0" />
-
+        <Dialog as="div" className="relative z-50" onClose={() => {}}>
           <div className="fixed inset-0 overflow-hidden">
-            <div className="absolute inset-0 overflow-hidden">
-              <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16">
+            <div className="absolute inset-0 grid grid-cols-2 overflow-hidden">
+              <span
+                onClick={() => {
+                  setVisibility((prev) => ({
+                    ...prev,
+                    supporterSidebar: false,
+                  }));
+                }}
+                className="h-screen w-screen"
+              ></span>
+              <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full">
                 <Transition.Child
                   as={Fragment}
+                  key={"supporters-sidebar"}
                   enter="transform transition ease-in-out duration-500 sm:duration-700"
                   enterFrom="translate-x-full"
                   enterTo="translate-x-0"
@@ -151,11 +146,21 @@ export default function SupporterSideBar() {
 
                           <div className="mt-1">
                             <p className="text-sm text-indigo-300">
-                              {activeStep.key === "start"
-                                ? "Escolha como aumentar sua rede."
-                                : activeStep.key === "share"
-                                  ? "Envie um link de convite para o apoiador."
-                                  : "Complete os campos e faça parte da transformação."}
+                              <If
+                                if={activeStep.key === "start"}
+                                then={"Escolha como aumentar sua rede."}
+                                else={
+                                  <If
+                                    if={activeStep.key === "share"}
+                                    then={
+                                      "Envie um link de convite para o apoiador."
+                                    }
+                                    else={
+                                      "Complete os campos e faça parte da transformação."
+                                    }
+                                  />
+                                }
+                              />
                             </p>
                           </div>
                         </div>
@@ -166,9 +171,9 @@ export default function SupporterSideBar() {
                         </div>
                       </div>
                       <div className="flex flex-shrink-0 justify-end gap-2 px-4 py-4">
-                        <button
+                        <Button
                           type="button"
-                          className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                          plain={true}
                           onClick={() => {
                             if (activeStep.key === "start") {
                               setVisibility((prev) => ({
@@ -181,11 +186,12 @@ export default function SupporterSideBar() {
                           }}
                         >
                           Voltar
-                        </button>
+                        </Button>
                         {activeStep.key === "add" && (
                           <Button
+                            type="submit"
                             disabled={addSupporterForm.formState.isSubmitting}
-                            variant="primary"
+                            color="indigo"
                             form={addSupporterFormId}
                           >
                             <div className="flex items-center gap-2">

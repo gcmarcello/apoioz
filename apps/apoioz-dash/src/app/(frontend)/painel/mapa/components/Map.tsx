@@ -371,7 +371,7 @@ export default function Map() {
           </>
         ) : (
           <>
-            <SupporterBall level={1} /> Desconectado do servidor de mapas.
+            <SupporterBall level={1} /> Desconectado da rede de apoio ao vivo.
           </>
         )}
       </div>

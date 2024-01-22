@@ -1,20 +1,9 @@
-import ErrorAlert from "@/app/(frontend)/_shared/components/alerts/errorAlert";
 import { readSupportersFulltext } from "@/app/api/panel/supporters/actions";
 import { fakerPT_BR } from "@faker-js/faker";
 import { Campaign } from "@prisma/client";
-import { useContext, useEffect, useMemo, useRef } from "react";
-import { useFormContext } from "react-hook-form";
+import { useContext, useEffect, useRef } from "react";
 import { useAction } from "odinkit/hooks/useAction";
 import { toProperCase } from "@/_shared/utils/format";
-import {
-  ComboboxField,
-  ListboxField,
-} from "@/app/(frontend)/_shared/components/fields/Select";
-import {
-  TextField,
-  MaskedTextField,
-} from "@/app/(frontend)/_shared/components/fields/Text";
-import dayjs from "dayjs";
 import { readZonesByCampaign } from "@/app/api/elections/zones/actions";
 import { readSectionsByZone } from "@/app/api/elections/sections/action";
 import { readAddressBySection } from "@/app/api/elections/locations/actions";
@@ -26,33 +15,38 @@ import DisclosureAccordion from "@/app/(frontend)/_shared/components/Disclosure"
 import { LoadingSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { useMocker } from "@/app/(frontend)/_shared/components/Mocker";
 import Link from "next/link";
-import { Combobox, Select } from "odinkit/components/Form/Select";
 import {
+  Description,
   ErrorMessage,
   FieldGroup,
   Fieldset,
   Label,
-  createField,
+  useFormContext,
 } from "odinkit/components/Form/Form";
+import { List } from "odinkit/components/List";
+import { Alertbox } from "odinkit/components/Alertbox";
 import { Input } from "odinkit/components/Form/Input";
-import { addSupporterDto } from "@/app/api/panel/supporters/dto";
+import dayjs from "dayjs";
+import { AddSupporterDto } from "@/app/api/panel/supporters/dto";
+import { If } from "odinkit/components/If";
+import {
+  Combobox,
+  Listbox,
+  ListboxLabel,
+  ListboxOption,
+  Select,
+} from "odinkit/components/Form/Selectbox";
+import { useSidebar } from "../lib/useSidebar";
 
 export function AddSupporterForm({ campaign }: { campaign: Campaign }) {
   const ref = useRef<null | HTMLDivElement>(null);
   const errRef = useRef<null | HTMLDivElement>(null);
 
-  const form = useFormContext();
+  const form = useFormContext<AddSupporterDto>();
 
-  const Field = useMemo(
-    () =>
-      createField({
-        zodObject: addSupporterDto,
-        enableAsterisk: false,
-      }),
-    []
-  );
+  const Field = form.createField();
 
-  const { supporter: userSupporter } = useContext(SidebarContext);
+  const { supporter: userSupporter } = useSidebar();
 
   const { data: zones, trigger: fetchZones } = useAction({
     action: readZonesByCampaign,
@@ -119,90 +113,100 @@ export function AddSupporterForm({ campaign }: { campaign: Campaign }) {
     );
 
   return (
-    <Fieldset>
-      <FieldGroup>
-        <div className="mt-4 space-y-3 divide-y">
-          <div className="space-y-3">
-            {form.formState.errors.root?.serverError?.message ? (
-              <div ref={errRef} className="scroll-mt-64">
-                <ErrorAlert
-                  errors={[
-                    form?.formState?.errors?.root?.serverError
-                      ?.message as string,
+    <Fieldset className="mt-4 space-y-3 divide-y">
+      <FieldGroup className="space-y-2">
+        <If
+          if={form.formState.errors.root?.serverError?.message}
+          then={
+            <div ref={errRef} className="scroll-mt-64">
+              <Alertbox type="error">
+                <List
+                  data={[
+                    form.formState.errors.root?.serverError?.message as string,
                   ]}
                 />
-              </div>
-            ) : null}
-            <Field name="user.name">
-              <Label>Nome do apoiador</Label>
-              <Input />
-              <ErrorMessage />
-            </Field>
+              </Alertbox>
+            </div>
+          }
+          else={null}
+        />
+        <Field name="user.name">
+          <Label>Nome do apoiador</Label>
+          <Input />
+          <ErrorMessage />
+        </Field>
 
-            <TextField label="Email" hform={form} name={"user.email"} />
-            <MaskedTextField
-              label="Celular"
-              hform={form}
-              inputMode="numeric"
-              name={"user.phone"}
-              mask="(99) 99999-9999"
-            />
-            <MaskedTextField
-              hform={form}
-              label="Data de Nascimento"
-              mask="99/99/9999"
-              inputMode="numeric"
-              name={"user.info.birthDate"}
-            />
-            {!form.watch("externalSupporter") && (
-              <div className="grid grid-cols-2 gap-3">
-                <div className="col-span-1">
-                  <ListboxField
-                    hform={form}
-                    data={zones}
-                    displayValueKey={"number"}
-                    name={"user.info.zoneId"}
-                    label="Zona"
-                    onChange={(value) => {
-                      fetchSections(value.id);
-                    }}
-                  />
-                </div>
-                <div className="col-span-1">
-                  <ComboboxField
-                    hform={form}
-                    data={sections}
-                    label="Seção"
-                    name={"user.info.sectionId"}
-                    displayValueKey={"number"}
-                    disabled={!sections}
-                    onChange={(value) => {
-                      fetchAddress(value.id);
-                    }}
-                  />
-                </div>
-                <div className="col-span-2">
-                  <span className="text-sm text-gray-500">
-                    Não sabe sua zona e seção?{" "}
-                    <Link
-                      target="_blank"
-                      className="underline"
-                      href="https://www.tse.jus.br/servicos-eleitorais/titulo-e-local-de-votacao/titulo-e-local-de-votacao"
-                    >
-                      Consulte o TSE.
-                    </Link>
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
+        <Field name="user.email">
+          <Label>Email</Label>
+          <Input />
+          <ErrorMessage />
+        </Field>
+
+        <Field name="user.phone">
+          <Label>Celular</Label>
+          <Input inputMode="numeric" mask={"(99) 99999-9999"} />
+          <ErrorMessage />
+        </Field>
+
+        <Field name="user.info.birthDate">
+          <Label>Data de Nascimento</Label>
+          <Input inputMode="numeric" mask={"99/99/9999"} />
+          <ErrorMessage />
+        </Field>
+      </FieldGroup>
+      <FieldGroup
+        hidden={form.watch("externalSupporter")}
+        className="grid grid-cols-2 gap-3 pt-3"
+      >
+        <Field name="user.info.zoneId" className="col-span-1">
+          <Label>Zona</Label>
+          <Listbox
+            data={zones}
+            displayValueKey="number"
+            onChange={(value) => {
+              form.setValue("user.info.sectionId", undefined);
+              fetchSections(value.id);
+            }}
+          >
+            {(zone) => <ListboxLabel>{zone.number}</ListboxLabel>}
+          </Listbox>
+        </Field>
+        <Field name="user.info.sectionId" className="col-span-1">
+          <Label>Seção</Label>
+          <Combobox
+            data={sections}
+            displayValueKey={"number"}
+            disabled={!form.watch("user.info.zoneId")}
+            onChange={(value) => {
+              fetchAddress(value.id);
+            }}
+          >
+            {(item) => <div>xd {item.number}</div>}
+          </Combobox>
+          <ErrorMessage />
+        </Field>
+        <Description className="col-span-2 text-sm text-gray-500">
+          Não sabe sua zona e seção?{" "}
+          <Link
+            target="_blank"
+            className="underline"
+            href="https://www.tse.jus.br/servicos-eleitorais/titulo-e-local-de-votacao/titulo-e-local-de-votacao"
+          >
+            Consulte o TSE.
+          </Link>
+        </Description>
+      </FieldGroup>
+      <FieldGroup>
+        <div>
+          <div></div>
           {userSupporter.level >= 4 && (
             <DisclosureAccordion
               title="Opções de Administrador"
               scrollToContent={true}
             >
               <div className="space-y-8">
-                <Field name="referralId">
+                {/**
+                   * <Field name="referralId">
                   <Label>Indicado Por</Label>
                   <Combobox
                     data={supporterList}
@@ -218,6 +222,7 @@ export function AddSupporterForm({ campaign }: { campaign: Campaign }) {
                     displayValueKey="user.name"
                   />
                 </Field>
+                   */}
                 <Field name="externalSupporter">
                   <Label>Teste</Label>
                   <Select
