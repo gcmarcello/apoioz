@@ -25,7 +25,12 @@ export function toProperCase(input: string): string | undefined {
 
 export function maskEmail(email: string) {
   let [username, domain] = email.split("@");
+
+  if (!domain || !username) throw "Invalid email";
+
   let [domainName, domainExtension] = domain.split(".");
+
+  if (!domainName || !domainExtension) throw "Invalid email";
 
   let maskedUsername = username.slice(0, 3) + "*".repeat(username.length - 3);
 

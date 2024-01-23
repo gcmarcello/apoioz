@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { createUserDto } from "../user/dto";
 import { pollAnswerDto } from "../panel/polls/dto";
+import { phoneValidator } from "@/_shared/utils/validators/phone.validator";
 
 export const signUpAsSupporterDto = z.object({
   user: createUserDto,
@@ -11,7 +12,14 @@ export const signUpAsSupporterDto = z.object({
 export type SignUpAsSupporterDto = z.infer<typeof signUpAsSupporterDto>;
 
 export const loginDto = z.object({
-  identifier: z.string().email(),
+  identifier: z.union([
+    z.custom((v: any) => phoneValidator(v), {
+      message: "O telefone deve ter 11 dígitos",
+    }),
+    z.string().email({
+      message: "O email deve ser válido",
+    }),
+  ]),
   password: z
     .string()
     .min(6, { message: "A senha tem no mínimo 6 caracteres" }),

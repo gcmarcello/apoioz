@@ -1,28 +1,25 @@
 import { readSupportersFulltext } from "@/app/api/panel/supporters/actions";
 import { fakerPT_BR } from "@faker-js/faker";
-import { Campaign } from "@prisma/client";
-import { useContext, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useAction } from "odinkit/hooks/useAction";
 import { toProperCase } from "@/_shared/utils/format";
 import { readZonesByCampaign } from "@/app/api/elections/zones/actions";
 import { readSectionsByZone } from "@/app/api/elections/sections/action";
 import { readAddressBySection } from "@/app/api/elections/locations/actions";
-import SwitchInput from "@/app/(frontend)/_shared/components/fields/Switch";
-import { SidebarContext } from "../lib/sidebar.ctx";
 import { scrollToElement } from "@/app/(frontend)/_shared/utils/scroll";
 import clsx from "clsx";
 import DisclosureAccordion from "@/app/(frontend)/_shared/components/Disclosure";
 import { LoadingSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { useMocker } from "@/app/(frontend)/_shared/components/Mocker";
 import Link from "next/link";
+import { useFormContext } from "odinkit/components/Form/Form";
 import {
   Description,
   ErrorMessage,
   FieldGroup,
   Fieldset,
   Label,
-  useFormContext,
-} from "odinkit/components/Form/Form";
+} from "odinkit/components/Form/Field";
 import { List } from "odinkit/components/List";
 import { Alertbox } from "odinkit/components/Alertbox";
 import { Input } from "odinkit/components/Form/Input";
@@ -33,12 +30,11 @@ import {
   Combobox,
   Listbox,
   ListboxLabel,
-  ListboxOption,
-  Select,
 } from "odinkit/components/Form/Selectbox";
 import { useSidebar } from "../lib/useSidebar";
+import { Switch } from "odinkit/components/Form/Switch";
 
-export function AddSupporterForm({ campaign }: { campaign: Campaign }) {
+export function AddSupporterForm() {
   const ref = useRef<null | HTMLDivElement>(null);
   const errRef = useRef<null | HTMLDivElement>(null);
 
@@ -46,7 +42,7 @@ export function AddSupporterForm({ campaign }: { campaign: Campaign }) {
 
   const Field = form.createField();
 
-  const { supporter: userSupporter } = useSidebar();
+  const { supporter: userSupporter, campaign } = useSidebar();
 
   const { data: zones, trigger: fetchZones } = useAction({
     action: readZonesByCampaign,
@@ -103,7 +99,13 @@ export function AddSupporterForm({ campaign }: { campaign: Campaign }) {
 
   const { data: supporterList, trigger: fetchSupporterList } = useAction({
     action: readSupportersFulltext,
+    responseParser: (res) =>
+      res.filter((item) => item.user.id !== campaign.userId),
   });
+
+  useEffect(() => {
+    fetchSupporterList();
+  }, [form.formState.isSubmitSuccessful]);
 
   if (!zones)
     return (
@@ -155,8 +157,10 @@ export function AddSupporterForm({ campaign }: { campaign: Campaign }) {
         </Field>
       </FieldGroup>
       <FieldGroup
-        hidden={form.watch("externalSupporter")}
-        className="grid grid-cols-2 gap-3 pt-3"
+        className={clsx(
+          "grid grid-cols-2 gap-3 pt-3",
+          form.watch("externalSupporter") && "hidden"
+        )}
       >
         <Field name="user.info.zoneId" className="col-span-1">
           <Label>Zona</Label>
@@ -181,7 +185,7 @@ export function AddSupporterForm({ campaign }: { campaign: Campaign }) {
               fetchAddress(value.id);
             }}
           >
-            {(item) => <div>xd {item.number}</div>}
+            {(item) => item.number}
           </Combobox>
           <ErrorMessage />
         </Field>
@@ -197,112 +201,51 @@ export function AddSupporterForm({ campaign }: { campaign: Campaign }) {
         </Description>
       </FieldGroup>
       <FieldGroup>
-        <div>
-          <div></div>
-          {userSupporter.level >= 4 && (
+        <If
+          if={userSupporter.level >= 4}
+          then={
             <DisclosureAccordion
               title="Opções de Administrador"
               scrollToContent={true}
             >
               <div className="space-y-8">
-                {/**
-                   * <Field name="referralId">
+                <Field name="referralId">
                   <Label>Indicado Por</Label>
                   <Combobox
                     data={supporterList}
                     setData={(query) =>
-                      fetchSupporterList({
-                        where: {
-                          user: {
-                            name: query,
-                          },
-                        },
-                      })
+                      query === ""
+                        ? fetchSupporterList()
+                        : fetchSupporterList({
+                            where: {
+                              user: {
+                                name: query,
+                              },
+                            },
+                          })
                     }
                     displayValueKey="user.name"
-                  />
-                </Field>
-                   */}
-                <Field name="externalSupporter">
-                  <Label>Teste</Label>
-                  <Select
-                    displayValueKey="nome"
-                    data={[
-                      {
-                        id: 1,
-                        nome: "Fernando",
-                      },
-                      {
-                        id: 2,
-                        nome: "Gabriel",
-                      },
-                      {
-                        id: 3,
-                        nome: "João",
-                      },
-                      {
-                        id: 4,
-                        nome: "Maria",
-                      },
-                      {
-                        id: 5,
-                        nome: "Pedro",
-                      },
-                      {
-                        id: 6,
-                        nome: "Rafael",
-                      },
-                      {
-                        id: 7,
-                        nome: "Ricardo",
-                      },
-                      {
-                        id: 8,
-                        nome: "Rodrigo",
-                      },
-                      {
-                        id: 9,
-                        nome: "Thiago",
-                      },
-                      {
-                        id: 10,
-                        nome: "Vinicius",
-                      },
-                      {
-                        id: 11,
-                        nome: "Vitor",
-                      },
-                      {
-                        id: 12,
-                        nome: "Wagner",
-                      },
-                      {
-                        id: 13,
-                        nome: "William",
-                      },
-                      {
-                        id: 14,
-                        nome: "Yuri",
-                      },
-                      {
-                        id: 15,
-                        nome: "Zé",
-                      },
-                    ]}
-                  />
+                  >
+                    {(item) => item.user.name}
+                  </Combobox>
+                  <ErrorMessage />
                 </Field>
 
-                <SwitchInput
-                  control={form.control}
-                  label="Apoiador Externo"
-                  name="externalSupporter"
-                  subLabel="que não vive na região."
-                />
+                <Field name="externalSupporter" variant="switch">
+                  <Label>Apoiador Externo</Label>
+                  <Description>
+                    Cadastre um apoiador que não vive na região.
+                  </Description>
+                  <Switch color="indigo" />
+                </Field>
               </div>
             </DisclosureAccordion>
-          )}
+          }
+        />
 
-          {!form.watch("externalSupporter") && (
+        <If
+          if={!form.watch("externalSupporter")}
+          then={
             <div
               ref={ref}
               className={clsx(
@@ -331,8 +274,8 @@ export function AddSupporterForm({ campaign }: { campaign: Campaign }) {
                 </div>
               </dl>
             </div>
-          )}
-        </div>
+          }
+        />
       </FieldGroup>
     </Fieldset>
   );

@@ -22,7 +22,12 @@ export type ReadSupportersDto = z.infer<typeof readSupportersDto>;
 export const createSupporterDto = z.object({
   user: createUserDto,
   userId: z.string().optional(),
-  referralId: z.string().optional(),
+  referralId: z
+    .string()
+    .uuid({
+      message: "Esse apoiador não existe",
+    })
+    .optional(),
   campaignId: z.string(),
   poll: pollAnswerDto.nullable(),
   externalSupporter: z.boolean().optional(),

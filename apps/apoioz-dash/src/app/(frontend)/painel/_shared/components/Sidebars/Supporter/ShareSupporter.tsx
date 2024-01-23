@@ -1,26 +1,15 @@
 "use client";
 import { createInviteCode } from "@/app/api/auth/invites/action";
 import { ArrowPathIcon } from "@heroicons/react/24/solid";
-import { Campaign, Prisma, User } from "@prisma/client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
-import { useSidebar } from "../lib/useSidebar";
-import { set } from "react-hook-form";
 import { LoadingSpinner } from "@/app/(frontend)/_shared/components/Spinners";
-import { UserWithoutPassword } from "prisma/types/User";
 import { useAction } from "odinkit/hooks/useAction";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 
-export function ShareSupporter({
-  user,
-  campaign,
-}: {
-  user: UserWithoutPassword;
-  campaign: Campaign;
-}) {
+export function ShareSupporter() {
   const [isMounted, setMounted] = useState(false);
-  const { supporter } = useSidebar();
 
   const {
     data: inviteCode,

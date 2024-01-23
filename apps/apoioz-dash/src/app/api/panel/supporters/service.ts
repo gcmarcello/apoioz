@@ -10,7 +10,6 @@ import {
   findCampaignById,
 } from "../campaigns/service";
 import {
-  AddSupporterDto,
   CreateSupporterDto,
   ReadSupporterBranchesDto,
   ReadSupportersDto,
@@ -153,40 +152,69 @@ export async function readSupportersFulltext({
 }) {
   const searchQuery = where?.user?.name ? `'${where?.user?.name}':*` : "";
 
-  const query = await fullTextSearch({
-    table: ["Supporter"],
-    tableAlias: "s",
-    joins: [
-      `INNER JOIN 
-      "User" u ON s."userId" = u.id`,
-      `LEFT JOIN
-      "UserInfo" u_info ON u."infoId" = u_info.id`,
-      `INNER JOIN 
-      "SupporterGroupMembership" sgm ON s.id = sgm."supporterId"`,
-      `INNER JOIN 
-      "SupporterGroup" sg ON sgm."supporterGroupId" = sg.id`,
-    ],
-    where: [
-      `s."campaignId" = '${supporterSession.campaignId}'`,
-      `sg."ownerId" = '${supporterSession.id}'`,
-    ],
-    select: [
-      ["s", "id"],
-      ["u", "name"],
-    ],
-    searchField: ["u", "name"],
-    orderBy: ["s", "id"],
-  });
+  let supporters: any[];
 
-  const supporters = await prisma
-    .$queryRawUnsafe<any[]>(query, searchQuery, 10)
-    .catch((err) => console.log(query, err));
+  if (where) {
+    const query = await fullTextSearch({
+      table: ["Supporter"],
+      tableAlias: "s",
+      joins: [
+        `INNER JOIN 
+        "User" u ON s."userId" = u.id`,
+        `LEFT JOIN
+        "UserInfo" u_info ON u."infoId" = u_info.id`,
+        `INNER JOIN 
+        "SupporterGroupMembership" sgm ON s.id = sgm."supporterId"`,
+        `INNER JOIN 
+        "SupporterGroup" sg ON sgm."supporterGroupId" = sg.id`,
+      ],
+      where: [
+        `s."campaignId" = '${supporterSession.campaignId}'`,
+        `sg."ownerId" = '${supporterSession.id}'`,
+      ],
+      select: [
+        ["s", "id"],
+        ["s", "userId"],
+        ["u", "name"],
+      ],
+      searchField: ["u", "name"],
+      orderBy: ["s", "id"],
+    });
 
-  if (!supporters || supporters.length < 1) throw "Apoiador não encontrado";
+    supporters = await prisma.$queryRawUnsafe<any[]>(query, searchQuery, 10);
+  } else {
+    supporters = await prisma.supporter
+      .findMany({
+        take: pagination?.take || 10,
+        skip: pagination?.skip,
+        cursor: pagination?.cursor,
+        where: {
+          campaignId: supporterSession.campaignId,
+          supporterGroupsMemberships: {
+            some: {
+              supporterGroup: {
+                ownerId: supporterSession.id,
+              },
+            },
+          },
+        },
+        include: {
+          user: true,
+        },
+        orderBy: { createdAt: "desc" },
+      })
+      .then((supporters) =>
+        supporters.map(({ user: { id, ...user }, ...s }) => ({
+          ...s,
+          ...user,
+        }))
+      );
+  }
 
   const parsedSupporters = supporters.map((s) => ({
     id: s.id,
     user: {
+      id: s.userId,
       name: s.name,
       email: s.email,
       phone: s.phone,

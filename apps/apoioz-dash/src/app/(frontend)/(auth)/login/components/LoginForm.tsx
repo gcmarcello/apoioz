@@ -6,19 +6,14 @@ import { fakerPT_BR } from "@faker-js/faker";
 import { useAction } from "odinkit/hooks/useAction";
 import { List } from "odinkit/components/List";
 import { Alertbox } from "odinkit/components/Alertbox";
-import {
-  ErrorMessage,
-  Fieldset,
-  Form,
-  Label,
-  useForm,
-} from "odinkit/components/Form/Form";
+import { useForm } from "odinkit/components/Form/Form";
 import { Container } from "odinkit/components/Containers";
 import { Input } from "odinkit/components/Form/Input";
 import { Button } from "odinkit/components/Button";
 import { ButtonSpinner } from "odinkit/components/Spinners";
-import { useMemo } from "react";
 import { If } from "odinkit/components/If";
+import { ErrorMessage, Fieldset, Label } from "odinkit/components/Form/Field";
+import { Form } from "odinkit/components/Form/Form";
 
 export default function LoginForm({
   supportRedirect,
@@ -69,8 +64,20 @@ export default function LoginForm({
 
         <Fieldset className={"space-y-3"}>
           <Field name="identifier">
-            <Label>Email</Label>
-            <Input placeholder="seu_email@email.com" />
+            <Label>Email ou Telefone</Label>
+            <Input
+              placeholder="email@email.com - (99) 99999-9999"
+              mask={(_, rawValue) => {
+                if (Number(rawValue)) {
+                  if (rawValue.length >= "99999999999".length) {
+                    return "(99) 99999-9999";
+                  } else if (rawValue.length === "9999999999".length) {
+                    return "(99) 9999-9999";
+                  }
+                }
+                return "";
+              }}
+            />
             <ErrorMessage />
           </Field>
 

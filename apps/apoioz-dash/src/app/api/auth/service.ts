@@ -5,16 +5,9 @@ import { prisma } from "prisma/prisma";
 import dayjs from "dayjs";
 import { sendEmail } from "../emails/service";
 import { compareHash, hashInfo } from "@/_shared/utils/bCrypt";
-import {
-  normalizePhone,
-  maskEmail,
-  normalizeEmail,
-} from "@/_shared/utils/format";
+import { normalizePhone, maskEmail } from "@/_shared/utils/format";
 import { getEnv } from "@/_shared/utils/settings";
-import {
-  UserSession,
-  UserSessionMiddleware,
-} from "@/middleware/functions/userSession.middleware";
+import { UserSession } from "@/middleware/functions/userSession.middleware";
 
 export async function login(
   request: LoginDto & { user: User; isEmail: boolean }
@@ -31,7 +24,7 @@ export async function login(
 export function createToken(request: { id: string }) {
   const JWT_KEY = getEnv("JWT_KEY");
   if (!JWT_KEY)
-    throw "O serviço de autenticação se encontra fora do ar. ERROR: MISSING JWTKEY";
+    throw "O serviço de autenticação se encontra fora do ar. ERROR: MISSING JWTKEY.";
   return jwt.sign({ id: request.id }, JWT_KEY, { expiresIn: "7d" });
 }
 

@@ -1,5 +1,5 @@
 "use client";
-import { Fragment, useId, useRef } from "react";
+import { Fragment, useId, useMemo, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { UserPlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { LinkIcon } from "@heroicons/react/20/solid";
@@ -7,7 +7,6 @@ import { ShareSupporter } from "./ShareSupporter";
 import { AddSupporterForm } from "./AddSupporter";
 import { useSidebar } from "../lib/useSidebar";
 import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
-import { useSteps } from "odinkit/hooks/useSteps";
 import { Form, useForm } from "odinkit/components/Form/Form";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 import { addSupporter } from "@/app/api/panel/supporters/actions";
@@ -45,42 +44,40 @@ export default function SupporterSideBar() {
     },
   });
 
-  const { activeStep, setActiveStep } = useSteps(
-    ["start", "share", "add"],
-    "start",
-    (step, setStep) => ({
-      start: (
-        <div className="flex flex-col gap-8 pb-4 pt-20">
-          <button
-            onClick={() => setStep("add")}
-            type="button"
-            className="mx-auto rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-          >
-            <UserPlusIcon className="h-30 w-30 text-indigo-500 group-hover:text-indigo-900" />
-            Adicionar Apoiador
-          </button>
-          <button
-            onClick={() => setStep("share")}
-            type="button"
-            className="mx-auto rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-          >
-            <LinkIcon className="h-30 w-30 text-gray-400 group-hover:text-gray-500" />
-            Compartilhar Link
-          </button>
-        </div>
-      ),
-      share: <ShareSupporter user={user} campaign={campaign} />,
-      add: (
-        <Form
-          id={addSupporterFormId}
-          hform={addSupporterForm}
-          onSubmit={addSupporterTrigger}
+  const screens = {
+    start: (
+      <div className="flex flex-col gap-8 pb-4 pt-20">
+        <button
+          onClick={() => setScreen("add")}
+          type="button"
+          className="mx-auto rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
         >
-          <AddSupporterForm campaign={campaign} />
-        </Form>
-      ),
-    })
-  );
+          <UserPlusIcon className="h-30 w-30 text-indigo-500 group-hover:text-indigo-900" />
+          Adicionar Apoiador
+        </button>
+        <button
+          onClick={() => setScreen("share")}
+          type="button"
+          className="mx-auto rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+        >
+          <LinkIcon className="h-30 w-30 text-gray-400 group-hover:text-gray-500" />
+          Compartilhar Link
+        </button>
+      </div>
+    ),
+    share: <ShareSupporter />,
+    add: (
+      <Form
+        id={addSupporterFormId}
+        hform={addSupporterForm}
+        onSubmit={addSupporterTrigger}
+      >
+        <AddSupporterForm />
+      </Form>
+    ),
+  };
+
+  const [screen, setScreen] = useState<keyof typeof screens>("start");
 
   return (
     <>
@@ -88,7 +85,7 @@ export default function SupporterSideBar() {
         show={visibility.supporterSidebar}
         afterLeave={() => {
           addSupporterForm.reset();
-          setActiveStep("start");
+          setScreen("start");
         }}
         as={"div"}
       >
@@ -147,11 +144,11 @@ export default function SupporterSideBar() {
                           <div className="mt-1">
                             <p className="text-sm text-indigo-300">
                               <If
-                                if={activeStep.key === "start"}
+                                if={screen === "start"}
                                 then={"Escolha como aumentar sua rede."}
                                 else={
                                   <If
-                                    if={activeStep.key === "share"}
+                                    if={screen === "share"}
                                     then={
                                       "Envie um link de convite para o apoiador."
                                     }
@@ -166,7 +163,7 @@ export default function SupporterSideBar() {
                         </div>
                         <div className="flex flex-1 flex-col justify-between">
                           <div className="divide-y divide-gray-200 px-4 sm:px-6">
-                            {activeStep.value}
+                            {screens[screen]}
                           </div>
                         </div>
                       </div>
@@ -175,19 +172,19 @@ export default function SupporterSideBar() {
                           type="button"
                           plain={true}
                           onClick={() => {
-                            if (activeStep.key === "start") {
+                            if (screen === "start") {
                               setVisibility((prev) => ({
                                 ...prev,
                                 supporterSidebar: false,
                               }));
                             } else {
-                              setActiveStep("start");
+                              setScreen("start");
                             }
                           }}
                         >
                           Voltar
                         </Button>
-                        {activeStep.key === "add" && (
+                        {screen === "add" && (
                           <Button
                             type="submit"
                             disabled={addSupporterForm.formState.isSubmitting}
