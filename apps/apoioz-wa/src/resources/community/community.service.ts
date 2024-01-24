@@ -1,14 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { CreateCommunityDto } from "./dto/create-community.dto";
 import { WhatsappService } from "../whatsapp/whatsapp.service";
-import prisma from "src/prisma/prisma";
 
 @Injectable()
 export class CommunityService {
   constructor(private whatsappService: WhatsappService) {}
 
   async getInvite(clusterSlug: string) {
-    const communities = await prisma.community.findMany({
+    const communities = await waPrisma.community.findMany({
       where: {
         CommunityCluster: {
           slug: clusterSlug,
@@ -39,7 +38,7 @@ export class CommunityService {
     );
 
     if (!availableGroup) {
-      const communityCluster = await prisma.communityCluster.findFirst({
+      const communityCluster = await waPrisma.communityCluster.findFirst({
         where: {
           slug: clusterSlug,
         },
@@ -58,7 +57,7 @@ export class CommunityService {
   }
 
   async sendAnnouncement(clusterSlug: string, message: string) {
-    const communities = await prisma.community.findMany({
+    const communities = await waPrisma.community.findMany({
       where: {
         CommunityCluster: {
           slug: clusterSlug,
@@ -123,7 +122,7 @@ export class CommunityService {
       `Olá, ${owner.pushname}! Você criou a comunidade ${communityTitle} com sucesso! Compartilhe o link abaixo para que as pessoas possam entrar na comunidade. \n\n${inviteCode}`
     );
 
-    return await prisma.community.create({
+    return await waPrisma.community.create({
       data: {
         id: whatsappCommunity.id._serialized,
         announcementsGroupId: announcementsGroup.id._serialized,

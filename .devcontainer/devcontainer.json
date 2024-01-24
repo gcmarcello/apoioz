@@ -3,7 +3,7 @@
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-  "forwardPorts": [5432, 5430, 4040, 8080, 3000],
+  "forwardPorts": [1212, 1213, 4040, 8080, 3000],
   "customizations": {
     "vscode": {
       "extensions": [
@@ -21,7 +21,7 @@
         "yoavbls.pretty-ts-errors",
         "IronGeek.vscode-env",
         "harehare.portable-kanban",
-        "alefragnani.Bookmarks"
+        "alefragnani.Bookmarks",
       ],
       "settings": {
         "git.repositoryScanMaxDepth": 5,
@@ -30,16 +30,16 @@
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
         "[typescriptreact]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
         },
         "editor.codeActionsOnSave": {
-          "source.fixAll.eslint": true
+          "source.fixAll.eslint": true,
         },
         "material-icon-theme.files.associations": {
-          ".kanban": "Mjml"
+          ".kanban": "Mjml",
         },
         "material-icon-theme.folders.associations": {
-          "_shared": "shared"
+          "_shared": "shared",
         },
         "material-icon-theme.activeIconPack": "nest",
         "editor.formatOnSave": true,
@@ -51,8 +51,8 @@
         "eslint.workingDirectories": [{ "mode": "auto" }],
         "explorer.compactFolders": false,
         "typescript.preferences.importModuleSpecifier": "shortest",
-        "workbench.tree.indent": 20
-      }
-    }
-  }
+        "workbench.tree.indent": 20,
+      },
+    },
+  },
 }

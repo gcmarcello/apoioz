@@ -1,7 +1,10 @@
 import { prisma } from "prisma/prisma";
 import { zoneWithoutGeoJSON } from "prisma/query/Zone";
 
-export async function readZonesByCampaign(campaignId: string) {
+export async function readZonesByCampaign(
+  campaignId: string,
+  withGeoJSON = false
+) {
   const campaign = await prisma.campaign.findUnique({
     where: { id: campaignId },
     include: {
@@ -9,7 +12,7 @@ export async function readZonesByCampaign(campaignId: string) {
         include: {
           City_To_Zone: {
             include: {
-              Zone: zoneWithoutGeoJSON,
+              Zone: withGeoJSON || zoneWithoutGeoJSON,
             },
           },
         },

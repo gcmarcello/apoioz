@@ -1,7 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { On } from "src/common/decorators/on";
 import { ContextOf } from "src/common/types/Whatsapp";
-import prisma from "src/prisma/prisma";
 import * as qrcode from "qrcode-terminal";
 @Injectable()
 export class WhatsappSocket {
@@ -23,7 +22,7 @@ export class WhatsappSocket {
   async onQR(qr: ContextOf<"qr">) {
     console.log(qr);
     qrcode.generate(qr, { small: true });
-    await prisma.metadata.upsert({
+    await waPrisma.metadata.upsert({
       create: {
         key: "qr",
         value: qr,

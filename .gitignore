@@ -2,6 +2,9 @@
 .wwebjs_auth
 .wwebjs_cache
 
+# Prisma
+/**/prisma/client
+
 # Dependencies
 node_modules
 .pnp

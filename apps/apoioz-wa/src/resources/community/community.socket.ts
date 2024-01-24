@@ -16,7 +16,7 @@ export class CommunitySocket {
       .getRecipients()
       .then((recipients) => recipients[0]);
     const communityId = group.groupMetadata.parentGroup._serialized ?? group.id;
-    const community = await prisma.community.findFirst({
+    const community = await waPrisma.community.findFirst({
       where: {
         id: communityId,
       },
