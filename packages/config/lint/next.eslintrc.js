@@ -26,6 +26,9 @@ module.exports = {
       },
     },
   },
+  rules: {
+    "no-undef": "off",
+  },
   ignorePatterns: [
     // Ignore dotfiles
     ".*.js",
