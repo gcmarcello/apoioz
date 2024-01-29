@@ -114,7 +114,6 @@ export function ElectionInfoSection({
                       <Listbox
                         data={zones}
                         displayValueKey="number"
-                        inputMode="numeric"
                         onChange={(value) => {
                           form.setValue("user.info.sectionId", undefined);
                           if (value) {
