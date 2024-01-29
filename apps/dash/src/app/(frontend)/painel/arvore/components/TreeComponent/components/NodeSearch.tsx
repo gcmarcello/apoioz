@@ -97,7 +97,7 @@ export function NodeSearch({
           valueKey="id"
           displayValueKey="user.name"
         >
-          {(item) => item.displayValue}
+          {(item) => item.user.name}
         </Combobox>
         <ErrorMessage />
       </Field>

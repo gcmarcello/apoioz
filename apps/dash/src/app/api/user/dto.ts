@@ -8,6 +8,7 @@ export const createUserDto = z.object({
   password: z.string().nullable().optional(),
   phone: z.custom(phoneValidator as any, { message: "Telefone inválido" }),
   info: z.object({
+    addressId: z.string().uuid({ message: "Endereço inválido" }),
     zoneId: z
       .string()
       .uuid({

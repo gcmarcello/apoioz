@@ -1,11 +1,7 @@
+import { SupporterSession } from "@/middleware/functions/supporterSession.middleware";
+import { fullTextSearch } from "odinkit";
 import { prisma } from "prisma/prisma";
-
-export async function readAddressBySection(sectionId: string) {
-  return await prisma.address.findFirst({
-    where: { Section: { some: { id: sectionId } } },
-    include: { City: true },
-  });
-}
+import { ReadAddressDto } from "./dto";
 
 export async function readStates() {
   return await prisma.state.findMany({ orderBy: { name: "asc" } });
@@ -21,15 +17,47 @@ export async function readCitiesByState(stateId: string) {
   });
 }
 
-export async function readAddressesByCampaign(campaignId: string) {
-  const cityId = await prisma.campaign
-    .findUnique({ where: { id: campaignId } })
-    .then((campaign) => campaign!.cityId);
+export async function readAddressFulltext(
+  request: ReadAddressDto & {
+    supporterSession: SupporterSession;
+  }
+) {
+  const city = await prisma.city.findFirst({
+    where: { Campaign: { some: { id: request.supporterSession.campaignId } } },
+  });
 
-  if (!cityId) throw new Error("City not found");
+  if (!city) throw "City not found";
+
+  const searchQuery = request.where?.location
+    ? `'${request.where?.location}':*`
+    : "";
+
+  const query = await fullTextSearch({
+    table: ["elections", "Address"],
+    tableAlias: "a",
+    where: [`a."cityId" = '${city.id}'`],
+    searchField: ["a", "location"],
+    orderBy: ["a", "id"],
+  });
+
+  const locations = await prisma.$queryRawUnsafe<any[]>(query, searchQuery, 10);
+
+  return locations;
+}
+
+export async function readAddresses(
+  data: ReadAddressDto & {
+    supporterSession: SupporterSession;
+  }
+) {
+  const campaign = await prisma.campaign.findUnique({
+    where: { id: data.supporterSession.campaignId },
+  });
 
   return await prisma.address.findMany({
-    where: { cityId },
+    where: { location: data.where?.location, cityId: campaign?.cityId! }, //@todo states
+    take: data.pagination?.take || 10,
+    skip: data.pagination?.skip || 0,
   });
 }
 

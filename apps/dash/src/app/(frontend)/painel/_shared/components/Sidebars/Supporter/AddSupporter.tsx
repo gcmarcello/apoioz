@@ -1,10 +1,13 @@
 import { readSupportersFulltext } from "@/app/api/panel/supporters/actions";
 import { fakerPT_BR } from "@faker-js/faker";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { toProperCase } from "@/_shared/utils/format";
 import { readZonesByCampaign } from "@/app/api/elections/zones/actions";
 import { readSectionsByZone } from "@/app/api/elections/sections/action";
-import { readAddressBySection } from "@/app/api/elections/locations/actions";
+import {
+  readAddressBySection,
+  readAddressFulltext,
+  readAddresses,
+} from "@/app/api/elections/locations/actions";
 import { scrollToElement } from "@/app/(frontend)/_shared/utils/scroll";
 import clsx from "clsx";
 import { LoadingSpinner } from "@/app/(frontend)/_shared/components/Spinners";
@@ -15,7 +18,7 @@ import dayjs from "dayjs";
 import { AddSupporterDto } from "@/app/api/panel/supporters/dto";
 
 import { useSidebar } from "../lib/useSidebar";
-import { If, Alertbox, List, Badge } from "odinkit";
+import { If, Alertbox, List, Badge, Tabs } from "odinkit";
 
 import {
   Button,
@@ -38,12 +41,8 @@ import {
   useFormContext,
 } from "odinkit/client";
 import { UserCircleIcon } from "@heroicons/react/20/solid";
-import {
-  CalendarDaysIcon,
-  CreditCardIcon,
-  EnvelopeIcon,
-  MapPinIcon,
-} from "@heroicons/react/24/solid";
+import { EnvelopeIcon } from "@heroicons/react/24/solid";
+import { Address } from "prisma/client";
 
 export function AddSupporterForm({
   isAdminOptions,
@@ -59,32 +58,38 @@ export function AddSupporterForm({
 
   const Field = useMemo(() => form.createField(), []);
 
-  const { supporter: userSupporter, campaign } = useSidebar();
+  const { campaign } = useSidebar();
 
   const [referralName, setReferralName] = useState<string>("");
 
-  const {
-    data: zones,
-    trigger: fetchZones,
-    reset: resetZones,
-  } = useAction({
+  const { data: zones, trigger: fetchZones } = useAction({
     action: readZonesByCampaign,
   });
 
-  const {
-    data: sections,
-    trigger: fetchSections,
-    reset: resetSections,
-  } = useAction({
+  const { data: sections, trigger: fetchSections } = useAction({
     action: readSectionsByZone,
+  });
+
+  const { data: fulltextAddresses, trigger: fulltextSearchAddresses } =
+    useAction({
+      action: readAddressFulltext,
+    });
+
+  const {
+    data: addresses,
+    reset: resetAddresses,
+    trigger: searchAddresses,
+  } = useAction({
+    action: readAddresses,
   });
 
   const {
     data: address,
-    trigger: fetchAddress,
     reset: resetAddress,
+    trigger: searchAddress,
   } = useAction({
-    action: readAddressBySection,
+    action: readAddresses,
+    responseParser: (res) => res[0],
   });
 
   useEffect(() => {
@@ -95,7 +100,7 @@ export function AddSupporterForm({
     if (ref.current) {
       scrollToElement(ref.current, 0);
     }
-  }, [address]);
+  }, [addresses]);
 
   useEffect(() => {
     if (form.getValues("externalSupporter")) {
@@ -188,55 +193,94 @@ export function AddSupporterForm({
           <ErrorMessage />
         </Field>
       </FieldGroup>
-      <FieldGroup
-        className={clsx(
-          "grid grid-cols-2 gap-3 pt-3",
-          form.watch("externalSupporter") && "hidden"
-        )}
-      >
-        <Field name="user.info.zoneId" className="col-span-1">
-          <Label>Zona</Label>
-          <Listbox
-            data={zones}
-            displayValueKey="number"
-            onChange={(value) => {
-              form.setValue("user.info.sectionId", undefined);
-              fetchSections(value.id);
-            }}
-          >
-            {(zone) => <ListboxLabel>{zone.number}</ListboxLabel>}
-          </Listbox>
-        </Field>
-        <Field name="user.info.sectionId" className="col-span-1">
-          <Label>Seção</Label>
-          <Combobox
-            data={sections}
-            displayValueKey={"number"}
-            disabled={!form.watch("user.info.zoneId")}
-            inputMode="numeric"
-            onChange={(value) => {
-              if (value) {
-                fetchAddress(value.id);
-              } else {
-                resetAddress();
-              }
-            }}
-          >
-            {(item) => item.displayValue}
-          </Combobox>
-          <ErrorMessage />
-        </Field>
-        <Description className="col-span-2 text-sm text-gray-500">
-          Não sabe sua zona e seção?{" "}
-          <Link
-            target="_blank"
-            className="underline"
-            href="https://www.tse.jus.br/servicos-eleitorais/titulo-e-local-de-votacao/titulo-e-local-de-votacao"
-          >
-            Consulte o TSE.
-          </Link>
-        </Description>
+
+      <FieldGroup className={clsx(form.watch("externalSupporter") && "hidden")}>
+        <Tabs
+          className="flex w-full justify-center pb-4 pt-2"
+          tabs={[
+            {
+              title: "Por zona e seção",
+              content: (
+                <>
+                  <Field name="user.info.zoneId" className="col-span-1">
+                    <Label>Zona</Label>
+                    <Listbox
+                      data={zones}
+                      displayValueKey="number"
+                      onChange={(value) => {
+                        form.setValue("user.info.sectionId", undefined);
+                        if (value) {
+                          fetchSections(value.id);
+                        }
+                      }}
+                    >
+                      {(zone) => <ListboxLabel>{zone.number}</ListboxLabel>}
+                    </Listbox>
+                  </Field>
+                  <Field name="user.info.sectionId" className="col-span-1">
+                    <Label>Seção</Label>
+                    <Combobox
+                      data={sections}
+                      displayValueKey={"number"}
+                      disabled={!form.watch("user.info.zoneId")}
+                      inputMode="numeric"
+                      onChange={(value) => {
+                        if (value) {
+                          searchAddress({
+                            where: {
+                              sectionId: value.id,
+                            },
+                          });
+                        } else {
+                          resetAddress();
+                        }
+                      }}
+                    >
+                      {(item) => item.number}
+                    </Combobox>
+                    <ErrorMessage />
+                  </Field>
+                  <Description className="col-span-2 text-sm text-gray-500">
+                    Não sabe sua zona e seção?{" "}
+                    <Link
+                      target="_blank"
+                      className="underline"
+                      href="https://www.tse.jus.br/servicos-eleitorais/titulo-e-local-de-votacao/titulo-e-local-de-votacao"
+                    >
+                      Consulte o TSE.
+                    </Link>
+                  </Description>
+                </>
+              ),
+            },
+            {
+              title: "Por endereço",
+              content: (
+                <Field name="user.info.addressId">
+                  <Label>Endereço</Label>
+                  <Combobox
+                    data={(addresses || fulltextAddresses) as Address[]}
+                    displayValueKey="location"
+                    setData={(query) => {
+                      console.log(query);
+                      return query === ""
+                        ? searchAddresses()
+                        : fulltextSearchAddresses({
+                            where: {
+                              location: query,
+                            },
+                          });
+                    }}
+                  >
+                    {(item) => <div>{item.location}</div>}
+                  </Combobox>
+                </Field>
+              ),
+            },
+          ]}
+        />
       </FieldGroup>
+
       {(form.watch("externalSupporter") || form.watch("user.info.zoneId")) &&
         form.watch("user.name") && (
           <div ref={ref} className="py-4">
@@ -358,12 +402,11 @@ export function AddSupporterForm({
                       })
                 }
                 onChange={(v) => {
-                  console.log(v);
-                  setReferralName(v.user.name);
+                  setReferralName(v?.user.name);
                 }}
                 displayValueKey="user.name"
               >
-                {(item) => item.displayValue}
+                {(item) => item.user.name}
               </Combobox>
               <ErrorMessage />
             </Field>

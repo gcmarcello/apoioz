@@ -15,22 +15,23 @@ export async function createMapData(request: {
   const addresses = await prisma.address.findMany({
     where: { cityId },
     include: {
-      Section: {
-        include: {
-          Zone: zoneWithoutGeoJSON,
-          Supporter: {
-            where: {
-              supporterGroupsMemberships: {
-                some: {
-                  supporterGroup: {
-                    ownerId: request.supporterSession.id,
-                  },
-                },
+      _count: {
+        select: {
+          Section: true,
+        },
+      },
+      Supporter: {
+        where: {
+          supporterGroupsMemberships: {
+            some: {
+              supporterGroup: {
+                ownerId: request.supporterSession.id,
               },
             },
           },
         },
       },
+      Zone: true,
     },
   });
 

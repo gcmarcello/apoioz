@@ -8,33 +8,32 @@ import { BasicInfoSection } from "./BasicInfoSection";
 import { ElectionInfoSection } from "./ElectionInfoSection";
 import clsx from "clsx";
 import { fakerPT_BR } from "@faker-js/faker";
-import { Form, useAction, useForm } from "odinkit/client";
+import { Button, MultistepForm, useAction, useForm } from "odinkit/client";
 import Loading from "@/app/(frontend)/loading";
 import { BottomNavigation } from "@/app/(frontend)/_shared/components/navigation/BottomNavigation";
-import { Button } from "@/app/(frontend)/_shared/components/Button";
 import { signUpAsSupporter } from "@/app/api/auth/action";
 import { signUpAsSupporterDto } from "@/app/api/auth/dto";
 import { PollWithQuestionsWithOptions } from "prisma/types/Poll";
 import { useMocker } from "@/app/(frontend)/_shared/components/Mocker";
 import { Transition } from "@headlessui/react";
 import { scrollToElement } from "@/app/(frontend)/_shared/utils/scroll";
+import { readSectionsByZone } from "@/app/api/elections/sections/action";
+import { For } from "odinkit";
 
 dayjs.extend(customParseFormat);
 
-export default function SupporterSignUpPage({
+export default function SupporterSignUpForm({
   inviteCodeId,
   campaign,
-  user,
   zones,
   poll,
 }: {
   inviteCodeId: string;
   campaign: any;
-  user: any;
   zones: any;
   poll: PollWithQuestionsWithOptions | null;
 }) {
-  const [stage, setStage] = useState<string | null>("basicInfo");
+  const errorRef = useRef(null);
 
   const form = useForm({
     defaultValues: {
@@ -66,27 +65,13 @@ export default function SupporterSignUpPage({
     },
     mode: "onChange",
   });
-  const errorRef = useRef(null);
 
-  useMocker({
-    form,
-    data: async () => {
-      const { data: zones } = await fetchZones(campaign?.id);
-      const zone = zones![Math.floor(Math.random() * zones!.length)];
-      const { data: sections } = await fetchSections(zone.id);
-
-      return {
-        "user.name": fakerPT_BR.person.fullName(),
-        "user.email": fakerPT_BR.internet.email(),
-        "user.phone": fakerPT_BR.phone.number(),
-        "user.info.zoneId": zone.id,
-        "user.info.sectionId":
-          sections?.[Math.round(Math.random() * sections?.length)].id,
-        "user.info.birthDate": dayjs(
-          fakerPT_BR.date.past({ refDate: 1 }).toISOString()
-        ).format("DD/MM/YYYY"),
-      };
-    },
+  const {
+    data: sections,
+    trigger: fetchSections,
+    reset: resetSections,
+  } = useAction({
+    action: readSectionsByZone,
   });
 
   const {
@@ -101,7 +86,6 @@ export default function SupporterSignUpPage({
       }, 350);
     },
     onError: (err) => {
-      setStage("basicInfo");
       setTimeout(() => {
         if (errorRef.current) {
           scrollToElement(errorRef.current, 12);
@@ -110,11 +94,25 @@ export default function SupporterSignUpPage({
     },
   });
 
-  function verifyStep(fields: string[]) {
-    const formFields = fields.map((field) => form.getFieldState(field as any)); //@todo
+  useMocker({
+    form,
+    data: async () => {
+      const zone = zones![Math.floor(Math.random() * zones!.length)];
+      const { data: sections } = await fetchSections(zone.id);
 
-    return formFields.every((field) => !field.invalid && field.isDirty);
-  }
+      return {
+        "user.name": fakerPT_BR.person.fullName(),
+        "user.email": fakerPT_BR.internet.email(),
+        "user.phone": fakerPT_BR.phone.number(),
+        "user.info.zoneId": zone.id,
+        "user.info.sectionId":
+          sections?.[Math.round(Math.random() * sections?.length)]?.id,
+        "user.info.birthDate": dayjs(
+          fakerPT_BR.date.past({ refDate: 1 }).toISOString()
+        ).format("DD/MM/YYYY"),
+      };
+    },
+  });
 
   if (form.formState.isSubmitting) return <Loading />;
 
@@ -127,151 +125,129 @@ export default function SupporterSignUpPage({
     );
 
   return (
-    <Form
+    <MultistepForm
       className="flex h-full flex-col  divide-gray-200  text-left "
       hform={form}
-      multistep={{
-        order: ["basicInfo", "electionInfo"],
-        steps: {
-          basicInfo: {
-            fields: [
-              "user.name",
-              "user.email",
-              "user.info.birthDate",
-              "user.phone",
-            ],
-            form: <BasicInfoSection />,
-          },
-          electionInfo: {
-            fields: [
-              "user.info.zoneId",
-              "user.info.sectionId",
-              "user.password",
-            ],
-            form: <ElectionInfoSection />,
-          },
+      onSubmit={signUp}
+      order={["basicInfo", "electionInfo"]}
+      steps={{
+        basicInfo: {
+          fields: [
+            "user.name",
+            "user.email",
+            "user.info.birthDate",
+            "user.phone",
+          ],
+          form: <BasicInfoSection />,
+        },
+        electionInfo: {
+          fields: ["user.info.zoneId", "user.info.sectionId", "user.password"],
+          form: <ElectionInfoSection zones={zones} poll={poll} />,
         },
       }}
-      onSubmit={signUp}
     >
-      <div className={clsx("mb-4 space-y-2 pb-2")}>
-        <Transition
-          show={stage === "basicInfo"}
-          enter="ease-out duration-300"
-          enterFrom="opacity-0 scale-95"
-          enterTo="opacity-100 scale-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-0 scale-100"
-          leaveTo="opacity-0 scale-95"
-        >
-          <BasicInfoSection form={form} />
-        </Transition>
-        <Transition
-          show={stage === "electionInfo"}
-          enter="ease-out duration-300"
-          enterFrom="opacity-0 scale-95"
-          enterTo="opacity-50 scale-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-100 scale-100"
-          leaveTo="opacity-0 scale-95"
-        >
-          <ElectionInfoSection form={form} zones={zones} poll={poll} />
-        </Transition>
-      </div>
-      <div className="hidden justify-between lg:flex">
-        {stage === "electionInfo" && (
-          <button
-            type="button"
-            onClick={() => {
-              setStage("basicInfo");
-            }}
-            className={clsx(
-              "rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 lg:w-auto",
-              !form.formState.isValid ? "w-full" : "w-1/2"
+      {({
+        currentStepIndex,
+        currentStepKey,
+        prevStep,
+        nextStep,
+        stepCount,
+        stepOrder,
+        steps,
+        isCurrentStepValid,
+        walk,
+      }) => (
+        <>
+          <div className={clsx("mb-4 space-y-2 pb-2")}>
+            <For each={stepOrder}>
+              {(step) => (
+                <Transition
+                  show={step === currentStepKey}
+                  enter="ease-out duration-200"
+                  enterFrom="opacity-0 scale-95"
+                  enterTo="opacity-100 scale-100"
+                  leave="ease-in duration-200"
+                  leaveFrom="opacity-0 scale-100"
+                  leaveTo="opacity-0 scale-95"
+                >
+                  {steps[currentStepKey].form}
+                </Transition>
+              )}
+            </For>
+          </div>
+          <div className="hidden justify-between lg:flex">
+            {currentStepIndex > 0 && prevStep >= 0 && (
+              <Button
+                type="button"
+                plain={true}
+                onClick={() => {
+                  walk(-1);
+                }}
+              >
+                Voltar
+              </Button>
             )}
-          >
-            Voltar
-          </button>
-        )}
 
-        {stage === "basicInfo" ? (
-          <button
-            type="button"
-            disabled={!verifyStep([])}
-            onClick={() => {
-              setStage("electionInfo");
-            }}
-            className={clsx(
-              "inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-indigo-300"
-            )}
-          >
-            Próximo
-          </button>
-        ) : (
-          <button
-            disabled={!verifyStep([])}
-            type="submit"
-            className={clsx(
-              "inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-indigo-300",
-              "ms-2 w-1/2"
-            )}
-          >
-            Inscrever
-          </button>
-        )}
-      </div>
-      <BottomNavigation className="block p-2 lg:hidden">
-        <div className="flex justify-between">
-          {stage === "electionInfo" && (
-            <Button
-              variant="secondary"
-              role="button"
-              onClick={(e) => {
-                e.preventDefault();
-                setStage("basicInfo");
-              }}
-            >
-              Voltar
-            </Button>
-          )}
+            {currentStepIndex != stepCount - 1 &&
+              nextStep === stepCount - 1 && (
+                <Button
+                  type="button"
+                  color="indigo"
+                  className="w-full"
+                  onClick={() => {
+                    walk(1);
+                  }}
+                  disabled={!isCurrentStepValid}
+                >
+                  Próximo
+                </Button>
+              )}
 
-          {stage === "basicInfo" ? (
-            <Button
-              onClick={(e) => {
-                e.preventDefault();
-                setStage("electionInfo");
-              }}
-              role="button"
-              variant="primary"
-              className="w-full"
-              disabled={
-                !verifyStep([
-                  "user.name",
-                  "user.email",
-                  "user.info.birthDate",
-                  "user.phone",
-                ])
-              }
-            >
-              Próximo
-            </Button>
-          ) : (
-            <Button
-              variant="primary"
-              disabled={
-                !verifyStep([
-                  "user.info.zoneId",
-                  "user.info.sectionId",
-                  "user.password",
-                ])
-              }
-              type="submit"
-            >
-              Inscrever
-            </Button>
-          )}
-        </div>
-      </BottomNavigation>
-    </Form>
+            {currentStepIndex === stepCount - 1 && (
+              <Button
+                type="submit"
+                color="indigo"
+                disabled={!isCurrentStepValid}
+              >
+                Inscrever
+              </Button>
+            )}
+          </div>
+          <BottomNavigation className="block p-2 lg:hidden">
+            <div className="flex justify-between">
+              {prevStep > 0 && (
+                <Button
+                  type="button"
+                  onClick={() => {
+                    walk(-1);
+                  }}
+                >
+                  Voltar
+                </Button>
+              )}
+
+              {currentStepIndex != stepCount - 1 &&
+                nextStep === stepCount - 1 && (
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      walk(1);
+                    }}
+                    disabled={!isCurrentStepValid}
+                  >
+                    Próximo
+                  </Button>
+                )}
+
+              {currentStepIndex === stepCount - 1 && (
+                <Button type="submit" disabled={!isCurrentStepValid}>
+                  Inscrever
+                </Button>
+              )}
+            </div>
+          </BottomNavigation>
+        </>
+      )}
+    </MultistepForm>
   );
 }
