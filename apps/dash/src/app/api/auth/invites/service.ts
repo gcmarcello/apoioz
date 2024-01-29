@@ -1,55 +1,65 @@
-import { isProd } from "@/_shared/utils/settings";
 import dayjs from "dayjs";
+import { InviteCode } from "prisma/client";
 import { prisma } from "prisma/prisma";
 
 export async function createInviteCode({
   campaignId,
   referralId,
+  override = false,
 }: {
+  override?: boolean;
   campaignId: string;
   referralId: string;
 }) {
   if (!campaignId || !referralId) throw "Missing campaignId or referralId";
 
-  const existingCode = await prisma.inviteCode.findFirst({
-    where: { campaignId, referralId },
+  const lastInviteCode = await getLastInviteCode({
+    referralId,
+    campaignId,
   });
 
-  if (
-    existingCode &&
-    dayjs(existingCode?.expiresAt).isAfter(dayjs().subtract(60, "minutes"))
-  )
-    return existingCode;
+  if (!override && lastInviteCode) {
+    const isCodeValid = validateInviteCode(lastInviteCode);
+
+    if (isCodeValid) return lastInviteCode;
+  }
 
   const code = await prisma.inviteCode.create({
     data: {
       campaignId,
       referralId,
-      expiresAt: dayjs()
-        .add(isProd ? 60 : 200, "minutes")
-        .toISOString(),
+      expiresAt: dayjs().add(60, "minutes").toISOString(),
     },
   });
 
   return code;
 }
 
-export async function validateInviteCode(code: string) {
-  const inviteCode = await prisma.inviteCode.findUnique({
-    where: { id: code },
+export async function readInviteCode({ id }: { id: string }) {
+  return await prisma.inviteCode.findUnique({
+    where: { id },
   });
+}
 
-  if (!inviteCode) throw "Código de convite inválido";
-
-  if (dayjs(inviteCode.expiresAt).isBefore(dayjs()))
-    throw "Código de convite expirado";
-
-  await prisma.inviteCode.update({
-    where: { id: code },
-    data: { enteredAt: dayjs().toISOString() },
+export async function getLastInviteCode({
+  referralId,
+  campaignId,
+}: {
+  referralId: string;
+  campaignId: string;
+}) {
+  return await prisma.inviteCode.findFirst({
+    where: { referralId, campaignId },
+    orderBy: { expiresAt: "desc" },
   });
+}
 
-  return inviteCode;
+export function validateInviteCode(code: InviteCode) {
+  const expiresAt = dayjs(code.expiresAt);
+
+  const now = dayjs();
+
+  return dayjs(now).isAfter(expiresAt);
 }
 
 export async function useInviteCode(code: string) {

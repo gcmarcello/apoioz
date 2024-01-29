@@ -87,8 +87,13 @@ export function AddSupporterForm({
     reset: resetAddress,
     trigger: searchAddress,
   } = useAction({
+    requestParser: (req) => {
+      if (req?.where) req.where.campaignId = campaign.id;
+      return req;
+    },
     action: readAddresses,
     responseParser: (res) => res[0],
+    onSuccess: (r) => console.log(r),
   });
 
   useEffect(() => {
@@ -107,12 +112,6 @@ export function AddSupporterForm({
       form.setValue("user.info.sectionId", undefined);
     }
   }, [form.watch("externalSupporter")]);
-
-  useEffect(() => {
-    if (form.getValues("user.info.addressId")) {
-      searchAddress();
-    }
-  }, [form.watch("user.info.addressId")]);
 
   useMocker({
     form,
@@ -205,9 +204,12 @@ export function AddSupporterForm({
           tabs={[
             {
               title: "Por zona e seção",
-              onClick: () => form.resetField("user.info.addressId"),
+              onClick: () => {
+                form.resetField("user.info.addressId");
+                resetAddress();
+              },
               content: (
-                <>
+                <FieldGroup className="space-y-4">
                   <Field name="user.info.zoneId" className="col-span-1">
                     <Label>Zona</Label>
                     <Listbox
@@ -256,7 +258,7 @@ export function AddSupporterForm({
                       Consulte o TSE.
                     </Link>
                   </Description>
-                </>
+                </FieldGroup>
               ),
             },
             {
@@ -281,6 +283,9 @@ export function AddSupporterForm({
                       } else {
                         searchAddresses();
                       }
+                    }}
+                    onChange={(value) => {
+                      searchAddress({ where: { id: value?.id } });
                     }}
                   >
                     {(item) => <div>{item.location}</div>}
@@ -346,7 +351,8 @@ export function AddSupporterForm({
                           const zoneId = form.watch("user.info.zoneId");
                           const sectionId = form.watch("user.info.sectionId");
                           const location = address?.location;
-                          if (address) return <>{address.location}</>;
+                          if (address && !zoneId && !sectionId)
+                            return <>{address.location}</>;
                           return (
                             <>
                               <>

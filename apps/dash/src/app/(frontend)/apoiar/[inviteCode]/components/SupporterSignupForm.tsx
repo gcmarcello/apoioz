@@ -208,6 +208,7 @@ export default function SupporterSignUpForm({
                 )}
               </For>
             </div>
+
             <div className="hidden justify-between lg:flex">
               {currentStepIndex > 0 && prevStep >= 0 && (
                 <Button
