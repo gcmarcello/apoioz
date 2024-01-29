@@ -1,0 +1,68 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions", "multiSchema"]
+  output = "./client"
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [uuid_ossp(map: "uuid-ossp", schema: "extensions")]
+  schemas    = ["public", "extensions"]
+}
+
+model CommunityCluster {
+  id          String                  @id @default(uuid())
+  slug        String                  @unique
+  title       String
+  description String?
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @updatedAt
+  communities Community[]
+  admins      CommunityClusterAdmin[]
+
+  @@schema("public")
+}
+
+model CommunityClusterAdmin {
+  id                 String            @id @default(uuid())
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  user               User              @relation(fields: [userId], references: [id])
+  userId             String
+  CommunityCluster   CommunityCluster? @relation(fields: [communityClusterId], references: [id])
+  communityClusterId String?
+
+  @@schema("public")
+}
+
+model User {
+  id             String                  @id @default(uuid())
+  number         String                  @unique
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+  CommunityAdmin CommunityClusterAdmin[]
+
+  @@schema("public")
+}
+
+model Community {
+  id                   String            @id
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+  CommunityCluster     CommunityCluster? @relation(fields: [clusterId], references: [id])
+  clusterId            String?
+  announcementsGroupId String?           @unique
+
+  @@schema("public")
+}
+
+model Metadata {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  key       String   @unique
+  value     String
+
+  @@schema("public")
+}
