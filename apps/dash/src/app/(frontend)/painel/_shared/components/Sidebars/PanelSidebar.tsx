@@ -169,33 +169,31 @@ export default function PanelSideBar() {
                       <ul role="list" className="flex flex-1 flex-col gap-y-7">
                         <li>
                           <ul role="list" className="-mx-2 space-y-1">
-                            <For each={navigation}>
+                            <For each={navigation} identifier="defaultnav">
                               {(item) => (
-                                <li>
-                                  <a
-                                    href={item.href}
+                                <a
+                                  href={item.href}
+                                  className={clsx(
+                                    item.current
+                                      ? `bg-indigo-700 text-white`
+                                      : "text-indigo-200 hover:bg-indigo-700 hover:text-white",
+                                    "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
+                                  )}
+                                >
+                                  <item.icon
                                     className={clsx(
                                       item.current
-                                        ? `bg-indigo-700 text-white`
-                                        : "text-indigo-200 hover:bg-indigo-700 hover:text-white",
-                                      "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
-                                    )}
-                                  >
-                                    <item.icon
-                                      className={clsx(
-                                        item.current
-                                          ? "text-white"
-                                          : "text-indigo-200 group-hover:text-white",
-                                        item.icon === WhatsAppIcon &&
-                                          "me-1 h-[1.3rem] w-[1.3rem] fill-indigo-200",
+                                        ? "text-white"
+                                        : "text-indigo-200 group-hover:text-white",
+                                      item.icon === WhatsAppIcon &&
+                                        "me-1 h-[1.3rem] w-[1.3rem] fill-indigo-200",
 
-                                        "h-6 w-6 shrink-0"
-                                      )}
-                                      aria-hidden="true"
-                                    />
-                                    {item.name}
-                                  </a>
-                                </li>
+                                      "h-6 w-6 shrink-0"
+                                    )}
+                                    aria-hidden="true"
+                                  />
+                                  {item.name}
+                                </a>
                               )}
                             </For>
                           </ul>
@@ -206,7 +204,7 @@ export default function PanelSideBar() {
                               Administrativo
                             </div>
                             <ul role="list" className="-mx-2 space-y-1">
-                              <For each={adminNavigation}>
+                              <For each={adminNavigation} identifier="adminnav">
                                 {(item) => (
                                   <li>
                                     <a

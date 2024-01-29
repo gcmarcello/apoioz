@@ -6,7 +6,7 @@ import { CampaignLeaderMiddleware } from "@/middleware/functions/campaignLeader.
 import * as service from "./service";
 
 export async function upsertWhatsapp(request: UpsertWhatsappDto) {
-  const { request: parsedRequest } = await UseMiddlewares(request)
+  const { request: parsedRequest } = await UseMiddlewares({ request })
     .then(UserSessionMiddleware)
     .then(SupporterSessionMiddleware)
     .then(CampaignLeaderMiddleware);

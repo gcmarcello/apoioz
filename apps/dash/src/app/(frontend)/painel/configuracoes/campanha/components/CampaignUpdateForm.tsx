@@ -13,7 +13,7 @@ import {
   updateCampaignDto,
 } from "@/app/api/panel/campaigns/dto";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Campaign } from "@prisma/client";
+import { Campaign } from "prisma/client";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";

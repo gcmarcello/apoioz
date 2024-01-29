@@ -1,16 +1,25 @@
-import { MiddlewareArguments } from "../types/types";
+"use server";
+import { ZodObject, ZodRawShape, ZodTypeAny, ZodEffects } from "zod";
+import { MiddlewareArguments } from "./useMiddlewares";
+import { FieldValues } from "react-hook-form";
 
-export async function ValidatorMiddleware({
+export async function ValidatorMiddleware<R, A, Fields extends FieldValues>({
   additionalArguments,
+  schema,
   request,
-}: MiddlewareArguments) {
-  if (!additionalArguments) throw new Error("Missing additionalArguments");
+}: MiddlewareArguments<R, A> & {
+  schema: ZodObject<ZodRawShape, "strip", ZodTypeAny, Fields, Fields>;
+}) {
+  if (!schema) throw "Missing schema for validation";
 
-  const { success, error } =
-    await additionalArguments.schema.safeParse(request);
+  const { success, error } = schema.safeParse(request) as any;
 
   if (!success) {
-    console.error(error);
-    return "Erro ao validar os dados.";
+    throw error;
   }
+
+  return {
+    request,
+    additionalArguments,
+  };
 }

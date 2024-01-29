@@ -11,11 +11,13 @@ import {
   ReadSupportersDto,
   ReadSupporterBranchesDto,
   AddSupporterDto,
+  readSupportersDto,
 } from "./dto";
+import { ValidatorMiddleware } from "@/middleware/functions/validator.middleware";
 
 export async function readSupportersFulltext(request?: ReadSupportersDto) {
   try {
-    const { request: parsedRequest } = await UseMiddlewares(request)
+    const { request: parsedRequest } = await UseMiddlewares({ request })
       .then(UserSessionMiddleware)
       .then(SupporterSessionMiddleware);
 
@@ -35,7 +37,13 @@ export async function readSupportersFromSupporterGroup(
   request?: ReadSupportersDto
 ) {
   try {
-    const { request: parsedRequest } = await UseMiddlewares(request)
+    const { request: parsedRequest } = await UseMiddlewares({ request })
+      .then((arg) =>
+        ValidatorMiddleware({
+          ...arg,
+          schema: readSupportersDto,
+        })
+      )
       .then(UserSessionMiddleware)
       .then(SupporterSessionMiddleware);
 
@@ -55,7 +63,13 @@ export async function readSupportersFromSupporterGroupWithRelation(
   request?: ReadSupportersDto
 ) {
   try {
-    const { request: parsedRequest } = await UseMiddlewares(request)
+    const { request: parsedRequest } = await UseMiddlewares({ request })
+      .then((arg) =>
+        ValidatorMiddleware({
+          ...arg,
+          schema: readSupportersDto,
+        })
+      )
       .then(UserSessionMiddleware)
       .then(SupporterSessionMiddleware);
 
@@ -67,14 +81,13 @@ export async function readSupportersFromSupporterGroupWithRelation(
       pagination,
     });
   } catch (err) {
-    console.log(err);
     return ActionResponse.error(err);
   }
 }
 
 export async function addSupporter(request: AddSupporterDto) {
   try {
-    const { request: parsedRequest } = await UseMiddlewares(request)
+    const { request: parsedRequest } = await UseMiddlewares({ request })
       .then(UserSessionMiddleware)
       .then(SupporterSessionMiddleware);
 
@@ -104,7 +117,7 @@ export async function addSupporter(request: AddSupporterDto) {
 
 export async function readSupporterTrail(request?: ReadSupporterBranchesDto) {
   try {
-    const { request: parsedRequest } = await UseMiddlewares(request)
+    const { request: parsedRequest } = await UseMiddlewares({ request })
       .then(UserSessionMiddleware)
       .then(SupporterSessionMiddleware);
 
@@ -122,7 +135,7 @@ export async function readSupporterBranches(
   request?: ReadSupporterBranchesDto
 ) {
   try {
-    const { request: parsedRequest } = await UseMiddlewares(request)
+    const { request: parsedRequest } = await UseMiddlewares({ request })
       .then(UserSessionMiddleware)
       .then(SupporterSessionMiddleware);
 

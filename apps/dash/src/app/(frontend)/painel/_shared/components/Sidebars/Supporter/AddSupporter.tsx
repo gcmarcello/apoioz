@@ -1,13 +1,12 @@
 import { readSupportersFulltext } from "@/app/api/panel/supporters/actions";
 import { fakerPT_BR } from "@faker-js/faker";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toProperCase } from "@/_shared/utils/format";
 import { readZonesByCampaign } from "@/app/api/elections/zones/actions";
 import { readSectionsByZone } from "@/app/api/elections/sections/action";
 import { readAddressBySection } from "@/app/api/elections/locations/actions";
 import { scrollToElement } from "@/app/(frontend)/_shared/utils/scroll";
 import clsx from "clsx";
-import DisclosureAccordion from "@/app/(frontend)/_shared/components/Disclosure";
 import { LoadingSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { useMocker } from "@/app/(frontend)/_shared/components/Mocker";
 import Link from "next/link";
@@ -16,11 +15,17 @@ import dayjs from "dayjs";
 import { AddSupporterDto } from "@/app/api/panel/supporters/dto";
 
 import { useSidebar } from "../lib/useSidebar";
-import { If, Alertbox, List } from "odinkit";
+import { If, Alertbox, List, Badge } from "odinkit";
 
 import {
+  Button,
   Combobox,
   Description,
+  Dialog,
+  DialogActions,
+  DialogBody,
+  DialogDescription,
+  DialogTitle,
   ErrorMessage,
   FieldGroup,
   Fieldset,
@@ -32,8 +37,21 @@ import {
   useAction,
   useFormContext,
 } from "odinkit/client";
+import { UserCircleIcon } from "@heroicons/react/20/solid";
+import {
+  CalendarDaysIcon,
+  CreditCardIcon,
+  EnvelopeIcon,
+  MapPinIcon,
+} from "@heroicons/react/24/solid";
 
-export function AddSupporterForm() {
+export function AddSupporterForm({
+  isAdminOptions,
+  setIsAdminOptions,
+}: {
+  isAdminOptions: boolean;
+  setIsAdminOptions: (value: boolean) => void;
+}) {
   const ref = useRef<null | HTMLDivElement>(null);
   const errRef = useRef<null | HTMLDivElement>(null);
 
@@ -43,15 +61,29 @@ export function AddSupporterForm() {
 
   const { supporter: userSupporter, campaign } = useSidebar();
 
-  const { data: zones, trigger: fetchZones } = useAction({
+  const [referralName, setReferralName] = useState<string>("");
+
+  const {
+    data: zones,
+    trigger: fetchZones,
+    reset: resetZones,
+  } = useAction({
     action: readZonesByCampaign,
   });
 
-  const { data: sections, trigger: fetchSections } = useAction({
+  const {
+    data: sections,
+    trigger: fetchSections,
+    reset: resetSections,
+  } = useAction({
     action: readSectionsByZone,
   });
 
-  const { data: address, trigger: fetchAddress } = useAction({
+  const {
+    data: address,
+    trigger: fetchAddress,
+    reset: resetAddress,
+  } = useAction({
     action: readAddressBySection,
   });
 
@@ -81,13 +113,14 @@ export function AddSupporterForm() {
 
       const { data: sections } = await fetchSections(zone?.id || "");
 
+      const section = sections?.[Math.round(Math.random() * sections.length)]!;
+
       return {
         "user.name": fakerPT_BR.person.fullName(),
         "user.email": fakerPT_BR.internet.email(),
         "user.phone": fakerPT_BR.phone.number(),
         "user.info.zoneId": zone?.id,
-        "user.info.sectionId":
-          sections?.[Math.round(Math.random() * sections.length)]?.id,
+        "user.info.sectionId": section.id,
         "user.info.birthDate": dayjs(
           fakerPT_BR.date.past({ refDate: 1 }).toISOString()
         ).format("DD/MM/YYYY"),
@@ -104,6 +137,7 @@ export function AddSupporterForm() {
 
   useEffect(() => {
     fetchSupporterList();
+    setReferralName("");
   }, [form.formState.isSubmitSuccessful]);
 
   if (!zones)
@@ -179,11 +213,16 @@ export function AddSupporterForm() {
             data={sections}
             displayValueKey={"number"}
             disabled={!form.watch("user.info.zoneId")}
+            inputMode="numeric"
             onChange={(value) => {
-              fetchAddress(value.id);
+              if (value) {
+                fetchAddress(value.id);
+              } else {
+                resetAddress();
+              }
             }}
           >
-            {(item) => item.number}
+            {(item) => item.displayValue}
           </Combobox>
           <ErrorMessage />
         </Field>
@@ -198,89 +237,152 @@ export function AddSupporterForm() {
           </Link>
         </Description>
       </FieldGroup>
-      <FieldGroup>
-        <If
-          deps={{
-            level: userSupporter.level,
-          }}
-          if={({ level }) => level >= 4}
-          then={
-            <DisclosureAccordion
-              title="Opções de Administrador"
-              scrollToContent={true}
-            >
-              <div className="space-y-8">
-                <Field name="referralId">
-                  <Label>Indicado Por</Label>
-                  <Combobox
-                    data={supporterList}
-                    setData={(query) =>
-                      query === ""
-                        ? fetchSupporterList()
-                        : fetchSupporterList({
-                            where: {
-                              user: {
-                                name: query,
-                              },
-                            },
-                          })
-                    }
-                    displayValueKey="user.name"
-                  >
-                    {(item) => item.user.name}
-                  </Combobox>
-                  <ErrorMessage />
-                </Field>
-
-                <Field name="externalSupporter" variant="switch">
-                  <Label>Apoiador Externo</Label>
-                  <Description>
-                    Cadastre um apoiador que não vive na região.
-                  </Description>
-                  <Switch color="indigo" />
-                </Field>
-              </div>
-            </DisclosureAccordion>
-          }
-        />
-
-        <If
-          deps={{
-            externalSupporter: form.watch("externalSupporter"),
-          }}
-          if={({ externalSupporter }) => externalSupporter}
-          then={
-            <div
-              ref={ref}
-              className={clsx(
-                "mt-6 border-t border-gray-100",
-                address ? "block" : "hidden"
-              )}
-            >
-              <dl className="divide-y divide-gray-100">
-                <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                  <dt className="text-sm font-medium leading-6 text-gray-900">
-                    Local de Votação
-                  </dt>
-                  <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                    {toProperCase(address?.location || "")}
-                  </dd>
-                </div>
-                <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                  <dt className="text-sm font-medium leading-6 text-gray-900">
-                    Endereço
-                  </dt>
-                  <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                    {toProperCase(
-                      address?.address + ", " + address?.City?.name
+      {(form.watch("externalSupporter") || form.watch("user.info.zoneId")) &&
+        form.watch("user.name") && (
+          <div ref={ref} className="py-4">
+            <div className="lg:col-start-3 lg:row-end-1">
+              <h2 className="sr-only">Summary</h2>
+              <div className="rounded-lg bg-slate-50 shadow-sm ring-1 ring-gray-900/5">
+                <dl className="flex flex-wrap">
+                  <div className="flex-auto pl-6 pt-6 font-semibold leading-6 text-gray-900">
+                    Confirmação
+                  </div>
+                  <div className="flex-none self-end px-6 pt-4">
+                    <dt className="sr-only">Status</dt>
+                    {form.watch("externalSupporter") ? (
+                      <Badge color="blue">Apoiador externo</Badge>
+                    ) : (
+                      <Badge color="emerald">Apoiador</Badge>
                     )}
-                  </dd>
-                </div>
-              </dl>
+                  </div>
+                  <div className="mt-6 flex w-full flex-none gap-x-4 border-t border-gray-900/5 px-6 pt-6">
+                    <dt className="flex-none">
+                      <span className="sr-only">Client</span>
+                      <UserCircleIcon
+                        className="h-6 w-5 text-gray-400"
+                        aria-hidden="true"
+                      />
+                    </dt>
+                    <dd className="text-sm font-medium leading-6 text-gray-900">
+                      {form.watch("user.name")}
+                    </dd>
+                  </div>
+                  {!form.watch("externalSupporter") && (
+                    <div className="mt-4 flex w-full flex-none gap-x-4 px-6">
+                      <dt className="flex-none">
+                        <span className="sr-only">Status</span>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          className="h-6 w-5 text-gray-400"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M9.674 2.075a.75.75 0 0 1 .652 0l7.25 3.5A.75.75 0 0 1 17 6.957V16.5h.25a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1 0-1.5H3V6.957a.75.75 0 0 1-.576-1.382l7.25-3.5ZM11 6a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM7.5 9.75a.75.75 0 0 0-1.5 0v5.5a.75.75 0 0 0 1.5 0v-5.5Zm3.25 0a.75.75 0 0 0-1.5 0v5.5a.75.75 0 0 0 1.5 0v-5.5Zm3.25 0a.75.75 0 0 0-1.5 0v5.5a.75.75 0 0 0 1.5 0v-5.5Z"
+                            clip-rule="evenodd"
+                          />
+                        </svg>
+                      </dt>
+                      <dd className="text-sm leading-6 text-gray-500">
+                        {(() => {
+                          const zoneId = form.watch("user.info.zoneId");
+                          const sectionId = form.watch("user.info.sectionId");
+                          const location = address?.location;
+
+                          return (
+                            <>
+                              <>
+                                {zoneId &&
+                                  "Zona " +
+                                    zones?.find(
+                                      (zone) =>
+                                        zone.id ===
+                                        form.watch("user.info.zoneId")
+                                    )?.number}
+                              </>
+                              <>
+                                {zoneId &&
+                                  sectionId &&
+                                  ", Seção " +
+                                    sections?.find(
+                                      (section) =>
+                                        section.id ===
+                                        form.watch("user.info.sectionId")
+                                    )?.number}
+                              </>
+                              <>{zoneId && sectionId && " - " + location}</>
+                            </>
+                          );
+                        })()}
+                      </dd>
+                    </div>
+                  )}
+                  <div className="mt-4 flex w-full flex-none gap-x-4 px-6">
+                    <dt className="flex-none">
+                      <span className="sr-only">Status</span>
+
+                      <EnvelopeIcon className="h-6 w-5 text-gray-400" />
+                    </dt>
+                    <dd className="text-sm leading-6 text-gray-500">
+                      Indicado por{" "}
+                      {form.watch("referralId") ? referralName : "Você"}
+                    </dd>
+                  </div>
+                </dl>
+                <div className="mt-6  border-gray-900/5 px-6 py-3"></div>
+              </div>
             </div>
-          }
-        />
-      </FieldGroup>
+          </div>
+        )}
+      <Dialog open={isAdminOptions} onClose={setIsAdminOptions} zIndex={90}>
+        <DialogTitle>Opções de Administrador</DialogTitle>
+        <DialogDescription>
+          Escolha entre as opções abaixo para adicionar um apoiador.
+        </DialogDescription>
+        <DialogBody>
+          <FieldGroup className={"space-y-8"}>
+            <Field name="referralId">
+              <Label>Indicado Por</Label>
+              <Combobox
+                data={supporterList}
+                setData={(query) =>
+                  query === ""
+                    ? fetchSupporterList()
+                    : fetchSupporterList({
+                        where: {
+                          user: {
+                            name: query,
+                          },
+                        },
+                      })
+                }
+                onChange={(v) => {
+                  console.log(v);
+                  setReferralName(v.user.name);
+                }}
+                displayValueKey="user.name"
+              >
+                {(item) => item.displayValue}
+              </Combobox>
+              <ErrorMessage />
+            </Field>
+
+            <Field name="externalSupporter" variant="switch">
+              <Label>Apoiador Externo</Label>
+              <Description>
+                Cadastre um apoiador que não vive na região.
+              </Description>
+              <Switch color="indigo" />
+            </Field>
+          </FieldGroup>
+        </DialogBody>
+        <DialogActions>
+          <Button color="indigo" onClick={() => setIsAdminOptions(false)}>
+            Salvar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Fieldset>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 import { generateRandomHexColor } from "@/app/(frontend)/_shared/utils/colors";
-import { PollAnswer, PollOption } from "@prisma/client";
+import { PollAnswer, PollOption } from "prisma/client";
 import {
   Chart as ChartJS,
   CategoryScale,

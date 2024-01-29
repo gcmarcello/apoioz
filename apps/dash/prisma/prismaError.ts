@@ -1,5 +1,5 @@
 import { toProperCase } from "@/_shared/utils/format";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "prisma/client";
 
 export function handlePrismaError(target: string, error: any) {
   if (!error)

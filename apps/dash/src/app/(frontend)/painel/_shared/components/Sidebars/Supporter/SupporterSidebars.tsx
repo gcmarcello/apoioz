@@ -1,20 +1,30 @@
 "use client";
 import { Fragment, useId, useMemo, useRef, useState } from "react";
-import { Dialog, Transition } from "@headlessui/react";
+import * as HeadlessUI from "@headlessui/react";
 import { UserPlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { LinkIcon } from "@heroicons/react/20/solid";
+import { Cog6ToothIcon, LinkIcon } from "@heroicons/react/20/solid";
 import { ShareSupporter } from "./ShareSupporter";
 import { AddSupporterForm } from "./AddSupporter";
 import { useSidebar } from "../lib/useSidebar";
 import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
-import { addSupporter } from "@/app/api/panel/supporters/actions";
+import {
+  addSupporter,
+  readSupportersFulltext,
+} from "@/app/api/panel/supporters/actions";
 import { addSupporterDto } from "@/app/api/panel/supporters/dto";
 import { Form, Button, useAction, useForm } from "odinkit/client";
 import { If } from "odinkit";
 
 export default function SupporterSideBar() {
-  const { visibility, setVisibility } = useSidebar();
+  const {
+    supporter: userSupporter,
+    visibility,
+    setVisibility,
+    campaign,
+  } = useSidebar();
+
+  const [isAdminOptions, setIsAdminOptions] = useState(false);
 
   const addSupporterForm = useForm({
     schema: addSupporterDto,
@@ -29,6 +39,10 @@ export default function SupporterSideBar() {
     isMutating,
   } = useAction({
     action: addSupporter,
+    requestParser: (data) => {
+      console.log(data);
+      return data;
+    },
     onError: (err) =>
       showToast({ message: err, variant: "error", title: "Erro" }),
     onSuccess: ({ data }) => {
@@ -70,7 +84,10 @@ export default function SupporterSideBar() {
         hform={addSupporterForm}
         onSubmit={addSupporterTrigger}
       >
-        <AddSupporterForm />
+        <AddSupporterForm
+          isAdminOptions={isAdminOptions}
+          setIsAdminOptions={setIsAdminOptions}
+        />
       </Form>
     ),
   };
@@ -79,7 +96,7 @@ export default function SupporterSideBar() {
 
   return (
     <>
-      <Transition.Root
+      <HeadlessUI.Transition.Root
         show={visibility.supporterSidebar}
         afterLeave={() => {
           addSupporterForm.reset();
@@ -87,7 +104,11 @@ export default function SupporterSideBar() {
         }}
         as={"div"}
       >
-        <Dialog as="div" className="relative z-50" onClose={() => {}}>
+        <HeadlessUI.Dialog
+          as="div"
+          className="relative z-[60]"
+          onClose={() => {}}
+        >
           <div className="fixed inset-0 overflow-hidden">
             <div className="absolute inset-0 grid grid-cols-2 overflow-hidden">
               <span
@@ -97,10 +118,10 @@ export default function SupporterSideBar() {
                     supporterSidebar: false,
                   }));
                 }}
-                className="h-screen w-screen"
+                className=" h-screen w-screen bg-black bg-opacity-40"
               ></span>
               <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full">
-                <Transition.Child
+                <HeadlessUI.Transition.Child
                   as={Fragment}
                   key={"supporters-sidebar"}
                   enter="transform transition ease-in-out duration-500 sm:duration-700"
@@ -110,14 +131,14 @@ export default function SupporterSideBar() {
                   leaveFrom="translate-x-0"
                   leaveTo="translate-x-full"
                 >
-                  <Dialog.Panel className="pointer-events-auto w-screen max-w-md">
+                  <HeadlessUI.Dialog.Panel className="pointer-events-auto w-screen max-w-md">
                     <div className="flex h-full flex-col divide-y divide-gray-200 bg-white shadow-xl">
                       <div className="h-0 flex-1 overflow-y-auto">
                         <div className="bg-indigo-700 px-4 py-6 sm:px-6">
                           <div className="flex items-center justify-between">
-                            <Dialog.Title className="text-base font-semibold leading-6 text-white">
+                            <HeadlessUI.Dialog.Title className="text-base font-semibold leading-6 text-white">
                               Adicionar Apoiador
-                            </Dialog.Title>
+                            </HeadlessUI.Dialog.Title>
                             <div className="ml-3 flex h-7 items-center">
                               <button
                                 type="button"
@@ -168,47 +189,70 @@ export default function SupporterSideBar() {
                           </div>
                         </div>
                       </div>
-                      <div className="flex flex-shrink-0 justify-end gap-2 px-4 py-4">
-                        <Button
-                          type="button"
-                          plain={true}
-                          onClick={() => {
-                            if (screen === "start") {
-                              setVisibility((prev) => ({
-                                ...prev,
-                                supporterSidebar: false,
-                              }));
-                            } else {
-                              setScreen("start");
-                            }
-                          }}
-                        >
-                          Voltar
-                        </Button>
-                        {screen === "add" && (
+                      <div className="flex w-full justify-between gap-2 px-4 py-4">
+                        <div className="flex  items-center ">
+                          {screen === "add" && userSupporter.level >= 4 && (
+                            <Button
+                              type="button"
+                              plain={true}
+                              onClick={() => {
+                                setIsAdminOptions((prev) => !prev);
+                              }}
+                            >
+                              <Cog6ToothIcon className="size-4 " />{" "}
+                              <span className="hidden sm:block">
+                                Administrador
+                              </span>
+                            </Button>
+                          )}
+                        </div>
+                        <div className="flex  items-center  justify-between gap-2 ">
                           <Button
-                            type="submit"
-                            disabled={addSupporterForm.formState.isSubmitting}
-                            color="indigo"
-                            form={addSupporterFormId}
+                            type="button"
+                            plain={true}
+                            onClick={() => {
+                              if (screen === "start") {
+                                setVisibility((prev) => ({
+                                  ...prev,
+                                  supporterSidebar: false,
+                                }));
+                              }
+                              if (screen === "share") {
+                                setScreen("start");
+                              }
+                              if (screen === "add") {
+                                setScreen("start");
+                                addSupporterForm.reset();
+                              }
+                            }}
                           >
-                            <div className="flex items-center gap-2">
-                              Adicionar{" "}
-                              {addSupporterForm.formState.isSubmitting && (
-                                <ButtonSpinner />
-                              )}
-                            </div>
+                            Voltar
                           </Button>
-                        )}
+                          {screen === "add" && (
+                            <Button
+                              type="submit"
+                              disabled={addSupporterForm.formState.isSubmitting}
+                              color="indigo"
+                              form={addSupporterFormId}
+                            >
+                              <div className="flex items-center gap-2">
+                                Adicionar{" "}
+                                {addSupporterForm.formState.isSubmitting && (
+                                  <ButtonSpinner />
+                                )}
+                              </div>
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </Dialog.Panel>
-                </Transition.Child>
+                  </HeadlessUI.Dialog.Panel>
+                </HeadlessUI.Transition.Child>
               </div>
             </div>
           </div>
-        </Dialog>
-      </Transition.Root>
+        </HeadlessUI.Dialog>
+      </HeadlessUI.Transition.Root>
     </>
   );
 }

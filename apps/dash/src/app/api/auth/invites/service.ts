@@ -17,7 +17,7 @@ export async function createInviteCode({
 
   if (
     existingCode &&
-    dayjs(existingCode?.expiresAt).isAfter(dayjs().subtract(10, "minutes"))
+    dayjs(existingCode?.expiresAt).isAfter(dayjs().subtract(60, "minutes"))
   )
     return existingCode;
 

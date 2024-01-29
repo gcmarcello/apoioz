@@ -22,7 +22,7 @@ export async function joinCampaign(request: JoinCampaignDto) {
   try {
     const {
       request: { userSession },
-    } = await UseMiddlewares(request).then(UserSessionMiddleware);
+    } = await UseMiddlewares({ request }).then(UserSessionMiddleware);
 
     const campaignOwnerSupporter = await prisma.supporter.findFirst({
       where: {
@@ -80,7 +80,7 @@ export async function updateCampaign(request: {
   data: any;
 }) {
   try {
-    const { request: parsedRequest } = await UseMiddlewares(request)
+    const { request: parsedRequest } = await UseMiddlewares({ request })
       .then(UserSessionMiddleware)
       .then(SupporterSessionMiddleware)
       .then(CampaignLeaderMiddleware);

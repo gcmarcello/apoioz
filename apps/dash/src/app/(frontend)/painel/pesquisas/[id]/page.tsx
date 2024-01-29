@@ -4,7 +4,7 @@ import { PageTitle } from "@/app/(frontend)/_shared/components/text/PageTitle";
 import PageHeader from "@/app/(frontend)/_shared/components/PageHeader";
 import Footer from "../../_shared/components/Footer";
 import PollTable from "./components/pollTable";
-import { PollOption } from "@prisma/client";
+import { PollOption } from "prisma/client";
 import { redirect } from "next/navigation";
 
 interface SupporterAnswers {

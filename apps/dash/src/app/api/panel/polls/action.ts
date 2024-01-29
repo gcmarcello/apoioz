@@ -14,7 +14,7 @@ import { getEnv } from "@/_shared/utils/settings";
 
 export async function createPoll(request: UpsertPollDto) {
   try {
-    const { request: parsedRequest } = await UseMiddlewares(request)
+    const { request: parsedRequest } = await UseMiddlewares({ request })
       .then(UserSessionMiddleware)
       .then(SupporterSessionMiddleware)
       .then(CampaignLeaderMiddleware);
@@ -29,7 +29,7 @@ export async function createPoll(request: UpsertPollDto) {
 
 export async function updatePoll(request: UpsertPollDto) {
   try {
-    const { request: parsedRequest } = await UseMiddlewares(request)
+    const { request: parsedRequest } = await UseMiddlewares({ request })
       .then(UserSessionMiddleware)
       .then(SupporterSessionMiddleware)
       .then(CampaignLeaderMiddleware);
@@ -44,8 +44,9 @@ export async function updatePoll(request: UpsertPollDto) {
 
 export async function answerPoll(request: PollAnswerDto) {
   try {
-    const { request: parsedRequest } =
-      await UseMiddlewares(request).then(IpMiddleware);
+    const { request: parsedRequest } = await UseMiddlewares({ request }).then(
+      IpMiddleware
+    );
 
     const token = cookies().get("token")?.value;
     if (token) {

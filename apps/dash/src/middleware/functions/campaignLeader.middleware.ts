@@ -1,11 +1,11 @@
 "use server";
 import { cookies } from "next/headers";
 import { prisma } from "prisma/prisma";
-import { UserSessionMiddlewareReturnType } from "./userSession.middleware";
+import { UserSessionMiddlewareReturn } from "./userSession.middleware";
 
-export async function CampaignLeaderMiddleware<T>({
+export async function CampaignLeaderMiddleware<R, A>({
   request,
-}: UserSessionMiddlewareReturnType<T>) {
+}: UserSessionMiddlewareReturn<R, A>) {
   const campaignId = cookies().get("activeCampaign")!.value;
 
   const supporter = await prisma.supporter.findFirst({
@@ -25,7 +25,3 @@ export async function CampaignLeaderMiddleware<T>({
     },
   };
 }
-
-export type SupporterSessionMiddlewareReturnType = Awaited<
-  ReturnType<typeof CampaignLeaderMiddleware>
->;

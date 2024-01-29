@@ -1,11 +1,10 @@
 "use server";
-import { MiddlewareArguments } from "../types/types";
 import { prisma } from "prisma/prisma";
-import { SupporterSessionMiddlewareReturnType } from "./supporterSession.middleware";
+import { SupporterSessionMiddlewareReturn } from "./supporterSession.middleware";
 
-export async function CampaignMiddleware<T>({
+export async function CampaignMiddleware<R, A>({
   request,
-}: SupporterSessionMiddlewareReturnType<T>) {
+}: SupporterSessionMiddlewareReturn<R, A>) {
   const campaign = await prisma.campaign.findFirst({
     where: {
       id: request.supporterSession.campaignId,

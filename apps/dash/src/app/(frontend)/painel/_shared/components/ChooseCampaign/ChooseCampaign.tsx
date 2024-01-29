@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { fakerPT_BR } from "@faker-js/faker";
 import dayjs from "dayjs";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "prisma/client";
 import { CampaignList } from "./CampaignList";
 import { revalidatePath } from "next/cache";
 import {

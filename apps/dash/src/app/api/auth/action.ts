@@ -18,7 +18,7 @@ import { UserSessionMiddleware } from "@/middleware/functions/userSession.middle
 
 export async function login(request: LoginDto) {
   try {
-    const parsedRequest = await UseMiddlewares(request).then(
+    const parsedRequest = await UseMiddlewares({ request }).then(
       ExistingUserMiddleware
     );
 
@@ -75,7 +75,7 @@ export async function resetPassword(request: PasswordResetDto) {
 
 export async function updatePassword(request: PasswordUpdateDto) {
   try {
-    const { request: parsedRequest } = await UseMiddlewares(request).then(
+    const { request: parsedRequest } = await UseMiddlewares({ request }).then(
       UserSessionMiddleware
     );
     await authService.updatePassword(parsedRequest);

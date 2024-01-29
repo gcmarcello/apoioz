@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { LoginDto, PasswordResetDto, PasswordUpdateDto } from "./dto";
-import { User } from "@prisma/client";
+import { User } from "prisma/client";
 import { prisma } from "prisma/prisma";
 import dayjs from "dayjs";
 import { sendEmail } from "../emails/service";

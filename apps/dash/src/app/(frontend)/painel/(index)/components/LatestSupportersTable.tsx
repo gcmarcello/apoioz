@@ -8,7 +8,7 @@ import { DefaultTable } from "@/app/(frontend)/_shared/components/tables/table";
 import SupporterBall from "@/app/(frontend)/_shared/components/SupporterBall";
 import { ParagraphLink } from "@/app/(frontend)/_shared/components/text/ParagraphLink";
 import { Pagination } from "@/app/api/_shared/dto/read";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "prisma/client";
 
 export type LatestSupportersTableData = Prisma.SupporterGetPayload<{
   include: {

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Calendar from "../components/Calendar";
 import { CalendarContext } from "../contexts/calendar.ctx";
-import { Event } from "@prisma/client";
+import { Event } from "prisma/client";
 
 export default function CalendarProvider({
   children,

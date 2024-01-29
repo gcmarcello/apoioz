@@ -4,7 +4,7 @@ import { ArrowDownIcon, ArrowUpIcon } from "@heroicons/react/24/solid";
 import { Control, UseFormReturn, useFieldArray } from "react-hook-form";
 import { Button, IconOnlyButton } from "../../../_shared/components/Button";
 import SwitchInput from "@/app/(frontend)/_shared/components/fields/Switch";
-import { Poll } from "@prisma/client";
+import { Poll } from "prisma/client";
 
 export default function OptionFieldArray({
   nestIndex,

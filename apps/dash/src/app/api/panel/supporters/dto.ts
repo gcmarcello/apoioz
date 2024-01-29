@@ -5,10 +5,10 @@ import { createUserDto } from "../../user/dto";
 
 export const readSupportersDto = readDto(
   z.object({
-    supporterId: z.string().optional(),
+    supporterId: z.string().uuid().optional(),
     user: z
       .object({
-        id: z.string().optional(),
+        id: z.string().uuid().optional(),
         name: z.string().optional(),
         email: z.string().optional(),
         phone: z.string().optional(),

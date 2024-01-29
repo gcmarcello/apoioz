@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { SidebarContext } from "./sidebar.ctx";
-import { Campaign, Prisma, Supporter, User } from "@prisma/client";
+import { Campaign, Prisma, Supporter, User } from "prisma/client";
 import { CampaignOptions } from "prisma/types/Campaign";
 
 export default function SidebarProvider({

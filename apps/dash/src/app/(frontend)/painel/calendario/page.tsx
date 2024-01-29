@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import updateLocale from "dayjs/plugin/updateLocale";
 import EventList from "./components/EventList";
-import { Event } from "@prisma/client";
+import { Event } from "prisma/client";
 import Calendar from "./components/Calendar";
 import { cookies, headers } from "next/headers";
 import { readEventsByCampaign } from "@/app/api/panel/events/actions";

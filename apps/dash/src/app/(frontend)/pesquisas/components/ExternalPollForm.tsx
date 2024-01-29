@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/app/(frontend)/_shared/components/Button";
-import { Campaign, PollQuestion, Prisma } from "@prisma/client";
+import { Campaign, PollQuestion, Prisma } from "prisma/client";
 import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { set, useFieldArray, useForm } from "react-hook-form";
 import { BottomNavigation } from "../../_shared/components/navigation/BottomNavigation";

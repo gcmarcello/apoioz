@@ -9,7 +9,7 @@ import { useAction } from "odinkit/client";
 import { leaveAsSupporter } from "@/app/api/panel/supporters/actions";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 import { useRouter } from "next/navigation";
-import { Campaign } from "@prisma/client";
+import { Campaign } from "prisma/client";
 
 export default function LeaveCampaignForm({
   campaign,

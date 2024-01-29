@@ -1,4 +1,4 @@
-import { Supporter, Zone } from "@prisma/client";
+import { Supporter, Zone } from "prisma/client";
 import dayjs from "dayjs";
 import { NextResponse } from "next/server";
 import crypto from "crypto";

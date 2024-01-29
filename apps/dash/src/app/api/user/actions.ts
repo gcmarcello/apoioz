@@ -17,7 +17,7 @@ export async function readUserFromSupporter(supporterId: string) {
 
 export async function updateUser(request: any) {
   try {
-    const { request: parsedRequest } = await UseMiddlewares(request).then(
+    const { request: parsedRequest } = await UseMiddlewares({ request }).then(
       UserSessionMiddleware
     );
 

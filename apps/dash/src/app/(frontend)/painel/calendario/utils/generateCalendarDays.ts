@@ -1,4 +1,4 @@
-import { Event } from "@prisma/client";
+import { Event } from "prisma/client";
 import dayjs from "dayjs";
 
 function generateDay(today: any, index: number): string {

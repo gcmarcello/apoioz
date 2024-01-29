@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { PageTitle } from "../../_shared/components/text/PageTitle";
 import { PageSubtitle } from "../../_shared/components/text/PageSubtitle";
-import { Campaign } from "@prisma/client";
+import { Campaign } from "prisma/client";
 
 export function PollHeader({
   campaign,

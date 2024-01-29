@@ -1,4 +1,4 @@
-import { Prisma, User, UserInfo } from "@prisma/client";
+import { Prisma, User, UserInfo } from "../client";
 
 export type UserWithoutPassword = Omit<User, "password">;
 

@@ -2,7 +2,7 @@
 
 import { FormProvider, useForm } from "react-hook-form";
 import { ReactNode } from "react";
-import { Neighborhood, Zone, Address, Prisma } from "@prisma/client";
+import { Neighborhood, Zone, Address, Prisma } from "prisma/client";
 import { parsedNeighborhoods } from "../utils/parseNeighborhoods";
 import { parseZones } from "../utils/parseZones";
 import { parseAddresses } from "../utils/parseAddresses";

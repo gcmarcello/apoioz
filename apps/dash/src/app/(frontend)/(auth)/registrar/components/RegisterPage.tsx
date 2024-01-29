@@ -17,7 +17,7 @@ import { readCitiesByState } from "@/app/api/elections/locations/actions";
 import { readSectionsByZone } from "@/app/api/elections/sections/action";
 import { readZonesByCity } from "@/app/api/elections/zones/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Party, State } from "@prisma/client";
+import { Party, State } from "prisma/client";
 import axios from "axios";
 import clsx from "clsx";
 import dayjs from "dayjs";

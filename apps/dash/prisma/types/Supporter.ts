@@ -1,4 +1,4 @@
-import { Prisma, Supporter } from "@prisma/client";
+import { Prisma, Supporter } from "../client";
 
 export type SupporterWithReferralUser = Prisma.SupporterGetPayload<{
   include: {

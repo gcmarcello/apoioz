@@ -32,6 +32,9 @@ export function NodeSearch({
 
   const searchForm = useForm({
     schema,
+    fieldOptions: {
+      enableAsterisk: false,
+    },
   });
 
   const Field = useMemo(() => searchForm.createField(), []);
@@ -45,7 +48,6 @@ export function NodeSearch({
       saveNodes(nodes);
       saveEdges(edges);
       toggleNodesVisibility(nodes as any);
-      console.log(data);
       setTimeout(() => {
         const node = nodes.find(
           (node) => searchForm.getValues("supporter") === node.id
@@ -61,9 +63,7 @@ export function NodeSearch({
 
   const { data: supporterList, trigger: fetchSupporterList } = useAction({
     action: readSupportersFulltext,
-    onSuccess: ({ data }) => {
-      console.log(data);
-    },
+    onSuccess: ({ data }) => {},
   });
 
   return (
@@ -72,27 +72,32 @@ export function NodeSearch({
         <Label>Buscar apoiador</Label>
         <Combobox
           setData={(value) => {
-            fetchSupporterList({
-              where: {
-                user: {
-                  name: value,
+            if (value) {
+              fetchSupporterList({
+                where: {
+                  user: {
+                    name: value,
+                  },
                 },
-              },
-            });
+              });
+            } else {
+              fetchSupporterList();
+            }
           }}
           data={supporterList}
           onChange={(value) => {
-            console.log(value);
-            fetchSupporterTrail({
-              where: {
-                supporterId: value.id,
-              },
-            });
+            if (value) {
+              fetchSupporterTrail({
+                where: {
+                  supporterId: value.id,
+                },
+              });
+            }
           }}
           valueKey="id"
           displayValueKey="user.name"
         >
-          {(item) => item.user.name}
+          {(item) => item.displayValue}
         </Combobox>
         <ErrorMessage />
       </Field>

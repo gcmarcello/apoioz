@@ -2,7 +2,7 @@
 import dayjs, { Dayjs } from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import utc from "dayjs/plugin/utc";
-import { Supporter, User } from "@prisma/client";
+import { Supporter, User } from "prisma/client";
 import { prisma } from "prisma/prisma";
 import { sendEmail } from "../../emails/service";
 import { CreateEventDto, ReadEventsAvailability, ReadEventsDto } from "./dto";

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { PageTitle } from "./text/PageTitle";
 import { PageSubtitle } from "./text/PageSubtitle";
-import { Campaign } from "@prisma/client";
+import { Campaign } from "prisma/client";
 
 export function CampaignHeader({
   campaign,

@@ -9,7 +9,7 @@ import { RowSelection, createColumnHelper } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import { DefaultTable } from "@/app/(frontend)/_shared/components/tables/table";
 import { LoadingSpinner } from "@/app/(frontend)/_shared/components/Spinners";
-import { Poll } from "@prisma/client";
+import { Poll } from "prisma/client";
 import { ParagraphLink } from "@/app/(frontend)/_shared/components/text/ParagraphLink";
 import { toProperCase } from "@/_shared/utils/format";
 import { useState } from "react";

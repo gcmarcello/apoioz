@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "prisma/prisma";
-import { Poll, PollAnswer, Supporter } from "@prisma/client";
+import { Poll, PollAnswer, Supporter } from "prisma/client";
 import { PollAnswerDto, UpsertPollDto } from "./dto";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";

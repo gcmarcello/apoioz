@@ -5,7 +5,7 @@ import {
   useContext,
   useState,
 } from "react";
-import { Campaign, Prisma, Supporter } from "@prisma/client";
+import { Campaign, Prisma, Supporter } from "prisma/client";
 import { UserWithoutPassword } from "prisma/types/User";
 
 export class SidebarContextProps {

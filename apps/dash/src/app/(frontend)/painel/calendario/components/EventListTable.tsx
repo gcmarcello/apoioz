@@ -4,7 +4,7 @@ import clsx from "clsx";
 import dayjs from "dayjs";
 import { headers, cookies } from "next/headers";
 import { EventListActions } from "./EventListActions";
-import { Event } from "@prisma/client";
+import { Event } from "prisma/client";
 import { Date } from "@/app/(frontend)/_shared/components/Date";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";

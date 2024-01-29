@@ -9,7 +9,7 @@ import clsx from "clsx";
 import dayjs from "dayjs";
 import { useState, useEffect, Dispatch } from "react";
 import { generateCalendarDays } from "../utils/generateCalendarDays";
-import { Campaign, Event } from "@prisma/client";
+import { Campaign, Event } from "prisma/client";
 import DayModal from "./DayModal";
 import { CalendarDay } from "../page";
 import Loading from "../../loading";

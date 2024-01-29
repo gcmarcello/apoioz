@@ -59,7 +59,7 @@ function useExpandCollapse(
         data: { ...d.data.data },
         type: "custom",
         position: isHierarchyPointNode(d)
-          ? { y: d.x, x: d.y }
+          ? { x: d.x, y: d.y }
           : d.data.position,
       })),
       edges: edges.filter(

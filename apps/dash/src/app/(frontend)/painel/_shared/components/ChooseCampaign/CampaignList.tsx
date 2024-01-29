@@ -1,7 +1,7 @@
 "use client";
 import { LoadingSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { activateCampaign } from "@/app/api/panel/campaigns/actions";
-import { Campaign } from "@prisma/client";
+import { Campaign } from "prisma/client";
 import clsx from "clsx";
 import { useAction } from "odinkit/client";
 

@@ -1,4 +1,4 @@
-import { Supporter } from "@prisma/client";
+import { Supporter } from "prisma/client";
 import { UserWithInfo, UserWithoutPassword } from "prisma/types/User";
 import { getEnv, isProd } from "@/_shared/utils/settings";
 import dayjs from "dayjs";
@@ -370,7 +370,7 @@ export async function readSupportersFromSupporterGroupWithRelation({
     data: supporterList,
     pagination: {
       cursor: pagination?.cursor,
-      count: supporterList.length + 1,
+      count: supporterList.length,
     },
   };
 }

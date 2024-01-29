@@ -334,7 +334,7 @@ export default function Map() {
                           </div>
 
                           <div
-                            onClick={() =>
+                            onClick={() => {
                               setSelectedAddress({
                                 geocode,
                                 location,
@@ -344,8 +344,12 @@ export default function Map() {
                                 zone,
                                 neighborhood,
                                 id,
-                              })
-                            }
+                              });
+
+                              if (document.fullscreenElement) {
+                                document.exitFullscreen();
+                              }
+                            }}
                             className={clsx(
                               "bg-indigo-600 text-white shadow-sm hover:bg-indigo-500",
                               "flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"

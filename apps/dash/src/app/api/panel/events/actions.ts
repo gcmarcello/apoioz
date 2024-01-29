@@ -10,7 +10,7 @@ import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 
 export async function createEvent(request: CreateEventDto) {
   try {
-    const { request: parsedRequest } = await UseMiddlewares(request)
+    const { request: parsedRequest } = await UseMiddlewares({ request })
       .then(UserSessionMiddleware)
       .then(SupporterSessionMiddleware);
 
@@ -32,7 +32,7 @@ export async function createEvent(request: CreateEventDto) {
 }
 
 export async function readEventsByCampaign(request: ReadEventsDto) {
-  const { request: parsedRequest } = await UseMiddlewares(request)
+  const { request: parsedRequest } = await UseMiddlewares({ request })
     .then(UserSessionMiddleware)
     .then(SupporterSessionMiddleware);
 
@@ -45,7 +45,7 @@ export async function readEventTimestamps(payload: string) {
 
 export async function readEventsAvailability(request: ReadEventsAvailability) {
   try {
-    const { request: parsedRequest } = await UseMiddlewares(request)
+    const { request: parsedRequest } = await UseMiddlewares({ request })
       .then((res) => UserSessionMiddleware(res))
       .then((res) => SupporterSessionMiddleware(res));
 

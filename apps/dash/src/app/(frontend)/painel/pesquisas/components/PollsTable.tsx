@@ -13,7 +13,7 @@ import WhatsAppIcon from "@/app/(frontend)/_shared/components/icons/WhatsAppIcon
 import { DefaultTable } from "@/app/(frontend)/_shared/components/tables/table";
 import { EyeIcon } from "@heroicons/react/24/outline";
 import { LoadingSpinner } from "@/app/(frontend)/_shared/components/Spinners";
-import { Poll, PollQuestion } from "@prisma/client";
+import { Poll, PollQuestion } from "prisma/client";
 import { ParagraphLink } from "@/app/(frontend)/_shared/components/text/ParagraphLink";
 
 export default function PollsTable({ polls }: { polls: Poll[] }) {

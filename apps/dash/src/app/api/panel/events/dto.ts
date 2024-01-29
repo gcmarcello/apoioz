@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { readDto } from "../../_shared/dto/read";
-import { Event } from "@prisma/client";
+import { Event } from "prisma/client";
 
 const timeSlotDto = z.object({
   id: z.number(),

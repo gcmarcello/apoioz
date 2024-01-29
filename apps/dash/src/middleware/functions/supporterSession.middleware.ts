@@ -1,13 +1,14 @@
 "use server";
-import { Supporter } from "@prisma/client";
+import { Supporter } from "prisma/client";
 import { cookies } from "next/headers";
 import { prisma } from "prisma/prisma";
-import { UserSessionMiddlewareReturnType } from "./userSession.middleware";
 import { UserWithoutPassword } from "prisma/types/User";
+import { UserSessionMiddlewareReturn } from "./userSession.middleware";
+import { MiddlewareReturnType } from "./useMiddlewares";
 
-export async function SupporterSessionMiddleware<T>({
+export async function SupporterSessionMiddleware<R, A>({
   request,
-}: UserSessionMiddlewareReturnType<T>) {
+}: UserSessionMiddlewareReturn<R, A>) {
   const campaignId = cookies().get("activeCampaign")!.value;
 
   const supporter = await prisma.supporter.findFirst({
@@ -33,6 +34,6 @@ export async function SupporterSessionMiddleware<T>({
 
 export type SupporterSession = Supporter & { user: UserWithoutPassword };
 
-export type SupporterSessionMiddlewareReturnType<T> = Awaited<
-  ReturnType<typeof SupporterSessionMiddleware<T>>
+export type SupporterSessionMiddlewareReturn<R, A> = MiddlewareReturnType<
+  typeof SupporterSessionMiddleware<R, A>
 >;

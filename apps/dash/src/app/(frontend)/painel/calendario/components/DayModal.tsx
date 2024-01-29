@@ -7,7 +7,7 @@ import {
   EllipsisHorizontalIcon,
   CheckIcon,
 } from "@heroicons/react/24/solid";
-import { Campaign } from "@prisma/client";
+import { Campaign } from "prisma/client";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import {

@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma } from "../client";
 
 export type PollWithQuestionsWithOptions = Prisma.PollGetPayload<{
   include: { PollQuestion: { include: { PollOption: true } } };

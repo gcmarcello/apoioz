@@ -1,13 +1,19 @@
 import { EyeSlashIcon, EyeIcon, UserPlusIcon } from "@heroicons/react/24/solid";
-import { Zone } from "@prisma/client";
+import { Zone } from "prisma/client";
 import { Controller, useForm } from "react-hook-form";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { readSectionsByZone } from "@/app/api/elections/sections/action";
 import { readAddressBySection } from "@/app/api/elections/locations/actions";
 import { toProperCase } from "@/_shared/utils/format";
 import { PresentationChartBarIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import { useAction } from "odinkit/client";
+import {
+  FieldGroup,
+  Fieldset,
+  Label,
+  useAction,
+  useFormContext,
+} from "odinkit/client";
 import {
   ComboboxField,
   ListboxField,
@@ -19,18 +25,20 @@ import { SignUpAsSupporterDto } from "@/app/api/auth/dto";
 import Link from "next/link";
 
 export function ElectionInfoSection({
-  form,
   zones,
   poll,
 }: {
-  form: ReturnType<typeof useForm<SignUpAsSupporterDto>>;
   zones: { data: Zone[]; message: string };
   poll: any;
 }) {
   const [showPassword, setShowPassword] = useState(false);
-  const [willAddPassword, setWillAddPassword] = useState<boolean | null>(null);
+
   const ref = useRef<null | HTMLDivElement>(null);
   const formRef = useRef<null | HTMLDivElement>(null);
+
+  const form = useFormContext<SignUpAsSupporterDto>();
+
+  const Field = useMemo(() => form.createField(), []);
 
   const {
     data: sectionList,
@@ -42,12 +50,6 @@ export function ElectionInfoSection({
       resetAddress();
       form.resetField("user.info.sectionId");
       return data;
-    },
-    onError: (error) => {
-      form.setError("root.serverError", {
-        type: "400",
-        message: error || "Erro inesperado",
-      });
     },
   });
 
@@ -67,15 +69,12 @@ export function ElectionInfoSection({
   }, [address]);
 
   return (
-    <>
+    <Fieldset>
       <div ref={formRef}></div>
-      <div>
-        <label
-          htmlFor="password"
-          className="block text-sm font-medium leading-6 text-gray-900"
-        >
-          Cadastre sua Senha
-        </label>
+      <FieldGroup>
+        <Field name="user.password">
+          <Label>Cadastre sua Senha</Label>
+        </Field>
         <div className="mt-2 flex rounded-md shadow-sm">
           <div className="relative flex flex-grow items-stretch focus-within:z-10">
             <input
@@ -107,8 +106,8 @@ export function ElectionInfoSection({
             )}
           </button>
         </div>
-      </div>
-      <div className="mt-3 grid grid-cols-2 gap-3">
+      </FieldGroup>
+      <FieldGroup className="mt-3 grid grid-cols-2 gap-3">
         <div className="col-span-1">
           <ListboxField
             hform={form}
@@ -182,7 +181,7 @@ export function ElectionInfoSection({
             </div>
           )}
         </div>
-      </div>
-    </>
+      </FieldGroup>
+    </Fieldset>
   );
 }

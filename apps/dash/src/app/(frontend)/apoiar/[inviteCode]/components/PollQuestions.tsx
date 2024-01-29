@@ -1,7 +1,6 @@
 import CheckboxInput from "@/app/(frontend)/_shared/components/fields/Checkbox";
 import RadioInput from "@/app/(frontend)/_shared/components/fields/Radio";
 import { TextAreaField } from "@/app/(frontend)/_shared/components/fields/Text";
-import { PollQuestion } from "@prisma/client";
 import {
   PollQuestionWithOptions,
   PollWithQuestionsWithOptions,
