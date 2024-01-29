@@ -277,11 +277,16 @@ export function AddSupporterForm({
                       if (query) {
                         fulltextSearchAddresses({
                           where: {
+                            campaignId: campaign.id,
                             location: query,
                           },
                         });
                       } else {
-                        searchAddresses();
+                        searchAddresses({
+                          where: {
+                            campaignId: campaign.id,
+                          },
+                        });
                       }
                     }}
                     onChange={(value) => {
