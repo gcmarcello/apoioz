@@ -3,15 +3,12 @@ export interface MiddlewareArguments<R = any, A = any> {
   additionalArguments?: A;
 }
 
-export async function UseMiddlewares<
-  R extends object = {},
-  A extends object = {},
->(
+export async function UseMiddlewares<R = {}, A = {}>(
   {
     request,
     additionalArguments,
   }: {
-    request?: R;
+    request: R;
     additionalArguments?: A;
   } = {
     request: {} as R,
@@ -19,8 +16,8 @@ export async function UseMiddlewares<
   }
 ) {
   return {
-    request,
-    additionalArguments,
+    request: request as R,
+    additionalArguments: additionalArguments as A,
   };
 }
 

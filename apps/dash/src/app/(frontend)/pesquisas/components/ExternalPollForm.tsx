@@ -123,7 +123,9 @@ export function ExternalPollForm<T extends keyof PossibleStates>({
                                 refs.current[index] = el;
                               }
                             }}
-                            onClick={() => scrollToElement(refs.current[index])}
+                            onClick={() =>
+                              scrollToElement(refs.current[index]!)
+                            }
                           >
                             <div className="font-semibold">
                               {

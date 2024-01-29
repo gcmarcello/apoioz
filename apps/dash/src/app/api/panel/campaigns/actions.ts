@@ -126,9 +126,9 @@ export async function generateMainPageStats(data: any) {
 
 export async function createCampaign(data: CreateCampaignDto) {
   try {
-    const { request: parsedRequest } = await UseMiddlewares(data).then(
-      UserSessionMiddleware
-    );
+    const { request: parsedRequest } = await UseMiddlewares({
+      request: data,
+    }).then(UserSessionMiddleware);
 
     const campaign = await service.createCampaign(parsedRequest);
 

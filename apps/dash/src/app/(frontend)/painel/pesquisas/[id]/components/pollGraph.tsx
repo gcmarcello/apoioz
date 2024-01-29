@@ -9,10 +9,7 @@ import {
   Title,
   Tooltip,
   Legend,
-  ChartOptions,
 } from "chart.js";
-import { Chart } from "chart.js/dist";
-import { useEffect, useMemo, useRef, useState } from "react";
 import { Bar } from "react-chartjs-2";
 
 export default function QuestionGraph({ question }: { question: any }) {

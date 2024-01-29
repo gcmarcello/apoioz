@@ -19,7 +19,7 @@ export default async function EventListTable({ events }: { events: Event[] }) {
 
   function getInitials(name: string) {
     const letters = name.split("");
-    return (letters[0] + letters[1]).toLocaleUpperCase();
+    return (letters[0] || "" + letters[1]).toLocaleUpperCase();
   }
 
   return (

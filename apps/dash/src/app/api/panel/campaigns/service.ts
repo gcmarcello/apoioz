@@ -60,31 +60,27 @@ export async function readCampaign(request: {
 }
 
 export async function readCampaignBasicInfo(campaignId: string) {
-  try {
-    const campaign = await prisma.campaign.findUnique({
-      where: { id: campaignId },
+  const campaign = await prisma.campaign.findUnique({
+    where: { id: campaignId },
+  });
+
+  let zones;
+
+  if (campaign?.cityId) {
+    zones = await readZonesByCity(campaign?.cityId);
+  }
+
+  if (campaign?.stateId) {
+    zones = await readZonesByState(campaign?.stateId);
+  }
+
+  if (!campaign)
+    return NextResponse.json({
+      message: `Essa campanha não existe.`,
+      status: 403,
     });
 
-    let zones;
-
-    if (campaign?.cityId) {
-      zones = await readZonesByCity(campaign?.cityId);
-    }
-
-    if (campaign?.stateId) {
-      zones = await readZonesByState(campaign?.stateId);
-    }
-
-    if (!campaign)
-      return NextResponse.json({
-        message: `Essa campanha não existe.`,
-        status: 403,
-      });
-
-    return { ...campaign, zones };
-  } catch (error) {
-    throw error;
-  }
+  return { ...campaign, zones };
 }
 
 export async function generateMainPageStats(

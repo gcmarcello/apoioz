@@ -3,13 +3,13 @@ type RGB = [number, number, number];
 function luminance(r: number, g: number, b: number): number {
   let a: number[] = [r / 255, g / 255, b / 255];
   for (let i = 0; i < a.length; i++) {
-    if (a[i] <= 0.03928) {
-      a[i] = a[i] / 12.92;
+    if (a[i] || 0 <= 0.03928) {
+      a[i] = a[i] || 0 / 12.92;
     } else {
-      a[i] = Math.pow((a[i] + 0.055) / 1.055, 2.4);
+      a[i] = Math.pow((a[i] || 0 + 0.055) / 1.055, 2.4);
     }
   }
-  return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+  return 0.2126 * (a[0] || 0) + 0.7152 * (a[1] || 0) + 0.0722 * (a[2] || 0);
 }
 
 export function getLuminanceFromHex(hex: string): number {
@@ -18,13 +18,11 @@ export function getLuminanceFromHex(hex: string): number {
   const g = (rgb >> 8) & 0xff;
   const b = (rgb >> 0) & 0xff;
 
-  // sRGB to Linear RGB conversion
   const toLinear = (color: number): number => {
     const c = color / 255.0;
     return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
   };
 
-  // Calculate relative luminance
   return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
 }
 

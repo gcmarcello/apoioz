@@ -28,7 +28,7 @@ export async function login(request: LoginDto) {
 
     cookies().set("token", token);
   } catch (err: any) {
-    console.log(err)
+    console.log(err);
     return ActionResponse.error(err);
   }
 

@@ -11,12 +11,12 @@ export default async function PesquisaExternalPage({
 }: {
   params: { id: string };
 }) {
-  const userId = await UseMiddlewares(
-    { token: cookies().get("token")?.value },
-    {
+  const userId = await UseMiddlewares({
+    request: { token: cookies().get("token")?.value },
+    additionalArguments: {
       roles: ["user"],
-    }
-  ).then(AuthMiddleware);
+    },
+  }).then(AuthMiddleware);
 
   const ip = headers().get("X-Forwarded-For")!;
 

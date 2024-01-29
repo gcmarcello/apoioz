@@ -1,11 +1,10 @@
 import { normalizeEmail, normalizePhone } from "@/_shared/utils/format";
 import { LoginDto } from "./dto";
+import { MiddlewareArguments } from "@/middleware/functions/useMiddlewares";
 
-export async function ExistingUserMiddleware({
+export async function ExistingUserMiddleware<R extends LoginDto, A>({
   request,
-}: {
-  request: LoginDto;
-}) {
+}: MiddlewareArguments<R, A>) {
   const isEmail = request.identifier.includes("@");
 
   const user = await prisma.user.findFirst({
