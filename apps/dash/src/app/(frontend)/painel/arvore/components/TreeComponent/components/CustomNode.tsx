@@ -69,7 +69,6 @@ export function CustomNode({
       return [rest, ...referred];
     },
     onSuccess: ({ data }) => {
-      console.log(data);
       const { nodes, edges } = processNodesEdges({ supporters: data as any }); //@todo
       saveNodes(nodes);
       saveEdges(edges);

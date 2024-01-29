@@ -32,7 +32,6 @@ import { useState } from "react";
 export default function WhatsappForm() {
   const { data, trigger, isMutating } = useAction({
     action: upsertWhatsapp,
-    onSuccess: (data) => console.log(data),
     onError: (error) => setSuccessOnAdding(true),
   });
   const [successOnAdding, setSuccessOnAdding] = useState(false);

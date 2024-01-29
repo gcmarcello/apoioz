@@ -17,7 +17,6 @@ export async function createEvent(request: CreateEventDto) {
     revalidatePath("/painel/calendario");
 
     const event = await service.createEvent(parsedRequest);
-    console.log(event);
 
     return ActionResponse.success({
       data: event,

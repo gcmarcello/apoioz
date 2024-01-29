@@ -396,7 +396,6 @@ export async function readSupportersFromSupporterGroupWithRelation({
 }
 
 export async function createSupporter(request: CreateSupporterDto) {
-  console.log(request);
   const existingUser = await prisma.user.findFirst({
     where: {
       OR: [
@@ -461,8 +460,6 @@ export async function createSupporter(request: CreateSupporterDto) {
 
   const supporterId = crypto.randomUUID();
 
-  console.log(request);
-
   if (
     !user.info?.sectionId &&
     !user.info.addressId &&
@@ -488,8 +485,6 @@ export async function createSupporter(request: CreateSupporterDto) {
           .findFirst({ where: { id: user.info.addressId } })
           .then((a) => a?.zoneId)
       : user.info.zoneId;
-
-  console.log(zoneId);
 
   const supporter = await prisma.supporter.create({
     include: { user: true },

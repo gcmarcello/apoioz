@@ -19,10 +19,7 @@ export async function createInviteCode({
   });
 
   if (!override && lastInviteCode) {
-    console.log(lastInviteCode, override);
     const isCodeValid = validateInviteCode(lastInviteCode);
-
-    console.log(isCodeValid);
 
     if (isCodeValid) return lastInviteCode;
   }

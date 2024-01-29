@@ -70,7 +70,6 @@ export function ElectionInfoSection({
     },
     action: readAddresses,
     responseParser: (res) => res[0],
-    onSuccess: (address) => console.log(address),
   });
 
   useEffect(() => {
