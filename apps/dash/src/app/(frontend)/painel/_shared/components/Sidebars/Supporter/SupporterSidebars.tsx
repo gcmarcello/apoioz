@@ -39,10 +39,6 @@ export default function SupporterSideBar() {
     isMutating,
   } = useAction({
     action: addSupporter,
-    requestParser: (data) => {
-      console.log(data);
-      return data;
-    },
     onError: (err) =>
       showToast({ message: err, variant: "error", title: "Erro" }),
     onSuccess: ({ data }) => {

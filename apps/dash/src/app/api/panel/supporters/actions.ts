@@ -97,9 +97,8 @@ export async function addSupporter(request: AddSupporterDto) {
     const referralId = request.referralId || parsedRequest.supporterSession.id;
 
     const newSupporter = await service.createSupporter({
+      ...parsedRequest,
       campaignId: parsedRequest.supporterSession.campaignId,
-      user: request.user,
-      referralId,
     });
 
     if (!newSupporter) throw "Erro ao criar novo apoiador.";
