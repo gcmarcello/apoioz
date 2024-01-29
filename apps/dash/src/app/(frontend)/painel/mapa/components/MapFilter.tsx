@@ -103,7 +103,6 @@ export function MapFilter() {
                       if (
                         mapData.getValues("neighborhoods.all.checked" as any)
                       ) {
-                        console.log(field);
                         mapData.setValue(
                           "neighborhoods",
                           neighborhoods.map((n) => ({

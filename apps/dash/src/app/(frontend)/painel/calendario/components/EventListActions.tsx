@@ -36,7 +36,6 @@ export function EventListActions({ event }: { event: Event }) {
         disableButton: false,
       });
     } catch (error) {
-      console.log(error);
       showToast({
         variant: "error",
         message: "Erro ao rejeitar evento",

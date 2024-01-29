@@ -93,7 +93,6 @@ export function AddSupporterForm({
     },
     action: readAddresses,
     responseParser: (res) => res[0],
-    onSuccess: (r) => console.log(r),
   });
 
   useEffect(() => {
