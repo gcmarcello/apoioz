@@ -8,9 +8,13 @@ import { toProperCase } from "@/_shared/utils/format";
 import { PresentationChartBarIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import {
+  Combobox,
+  Description,
   FieldGroup,
   Fieldset,
+  Input,
   Label,
+  Listbox,
   useAction,
   useFormContext,
 } from "odinkit/client";
@@ -28,11 +32,9 @@ export function ElectionInfoSection({
   zones,
   poll,
 }: {
-  zones: { data: Zone[]; message: string };
+  zones: Zone[];
   poll: any;
 }) {
-  const [showPassword, setShowPassword] = useState(false);
-
   const ref = useRef<null | HTMLDivElement>(null);
   const formRef = useRef<null | HTMLDivElement>(null);
 
@@ -74,73 +76,44 @@ export function ElectionInfoSection({
       <FieldGroup>
         <Field name="user.password">
           <Label>Cadastre sua Senha</Label>
+          <Input type="password" />
         </Field>
-        <div className="mt-2 flex rounded-md shadow-sm">
-          <div className="relative flex flex-grow items-stretch focus-within:z-10">
-            <input
-              type={showPassword ? "text" : "password"}
-              autoComplete="password"
-              {...form.register("user.password", {
-                required: true,
-                minLength: 6,
-              })}
-              id="password"
-              className="block w-full rounded-none rounded-l-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            />
-          </div>
-          <button
-            onClick={() => setShowPassword(!showPassword)}
-            type="button"
-            className="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md border-none bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-          >
-            {showPassword ? (
-              <EyeSlashIcon
-                className="-ml-0.5 h-5 w-5 text-gray-400"
-                aria-hidden="true"
-              />
-            ) : (
-              <EyeIcon
-                className="-ml-0.5 h-5 w-5 text-gray-400"
-                aria-hidden="true"
-              />
-            )}
-          </button>
-        </div>
       </FieldGroup>
       <FieldGroup className="mt-3 grid grid-cols-2 gap-3">
-        <div className="col-span-1">
-          <ListboxField
-            hform={form}
-            label="Zona"
-            name={"user.info.zoneId"}
-            data={zones.data}
+        <Field name={"user.info.zoneId"} className="col-span-1">
+          <Label>Zona</Label>
+          <Listbox
+            data={zones}
             displayValueKey="number"
             onChange={async (e) => await fetchSections(e.id)}
-          />
-        </div>
-        <div className="col-span-1">
-          <ComboboxField
-            hform={form}
+          >
+            {(i) => i.number}
+          </Listbox>
+        </Field>
+        <Field name={"user.info.sectionId"} className="col-span-1">
+          <Label>Seção</Label>
+          <Combobox
             data={sectionList}
             disabled={!sectionList?.length}
             onChange={async (value) => fetchAddress(value.id)}
-            name={"user.info.sectionId"}
-            label="Seção"
             displayValueKey={"number"}
-          />
-        </div>
-        <div className="col-span-2">
-          <span className="text-sm text-gray-500">
-            Não sabe sua zona e seção?{" "}
-            <Link
-              target="_blank"
-              className="underline"
-              href="https://www.tse.jus.br/servicos-eleitorais/titulo-e-local-de-votacao/titulo-e-local-de-votacao"
-            >
-              Consulte o TSE.
-            </Link>
-          </span>
-        </div>
+          >
+            {(i) => i.displayValue}
+          </Combobox>
+          <Description className="col-span-2">
+            <span className="text-sm text-gray-500">
+              Não sabe sua zona e seção?{" "}
+              <Link
+                target="_blank"
+                className="underline"
+                href="https://www.tse.jus.br/servicos-eleitorais/titulo-e-local-de-votacao/titulo-e-local-de-votacao"
+              >
+                Consulte o TSE.
+              </Link>
+            </span>
+          </Description>
+        </Field>
+
         <div className="col-span-2 pb-6">
           <div>
             {address && (

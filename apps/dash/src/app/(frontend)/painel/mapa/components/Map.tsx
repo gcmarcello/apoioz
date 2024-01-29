@@ -20,6 +20,7 @@ import { MapAddressType, MapContextProps } from "../providers/MapDataProvider";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 import SupporterBall from "@/app/(frontend)/_shared/components/SupporterBall";
 import { useAction } from "odinkit/client";
+import { Badge } from "odinkit";
 
 const POSITION_CLASSES = {
   bottomleft: "leaflet-bottom leaflet-left",
@@ -261,8 +262,8 @@ export default function Map() {
                 location,
                 address,
                 supportersCount,
-                sectionsCount,
                 zone,
+                sectionsCount,
                 neighborhood,
                 id,
               },
@@ -314,23 +315,25 @@ export default function Map() {
                   >
                     {(() => {
                       return (
-                        <article className="flex max-w-2xl flex-col items-start  gap-y-3 ">
-                          <div className="group relative">
-                            <div className="text-sm font-bold text-gray-900">
-                              {location}
-                              <div className="font mt-0.5 text-xs  text-gray-600">
-                                {toProperCase(address || "")}
-                              </div>
+                        <article className="max-w-23xl flex flex-col items-start  gap-y-3 ">
+                          <div className="text-wrap	text-sm font-bold text-gray-900">
+                            {location}
+                            <div className="font mt-0.5 text-xs  text-gray-600">
+                              {toProperCase(address || "")}
                             </div>
                           </div>
 
-                          <div className="flex w-full items-center justify-start">
-                            <div className="font text-lg font-bold  text-gray-700 group-hover:text-gray-600">
-                              {supportersCount} Apoiador
-                            </div>
-                            <div className="relative z-10 ml-1 rounded-full bg-gray-200 px-2 py-1 text-xs font-medium  text-gray-600 hover:bg-gray-100">
-                              {sectionsCount} Seções
-                            </div>
+                          <div className="flex w-full items-center justify-start gap-3">
+                            <Badge color="indigo">
+                              {supportersCount +
+                                (supportersCount > 1
+                                  ? " Apoiadores"
+                                  : " Apoiador")}
+                            </Badge>
+                            <Badge color="emerald">
+                              {sectionsCount +
+                                (sectionsCount > 1 ? " Seções" : " Seção")}
+                            </Badge>
                           </div>
 
                           <div
