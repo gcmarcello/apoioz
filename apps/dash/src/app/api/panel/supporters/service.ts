@@ -339,6 +339,7 @@ export async function readSupportersFromSupporterGroupWithRelation({
             include: {
               Section: true,
               Zone: zoneWithoutGeoJSON,
+              Address: true,
             },
           },
           name: true,
@@ -459,6 +460,34 @@ export async function createSupporter(request: CreateSupporterDto) {
 
   const supporterId = crypto.randomUUID();
 
+  if (
+    !user.info?.sectionId &&
+    !user.info.addressId &&
+    !request.externalSupporter
+  )
+    throw "Endereço ou seção não informados.";
+
+  const addressId = request.externalSupporter
+    ? undefined
+    : user?.info?.addressId
+      ? user.info.addressId
+      : await prisma.section
+          .findFirst({ where: { id: user.info.sectionId! } })
+          .then((s) => s?.addressId);
+
+  if (!addressId && !request.externalSupporter)
+    throw "Endereço não encontrado.";
+
+  const zoneId = request.externalSupporter
+    ? undefined
+    : user.info.addressId
+      ? await prisma.address
+          .findFirst({ where: { id: user.info.addressId } })
+          .then((a) => a?.zoneId)
+      : user.info.zoneId;
+
+  console.log(zoneId);
+
   const supporter = await prisma.supporter.create({
     include: { user: true },
     data: {
@@ -470,7 +499,10 @@ export async function createSupporter(request: CreateSupporterDto) {
           : undefined,
       },
       Zone: {
-        connect: user?.info?.zoneId ? { id: user?.info?.zoneId } : undefined,
+        connect: zoneId ? { id: zoneId } : undefined,
+      },
+      Address: {
+        connect: addressId ? { id: addressId } : undefined,
       },
       campaign: { connect: { id: referral.campaignId } },
       referral: { connect: { id: referral.id } },
@@ -491,8 +523,9 @@ export async function createSupporter(request: CreateSupporterDto) {
                   user.info?.birthDate,
                   "DD/MM/YYYY"
                 ).toISOString(),
-                zoneId: user.info?.zoneId,
+                zoneId: zoneId,
                 sectionId: user.info?.sectionId,
+                addressId: addressId,
               },
             },
             role: "user",

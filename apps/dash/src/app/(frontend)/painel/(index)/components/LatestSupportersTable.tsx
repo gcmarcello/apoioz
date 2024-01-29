@@ -9,12 +9,13 @@ import SupporterBall from "@/app/(frontend)/_shared/components/SupporterBall";
 import { ParagraphLink } from "@/app/(frontend)/_shared/components/text/ParagraphLink";
 import { Pagination } from "@/app/api/_shared/dto/read";
 import { Prisma } from "prisma/client";
+import { toProperCase } from "odinkit";
 
 export type LatestSupportersTableData = Prisma.SupporterGetPayload<{
   include: {
     user: {
       select: {
-        info: { include: { Section: true; Zone: true } };
+        info: { include: { Section: true; Zone: true; Address: true } };
         name: true;
         email: true;
         phone: true;
@@ -98,6 +99,14 @@ export default function LatestSupportersTable({
       id: "section",
       header: "Seção",
       cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor("user.info.Address.neighborhood", {
+      id: "neighborhood",
+      header: "Bairro",
+      cell: (info) =>
+        info.getValue()
+          ? toProperCase(String(info.getValue()))
+          : "Não informado",
     }),
     columnHelper.accessor("createdAt", {
       id: "createdAt",

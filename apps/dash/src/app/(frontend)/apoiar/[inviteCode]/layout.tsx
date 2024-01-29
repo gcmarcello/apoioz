@@ -16,7 +16,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-screen w-full items-center justify-center bg-white px-6 pt-8 lg:px-8">
+    <div className="mt-8 flex w-full items-center justify-center bg-white px-6 lg:mt-20 lg:px-8">
       <div className="mx-auto max-w-2xl ">{children}</div>
     </div>
   );

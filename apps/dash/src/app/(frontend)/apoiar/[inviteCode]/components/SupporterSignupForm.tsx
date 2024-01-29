@@ -19,6 +19,8 @@ import { Transition } from "@headlessui/react";
 import { scrollToElement } from "@/app/(frontend)/_shared/utils/scroll";
 import { readSectionsByZone } from "@/app/api/elections/sections/action";
 import { For } from "odinkit";
+import { UserWithoutPassword } from "prisma/types/User";
+import { UserIcon } from "@heroicons/react/24/solid";
 
 dayjs.extend(customParseFormat);
 
@@ -27,11 +29,13 @@ export default function SupporterSignUpForm({
   campaign,
   zones,
   poll,
+  user,
 }: {
   inviteCodeId: string;
   campaign: any;
   zones: any;
   poll: PollWithQuestionsWithOptions | null;
+  user: UserWithoutPassword;
 }) {
   const errorRef = useRef(null);
 
@@ -43,8 +47,6 @@ export default function SupporterSignUpForm({
         password: "",
         phone: "",
         info: {
-          sectionId: "",
-          zoneId: "",
           birthDate: "",
         },
       },
@@ -125,99 +127,92 @@ export default function SupporterSignUpForm({
     );
 
   return (
-    <MultistepForm
-      className="flex h-full flex-col  divide-gray-200  text-left "
-      hform={form}
-      onSubmit={signUp}
-      order={["basicInfo", "electionInfo"]}
-      steps={{
-        basicInfo: {
-          fields: [
-            "user.name",
-            "user.email",
-            "user.info.birthDate",
-            "user.phone",
-          ],
-          form: <BasicInfoSection />,
-        },
-        electionInfo: {
-          fields: ["user.info.zoneId", "user.info.sectionId", "user.password"],
-          form: <ElectionInfoSection zones={zones} poll={poll} />,
-        },
-      }}
-    >
-      {({
-        currentStepIndex,
-        currentStepKey,
-        prevStep,
-        nextStep,
-        stepCount,
-        stepOrder,
-        steps,
-        isCurrentStepValid,
-        walk,
-      }) => (
+    <>
+      {!form.formState.isSubmitSuccessful && (
         <>
-          <div className={clsx("mb-4 space-y-2 pb-2")}>
-            <For each={stepOrder}>
-              {(step) => (
-                <Transition
-                  show={step === currentStepKey}
-                  enter="ease-out duration-200"
-                  enterFrom="opacity-0 scale-95"
-                  enterTo="opacity-100 scale-100"
-                  leave="ease-in duration-200"
-                  leaveFrom="opacity-0 scale-100"
-                  leaveTo="opacity-0 scale-95"
-                >
-                  {steps[currentStepKey].form}
-                </Transition>
-              )}
-            </For>
-          </div>
-          <div className="hidden justify-between lg:flex">
-            {currentStepIndex > 0 && prevStep >= 0 && (
-              <Button
-                type="button"
-                plain={true}
-                onClick={() => {
-                  walk(-1);
-                }}
-              >
-                Voltar
-              </Button>
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+            {campaign.name}
+          </h2>
+          <h3 className="text-xl font-bold  tracking-tight text-zinc-700">
+            {campaign.state?.name || (
+              <>
+                {campaign.city?.name}, {campaign.city?.State?.code}
+              </>
             )}
+          </h3>
+          <p className="mt-2 text-lg leading-8 text-gray-600">
+            Preencha seus dados abaixo para fazer parte da nossa rede de apoio!
+          </p>
+          {user && (
+            <div className="my-4 inline-flex text-gray-500 hover:text-gray-600">
+              <UserIcon className="me-2 h-6 w-6" />{" "}
+              <p>Convidado por {user.name}</p>
+            </div>
+          )}
+        </>
+      )}
 
-            {currentStepIndex != stepCount - 1 &&
-              nextStep === stepCount - 1 && (
+      <MultistepForm
+        className="flex h-full flex-col  divide-gray-200  text-left "
+        hform={form}
+        onSubmit={signUp}
+        order={["basicInfo", "electionInfo"]}
+        steps={{
+          basicInfo: {
+            fields: [
+              "user.name",
+              "user.email",
+              "user.info.birthDate",
+              "user.phone",
+            ],
+            form: <BasicInfoSection />,
+          },
+          electionInfo: {
+            fields: ["user.password"],
+            form: (
+              <ElectionInfoSection
+                campaign={campaign}
+                zones={zones}
+                poll={poll}
+              />
+            ),
+          },
+        }}
+      >
+        {({
+          currentStepIndex,
+          currentStepKey,
+          prevStep,
+          nextStep,
+          stepCount,
+          stepOrder,
+          steps,
+          isCurrentStepValid,
+          walk,
+        }) => (
+          <>
+            <div className={clsx("mb-4 space-y-2 pb-2")}>
+              <For each={stepOrder}>
+                {(step) => (
+                  <Transition
+                    show={step === currentStepKey}
+                    enter="ease-out duration-200"
+                    enterFrom="opacity-0 scale-95"
+                    enterTo="opacity-100 scale-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-0 scale-100"
+                    leaveTo="opacity-0 scale-95"
+                  >
+                    {steps[currentStepKey].form}
+                  </Transition>
+                )}
+              </For>
+            </div>
+            <div className="hidden justify-between lg:flex">
+              {currentStepIndex > 0 && prevStep >= 0 && (
                 <Button
                   type="button"
-                  color="indigo"
-                  className="w-full"
-                  onClick={() => {
-                    walk(1);
-                  }}
-                  disabled={!isCurrentStepValid}
-                >
-                  Próximo
-                </Button>
-              )}
-
-            {currentStepIndex === stepCount - 1 && (
-              <Button
-                type="submit"
-                color="indigo"
-                disabled={!isCurrentStepValid}
-              >
-                Inscrever
-              </Button>
-            )}
-          </div>
-          <BottomNavigation className="block p-2 lg:hidden">
-            <div className="flex justify-between">
-              {prevStep > 0 && (
-                <Button
-                  type="button"
+                  plain={true}
                   onClick={() => {
                     walk(-1);
                   }}
@@ -230,6 +225,8 @@ export default function SupporterSignUpForm({
                 nextStep === stepCount - 1 && (
                   <Button
                     type="button"
+                    color="indigo"
+                    className="w-full"
                     onClick={() => {
                       walk(1);
                     }}
@@ -240,14 +237,57 @@ export default function SupporterSignUpForm({
                 )}
 
               {currentStepIndex === stepCount - 1 && (
-                <Button type="submit" disabled={!isCurrentStepValid}>
+                <Button
+                  type="submit"
+                  color="indigo"
+                  disabled={!isCurrentStepValid}
+                >
                   Inscrever
                 </Button>
               )}
             </div>
-          </BottomNavigation>
-        </>
-      )}
-    </MultistepForm>
+            <BottomNavigation className="block p-2 lg:hidden">
+              <div className="flex flex-row-reverse justify-between">
+                {currentStepIndex != stepCount - 1 &&
+                  nextStep === stepCount - 1 && (
+                    <Button
+                      type="button"
+                      color="indigo"
+                      onClick={() => {
+                        walk(1);
+                      }}
+                      disabled={!isCurrentStepValid}
+                    >
+                      Próximo
+                    </Button>
+                  )}
+
+                {currentStepIndex === stepCount - 1 && (
+                  <Button
+                    type="submit"
+                    color="indigo"
+                    disabled={!isCurrentStepValid}
+                  >
+                    Inscrever
+                  </Button>
+                )}
+
+                {currentStepIndex > 0 && (
+                  <Button
+                    type="button"
+                    plain
+                    onClick={() => {
+                      walk(-1);
+                    }}
+                  >
+                    Voltar
+                  </Button>
+                )}
+              </div>
+            </BottomNavigation>
+          </>
+        )}
+      </MultistepForm>
+    </>
   );
 }

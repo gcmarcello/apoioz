@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { readZonesByCampaign } from "@/app/api/elections/zones/actions";
 import { readSectionsByZone } from "@/app/api/elections/sections/action";
 import {
-  readAddressBySection,
   readAddressFulltext,
   readAddresses,
 } from "@/app/api/elections/locations/actions";
@@ -100,7 +99,7 @@ export function AddSupporterForm({
     if (ref.current) {
       scrollToElement(ref.current, 0);
     }
-  }, [addresses]);
+  }, [form.watch("user.info.sectionId"), form.watch("user.info.addressId")]);
 
   useEffect(() => {
     if (form.getValues("externalSupporter")) {
@@ -108,6 +107,12 @@ export function AddSupporterForm({
       form.setValue("user.info.sectionId", undefined);
     }
   }, [form.watch("externalSupporter")]);
+
+  useEffect(() => {
+    if (form.getValues("user.info.addressId")) {
+      searchAddress();
+    }
+  }, [form.watch("user.info.addressId")]);
 
   useMocker({
     form,
@@ -200,6 +205,7 @@ export function AddSupporterForm({
           tabs={[
             {
               title: "Por zona e seção",
+              onClick: () => form.resetField("user.info.addressId"),
               content: (
                 <>
                   <Field name="user.info.zoneId" className="col-span-1">
@@ -255,21 +261,26 @@ export function AddSupporterForm({
             },
             {
               title: "Por endereço",
+              onClick: () => {
+                form.resetField("user.info.sectionId");
+                form.resetField("user.info.zoneId");
+              },
               content: (
                 <Field name="user.info.addressId">
                   <Label>Endereço</Label>
                   <Combobox
-                    data={(addresses || fulltextAddresses) as Address[]}
+                    data={(fulltextAddresses || addresses) as Address[]}
                     displayValueKey="location"
                     setData={(query) => {
-                      console.log(query);
-                      return query === ""
-                        ? searchAddresses()
-                        : fulltextSearchAddresses({
-                            where: {
-                              location: query,
-                            },
-                          });
+                      if (query) {
+                        fulltextSearchAddresses({
+                          where: {
+                            location: query,
+                          },
+                        });
+                      } else {
+                        searchAddresses();
+                      }
                     }}
                   >
                     {(item) => <div>{item.location}</div>}
@@ -281,7 +292,9 @@ export function AddSupporterForm({
         />
       </FieldGroup>
 
-      {(form.watch("externalSupporter") || form.watch("user.info.zoneId")) &&
+      {(form.watch("externalSupporter") ||
+        form.watch("user.info.zoneId") ||
+        form.watch("user.info.addressId")) &&
         form.watch("user.name") && (
           <div ref={ref} className="py-4">
             <div className="lg:col-start-3 lg:row-end-1">
@@ -322,9 +335,9 @@ export function AddSupporterForm({
                           className="h-6 w-5 text-gray-400"
                         >
                           <path
-                            fill-rule="evenodd"
+                            fillRule="evenodd"
                             d="M9.674 2.075a.75.75 0 0 1 .652 0l7.25 3.5A.75.75 0 0 1 17 6.957V16.5h.25a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1 0-1.5H3V6.957a.75.75 0 0 1-.576-1.382l7.25-3.5ZM11 6a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM7.5 9.75a.75.75 0 0 0-1.5 0v5.5a.75.75 0 0 0 1.5 0v-5.5Zm3.25 0a.75.75 0 0 0-1.5 0v5.5a.75.75 0 0 0 1.5 0v-5.5Zm3.25 0a.75.75 0 0 0-1.5 0v5.5a.75.75 0 0 0 1.5 0v-5.5Z"
-                            clip-rule="evenodd"
+                            clipRule="evenodd"
                           />
                         </svg>
                       </dt>
@@ -333,7 +346,7 @@ export function AddSupporterForm({
                           const zoneId = form.watch("user.info.zoneId");
                           const sectionId = form.watch("user.info.sectionId");
                           const location = address?.location;
-
+                          if (address) return <>{address.location}</>;
                           return (
                             <>
                               <>

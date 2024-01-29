@@ -3,11 +3,21 @@ import { createUserDto } from "../user/dto";
 import { pollAnswerDto } from "../panel/polls/dto";
 import { phoneValidator } from "@/_shared/utils/validators/phone.validator";
 
-export const signUpAsSupporterDto = z.object({
-  user: createUserDto,
-  poll: pollAnswerDto.nullable(),
-  inviteCodeId: z.string(),
-});
+export const signUpAsSupporterDto = z
+  .object({
+    user: createUserDto,
+    poll: pollAnswerDto.nullable(),
+    inviteCodeId: z.string(),
+  })
+  .refine(
+    (data) =>
+      data.user.info.addressId ||
+      (data.user.info.zoneId && data.user.info.sectionId),
+    {
+      message: "É necessário informar um endereço ou zona e seção",
+      path: ["user", "info", "zoneId"],
+    }
+  );
 
 export type SignUpAsSupporterDto = z.infer<typeof signUpAsSupporterDto>;
 

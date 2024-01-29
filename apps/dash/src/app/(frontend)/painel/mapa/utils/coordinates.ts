@@ -30,12 +30,10 @@ export function filterOutValues({
         !neighborhoods.find((n) => n.name === data.neighborhood).checked &&
         neighborhoods.some((n) => n.checked)
       ) {
-        console.log(data.zone);
         return null;
       }
 
       if (!zones.find((z) => z.label === data.zone).checked) {
-        console.log(data.zone);
         return null;
       }
 

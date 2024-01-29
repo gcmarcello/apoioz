@@ -19,7 +19,7 @@ export default function AddSupporterSuccess({
 }) {
   return (
     <>
-      <div className="bg-white px-6 py-5 lg:px-8">
+      <div className="bg-white">
         <div className="mx-auto max-w-4xl text-base leading-7 text-gray-700">
           <p className="text-base font-semibold leading-7 text-indigo-600">
             Cadastro bem-sucedido!
