@@ -47,8 +47,6 @@ export default function SupporterSignUpForm({
         password: "",
         phone: "",
         info: {
-          sectionId: "",
-          zoneId: "",
           birthDate: "",
         },
       },
@@ -170,11 +168,7 @@ export default function SupporterSignUpForm({
             form: <BasicInfoSection />,
           },
           electionInfo: {
-            fields: [
-              "user.info.zoneId",
-              "user.info.sectionId",
-              "user.password",
-            ],
+            fields: ["user.password"],
             form: (
               <ElectionInfoSection
                 campaign={campaign}
@@ -193,68 +187,32 @@ export default function SupporterSignUpForm({
           steps,
           isCurrentStepValid,
           walk,
-        }) => (
-          <>
-            <div className={clsx("mb-4 space-y-2 pb-2")}>
-              <For each={order}>
-                {(step) => (
-                  <Transition
-                    show={step === order[currentStep]}
-                    enter="ease-out duration-200"
-                    enterFrom="opacity-0 scale-95"
-                    enterTo="opacity-100 scale-100"
-                    leave="ease-in duration-200"
-                    leaveFrom="opacity-0 scale-100"
-                    leaveTo="opacity-0 scale-95"
-                  >
-                    {steps[step].form}
-                  </Transition>
-                )}
-              </For>
-            </div>
+        }) => {
+          return (
+            <>
+              <div className={clsx("mb-4 space-y-2 pb-2")}>
+                <For each={order}>
+                  {(step) => (
+                    <Transition
+                      show={step === order[currentStep]}
+                      enter="ease-out duration-200"
+                      enterFrom="opacity-0 scale-95"
+                      enterTo="opacity-100 scale-100"
+                      leave="ease-in duration-200"
+                      leaveFrom="opacity-0 scale-100"
+                      leaveTo="opacity-0 scale-95"
+                    >
+                      {steps[step].form}
+                    </Transition>
+                  )}
+                </For>
+              </div>
 
-            <div className="hidden justify-between lg:flex">
-              {hasPrevStep && (
-                <Button
-                  type="button"
-                  plain={true}
-                  onClick={() => {
-                    walk(-1);
-                  }}
-                >
-                  Voltar
-                </Button>
-              )}
-
-              {hasNextStep && (
-                <Button
-                  type="button"
-                  color="indigo"
-                  className="w-full"
-                  onClick={() => {
-                    walk(1);
-                  }}
-                  disabled={!isCurrentStepValid}
-                >
-                  Próximo
-                </Button>
-              )}
-
-              {!hasNextStep && (
-                <Button
-                  type="submit"
-                  color="indigo"
-                  disabled={!isCurrentStepValid}
-                >
-                  Inscrever
-                </Button>
-              )}
-            </div>
-            <BottomNavigation className="block p-2 lg:hidden">
-              <div className="flex justify-between">
+              <div className="hidden justify-between lg:flex">
                 {hasPrevStep && (
                   <Button
                     type="button"
+                    plain={true}
                     onClick={() => {
                       walk(-1);
                     }}
@@ -266,6 +224,8 @@ export default function SupporterSignUpForm({
                 {hasNextStep && (
                   <Button
                     type="button"
+                    color="indigo"
+                    className="w-full"
                     onClick={() => {
                       walk(1);
                     }}
@@ -276,14 +236,68 @@ export default function SupporterSignUpForm({
                 )}
 
                 {!hasNextStep && (
-                  <Button type="submit" disabled={!isCurrentStepValid}>
+                  <Button
+                    type="submit"
+                    color="indigo"
+                    disabled={
+                      !isCurrentStepValid ||
+                      !(
+                        form.watch("user.info.addressId") ||
+                        (form.watch("user.info.sectionId") &&
+                          form.watch("user.info.zoneId"))
+                      )
+                    }
+                  >
                     Inscrever
                   </Button>
                 )}
               </div>
-            </BottomNavigation>
-          </>
-        )}
+              <BottomNavigation className="block p-2 lg:hidden">
+                <div className="flex justify-between">
+                  {hasPrevStep && (
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        walk(-1);
+                      }}
+                    >
+                      Voltar
+                    </Button>
+                  )}
+
+                  {hasNextStep && (
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        walk(1);
+                      }}
+                      disabled={!isCurrentStepValid}
+                    >
+                      Próximo
+                    </Button>
+                  )}
+
+                  {!hasNextStep && (
+                    <Button
+                      type="submit"
+                      color="indigo"
+                      disabled={
+                        !isCurrentStepValid ||
+                        !(
+                          form.watch("user.info.addressId") ||
+                          (form.watch("user.info.sectionId") &&
+                            form.watch("user.info.zoneId"))
+                        )
+                      }
+                    >
+                      Inscrever
+                    </Button>
+                  )}
+                </div>
+              </BottomNavigation>
+            </>
+          );
+        }}
       </MultistepForm>
     </>
   );

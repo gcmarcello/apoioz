@@ -56,10 +56,6 @@ export function ElectionInfoSection({
     reset: resetAddresses,
     trigger: searchAddresses,
   } = useAction({
-    requestParser: (req) => {
-      if (req?.where) req.where.campaignId = campaign.id;
-      return req;
-    },
     action: readAddresses,
   });
 
@@ -82,12 +78,6 @@ export function ElectionInfoSection({
       scrollToElement(ref.current, 12);
     }
   }, [address]);
-
-  useEffect(() => {
-    if (form.getValues("user.info.addressId")) {
-      searchAddress();
-    }
-  }, [form.watch("user.info.addressId")]);
 
   return (
     <Fieldset>
@@ -168,12 +158,24 @@ export function ElectionInfoSection({
                         if (query) {
                           fulltextSearchAddresses({
                             where: {
+                              campaignId: campaign.id,
                               location: query,
                             },
                           });
                         } else {
-                          searchAddresses();
+                          searchAddresses({
+                            where: {
+                              campaignId: campaign.id,
+                            },
+                          });
                         }
+                      }}
+                      onChange={(value) => {
+                        searchAddress({
+                          where: {
+                            id: value?.id,
+                          },
+                        });
                       }}
                     >
                       {(item) => <div>{item.location}</div>}

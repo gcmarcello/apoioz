@@ -38,9 +38,11 @@ export async function readAddressFulltext(request: ReadAddressDto) {
   }
 }
 
-export async function readAddresses(request?: ReadAddressDto) {
+export async function readAddresses(request: ReadAddressDto) {
   try {
     const { request: parsedRequest } = await UseMiddlewares({ request });
+
+    console.log(request, parsedRequest);
 
     if (!parsedRequest)
       throw "Informações não encontradas. Por favor, tente novamente.";
