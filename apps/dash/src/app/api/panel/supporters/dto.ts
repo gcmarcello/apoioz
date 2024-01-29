@@ -50,6 +50,7 @@ export const addSupporterDto = createSupporterDto
       if (
         (Boolean(data.user.info.sectionId) === false ||
           Boolean(data.user.info.zoneId) === false) &&
+        !data.user.info.addressId &&
         Boolean(data.externalSupporter) === false
       )
         return false;

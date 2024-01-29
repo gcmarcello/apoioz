@@ -16,7 +16,13 @@ export function BasicInfoSection() {
       </Field>
       <Field name={"user.email"} className="mt-2">
         <Label>Email</Label>
-        <Input autoComplete="email" placeholder="ex. joao@silva.com" />
+        <Input
+          autoComplete="email"
+          autoCapitalize="off"
+          autoCorrect="off"
+          inputMode="email"
+          placeholder="ex. joao@silva.com"
+        />
       </Field>
       <Field name="user.phone" className="mt-2">
         <Label>Celular</Label>

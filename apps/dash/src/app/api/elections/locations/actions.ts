@@ -25,29 +25,25 @@ export async function readStates() {
 
 export async function readAddressFulltext(request: ReadAddressDto) {
   try {
-    const { request: parsedRequest } = await UseMiddlewares({
-      request,
-    })
-      .then(UserSessionMiddleware)
-      .then(SupporterSessionMiddleware);
+    const { request: parsedRequest } = await UseMiddlewares({ request });
+
+    if (!parsedRequest)
+      throw "Informações não encontradas. Por favor, tente novamente.";
 
     const addresses = await service.readAddressFulltext(parsedRequest);
 
-    console.log(addresses);
-
     return ActionResponse.success({ data: addresses as Address[] });
   } catch (err) {
-    console.log(err);
-
     return ActionResponse.error(err);
   }
 }
 
 export async function readAddresses(request?: ReadAddressDto) {
   try {
-    const { request: parsedRequest } = await UseMiddlewares({ request })
-      .then(UserSessionMiddleware)
-      .then(SupporterSessionMiddleware);
+    const { request: parsedRequest } = await UseMiddlewares({ request });
+
+    if (!parsedRequest)
+      throw "Informações não encontradas. Por favor, tente novamente.";
 
     const addresses = await service.readAddresses(parsedRequest);
 

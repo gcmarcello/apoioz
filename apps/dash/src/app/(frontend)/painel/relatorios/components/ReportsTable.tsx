@@ -8,6 +8,7 @@ import {
   Link,
   Table,
   WhatsAppIcon,
+  toProperCase,
 } from "odinkit";
 import { ViewAsButton } from "./ViewAsButton";
 import { Date } from "@/app/(frontend)/_shared/components/Date";
@@ -16,11 +17,13 @@ interface ReportsTableRankingProps {
   supporters: ExtractSuccessResponse<
     typeof readSupportersFromSupporterGroupWithRelation
   >;
+  count: number;
 }
 
 export function ReportsTable({ supporters }: ReportsTableRankingProps) {
   return (
     <Table
+      xlsx={{ fileName: "Relatório de apoiadores", sheetName: "Apoiadores" }}
       columns={(columnHelper) => [
         columnHelper.accessor("user.name", {
           id: "name",
@@ -36,6 +39,20 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
           cell: (info) => (
             <div className="group flex items-center gap-x-1.5 text-gray-500">
               {info.getValue()}
+
+              <div className="absolute hidden group-hover:block"></div>
+            </div>
+          ),
+        }),
+        columnHelper.accessor("user.info.Address.neighborhood", {
+          id: "neighborhood",
+          header: "Bairro",
+          enableSorting: true,
+          cell: (info) => (
+            <div className="group flex items-center gap-x-1.5 text-gray-500">
+              {info.getValue() && info.getValue() !== "undefined"
+                ? toProperCase(String(info.getValue()))
+                : "Não informado"}
 
               <div className="absolute hidden group-hover:block"></div>
             </div>

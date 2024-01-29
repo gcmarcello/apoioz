@@ -17,13 +17,9 @@ export async function readCitiesByState(stateId: string) {
   });
 }
 
-export async function readAddressFulltext(
-  request: ReadAddressDto & {
-    supporterSession: SupporterSession;
-  }
-) {
+export async function readAddressFulltext(request: ReadAddressDto) {
   const city = await prisma.city.findFirst({
-    where: { Campaign: { some: { id: request.supporterSession.campaignId } } },
+    where: { Campaign: { some: { id: request?.where?.campaignId } } },
   });
 
   if (!city) throw "City not found";
@@ -45,13 +41,11 @@ export async function readAddressFulltext(
   return locations;
 }
 
-export async function readAddresses(
-  data: ReadAddressDto & {
-    supporterSession: SupporterSession;
-  }
-) {
+export async function readAddresses(data: ReadAddressDto) {
   const campaign = await prisma.campaign.findUnique({
-    where: { id: data.supporterSession.campaignId },
+    where: {
+      id: data.where?.campaignId,
+    },
   });
 
   return await prisma.address.findMany({
