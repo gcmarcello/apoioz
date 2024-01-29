@@ -38,7 +38,7 @@ export async function readSectionsByCity(cityId: string) {
     orderBy: { number: "asc" },
   });
   return {
-    city: addresses[0].City,
+    city: addresses[0]?.City,
     sections: sections,
     count: sections.length,
   };

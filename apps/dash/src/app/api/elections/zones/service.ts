@@ -42,7 +42,7 @@ export async function readZonesByState(stateId: string) {
     select: { id: true, number: true, stateId: true, State: true },
   });
   return {
-    state: selectedZones[0].State,
+    state: selectedZones[0]?.State,
     zones: selectedZones.map((zone) => ({ id: zone.id, number: zone.number })),
     count: selectedZones.map((zone) => ({ id: zone.id, number: zone.number }))
       .length,

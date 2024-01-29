@@ -116,8 +116,8 @@ export async function generateMainPageStats(
     })
     .then((s) => s[0])
     .then((s) => ({
-      id: s.referralId,
-      count: s._count.referralId,
+      id: s?.referralId,
+      count: s?._count.referralId,
     }));
 
   const campaignLeader = await prisma.supporter.findFirst({
@@ -161,8 +161,8 @@ export async function generateMainPageStats(
     })
     .then((s) => s[0])
     .then((s) => ({
-      id: s.sectionId,
-      count: s._count.sectionId,
+      id: s?.sectionId,
+      count: s?._count.sectionId,
     }));
 
   if (!leadingSectionCount.id) throw "Seção não encontrada";

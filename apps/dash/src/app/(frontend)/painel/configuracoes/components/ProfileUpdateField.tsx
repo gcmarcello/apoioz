@@ -146,13 +146,16 @@ function ProfileUpdateButtons({
           type="button"
           className="font-semibold text-gray-400 hover:text-gray-600"
           onClick={() => {
-            setShowFields((prevShowFields) => ({
-              ...prevShowFields,
-              [field.name]: {
-                ...prevShowFields[field.name],
-                show: false,
-              },
-            }));
+            setShowFields(
+              (prevShowFields) =>
+                ({
+                  ...prevShowFields,
+                  [field.name]: {
+                    ...prevShowFields[field.name],
+                    show: false,
+                  },
+                }) as any
+            );
           }}
         >
           Cancelar
@@ -163,13 +166,16 @@ function ProfileUpdateButtons({
         disabled={field.show && !form.formState.isValid ? true : false}
         className="font-semibold text-indigo-600 hover:text-indigo-500 disabled:text-indigo-200"
         onClick={() => {
-          setShowFields((prevShowFields) => ({
-            ...prevShowFields,
-            [field.name]: {
-              ...prevShowFields[field.name],
-              show: !prevShowFields[field.name].show,
-            },
-          }));
+          setShowFields(
+            (prevShowFields) =>
+              ({
+                ...prevShowFields,
+                [field.name]: {
+                  ...prevShowFields[field.name],
+                  show: !prevShowFields[field.name]?.show,
+                },
+              }) as any
+          );
         }}
       >
         {field.show ? "Salvar" : "Atualizar"}

@@ -67,7 +67,7 @@ export default async function PesquisaPage({
         parsedAnswers: {},
       };
     }
-    acc[supporterId].answers.push(answer);
+    acc[supporterId]?.answers.push(answer);
     const answerString = (answer.answer as any).options
       .map(
         (option: PollOption) =>
@@ -76,12 +76,14 @@ export default async function PesquisaPage({
           )?.PollOption.find((o) => o.id === option.id)?.name
       )
       .join(", ");
-    acc[supporterId].parsedAnswers[questionId] = answerString;
-    acc[supporterId].parsedAnswers[`${questionId}_freeAnswer`] = (
+    acc[supporterId]!.parsedAnswers[questionId] = answerString;
+    acc[supporterId]!.parsedAnswers[`${questionId}_freeAnswer`] = (
       answer.answer as any
     ).freeAnswer;
     return acc;
   }, {});
+
+  //@todo fix notnull
 
   const parsedPoll = {
     title: poll.poll?.title,
