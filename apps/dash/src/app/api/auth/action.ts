@@ -13,7 +13,7 @@ import { ExistingUserMiddleware } from "./middlewares";
 import { ActionResponse } from "odinkit";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { createSupporter } from "../panel/supporters/service";
-import { validateInviteCode } from "./invites/service";
+import { readInviteCode, validateInviteCode } from "./invites/service";
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
 
 export async function login(request: LoginDto) {
@@ -103,9 +103,15 @@ export async function signUp() {
 
 export async function signUpAsSupporter(request: SignUpAsSupporterDto) {
   try {
-    const inviteCode = await validateInviteCode(request.inviteCodeId);
+    const inviteCode = await readInviteCode({
+      id: request.inviteCodeId,
+    });
 
     if (!inviteCode) throw "Código de convite inválido";
+
+    const isInviteCodeValid = validateInviteCode(inviteCode);
+
+    if (!isInviteCodeValid) throw "Código de convite inválido";
 
     const newSupporter = await createSupporter({
       user: request.user,

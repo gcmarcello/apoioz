@@ -44,7 +44,11 @@ export function ShareSupporter() {
     <div className="flex flex-col items-center space-y-6 pb-5 pt-8">
       <div className="flex flex-col gap-3">
         <button
-          onClick={() => generateInviteCode()}
+          onClick={() =>
+            generateInviteCode({
+              override: true,
+            })
+          }
           className="flex items-center justify-center gap-1 font-semibold text-indigo-600"
         >
           Gerar novo QR code <ArrowPathIcon className="h-4 w-4   opacity-100" />

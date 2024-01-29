@@ -49,6 +49,7 @@ export async function readAddresses(request?: ReadAddressDto) {
 
     return ActionResponse.success({ data: addresses });
   } catch (err) {
+    console.log(err);
     return ActionResponse.error(err);
   }
 }

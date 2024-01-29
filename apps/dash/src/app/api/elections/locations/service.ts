@@ -49,7 +49,12 @@ export async function readAddresses(data: ReadAddressDto) {
   });
 
   return await prisma.address.findMany({
-    where: { location: data.where?.location, cityId: campaign?.cityId! }, //@todo states
+    where: {
+      location: data.where?.location,
+      cityId: campaign?.cityId!,
+      id: data.where?.id,
+      Section: { some: { id: data.where?.sectionId } },
+    }, //@todo states
     take: data.pagination?.take || 10,
     skip: data.pagination?.skip || 0,
   });

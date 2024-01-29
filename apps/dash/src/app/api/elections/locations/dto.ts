@@ -8,6 +8,7 @@ export const readAddressDto = readDto(
     sectionId: z.string().uuid().optional(),
     location: z.string().optional(),
     address: z.string().optional(),
+    id: z.string().uuid().optional(),
   })
 );
 

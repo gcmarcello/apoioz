@@ -212,6 +212,7 @@ export default function SupporterSignUpForm({
                 )}
               </For>
             </div>
+
             <div className="hidden justify-between lg:flex">
               {hasPrevStep && (
                 <Button
