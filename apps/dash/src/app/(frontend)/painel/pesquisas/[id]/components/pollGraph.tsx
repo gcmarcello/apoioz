@@ -58,7 +58,7 @@ export default function QuestionGraph({ question }: { question: any }) {
   question.answers.forEach((answer: any) => {
     answer.options.forEach((option: any) => {
       if (voteCounts[option.id]) {
-        voteCounts[option.id].count += 1;
+        voteCounts[option.id]!.count += 1;
       } else {
         voteCounts[option.id] = {
           name: option.name,
@@ -68,6 +68,8 @@ export default function QuestionGraph({ question }: { question: any }) {
       }
     });
   });
+
+  // @todo notnull
 
   const data = {
     labels: Object.values(voteCounts).map(

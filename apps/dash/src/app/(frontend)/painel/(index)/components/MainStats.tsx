@@ -70,11 +70,10 @@ export default async function MainStats() {
         !Number.isNaN(totalSupportersChange)
           ? totalSupportersChange + "%"
           : "",
-      changeType: !!(
+      changeType:
         mainPageStats?.totalSupporters - mainPageStats?.supportersLastWeek
-      )
-        ? "increase"
-        : "decrease",
+          ? "increase"
+          : "decrease",
     },
     {
       name: "Seção Líder",
@@ -88,12 +87,14 @@ export default async function MainStats() {
       stat: mainPageStats?.referralLeader.user?.name,
       previousStat: `${mainPageStats?.referralLeader.count} no total`,
       change: `${Math.round(
-        (mainPageStats?.referralLeader.count / mainPageStats?.totalSupporters) *
-          100
+        (mainPageStats?.referralLeader?.count ||
+          0 / mainPageStats?.totalSupporters) * 100
       )}%`,
       changeType: false,
     },
   ];
+
+  // @todo tomar cuidado com aquele 0
 
   return (
     <div>
