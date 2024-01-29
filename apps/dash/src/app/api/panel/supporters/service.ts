@@ -295,6 +295,24 @@ export async function readSupportersFromSupporterGroupWithRelation({
         .then((s) => s?.id)
     : supporterSession.id;
 
+  const supporterCount = await prisma.supporter.count({
+    where: {
+      campaignId: supporterSession.campaignId,
+      supporterGroupsMemberships: {
+        some: {
+          supporterGroup: {
+            ownerId: supporterId,
+          },
+        },
+      },
+      user: {
+        name: { contains: where?.user?.name },
+        email: { contains: where?.user?.email },
+        phone: { contains: where?.user?.phone },
+      },
+    },
+  });
+
   const supporterList = await prisma.supporter.findMany({
     take: pagination?.take,
     skip: pagination?.skip,
@@ -372,6 +390,7 @@ export async function readSupportersFromSupporterGroupWithRelation({
       cursor: pagination?.cursor,
       count: supporterList.length,
     },
+    count: supporterCount,
   };
 }
 

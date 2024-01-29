@@ -16,11 +16,13 @@ interface ReportsTableRankingProps {
   supporters: ExtractSuccessResponse<
     typeof readSupportersFromSupporterGroupWithRelation
   >;
+  count: number;
 }
 
 export function ReportsTable({ supporters }: ReportsTableRankingProps) {
   return (
     <Table
+      xlsx={{ fileName: "Relatório de apoiadores", sheetName: "Apoiadores" }}
       columns={(columnHelper) => [
         columnHelper.accessor("user.name", {
           id: "name",

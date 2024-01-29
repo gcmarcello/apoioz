@@ -21,6 +21,7 @@ export default async function RelatoriosPage({
 }: {
   searchParams: {
     as: string;
+    page: string;
   };
 }) {
   const {
@@ -76,7 +77,10 @@ export default async function RelatoriosPage({
           <Container
             className={"col-span-1 px-2 md:col-span-3 lg:pe-0 lg:ps-8"}
           >
-            <ReportsTable supporters={supporters.data} />
+            <ReportsTable
+              supporters={supporters.data}
+              count={supporters.count}
+            />
           </Container>
         </div>
       </Container>
