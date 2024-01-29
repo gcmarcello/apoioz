@@ -19,7 +19,10 @@ export async function createInviteCode({
   });
 
   if (!override && lastInviteCode) {
+    console.log(lastInviteCode, override);
     const isCodeValid = validateInviteCode(lastInviteCode);
+
+    console.log(isCodeValid);
 
     if (isCodeValid) return lastInviteCode;
   }
@@ -59,7 +62,7 @@ export function validateInviteCode(code: InviteCode) {
 
   const now = dayjs();
 
-  return dayjs(now).isAfter(expiresAt);
+  return dayjs(now).isBefore(expiresAt);
 }
 
 export async function useInviteCode(code: string) {
