@@ -147,22 +147,20 @@ export default function SupporterSignUpForm({
       }}
     >
       {({
-        currentStepIndex,
-        currentStepKey,
-        prevStep,
-        nextStep,
-        stepCount,
-        stepOrder,
+        currentStep,
+        hasNextStep,
+        hasPrevStep,
+        order,
         steps,
         isCurrentStepValid,
         walk,
       }) => (
         <>
           <div className={clsx("mb-4 space-y-2 pb-2")}>
-            <For each={stepOrder}>
+            <For each={order}>
               {(step) => (
                 <Transition
-                  show={step === currentStepKey}
+                  show={step === order[currentStep]}
                   enter="ease-out duration-200"
                   enterFrom="opacity-0 scale-95"
                   enterTo="opacity-100 scale-100"
@@ -170,13 +168,13 @@ export default function SupporterSignUpForm({
                   leaveFrom="opacity-0 scale-100"
                   leaveTo="opacity-0 scale-95"
                 >
-                  {steps[currentStepKey].form}
+                  {steps[step].form}
                 </Transition>
               )}
             </For>
           </div>
           <div className="hidden justify-between lg:flex">
-            {currentStepIndex > 0 && prevStep >= 0 && (
+            {hasPrevStep && (
               <Button
                 type="button"
                 plain={true}
@@ -188,22 +186,21 @@ export default function SupporterSignUpForm({
               </Button>
             )}
 
-            {currentStepIndex != stepCount - 1 &&
-              nextStep === stepCount - 1 && (
-                <Button
-                  type="button"
-                  color="indigo"
-                  className="w-full"
-                  onClick={() => {
-                    walk(1);
-                  }}
-                  disabled={!isCurrentStepValid}
-                >
-                  Próximo
-                </Button>
-              )}
+            {hasNextStep && (
+              <Button
+                type="button"
+                color="indigo"
+                className="w-full"
+                onClick={() => {
+                  walk(1);
+                }}
+                disabled={!isCurrentStepValid}
+              >
+                Próximo
+              </Button>
+            )}
 
-            {currentStepIndex === stepCount - 1 && (
+            {!hasNextStep && (
               <Button
                 type="submit"
                 color="indigo"
@@ -215,7 +212,7 @@ export default function SupporterSignUpForm({
           </div>
           <BottomNavigation className="block p-2 lg:hidden">
             <div className="flex justify-between">
-              {prevStep > 0 && (
+              {hasPrevStep && (
                 <Button
                   type="button"
                   onClick={() => {
@@ -226,20 +223,19 @@ export default function SupporterSignUpForm({
                 </Button>
               )}
 
-              {currentStepIndex != stepCount - 1 &&
-                nextStep === stepCount - 1 && (
-                  <Button
-                    type="button"
-                    onClick={() => {
-                      walk(1);
-                    }}
-                    disabled={!isCurrentStepValid}
-                  >
-                    Próximo
-                  </Button>
-                )}
+              {hasNextStep && (
+                <Button
+                  type="button"
+                  onClick={() => {
+                    walk(1);
+                  }}
+                  disabled={!isCurrentStepValid}
+                >
+                  Próximo
+                </Button>
+              )}
 
-              {currentStepIndex === stepCount - 1 && (
+              {!hasNextStep && (
                 <Button type="submit" disabled={!isCurrentStepValid}>
                   Inscrever
                 </Button>
