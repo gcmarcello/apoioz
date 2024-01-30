@@ -34,7 +34,7 @@ export default function AddSupporterSuccess({
 
           <div className="mt-10 max-w-4xl pb-20">
             <ul role="list" className="mt-8 max-w-3xl space-y-8 text-gray-600">
-              {campaign.options?.showGroupOnSignup ? (
+              {/* {campaign.options?.showGroupOnSignup ? (
                 <li>
                   <div className="flex gap-x-3">
                     <WhatsAppIcon
@@ -82,7 +82,7 @@ export default function AddSupporterSuccess({
                     amigos.
                   </span>
                 </li>
-              )}
+              )} */}
 
               <li className="flex gap-x-3">
                 <CheckCircleIcon
