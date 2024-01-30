@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { CheckCircleIcon } from "@heroicons/react/20/solid";
 import { BottomNavigation } from "@/app/(frontend)/_shared/components/navigation/BottomNavigation";
-import { Button } from "@/app/(frontend)/_shared/components/Button";
 import clsx from "clsx";
 import {
   MegaphoneIcon,
@@ -9,6 +8,7 @@ import {
   UserPlusIcon,
 } from "@heroicons/react/24/solid";
 import WhatsAppIcon from "@/app/(frontend)/_shared/components/icons/WhatsAppIcon";
+import { Button } from "odinkit/client";
 
 export default function AddSupporterSuccess({
   campaign,
@@ -115,7 +115,7 @@ export default function AddSupporterSuccess({
           <BottomNavigation className="py-4">
             <div className="flex w-full items-center justify-center px-3">
               <Link href={`/login?email=${email}`}>
-                <Button variant="primary">Acessar o Painel de Controle</Button>
+                <Button color="indigo">Acessar o Painel de Controle</Button>
               </Link>
             </div>
           </BottomNavigation>
