@@ -169,6 +169,12 @@ export default function SupporterSignUpForm({
           },
           electionInfo: {
             fields: ["user.password"],
+            refine: (data) => {
+              return Boolean(
+                data.user.info.addressId ||
+                  (data.user.info.sectionId && data.user.info.zoneId)
+              );
+            },
             form: (
               <ElectionInfoSection
                 campaign={campaign}
@@ -188,6 +194,7 @@ export default function SupporterSignUpForm({
           isCurrentStepValid,
           walk,
         }) => {
+          console.log({ isCurrentStepValid });
           return (
             <>
               <div className={clsx("mb-4 space-y-2 pb-2")}>
@@ -239,14 +246,7 @@ export default function SupporterSignUpForm({
                   <Button
                     type="submit"
                     color="indigo"
-                    disabled={
-                      !isCurrentStepValid ||
-                      !(
-                        form.watch("user.info.addressId") ||
-                        (form.watch("user.info.sectionId") &&
-                          form.watch("user.info.zoneId"))
-                      )
-                    }
+                    disabled={!isCurrentStepValid}
                   >
                     Inscrever
                   </Button>

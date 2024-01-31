@@ -7,24 +7,28 @@ export const createUserDto = z.object({
   email: z.string().email({ message: "Email inválido" }).min(3),
   password: z.string().nullable().optional(),
   phone: z.custom(phoneValidator as any, { message: "Telefone inválido" }),
-  info: z.object({
-    addressId: z.string().uuid({ message: "Endereço inválido" }).optional(),
-    zoneId: z
-      .string()
-      .uuid({
-        message: "Zona inválida",
-      })
-      .optional(),
-    sectionId: z
-      .string()
-      .uuid({
-        message: "Seção inválida",
-      })
-      .optional(),
-    birthDate: z.custom(birthDateValidator as any, {
-      message: "Data de nascimento inválida",
+  info: z
+    .object({
+      addressId: z.string().uuid({ message: "Endereço inválido" }).optional(),
+      zoneId: z
+        .string()
+        .uuid({
+          message: "Zona inválida",
+        })
+        .optional(),
+      sectionId: z
+        .string()
+        .uuid({
+          message: "Seção inválida",
+        })
+        .optional(),
+      birthDate: z.custom(birthDateValidator as any, {
+        message: "Data de nascimento inválida",
+      }),
+    })
+    .refine((v) => v.addressId || (v.zoneId && v.sectionId), {
+      message: "Endereço ou zona e seção são obrigatórios",
     }),
-  }),
 });
 
 //@todo Temporary any until Zod accepts our pull request
