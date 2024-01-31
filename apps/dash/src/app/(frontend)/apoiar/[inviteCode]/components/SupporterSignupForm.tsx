@@ -18,7 +18,7 @@ import { useMocker } from "@/app/(frontend)/_shared/components/Mocker";
 import { Transition } from "@headlessui/react";
 import { scrollToElement } from "@/app/(frontend)/_shared/utils/scroll";
 import { readSectionsByZone } from "@/app/api/elections/sections/action";
-import { For } from "odinkit";
+import { ButtonSpinner, For } from "odinkit";
 import { UserWithoutPassword } from "prisma/types/User";
 import { UserIcon } from "@heroicons/react/24/solid";
 
@@ -38,6 +38,7 @@ export default function SupporterSignUpForm({
   poll: PollWithQuestionsWithOptions | null;
 }) {
   const errorRef = useRef(null);
+  const [showSuccessPage, setShowSuccessPage] = useState(false);
 
   const form = useForm({
     defaultValues: {
@@ -80,9 +81,11 @@ export default function SupporterSignUpForm({
     data: signUpData,
     trigger: signUp,
     reset: resetSignUp,
+    isMutating: isSigningUp,
   } = useAction({
     action: signUpAsSupporter,
     onSuccess: (res) => {
+      setShowSuccessPage(true);
       setTimeout(() => {
         scrollTo({ top: 0, behavior: "smooth" });
       }, 350);
@@ -118,7 +121,7 @@ export default function SupporterSignUpForm({
 
   if (form.formState.isSubmitting) return <Loading />;
 
-  if (form.formState.isSubmitSuccessful)
+  if (showSuccessPage)
     return (
       <AddSupporterSuccess
         campaign={campaign}
@@ -128,7 +131,7 @@ export default function SupporterSignUpForm({
 
   return (
     <>
-      {!form.formState.isSubmitSuccessful && (
+      {!showSuccessPage && (
         <>
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
             {campaign.name}
@@ -197,7 +200,7 @@ export default function SupporterSignUpForm({
           console.log({ isCurrentStepValid });
           return (
             <>
-              <div className={clsx("mb-4 space-y-2 pb-2")}>
+              <div className={clsx("mb-4 space-y-2 pb-2 lg:mb-2")}>
                 <For each={order}>
                   {(step) => (
                     <Transition
@@ -248,7 +251,10 @@ export default function SupporterSignUpForm({
                     color="indigo"
                     disabled={!isCurrentStepValid}
                   >
-                    Inscrever
+                    <div className="flex items-center gap-2">
+                      Inscrever
+                      {isSigningUp && <ButtonSpinner />}
+                    </div>
                   </Button>
                 )}
               </div>
@@ -282,6 +288,7 @@ export default function SupporterSignUpForm({
                       type="submit"
                       color="indigo"
                       disabled={
+                        isSigningUp ||
                         !isCurrentStepValid ||
                         !(
                           form.watch("user.info.addressId") ||
@@ -290,7 +297,10 @@ export default function SupporterSignUpForm({
                         )
                       }
                     >
-                      Inscrever
+                      <div className="flex items-center gap-2">
+                        Inscrever
+                        {isSigningUp && <ButtonSpinner />}
+                      </div>
                     </Button>
                   )}
                 </div>

@@ -36,7 +36,7 @@ export default function SupporterSideBar() {
   const {
     data: supporter,
     trigger: addSupporterTrigger,
-    isMutating,
+    isMutating: isAddingSupporter,
   } = useAction({
     action: addSupporter,
     onError: (err) =>
@@ -227,15 +227,13 @@ export default function SupporterSideBar() {
                           {screen === "add" && (
                             <Button
                               type="submit"
-                              disabled={addSupporterForm.formState.isSubmitting}
+                              disabled={isAddingSupporter}
                               color="indigo"
                               form={addSupporterFormId}
                             >
                               <div className="flex items-center gap-2">
                                 Adicionar{" "}
-                                {addSupporterForm.formState.isSubmitting && (
-                                  <ButtonSpinner />
-                                )}
+                                {isAddingSupporter && <ButtonSpinner />}
                               </div>
                             </Button>
                           )}

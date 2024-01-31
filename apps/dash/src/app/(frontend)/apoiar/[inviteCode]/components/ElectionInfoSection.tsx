@@ -193,7 +193,7 @@ export function ElectionInfoSection({
           <Input type="password" />
         </Field>
       </FieldGroup>
-      <div className="col-span-2 pb-6">
+      <div className="col-span-2">
         {poll && (
           <div>
             <SectionTitle>{poll.title}</SectionTitle>
@@ -205,7 +205,7 @@ export function ElectionInfoSection({
           {(form.watch("user.info.zoneId") ||
             form.watch("user.info.addressId")) &&
             form.watch("user.name") && (
-              <div ref={ref} className="pb-10 pt-4">
+              <div ref={ref} className="pb-10 pt-4 lg:pb-4">
                 <div className="lg:col-start-3 lg:row-end-1">
                   <h2 className="sr-only">Summary</h2>
                   <div className="rounded-lg bg-slate-50 shadow-sm ring-1 ring-gray-900/5">
@@ -250,7 +250,8 @@ export function ElectionInfoSection({
                                 "user.info.sectionId"
                               );
                               const location = address?.location;
-                              if (address) return <>{address.location}</>;
+                              if (address && !zoneId && !sectionId)
+                                return <>{address.location}</>;
                               return (
                                 <>
                                   <>
