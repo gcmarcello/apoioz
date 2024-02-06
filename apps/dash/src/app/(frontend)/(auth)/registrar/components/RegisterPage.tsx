@@ -24,7 +24,6 @@ import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
 import { useForm } from "react-hook-form";
-import { If } from "odinkit";
 
 const campaignTypes = [
   { id: "1", name: "Conselheiro Tutelar", value: "conselheiro" },
@@ -163,18 +162,16 @@ export default function RegisterPage({
         >
           <form onSubmit={form.handleSubmit(handleSubmit)}>
             <div className="mx-auto max-w-2xl px-4 lg:max-w-none lg:px-0">
-              <If
-                deps={{
-                  errorMessage:
-                    form.formState.errors?.root?.serverError?.message,
-                }}
-                if={(deps) => deps.errorMessage}
-                then={(deps) => (
-                  <div ref={errRef} className="mb-4 scroll-mt-64">
-                    <ErrorAlert errors={[deps.errorMessage]} />
-                  </div>
-                )}
-              />
+              {form.formState.errors?.root?.serverError?.message ? (
+                <div ref={errRef} className="mb-4 scroll-mt-64">
+                  <ErrorAlert
+                    errors={[
+                      form.formState.errors?.root?.serverError
+                        ?.message as string,
+                    ]}
+                  />
+                </div>
+              ) : null}
 
               <div className="divide-y">
                 <div>

@@ -17,7 +17,7 @@ import dayjs from "dayjs";
 import { AddSupporterDto } from "@/app/api/panel/supporters/dto";
 
 import { useSidebar } from "../lib/useSidebar";
-import { If, Alertbox, List, Badge, Tabs } from "odinkit";
+import { Alertbox, List, Badge, Tabs } from "odinkit";
 
 import {
   Button,
@@ -158,20 +158,15 @@ export function AddSupporterForm({
   return (
     <Fieldset className="mt-4 space-y-3 divide-y">
       <FieldGroup className="space-y-2">
-        <If
-          deps={{
-            serverError: form.formState.errors.root?.serverError?.message,
-          }}
-          if={(deps) => deps.serverError}
-          then={({ serverError }) => (
-            <div ref={errRef} className="scroll-mt-64">
-              <Alertbox type="error">
-                <List data={[serverError as string]} />
-              </Alertbox>
-            </div>
-          )}
-          else={null}
-        />
+        {form.formState.errors.root?.serverError?.message ? (
+          <Alertbox type="error">
+            <List
+              data={[
+                form.formState.errors.root?.serverError?.message as string,
+              ]}
+            />
+          </Alertbox>
+        ) : null}
         <Field name="user.name">
           <Label>Nome do apoiador</Label>
           <Input />

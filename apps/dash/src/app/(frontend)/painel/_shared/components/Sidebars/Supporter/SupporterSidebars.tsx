@@ -14,7 +14,6 @@ import {
 } from "@/app/api/panel/supporters/actions";
 import { addSupporterDto } from "@/app/api/panel/supporters/dto";
 import { Form, Button, useAction, useForm } from "odinkit/client";
-import { If } from "odinkit";
 
 export default function SupporterSideBar() {
   const {
@@ -158,24 +157,11 @@ export default function SupporterSideBar() {
 
                           <div className="mt-1">
                             <p className="text-sm text-indigo-300">
-                              <If
-                                deps={{
-                                  screen,
-                                }}
-                                if={(deps) => deps.screen === "start"}
-                                then={"Escolha como aumentar sua rede."}
-                                else={(deps) => (
-                                  <If
-                                    if={deps.screen === "share"}
-                                    then={
-                                      "Envie um link de convite para o apoiador."
-                                    }
-                                    else={
-                                      "Complete os campos e faça parte da transformação."
-                                    }
-                                  />
-                                )}
-                              />
+                              {screen === "start"
+                                ? "Escolha como aumentar sua rede."
+                                : screen === "share"
+                                  ? "Envie um link de convite para o apoiador."
+                                  : "Complete os campos e faça parte da transformação."}
                             </p>
                           </div>
                         </div>

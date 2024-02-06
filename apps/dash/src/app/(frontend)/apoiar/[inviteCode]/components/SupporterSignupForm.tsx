@@ -8,7 +8,13 @@ import { BasicInfoSection } from "./BasicInfoSection";
 import { ElectionInfoSection } from "./ElectionInfoSection";
 import clsx from "clsx";
 import { fakerPT_BR } from "@faker-js/faker";
-import { Button, MultistepForm, useAction, useForm } from "odinkit/client";
+import {
+  Button,
+  MultistepForm,
+  showToast,
+  useAction,
+  useForm,
+} from "odinkit/client";
 import Loading from "@/app/(frontend)/loading";
 import { BottomNavigation } from "@/app/(frontend)/_shared/components/navigation/BottomNavigation";
 import { signUpAsSupporter } from "@/app/api/auth/action";
@@ -38,7 +44,6 @@ export default function SupporterSignUpForm({
   poll: PollWithQuestionsWithOptions | null;
 }) {
   const errorRef = useRef(null);
-  const [showSuccessPage, setShowSuccessPage] = useState(false);
 
   const form = useForm({
     defaultValues: {
@@ -85,12 +90,16 @@ export default function SupporterSignUpForm({
   } = useAction({
     action: signUpAsSupporter,
     onSuccess: (res) => {
-      setShowSuccessPage(true);
       setTimeout(() => {
         scrollTo({ top: 0, behavior: "smooth" });
       }, 350);
     },
     onError: (err) => {
+      showToast({
+        message: err,
+        title: "Erro",
+        variant: "error",
+      });
       setTimeout(() => {
         if (errorRef.current) {
           scrollToElement(errorRef.current, 12);
@@ -121,7 +130,7 @@ export default function SupporterSignUpForm({
 
   if (form.formState.isSubmitting) return <Loading />;
 
-  if (showSuccessPage)
+  if (signUpData)
     return (
       <AddSupporterSuccess
         campaign={campaign}
@@ -131,28 +140,23 @@ export default function SupporterSignUpForm({
 
   return (
     <>
-      {!showSuccessPage && (
-        <>
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            {campaign.name}
-          </h2>
-          <h3 className="text-xl font-bold  tracking-tight text-zinc-700">
-            {campaign.state?.name || (
-              <>
-                {campaign.city?.name}, {campaign.city?.State?.code}
-              </>
-            )}
-          </h3>
-          <p className="mt-2 text-lg leading-8 text-gray-600">
-            Preencha seus dados abaixo para fazer parte da nossa rede de apoio!
-          </p>
-          {user && (
-            <div className="my-4 inline-flex text-gray-500 hover:text-gray-600">
-              <UserIcon className="me-2 h-6 w-6" />{" "}
-              <p>Convidado por {user.name}</p>
-            </div>
-          )}
-        </>
+      <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+        {campaign.name}
+      </h2>
+      <h3 className="text-xl font-bold  tracking-tight text-zinc-700">
+        {campaign.state?.name || (
+          <>
+            {campaign.city?.name}, {campaign.city?.State?.code}
+          </>
+        )}
+      </h3>
+      <p className="mt-2 text-lg leading-8 text-gray-600">
+        Preencha seus dados abaixo para fazer parte da nossa rede de apoio!
+      </p>
+      {user && (
+        <div className="my-4 inline-flex text-gray-500 hover:text-gray-600">
+          <UserIcon className="me-2 h-6 w-6" /> <p>Convidado por {user.name}</p>
+        </div>
       )}
 
       <MultistepForm
@@ -172,6 +176,12 @@ export default function SupporterSignUpForm({
           },
           electionInfo: {
             fields: ["user.password"],
+            refine: (data) => {
+              return Boolean(
+                data.user.info.addressId ||
+                  (data.user.info.sectionId && data.user.info.zoneId)
+              );
+            },
             form: (
               <ElectionInfoSection
                 campaign={campaign}
@@ -190,32 +200,71 @@ export default function SupporterSignUpForm({
           steps,
           isCurrentStepValid,
           walk,
-        }) => {
-          return (
-            <>
-              <div className={clsx("mb-4 space-y-2 pb-2 lg:mb-2")}>
-                <For each={order}>
-                  {(step) => (
-                    <Transition
-                      show={step === order[currentStep]}
-                      enter="ease-out duration-200"
-                      enterFrom="opacity-0 scale-95"
-                      enterTo="opacity-100 scale-100"
-                      leave="ease-in duration-200"
-                      leaveFrom="opacity-0 scale-100"
-                      leaveTo="opacity-0 scale-95"
-                    >
-                      {steps[step].form}
-                    </Transition>
-                  )}
-                </For>
-              </div>
+        }) => (
+          <>
+            <div className={clsx("mb-4 space-y-2 pb-2 lg:mb-2")}>
+              <For each={order}>
+                {(step) => (
+                  <Transition
+                    show={step === order[currentStep]}
+                    enter="ease-out duration-200"
+                    enterFrom="opacity-0 scale-95"
+                    enterTo="opacity-100 scale-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-0 scale-100"
+                    leaveTo="opacity-0 scale-95"
+                  >
+                    {steps[step].form}
+                  </Transition>
+                )}
+              </For>
+            </div>
 
-              <div className="hidden justify-between lg:flex">
+            <div className="hidden justify-between lg:flex">
+              {hasPrevStep && (
+                <Button
+                  type="button"
+                  plain={true}
+                  onClick={() => {
+                    walk(-1);
+                  }}
+                >
+                  Voltar
+                </Button>
+              )}
+
+              {hasNextStep && (
+                <Button
+                  type="button"
+                  color="indigo"
+                  className="w-full"
+                  onClick={() => {
+                    walk(1);
+                  }}
+                  disabled={!isCurrentStepValid}
+                >
+                  Próximo
+                </Button>
+              )}
+
+              {!hasNextStep && hasPrevStep && (
+                <Button
+                  type="submit"
+                  color="indigo"
+                  disabled={!isCurrentStepValid}
+                >
+                  <div className="flex items-center gap-2">
+                    Inscrever
+                    {isSigningUp && <ButtonSpinner />}
+                  </div>
+                </Button>
+              )}
+            </div>
+            <BottomNavigation className="block p-2 lg:hidden">
+              <div className="flex justify-between">
                 {hasPrevStep && (
                   <Button
                     type="button"
-                    plain={true}
                     onClick={() => {
                       walk(-1);
                     }}
@@ -227,8 +276,6 @@ export default function SupporterSignUpForm({
                 {hasNextStep && (
                   <Button
                     type="button"
-                    color="indigo"
-                    className="w-full"
                     onClick={() => {
                       walk(1);
                     }}
@@ -259,56 +306,9 @@ export default function SupporterSignUpForm({
                   </Button>
                 )}
               </div>
-              <BottomNavigation className="block p-2 lg:hidden">
-                <div className="flex justify-between">
-                  {hasPrevStep && (
-                    <Button
-                      type="button"
-                      onClick={() => {
-                        walk(-1);
-                      }}
-                    >
-                      Voltar
-                    </Button>
-                  )}
-
-                  {hasNextStep && (
-                    <Button
-                      type="button"
-                      onClick={() => {
-                        walk(1);
-                      }}
-                      disabled={!isCurrentStepValid}
-                    >
-                      Próximo
-                    </Button>
-                  )}
-
-                  {!hasNextStep && (
-                    <Button
-                      type="submit"
-                      color="indigo"
-                      disabled={
-                        isSigningUp ||
-                        !isCurrentStepValid ||
-                        !(
-                          form.watch("user.info.addressId") ||
-                          (form.watch("user.info.sectionId") &&
-                            form.watch("user.info.zoneId"))
-                        )
-                      }
-                    >
-                      <div className="flex items-center gap-2">
-                        Inscrever
-                        {isSigningUp && <ButtonSpinner />}
-                      </div>
-                    </Button>
-                  )}
-                </div>
-              </BottomNavigation>
-            </>
-          );
-        }}
+            </BottomNavigation>
+          </>
+        )}
       </MultistepForm>
     </>
   );
