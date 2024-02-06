@@ -15,7 +15,7 @@ import {
   useAction,
   useForm,
 } from "odinkit/client";
-import { Alertbox, ButtonSpinner, Container, If, List } from "odinkit";
+import { Alertbox, ButtonSpinner, Container, List } from "odinkit";
 
 export default function LoginForm({
   supportRedirect,
@@ -54,15 +54,11 @@ export default function LoginForm({
   return (
     <Container className="mx-auto w-full max-w-sm">
       <Form onSubmit={loginAction} className="mt-4" hform={form}>
-        <If
-          if={errors.root?.serverError?.message}
-          then={
-            <Alertbox type="error">
-              <List data={[errors.root?.serverError?.message as string]} />
-            </Alertbox>
-          }
-          else={null}
-        />
+        {errors.root?.serverError?.message ? (
+          <Alertbox type="error">
+            <List data={[errors.root?.serverError?.message as string]} />
+          </Alertbox>
+        ) : null}
 
         <Fieldset className={"space-y-3"}>
           <Field name="identifier">
@@ -95,16 +91,13 @@ export default function LoginForm({
             color="indigo"
             type="submit"
           >
-            <If
-              deps={{ isLoading }}
-              if={(deps) => deps.isLoading}
-              then={
-                <div className="flex items-center justify-center">
-                  <ButtonSpinner size="medium" />
-                </div>
-              }
-              else={"Login"}
-            />
+            {isLoading ? (
+              <div className="flex items-center justify-center">
+                <ButtonSpinner size="medium" />
+              </div>
+            ) : (
+              "Login"
+            )}
           </Button>
         </Fieldset>
       </Form>

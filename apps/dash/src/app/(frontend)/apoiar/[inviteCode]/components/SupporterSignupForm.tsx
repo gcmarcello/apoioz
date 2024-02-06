@@ -8,7 +8,13 @@ import { BasicInfoSection } from "./BasicInfoSection";
 import { ElectionInfoSection } from "./ElectionInfoSection";
 import clsx from "clsx";
 import { fakerPT_BR } from "@faker-js/faker";
-import { Button, MultistepForm, useAction, useForm } from "odinkit/client";
+import {
+  Button,
+  MultistepForm,
+  showToast,
+  useAction,
+  useForm,
+} from "odinkit/client";
 import Loading from "@/app/(frontend)/loading";
 import { BottomNavigation } from "@/app/(frontend)/_shared/components/navigation/BottomNavigation";
 import { signUpAsSupporter } from "@/app/api/auth/action";
@@ -38,7 +44,6 @@ export default function SupporterSignUpForm({
   poll: PollWithQuestionsWithOptions | null;
 }) {
   const errorRef = useRef(null);
-  const [showSuccessPage, setShowSuccessPage] = useState(false);
 
   const form = useForm({
     defaultValues: {
@@ -85,12 +90,16 @@ export default function SupporterSignUpForm({
   } = useAction({
     action: signUpAsSupporter,
     onSuccess: (res) => {
-      setShowSuccessPage(true);
       setTimeout(() => {
         scrollTo({ top: 0, behavior: "smooth" });
       }, 350);
     },
     onError: (err) => {
+      showToast({
+        message: err,
+        title: "Erro",
+        variant: "error",
+      });
       setTimeout(() => {
         if (errorRef.current) {
           scrollToElement(errorRef.current, 12);
@@ -121,7 +130,7 @@ export default function SupporterSignUpForm({
 
   if (form.formState.isSubmitting) return <Loading />;
 
-  if (showSuccessPage)
+  if (signUpData)
     return (
       <AddSupporterSuccess
         campaign={campaign}
@@ -131,7 +140,7 @@ export default function SupporterSignUpForm({
 
   return (
     <>
-      {!showSuccessPage && (
+      {!signUpData && (
         <>
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
             {campaign.name}
