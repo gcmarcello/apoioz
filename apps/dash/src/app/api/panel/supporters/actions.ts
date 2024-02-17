@@ -98,6 +98,7 @@ export async function addSupporter(request: AddSupporterDto) {
 
     const newSupporter = await service.createSupporter({
       ...parsedRequest,
+      referralId,
       campaignId: parsedRequest.supporterSession.campaignId,
     });
 

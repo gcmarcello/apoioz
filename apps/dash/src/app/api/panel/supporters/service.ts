@@ -428,7 +428,7 @@ export async function createSupporter(request: CreateSupporterDto) {
 
   if (!campaign) throw "Campanha não encontrada";
 
-  const referral = await prisma.supporter.findFirst({
+  const referral = await prisma.supporter.findUnique({
     where: { id: request.referralId, campaignId: request.campaignId },
   });
 
