@@ -2,7 +2,6 @@ import { readCampaign } from "@/app/api/panel/campaigns/service";
 import { readZonesByCampaign } from "@/app/api/elections/zones/service";
 import { readUserFromSupporter } from "@/app/api/user/service";
 import {
-  getLastInviteCode,
   readInviteCode,
   validateInviteCode,
 } from "@/app/api/auth/invites/service";
@@ -23,7 +22,7 @@ export default async function Apoiar({
 
   if (!inviteCode) return redirect("/painel");
 
-  const isInviteCodeValid = await validateInviteCode(inviteCode);
+  const isInviteCodeValid = validateInviteCode(inviteCode);
 
   if (!isInviteCodeValid) return redirect("/painel");
 
