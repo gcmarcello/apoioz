@@ -166,12 +166,7 @@ export default function SupporterSignUpForm({
         order={["basicInfo", "electionInfo"]}
         steps={{
           basicInfo: {
-            fields: [
-              "user.name",
-              "user.email",
-              "user.info.birthDate",
-              "user.phone",
-            ],
+            fields: ["user.name", "user.info.birthDate", "user.phone"],
             form: <BasicInfoSection />,
           },
           electionInfo: {
