@@ -173,7 +173,7 @@ export function AddSupporterForm({
           <ErrorMessage />
         </Field>
 
-        <Field name="user.email">
+        <Field enableAsterisk={false} name="user.email">
           <Label>Email</Label>
           <Input />
           <ErrorMessage />
