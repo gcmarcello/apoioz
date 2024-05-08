@@ -42,11 +42,15 @@ export async function createEvent(
     const campaign = await prisma.campaign.findFirstOrThrow({
       where: { id: request.supporterSession.campaignId },
     });
+
+    const supportersEmail = supporters
+      .filter((supporter) => supporter.user.email)
+      .map((supporter) => supporter.user.email)
+      .filter((email) => email !== host.user.email);
+
     await sendEmail({
       to: getEnv("SENDGRID_EMAIL"),
-      bcc: supporters
-        .map((supporter) => supporter.user.email)
-        .filter((email) => email !== host.user.email),
+      bcc: supportersEmail as string[],
       dynamicData: {
         subject: `${event.name} confirmado! - ApoioZ`,
         eventName: event.name,
@@ -59,36 +63,38 @@ export async function createEvent(
       templateId: "event_confirmed",
     });
   } else {
-    await sendEmail({
-      to: host.user.email,
-      dynamicData: {
-        subject: "Evento enviado para análise! - ApoioZ",
-        eventName: event.name,
-        eventDate: dayjs(event.dateStart)
-          .utcOffset(-3)
-          .format("DD/MM/YYYY HH:mm"),
-        eventLocation: event.location,
-        eventDescription: event.description,
-        organizerName: host.user.name,
-      },
-      templateId: "event_created",
-    });
+    if (host.user.email)
+      await sendEmail({
+        to: host.user.email,
+        dynamicData: {
+          subject: "Evento enviado para análise! - ApoioZ",
+          eventName: event.name,
+          eventDate: dayjs(event.dateStart)
+            .utcOffset(-3)
+            .format("DD/MM/YYYY HH:mm"),
+          eventLocation: event.location,
+          eventDescription: event.description,
+          organizerName: host.user.name,
+        },
+        templateId: "event_created",
+      });
 
-    await sendEmail({
-      to: leader.user.email,
-      dynamicData: {
-        subject: "Evento recebido para sua análise. - ApoioZ",
-        eventName: event.name,
-        eventDate: dayjs(event.dateStart)
-          .utcOffset(-3)
-          .format("DD/MM/YYYY HH:mm"),
-        eventLocation: event.location,
-        leaderName: leader.user.name,
-        eventObservations: event.observations,
-        eventDescription: event.description,
-      },
-      templateId: "event_created_leader",
-    });
+    if (leader.user.email)
+      await sendEmail({
+        to: leader.user.email,
+        dynamicData: {
+          subject: "Evento recebido para sua análise. - ApoioZ",
+          eventName: event.name,
+          eventDate: dayjs(event.dateStart)
+            .utcOffset(-3)
+            .format("DD/MM/YYYY HH:mm"),
+          eventLocation: event.location,
+          leaderName: leader.user.name,
+          eventObservations: event.observations,
+          eventDescription: event.description,
+        },
+        templateId: "event_created_leader",
+      });
   }
 
   return event;
@@ -211,25 +217,27 @@ export async function updateEventStatus(
       },
       templateId: "event_confirmed_host",
     });
-    await sendEmail({
-      to: host.user.email,
-      bcc: [
-        ...supporters
-          .map((supporter) => supporter.user.email)
-          .filter((email) => email !== host.user.email),
-      ],
+    if (host.user.email)
+      await sendEmail({
+        to: host.user.email,
+        bcc: [
+          ...supporters
+            .filter((supporter) => supporter.user.email)
+            .map((supporter) => supporter.user.email)
+            .filter((email) => email !== host.user.email),
+        ] as string[],
 
-      dynamicData: {
-        subject: `${event.name} confirmado! - ApoioZ`,
-        eventName: event.name,
-        eventDate: dayjs(event.dateStart)
-          .utcOffset(-3)
-          .format("DD/MM/YYYY HH:mm"),
-        eventLocation: event.location,
-        campaignName: campaign.name,
-      },
-      templateId: "event_confirmed",
-    });
+        dynamicData: {
+          subject: `${event.name} confirmado! - ApoioZ`,
+          eventName: event.name,
+          eventDate: dayjs(event.dateStart)
+            .utcOffset(-3)
+            .format("DD/MM/YYYY HH:mm"),
+          eventLocation: event.location,
+          campaignName: campaign.name,
+        },
+        templateId: "event_confirmed",
+      });
   }
 }
 
