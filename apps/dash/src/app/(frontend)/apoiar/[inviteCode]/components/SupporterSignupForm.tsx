@@ -176,7 +176,7 @@ export default function SupporterSignUpForm({
           },
           electionInfo: {
             fields: ["user.password"],
-            refine: (data) => {
+            refine: (data: any) => {
               return Boolean(
                 data.user.info.addressId ||
                   (data.user.info.sectionId && data.user.info.zoneId)
