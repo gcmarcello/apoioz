@@ -43,7 +43,7 @@ export default function SupporterSideBar() {
     onSuccess: ({ data }) => {
       if (!data) return;
       showToast({
-        message: `${data.user.name} adicionado a campanha`,
+        message: `${data.user?.name} adicionado a campanha`,
         variant: "success",
         title: "Apoiador Adicionado",
       });

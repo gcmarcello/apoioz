@@ -400,9 +400,6 @@ export async function createSupporter(request: CreateSupporterDto) {
     where: {
       OR: [
         {
-          email: normalizeEmail(request.user.email),
-        },
-        {
           phone: normalizePhone(request.user.phone),
         },
         {
@@ -511,7 +508,7 @@ export async function createSupporter(request: CreateSupporterDto) {
           },
           create: {
             id: userId,
-            email: normalizeEmail(user.email),
+            email: user.email ? normalizeEmail(user.email) : null,
             name: user.name,
             phone: normalizePhone(user.phone),
             password: user.password ? await hashInfo(user.password) : undefined,
@@ -555,20 +552,21 @@ export async function createSupporter(request: CreateSupporterDto) {
     "NEXT_PUBLIC_WS_SERVER"
   )}/campaign/${campaign.id}/supporter`;
 
-  const { data: ws } = await axios.get(wsUrl, {
+  await axios.get(wsUrl, {
     headers: { Authorization: getEnv("WS_SERVER_TOKEN") },
   });
 
-  await sendEmail({
-    to: user.email,
-    templateId: "welcome_email",
-    dynamicData: {
-      name: user.name,
-      siteLink: `${getEnv("NEXT_PUBLIC_SITE_URL")}/painel`,
-      campaignName: campaign.name,
-      subject: `Bem Vindo à Campanha ${campaign.name}! - ApoioZ`,
-    },
-  });
+  if (user.email)
+    await sendEmail({
+      to: user.email,
+      templateId: "welcome_email",
+      dynamicData: {
+        name: user.name,
+        siteLink: `${getEnv("NEXT_PUBLIC_SITE_URL")}/painel`,
+        campaignName: campaign.name,
+        subject: `Bem Vindo à Campanha ${campaign.name}! - ApoioZ`,
+      },
+    });
 
   const referralInfo = await prisma.supporter.findFirst({
     where: { id: referral.id },
@@ -576,6 +574,8 @@ export async function createSupporter(request: CreateSupporterDto) {
   });
 
   if (!referralInfo) throw "Apoiador não encontrado";
+
+  if (!referralInfo.user.email) return supporter;
 
   await sendEmail({
     to: referralInfo.user.email,
