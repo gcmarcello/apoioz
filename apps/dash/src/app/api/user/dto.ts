@@ -4,7 +4,7 @@ import { z } from "zod";
 
 export const createUserDto = z.object({
   name: z.string().min(3, { message: "Nome deve ter no mínimo 3 caracteres" }),
-  email: z.string().email({ message: "Email inválido" }).min(3),
+  email: z.string().email({ message: "Email inválido" }).min(3).optional(),
   password: z.string().nullable().optional(),
   phone: z.custom(phoneValidator as any, { message: "Telefone inválido" }),
   info: z

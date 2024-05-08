@@ -1,4 +1,4 @@
-function valueValidator(value: string) {
+export function valueValidator(value: string) {
   if (!value) return;
 
   value = value.replace(/[_.-]/g, "");

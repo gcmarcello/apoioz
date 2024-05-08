@@ -37,6 +37,8 @@ export async function createPasswordRecovery(identifier: string) {
     },
   });
   if (!potentialUser) throw "Usuário não encontrado.";
+  if (!potentialUser.email)
+    throw "Usuário não possui email cadastrado. Contate o líder do seu grupo.";
 
   const existingRecovery = await prisma.passwordRecovery.findFirst({
     where: {

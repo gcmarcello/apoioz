@@ -90,7 +90,7 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
               >
                 <WhatsAppIcon className="h-5 w-5 fill-gray-400 hover:fill-gray-500" />
               </Link>
-              <Link href="mailto:${info.getValue().email}" target="_blank">
+              <Link href={`mailto:${info.getValue().email}`} target="_blank">
                 <AtSymbolIcon className="h-[1.45rem] w-[1.45rem] text-gray-400 hover:text-gray-500" />
               </Link>
               <ViewAsButton as={info.row.original.id}>

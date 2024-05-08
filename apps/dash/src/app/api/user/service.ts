@@ -12,18 +12,20 @@ dayjs.extend(customParseFormat);
 export async function createUser(data: CreateUserDto) {
   const { name, email, password, phone, info } = data;
 
-  const existingUser = await prisma.user.findFirst({
-    where: { email: normalizeEmail(email) },
-  });
+  if (email) {
+    const existingUser = await prisma.user.findFirst({
+      where: { email: normalizeEmail(email) },
+    });
 
-  if (existingUser) throw `Usuário com este email já existe.`;
+    if (existingUser) throw `Usuário com este email já existe.`;
+  }
 
   const user = await prisma.user.create({
     data: {
-      email: normalizeEmail(data.email),
-      password: data.password && (await hashInfo(data.password)),
+      email: data.email ? normalizeEmail(data.email) : null,
+      password: password && (await hashInfo(password)),
       role: "user",
-      name: data.name,
+      name: name,
       phone: normalizePhone(phone),
       info: {
         create: {
@@ -79,7 +81,7 @@ export async function updateUser(request: any) {
     });
     if (verifyExistingEmail && verifyExistingEmail.id !== userSession.id)
       throw `Usuário com este email já existe.`;
-    const updatedUser = await prisma.user.update({
+    await prisma.user.update({
       where: { id: userSession.id },
       data: {
         ...data,
