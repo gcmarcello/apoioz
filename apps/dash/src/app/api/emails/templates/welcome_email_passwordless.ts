@@ -1,9 +1,9 @@
-export const event_created = `<!doctype html>
+export const welcome_email_passwordless = `<!doctype html>
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Evento Criado com Sucesso - ApoioZ</title>
+    <title>Boas-Vindas - {{campaignName}}</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -49,30 +49,19 @@ export const event_created = `<!doctype html>
   <body>
     <div class="email-container">
       <div class="email-header">
-        <h1>Seu evento foi criado com sucesso!</h1>
+        <h1>Bem-vindo(a) à {{campaignName}} - ApoioZ!</h1>
       </div>
       <div class="email-content">
-        <p>Olá {{organizerName}},</p>
+        <p>Olá {{name}}!</p>
+        <p>Bem vindo à campanha {{campaignName}} no sistema da ApoioZ.</p>
         <p>
-          Seu evento "{{eventName}}" foi criado com sucesso no ApoioZ! Ele está agora sob
-          análise pela equipe de campanha.
+          Você ainda não configurou uma senha. Clique no botão abaixo para fazer isto! Participe e ajude sua
+          rede de apoio a crescer!
         </p>
-        <p>Aqui estão os detalhes do seu evento:</p>
-        <ul>
-          <li>Nome do Evento: {{eventName}}</li>
-          <li>Data: {{eventDate}}</li>
-          <li>Local: {{eventLocation}}</li>
-          <li>Descrição: {{eventDescription}}</li>
-        </ul>
         <p style="text-align: center">
-          <a href="https://apoioz.com.br/painel/calendario" class="button"
-            >Ver Detalhes do Evento</a
-          >
+          <a href="{{siteLink}}" class="button">Defina sua Senha</a>
         </p>
-        <p>
-          Caso o evento seja confirmado, você receberá um e-mail com a confirmação do
-          evento e um contato por meio da equipe de campanha.
-        </p>
+        
         <p>Atenciosamente,<br />Equipe ApoioZ</p>
       </div>
       <div class="email-footer">

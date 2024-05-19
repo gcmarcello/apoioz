@@ -20,8 +20,6 @@ export async function sendEmail({
   templateId: keyof typeof templates;
   dynamicData: any;
 }) {
-  if (isDev) return;
-
   const template = await readEmailTemplate(templateId, dynamicData);
 
   const sendGridEmail = getEnv("SENDGRID_EMAIL");
@@ -35,8 +33,9 @@ export async function sendEmail({
       bcc,
       subject: template.subject,
       html: template.body,
+      /* mailSettings: { sandboxMode: { enable: isDev } }, */
     })
-    .then(() => console.log("Email sent"))
+    .then(() => console.log(`Email template ${templateId} sent to ${to}`))
     .catch((err) => {
       console.log(err.response.body.errors);
       throw "Failed to send email";

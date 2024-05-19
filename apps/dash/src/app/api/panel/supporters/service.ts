@@ -398,14 +398,24 @@ export async function readSupportersFromSupporterGroupWithRelation({
 export async function createSupporter(request: CreateSupporterDto) {
   const existingUser = await prisma.user.findFirst({
     where: {
-      OR: [
-        {
-          phone: normalizePhone(request.user.phone),
-        },
-        {
-          id: request?.userId,
-        },
-      ],
+      OR: request.user.email
+        ? [
+            {
+              phone: normalizePhone(request.user.phone),
+            },
+            {
+              id: request?.userId,
+            },
+            { email: normalizeEmail(request.user.email) },
+          ]
+        : [
+            {
+              phone: normalizePhone(request.user.phone),
+            },
+            {
+              id: request?.userId,
+            },
+          ],
     },
     include: {
       info: true,
@@ -556,17 +566,30 @@ export async function createSupporter(request: CreateSupporterDto) {
     headers: { Authorization: getEnv("WS_SERVER_TOKEN") },
   });
 
-  if (user.email)
+  let recoveryLink;
+  if (!user.password) {
+    recoveryLink = await prisma.passwordRecovery.create({
+      data: {
+        userId,
+        expiresAt: dayjs().add(7, "days").toISOString(),
+      },
+    });
+  }
+
+  if (user.email) {
     await sendEmail({
       to: user.email,
-      templateId: "welcome_email",
+      templateId: recoveryLink ? "welcome_email_passwordless" : "welcome_email",
       dynamicData: {
         name: user.name,
-        siteLink: `${getEnv("NEXT_PUBLIC_SITE_URL")}/painel`,
+        siteLink: recoveryLink
+          ? `${getEnv("NEXT_PUBLIC_SITE_URL")}/recuperar/${recoveryLink.id}`
+          : `${getEnv("NEXT_PUBLIC_SITE_URL")}/painel`,
         campaignName: campaign.name,
         subject: `Bem Vindo à Campanha ${campaign.name}! - ApoioZ`,
       },
     });
+  }
 
   const referralInfo = await prisma.supporter.findFirst({
     where: { id: referral.id },
