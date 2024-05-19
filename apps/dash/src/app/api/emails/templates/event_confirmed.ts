@@ -74,7 +74,7 @@ export const event_confirmed = `<!doctype html>
         <p>Atenciosamente,<br />Equipe ApoioZ</p>
       </div>
       <div class="email-footer">
-        <p>&copy; 2023 ApoioZ. Todos os direitos reservados.</p>
+        <p>&copy; 2024 ApoioZ. Todos os direitos reservados.</p>
       </div>
     </div>
   </body>

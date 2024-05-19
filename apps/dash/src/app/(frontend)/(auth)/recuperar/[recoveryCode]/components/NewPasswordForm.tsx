@@ -37,6 +37,7 @@ export default function NewPasswordForm({
     isMutating: loading,
   } = useAction({
     action: resetPassword,
+    redirect: true,
     onSuccess: () => {
       router.push("/painel");
     },

@@ -111,6 +111,7 @@ export async function addSupporter(request: AddSupporterDto) {
       message: "Sucesso ao criar novo apoiador!",
     });
   } catch (err: any) {
+    console.log(err);
     return ActionResponse.error(err);
   }
 }

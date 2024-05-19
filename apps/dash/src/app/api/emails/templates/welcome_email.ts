@@ -3,7 +3,7 @@ export const welcome_email = `<!doctype html>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Boas-Vindas - ApoioZ</title>
+    <title>Boas-Vindas - {{campaignName}}</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -49,7 +49,7 @@ export const welcome_email = `<!doctype html>
   <body>
     <div class="email-container">
       <div class="email-header">
-        <h1>Bem-vindo(a) ao ApoioZ!</h1>
+        <h1>Bem-vindo(a) à {{campaignName}} - ApoioZ!</h1>
       </div>
       <div class="email-content">
         <p>Olá {{name}}!</p>
@@ -64,7 +64,7 @@ export const welcome_email = `<!doctype html>
         <p>Atenciosamente,<br />Equipe ApoioZ</p>
       </div>
       <div class="email-footer">
-        <p>&copy; 2023 ApoioZ. Todos os direitos reservados.</p>
+        <p>&copy; 2024 ApoioZ. Todos os direitos reservados.</p>
       </div>
     </div>
   </body>
