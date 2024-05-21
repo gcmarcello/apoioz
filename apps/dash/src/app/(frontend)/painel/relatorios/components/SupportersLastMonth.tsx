@@ -1,14 +1,6 @@
 "use client";
 import dayjs from "dayjs";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
+
 import { readSupportersFromSupporterGroupWithRelation } from "@/app/api/panel/supporters/service";
 import { ChartContainer, createChart } from "odinkit/client";
 import { ExtractSuccessResponse } from "odinkit";
@@ -28,6 +20,10 @@ export function SupportersLastMonth({
     labels.push(dayjs().subtract(i, "day").format("MMMM D"));
   }
 
+  const initialsupporterData = supporterData.filter((s) =>
+    dayjs(s.createdAt).isBefore(dayjs().subtract(30, "day"))
+  ).length;
+
   const chartData = labels.map((label) => {
     return supporterData.filter(
       (supporter) => dayjs(supporter.createdAt).format("MMMM D") === label
@@ -36,12 +32,15 @@ export function SupportersLastMonth({
 
   const supporterSumEachDay = chartData.reduce<number[]>((acc, curr, index) => {
     if (index === 0) {
-      acc.push(curr);
+      acc.push(curr + initialsupporterData);
     } else {
       acc.push(acc[index - 1]! + curr);
     }
     return acc;
   }, []);
+
+  const maxYValue =
+    Math.round((Math.max(...supporterSumEachDay) + 100) / 100) * 100;
 
   const chart = createChart({
     type: "bar",
@@ -57,6 +56,12 @@ export function SupportersLastMonth({
     },
     options: {
       aspectRatio: 1.5,
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: maxYValue,
+        },
+      },
       plugins: {
         legend: {
           display: false,
