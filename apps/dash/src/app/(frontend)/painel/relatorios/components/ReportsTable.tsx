@@ -8,6 +8,7 @@ import {
   Link,
   Table,
   WhatsAppIcon,
+  formatPhone,
   toProperCase,
 } from "odinkit";
 import { ViewAsButton } from "./ViewAsButton";
@@ -23,7 +24,19 @@ interface ReportsTableRankingProps {
 export function ReportsTable({ supporters }: ReportsTableRankingProps) {
   return (
     <Table
-      xlsx={{ fileName: "Relatório de apoiadores", sheetName: "Apoiadores" }}
+      xlsx={{
+        fileName: "Relatório de apoiadores",
+        data: supporters.map((s) => ({
+          Nome: s.user.name,
+          "Indicado por": s.referral?.user.name,
+          Bairro: s.user.info.Address?.neighborhood,
+          Zona: s.user.info.Zone?.number,
+          Seção: s.user.info.Section?.number,
+          "Entrou em": dayjs(s.createdAt).format("DD/MM/YYYY HH:mm"),
+          Telefone: s.user.phone ? formatPhone(s.user.phone) : "",
+          Email: s.user.email,
+        })),
+      }}
       columns={(columnHelper) => [
         columnHelper.accessor("user.name", {
           id: "name",
