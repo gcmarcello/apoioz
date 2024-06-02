@@ -65,7 +65,7 @@ export default function LoginForm({
             <Label>Email ou Telefone</Label>
             <Input
               placeholder="email@email.com - (99) 99999-9999"
-              mask={(_, rawValue) => {
+              mask={(_: any, rawValue: any) => {
                 if (Number(rawValue)) {
                   if (rawValue.length >= "99999999999".length) {
                     return "(99) 99999-9999";
