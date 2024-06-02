@@ -56,9 +56,11 @@ export default async function MainStats() {
       </div>
     );
 
-  const totalSupportersChange =
-    mainPageStats?.totalSupporters -
-    mainPageStats?.supportersLastWeek / mainPageStats?.supportersLastWeek;
+  const totalSupportersChange = Math.round(
+    ((mainPageStats?.totalSupporters - mainPageStats?.supportersLastWeek) /
+      mainPageStats?.supportersLastWeek) *
+      100
+  );
 
   const stats = [
     {
@@ -86,10 +88,7 @@ export default async function MainStats() {
       name: "Líder de indicações",
       stat: mainPageStats?.referralLeader.user?.name,
       previousStat: `${mainPageStats?.referralLeader.count} no total`,
-      change: `${Math.round(
-        (mainPageStats?.referralLeader?.count ||
-          0 / mainPageStats?.totalSupporters) * 100
-      )}%`,
+      change: `${Math.round(((mainPageStats?.referralLeader?.count || 0) / mainPageStats.totalSupporters) * 100)}%`,
       changeType: false,
     },
   ];
