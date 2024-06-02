@@ -160,7 +160,7 @@ export default function SupporterSignUpForm({
       )}
 
       <MultistepForm
-        className="flex h-full flex-col  divide-gray-200  text-left "
+        className="flex h-full flex-col divide-gray-200  text-left  "
         hform={form}
         onSubmit={signUp}
         order={["basicInfo", "electionInfo"]}
