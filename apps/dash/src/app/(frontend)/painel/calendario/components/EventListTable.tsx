@@ -2,15 +2,18 @@ import { contrastingColor } from "@/app/(frontend)/_shared/utils/colors";
 import { CalendarIcon, MapPinIcon } from "@heroicons/react/24/solid";
 import clsx from "clsx";
 import dayjs from "dayjs";
-import { headers, cookies } from "next/headers";
 import { EventListActions } from "./EventListActions";
-import { Event } from "prisma/client";
+import { Event, Supporter } from "prisma/client";
 import { Date } from "@/app/(frontend)/_shared/components/Date";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 
-export default async function EventListTable({ events }: { events: Event[] }) {
+export default async function EventListTable({
+  events,
+}: {
+  events: (Event & { Supporter: Supporter & { user: { name: string } } })[];
+}) {
   const {
     request: { supporterSession },
   } = await UseMiddlewares()

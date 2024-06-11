@@ -4,11 +4,15 @@ import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 import { updateEventStatus } from "@/app/api/panel/events/actions";
 import { Transition, Dialog } from "@headlessui/react";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Event } from "prisma/client";
+import { Event, Supporter } from "prisma/client";
 import dayjs from "dayjs";
 import { Fragment, useEffect, useRef, useState } from "react";
 
-export function EventListActions({ event }: { event: Event }) {
+export function EventListActions({
+  event,
+}: {
+  event: Event & { Supporter: Supporter & { user: { name: string } } };
+}) {
   const [open, setOpen] = useState(false);
   const [counter, setCounter] = useState(3); // Start from 3 seconds
   const [rejectOptions, setRejectOptions] = useState({
@@ -137,6 +141,14 @@ export function EventListActions({ event }: { event: Event }) {
                         </dt>
                         <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                           {event.name}
+                        </dd>
+                      </div>
+                      <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                        <dt className="text-center text-sm  font-medium leading-6 text-gray-900">
+                          Responsável
+                        </dt>
+                        <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                          {event.Supporter.user.name}
                         </dd>
                       </div>
                       <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
