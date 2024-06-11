@@ -24,6 +24,7 @@ export async function createEvent(
       location: request.location,
       status: request.supporterSession.level === 4 ? "active" : "pending",
       hostId: request.supporterSession.id,
+      observations: request.observations,
     },
   });
 
@@ -109,6 +110,7 @@ export async function readEventsByCampaign({
   const allEvents = await prisma.event.findMany({
     where: { ...where, campaignId },
     orderBy: { dateStart: "asc" },
+    include: { Supporter: { include: { user: { select: { name: true } } } } },
   });
 
   const allActiveEvents = allEvents.filter(
