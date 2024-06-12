@@ -1,3 +1,4 @@
+"use client";
 import { showToast } from "@/app/(frontend)/_shared/components/alerts/toast";
 import {
   readEventsAvailability,
@@ -84,13 +85,6 @@ export default function SubmitEventRequest({
       },
     });
   }, []);
-
-  const generateFakeData = () => {
-    form.setValue("name", fakerPT_BR.company.buzzPhrase());
-    form.setValue("description", fakerPT_BR.lorem.paragraph());
-    form.setValue("location", fakerPT_BR.location.county());
-    form.setValue("observations", fakerPT_BR.lorem.paragraph());
-  };
 
   const onDateStartChange = (data: { value: string }) => {
     form.resetField("dateEnd");

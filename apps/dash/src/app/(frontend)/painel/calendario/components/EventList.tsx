@@ -1,11 +1,12 @@
 import { Event } from "prisma/client";
 
 import EventListTable from "./EventListTable";
+import { EventWithUser } from "../page";
 
 export default function EventList({
   events,
 }: {
-  events: { active: Event[]; pending: Event[] };
+  events: { active: EventWithUser[]; pending: EventWithUser[] };
 }) {
   return (
     <section className="divide-y">

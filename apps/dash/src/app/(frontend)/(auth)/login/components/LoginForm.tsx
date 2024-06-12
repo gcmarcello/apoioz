@@ -16,6 +16,7 @@ import {
   useForm,
 } from "odinkit/client";
 import { Alertbox, ButtonSpinner, Container, List } from "odinkit";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/20/solid";
 
 export default function LoginForm({
   supportRedirect,
