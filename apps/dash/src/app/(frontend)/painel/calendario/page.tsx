@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import updateLocale from "dayjs/plugin/updateLocale";
 import EventList from "./components/EventList";
-import { Event } from "prisma/client";
+import { Event, Supporter } from "prisma/client";
 import Calendar from "./components/Calendar";
 import { cookies, headers } from "next/headers";
 import { readEventsByCampaign } from "@/app/api/panel/events/actions";
@@ -20,6 +20,10 @@ export type CalendarDay = {
   isToday: boolean;
   isSelected: boolean;
   events?: Event[];
+};
+
+export type EventWithUser = Event & {
+  Supporter: Supporter & { user: { name: string } };
 };
 
 export default async function CalendarPage() {
