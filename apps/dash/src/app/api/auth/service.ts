@@ -13,7 +13,7 @@ export async function login(
   request: LoginDto & { user: User; isEmail: boolean }
 ) {
   if (!request.user.password)
-    throw `Seu acesso ao painel está restrito. Clique <a href="/" class="underline text-indigo-400">aqui</a> para finalizar a configuração.`;
+    throw `Seu acesso ao painel está restrito. Clique no link abaixo para criar uma senha.`;
 
   if (!(await compareHash(request.password, request.user.password)))
     throw `${request.isEmail ? "Email" : "Usuário"} ou senha incorretos.`;

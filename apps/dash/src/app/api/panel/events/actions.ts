@@ -3,10 +3,16 @@
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
 import { revalidatePath } from "next/cache";
-import { CreateEventDto, ReadEventsAvailability, ReadEventsDto } from "./dto";
+import {
+  CreateEventDto,
+  ReadEventsAvailability,
+  ReadEventsDto,
+  UpdateEventDto,
+} from "./dto";
 import * as service from "./service";
 import { ActionResponse } from "odinkit";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
+import { Event } from "prisma/client";
 
 export async function createEvent(request: CreateEventDto) {
   try {
@@ -71,9 +77,28 @@ export async function updateEventStatus(request: {
   return revalidatePath("/painel/calendario");
 }
 
-export async function updateEvent(payload: { eventId: string; data: Event }) {
-  return await service.updateEvent({
-    eventId: payload.eventId,
-    data: payload.data,
-  });
+export async function updateEvent(data: UpdateEventDto) {
+  const { request: parsedRequest } = await UseMiddlewares()
+    .then(UserSessionMiddleware)
+    .then(SupporterSessionMiddleware);
+
+  if (parsedRequest.supporterSession.level !== 4) {
+    return ActionResponse.error({
+      message: "Você não tem permissão para atualizar este evento.",
+    });
+  }
+
+  try {
+    const updatedEvent = await service.updateEvent({
+      eventId: data.id,
+      data: data,
+    });
+    revalidatePath("/painel/calendario");
+    return ActionResponse.success({
+      data: updatedEvent,
+      message: "Evento atualizado com sucesso!",
+    });
+  } catch (error) {
+    return ActionResponse.error(error);
+  }
 }

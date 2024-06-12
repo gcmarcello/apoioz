@@ -35,7 +35,7 @@ export default async function LoginPage({
       />
       <div className="my-2 flex justify-start sm:mx-auto sm:w-full sm:max-w-sm">
         <p className="text-center text-sm text-gray-500">
-          Esqueceu a senha ou não configurou?{" "}
+          Esqueceu a senha ou não criou uma?{" "}
           <Link
             href={"/recuperar"}
             className="font-semibold leading-6 text-indigo-600 hover:text-indigo-400"

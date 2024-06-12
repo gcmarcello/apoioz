@@ -19,6 +19,14 @@ export const createEventDto = z.object({
 
 export type CreateEventDto = z.infer<typeof createEventDto>;
 
+export const updateEventDto = createEventDto.merge(
+  z.object({
+    id: z.string(),
+  })
+);
+
+export type UpdateEventDto = z.infer<typeof updateEventDto>;
+
 export const readEventsDto = readDto(
   z.object({
     campaignId: z.string(),

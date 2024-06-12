@@ -1,5 +1,5 @@
 import { contrastingColor } from "@/app/(frontend)/_shared/utils/colors";
-import { CalendarIcon, MapPinIcon } from "@heroicons/react/24/solid";
+import { CalendarIcon, MapPinIcon, UserIcon } from "@heroicons/react/24/solid";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import { EventListActions } from "./EventListActions";
@@ -44,9 +44,17 @@ export default async function EventListTable({
             </div>
             <div className="flex-auto">
               <div className="flex justify-between">
-                <h3 className="pr-10 font-semibold text-gray-900 xl:pr-0">
-                  {event.name}
-                </h3>
+                <div>
+                  <h3 className="pr-10 font-semibold text-gray-900 xl:pr-0">
+                    {event.name}
+                  </h3>
+                  <div className="flex items-center gap-3">
+                    <UserIcon className="h-5 w-5 text-gray-500" />
+                    <h3 className="text-gray-500 xl:pr-0">
+                      {event.Supporter.user.name}
+                    </h3>
+                  </div>
+                </div>
                 {event.status !== "active" && supporterSession.level === 4 && (
                   <div className="px-2">
                     <EventListActions event={event} />
