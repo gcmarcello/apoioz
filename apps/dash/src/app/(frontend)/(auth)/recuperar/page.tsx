@@ -56,7 +56,7 @@ export default function RecoverPasswordPage() {
         />
 
         <h2 className=" text-center text-2xl font-bold leading-9 tracking-tight text-gray-700">
-          Recuperar Senha
+          Recuperar ou Criar Senha
         </h2>
       </div>
       <div className="my-2 flex flex-col justify-end space-y-4 sm:mx-auto sm:w-full sm:max-w-sm">
