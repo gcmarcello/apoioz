@@ -33,9 +33,14 @@ export async function sendEmail({
       bcc,
       subject: template.subject,
       html: template.body,
-      /* mailSettings: { sandboxMode: { enable: isDev } }, */
+      mailSettings: { sandboxMode: { enable: isDev } },
     })
-    .then(() => console.log(`Email template ${templateId} sent to ${to}`))
+    .then(() =>
+      console.log(
+        `Email template ${templateId} sent to ${to}`,
+        bcc ? `and bcc to ${bcc.length}` : ""
+      )
+    )
     .catch((err) => {
       console.log(err.response.body.errors);
       throw "Failed to send email";

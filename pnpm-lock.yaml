@@ -493,6 +493,9 @@ importers:
       dayjs:
         specifier: ^1.11.10
         version: 1.11.10
+      i18next:
+        specifier: ^23.11.5
+        version: 23.11.5
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -523,6 +526,9 @@ importers:
       zod:
         specifier: 3.21.0
         version: 3.21.0
+      zod-i18n-map:
+        specifier: ^2.27.0
+        version: 2.27.0(i18next@23.11.5)(zod@3.21.0)
       zustand:
         specifier: ^4.4.7
         version: 4.4.7(@types/react@18.2.21)(react@18.2.0)
@@ -7418,6 +7424,12 @@ packages:
     resolution: {integrity: sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==}
     engines: {node: '>=10.17.0'}
 
+  /i18next@23.11.5:
+    resolution: {integrity: sha512-41pvpVbW9rhZPk5xjCX2TPJi2861LEig/YRhUkY+1FQ2IQPS0bKUDYnEqY8XPPbB48h1uIwLnP9iiEfuSl20CA==}
+    dependencies:
+      '@babel/runtime': 7.23.8
+    dev: false
+
   /iconv-lite@0.4.24:
     resolution: {integrity: sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==}
     engines: {node: '>=0.10.0'}
@@ -12000,6 +12012,16 @@ packages:
       readable-stream: 3.6.2
     dev: false
     optional: true
+
+  /zod-i18n-map@2.27.0(i18next@23.11.5)(zod@3.21.0):
+    resolution: {integrity: sha512-ORu9XpiVh3WDiEUs5Cr9siGgnpeODoBsTIgSD8sQCH9B//f9KowlzqHUEdPYb3vFonaSH8yPvPCOFM4niwp3Sg==}
+    peerDependencies:
+      i18next: '>=21.3.0'
+      zod: '>=3.17.0'
+    dependencies:
+      i18next: 23.11.5
+      zod: 3.21.0
+    dev: false
 
   /zod@3.21.0:
     resolution: {integrity: sha512-UYdykTcVxB6lfdyLzAqLyyYAlOcpoluECvjsdoaqfQmz9p+3LRaIqYcNiL/J2kFYp66fBM8wwBvIGVEjq7KtZw==}

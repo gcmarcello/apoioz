@@ -4,16 +4,24 @@ import {
   readEventsAvailability,
   createEvent,
 } from "@/app/api/panel/events/actions";
-import { fakerPT_BR } from "@faker-js/faker";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
-import { Dispatch, SetStateAction, useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { Dispatch, SetStateAction, useState, useEffect, useMemo } from "react";
 import { Button } from "../../../_shared/components/Button";
 import { CalendarDay } from "../page";
 import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { ListboxField } from "@/app/(frontend)/_shared/components/fields/Select";
-import { useAction } from "odinkit/client";
+import {
+  Checkbox,
+  Description,
+  Form,
+  Input,
+  Label,
+  Switch,
+  Textarea,
+  useAction,
+  useForm,
+} from "odinkit/client";
 import { CreateEventDto, createEventDto } from "@/app/api/panel/events/dto";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -26,9 +34,7 @@ export default function SubmitEventRequest({
   day: CalendarDay;
   setShow: Dispatch<SetStateAction<boolean>>;
 }) {
-  const form = useForm<CreateEventDto>({
-    resolver: zodResolver(createEventDto),
-  });
+  const form = useForm({ schema: createEventDto });
 
   const { data, trigger: fetchEventsAvailability } = useAction({
     action: readEventsAvailability,
@@ -115,44 +121,25 @@ export default function SubmitEventRequest({
     setEndingAvailableTimes(times);
   };
 
+  const Field = useMemo(() => form.createField(), []);
+
   if (!data) return null;
 
   return (
-    <form onSubmit={form.handleSubmit((data) => submitEvent(data))}>
+    <Form hform={form} onSubmit={(data) => submitEvent(data)}>
       <div className="my-2">
         <div className="mt-4">
-          <label
-            htmlFor="name"
-            className="block text-sm font-medium leading-6 text-gray-900"
-          >
-            Nome do Evento
-          </label>
-          <div className="mt-1">
-            <input
-              type="text"
-              autoComplete="title"
-              {...form.register("name", { required: true })}
-              id="name"
-              className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            />
-          </div>
+          <Field name="name">
+            <Label>Nome do Evento</Label>
+            <Input />
+          </Field>
         </div>
 
         <div className="mt-4">
-          <label
-            htmlFor="description"
-            className="block text-sm font-medium leading-6 text-gray-900"
-          >
-            Descrição do Evento
-          </label>
-          <div className="mt-1">
-            <textarea
-              autoComplete="description"
-              {...form.register("description", { required: true })}
-              id="description"
-              className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            />
-          </div>
+          <Field name="description">
+            <Label>Descrição do Evento</Label>
+            <Textarea />
+          </Field>
         </div>
         <div className="mt-4 grid grid-cols-2 gap-2">
           <div>
@@ -192,41 +179,31 @@ export default function SubmitEventRequest({
             </span>
           )}
         <div className="mt-4">
-          <label
-            htmlFor="location"
-            className="block text-sm font-medium leading-6 text-gray-900"
-          >
-            Local do Evento
-          </label>
-          <div className="mt-1">
-            <input
-              type="text"
-              autoComplete="location"
-              {...form.register("location", { required: true })}
-              id="location"
-              className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            />
-          </div>
+          <Field name="location">
+            <Label>Local</Label>
+            <Input />
+          </Field>
         </div>
         <div className="mt-4">
-          <label
-            htmlFor="observations"
-            className="block text-sm font-medium leading-6 text-gray-900"
-          >
-            Observações{" "}
-            <span className="text-xs font-normal italic text-gray-400">
-              Só aparecem para a organização.
-            </span>
-          </label>
-          <div className="mt-1">
-            <textarea
-              autoComplete="observations"
-              {...form.register("observations", { required: true })}
-              id="observations"
-              className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            />
-          </div>
+          <Field variant="switch" name="private">
+            <Switch color="indigo" />
+            <Label>Evento Privado?</Label>
+            <Description>
+              O evento só será divulgado para os apoiadores da sua rede.
+            </Description>
+          </Field>
         </div>
+        <div className="mt-4">
+          <Field name="observations">
+            <Label>Observações</Label>
+            <Textarea />
+            <Description>
+              Informações adicionais sobre o evento. Só aparecem para a
+              organização da campanha.
+            </Description>
+          </Field>
+        </div>
+
         <div className="mt-5 flex justify-end space-x-2 sm:mt-6">
           {/* <Button
             variant="secondary"
@@ -251,6 +228,6 @@ export default function SubmitEventRequest({
           </Button>
         </div>
       </div>
-    </form>
+    </Form>
   );
 }
