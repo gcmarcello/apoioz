@@ -8,6 +8,7 @@ import { Date } from "@/app/(frontend)/_shared/components/Date";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
+import { LockClosedIcon } from "@heroicons/react/20/solid";
 
 export default async function EventListTable({
   events,
@@ -53,9 +54,12 @@ export default async function EventListTable({
                     <h3 className="text-gray-500 xl:pr-0">
                       {event.Supporter.user.name}
                     </h3>
+                    {event.private && (
+                      <LockClosedIcon className="h-5 w-5 text-gray-500" />
+                    )}
                   </div>
                 </div>
-                {event.status !== "active" && supporterSession.level === 4 && (
+                {supporterSession.level === 4 && (
                   <div className="px-2">
                     <EventListActions event={event} />
                   </div>

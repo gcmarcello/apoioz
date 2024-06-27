@@ -15,7 +15,7 @@ datasource db {
 model User {
   id               String             @id @default(dbgenerated("extensions.uuid_generate_v4()")) @db.Uuid
   name             String
-  email            String?             @unique
+  email            String?            @unique
   phone            String?            @unique
   password         String?
   role             String
@@ -144,6 +144,7 @@ model Event {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime? @updatedAt
   observations String?
+  private      Boolean   @default(false)
   Campaign     Campaign  @relation(fields: [campaignId], references: [id])
   Supporter    Supporter @relation(fields: [hostId], references: [id])
 

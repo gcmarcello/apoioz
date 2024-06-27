@@ -18,16 +18,19 @@ import {
 } from "@/app/api/panel/events/dto";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  Description,
   FieldGroup,
   Fieldset,
   Form,
   Input,
   Label,
+  Switch,
   useAction,
   useForm,
 } from "odinkit/client";
 import { ListboxField } from "@/app/(frontend)/_shared/components/fields/Select";
 import clsx from "clsx";
+import { Date } from "@/app/(frontend)/_shared/components/Date";
 
 export function EventListActions({
   event,
@@ -76,16 +79,6 @@ export function EventListActions({
       });
     }
   }
-
-  const form = useForm({
-    schema: updateEventDto,
-    defaultValues: {
-      ...event,
-      dateStart: dayjs(event.dateStart).toISOString(),
-      dateEnd: dayjs(event.dateEnd).toISOString(),
-      observations: event.observations ?? undefined,
-    },
-  });
 
   useEffect(() => {
     if (rejectOptions.counting) {
@@ -138,6 +131,23 @@ export function EventListActions({
     },
   });
 
+  const form = useForm({
+    schema: updateEventDto,
+    defaultValues: updateData
+      ? {
+          ...updateData,
+          dateStart: dayjs(updateData.dateStart).toISOString(),
+          dateEnd: dayjs(updateData.dateEnd).toISOString(),
+          observations: updateData.observations ?? undefined,
+        }
+      : {
+          ...event,
+          dateStart: dayjs(event.dateStart).toISOString(),
+          dateEnd: dayjs(event.dateEnd).toISOString(),
+          observations: event.observations ?? undefined,
+        },
+  });
+
   const onDateStartChange = (data: { value: string }) => {
     form.resetField("dateEnd");
     const rawSelectedTime = data.value;
@@ -175,13 +185,14 @@ export function EventListActions({
     fetchEventsAvailability({
       where: {
         day: dayjs(event.dateStart).toISOString(),
+        eventId: event.id,
       },
     });
   }, [open]);
 
   useEffect(
     () => onDateStartChange({ value: dayjs(event.dateStart).toISOString() }),
-    [data]
+    [data, showForm]
   );
 
   const Field = useMemo(() => form.createField(), []);
@@ -198,7 +209,9 @@ export function EventListActions({
           <div className="flex">
             <CheckIcon className="h-5 w-5 text-indigo-600" aria-hidden="true" />
           </div>
-          <span className="hidden md:block">Avaliar</span>
+          <span className="hidden md:block">
+            {event.status === "active" ? "Editar" : "Avaliar"}
+          </span>
         </button>
       </span>
 
@@ -245,7 +258,7 @@ export function EventListActions({
                         as="h3"
                         className="text-center text-base  font-semibold leading-6 text-gray-900"
                       >
-                        Análise do Evento
+                        Análise do Evento{" "}
                       </Dialog.Title>
                       <div className="mt-2">
                         <p className="text-left text-sm text-gray-500">
@@ -291,6 +304,14 @@ export function EventListActions({
                               <Label>Local</Label>
                               <Input></Input>
                             </Field>
+                            <Field variant="switch" name="private">
+                              <Switch color="indigo" />
+                              <Label>Evento Privado?</Label>
+                              <Description>
+                                O evento só será divulgado para os apoiadores da
+                                sua rede.
+                              </Description>
+                            </Field>
                           </FieldGroup>
                         </Fieldset>
                       ) : (
@@ -305,10 +326,37 @@ export function EventListActions({
                           </div>
                           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                             <dt className="text-center text-sm  font-medium leading-6 text-gray-900">
+                              Data
+                            </dt>
+                            <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                              <>
+                                {dayjs(event.dateStart).format(
+                                  "DD/MM/YYYY - HH:mm"
+                                )}{" "}
+                                -{" "}
+                                {dayjs(event.dateEnd).format(
+                                  "DD/MM/YYYY - HH:mm"
+                                )}
+                              </>
+                            </dd>
+                          </div>
+
+                          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                            <dt className="text-center text-sm  font-medium leading-6 text-gray-900">
                               Responsável
                             </dt>
                             <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                               {event.Supporter.user.name}
+                            </dd>
+                          </div>
+                          <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                            <dt className="text-center text-sm  font-medium leading-6 text-gray-900">
+                              Tipo
+                            </dt>
+                            <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                              {event.private
+                                ? "Privado - Apenas membros da rede do responsável serão informados"
+                                : "Público"}
                             </dd>
                           </div>
                           <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
@@ -356,7 +404,9 @@ export function EventListActions({
                     <div
                       className={clsx(
                         "mt-5 sm:mt-6 sm:grid sm:gap-3",
-                        showForm ? "sm:grid-cols-2" : "sm:grid-cols-3"
+                        showForm || event.status === "active"
+                          ? "sm:grid-cols-2"
+                          : "sm:grid-cols-3"
                       )}
                     >
                       <button
@@ -404,18 +454,21 @@ export function EventListActions({
                             />{" "}
                             {rejectOptions.counting
                               ? "Confirme em... " + counter
-                              : "Rejeitar"}
+                              : event.status === "active"
+                                ? "Cancelar"
+                                : "Rejeitar"}
                           </button>
-                          <button
-                            type="button"
-                            className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 "
-                            onClick={() => {
-                              processEvent("active");
-                              setOpen(false);
-                            }}
-                          >
-                            Aceitar
-                          </button>
+                          {event.status !== "active" && (
+                            <button
+                              type="button"
+                              className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 "
+                              onClick={async () => {
+                                await processEvent("active");
+                              }}
+                            >
+                              Aceitar
+                            </button>
+                          )}
                         </>
                       )}
                     </div>
