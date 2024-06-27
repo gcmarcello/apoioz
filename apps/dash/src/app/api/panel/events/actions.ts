@@ -32,6 +32,7 @@ export async function createEvent(request: CreateEventDto) {
           : "Evento solicitado com sucesso! Aguarde a resposta da coordenação.",
     });
   } catch (err) {
+    console.log(err);
     return ActionResponse.error(err);
   }
 }

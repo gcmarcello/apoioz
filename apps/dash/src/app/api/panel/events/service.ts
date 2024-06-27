@@ -2,29 +2,30 @@
 import dayjs, { Dayjs } from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import utc from "dayjs/plugin/utc";
-import { Supporter, User } from "prisma/client";
+import { Event, Supporter, User } from "prisma/client";
 import { prisma } from "prisma/prisma";
 import { sendEmail } from "../../emails/service";
 import { CreateEventDto, ReadEventsAvailability, ReadEventsDto } from "./dto";
 import { SupporterSession } from "@/middleware/functions/supporterSession.middleware";
 import { getEnv } from "@/_shared/utils/settings";
+import { UserSession } from "@/middleware/functions/userSession.middleware";
+import { readSupportersFromSupporterGroup } from "../supporters/service";
 dayjs.extend(customParseFormat);
 dayjs.extend(utc);
 
 export async function createEvent(
-  request: CreateEventDto & { supporterSession: SupporterSession }
+  request: CreateEventDto & {
+    supporterSession: SupporterSession;
+    userSession: UserSession;
+  }
 ) {
+  const { supporterSession, userSession, ...data } = request;
   const event = await prisma.event.create({
     data: {
-      name: request.name,
-      campaignId: request.supporterSession.campaignId,
-      dateStart: request.dateStart,
-      dateEnd: request.dateEnd,
-      description: request.description,
-      location: request.location,
-      status: request.supporterSession.level === 4 ? "active" : "pending",
-      hostId: request.supporterSession.id,
-      observations: request.observations,
+      ...data,
+      hostId: supporterSession.id,
+      campaignId: supporterSession.campaignId,
+      status: supporterSession.level === 4 ? "active" : "pending",
     },
   });
 
@@ -132,10 +133,15 @@ export async function readEventsByCampaign({
   return events;
 }
 
-export async function readEventTimestamps(campaignId: string) {
-  const events = await prisma.event.findMany({
-    where: { campaignId, status: "active" },
-  });
+export async function readEventTimestamps(
+  campaignId: string,
+  eventId?: string
+) {
+  const events = eventId
+    ? await prisma.event.findMany({
+        where: { campaignId, status: "active", NOT: { id: eventId } },
+      })
+    : await prisma.event.findMany({ where: { campaignId, status: "active" } });
 
   const eventTimestamps = events.map((event) => ({
     start: dayjs(event.dateStart).utcOffset(-3).toISOString(),
@@ -160,7 +166,8 @@ export async function readEventsAvailability(
   let availableTimeslots = [...timeslots];
 
   const eventTimestamps = await readEventTimestamps(
-    request.supporterSession.campaignId
+    request.supporterSession.campaignId,
+    request.where?.eventId
   );
 
   eventTimestamps.forEach((event) => {
@@ -185,6 +192,23 @@ export async function readEventsAvailability(
   };
 }
 
+export async function updateEvent({
+  eventId,
+  data,
+}: {
+  eventId: string;
+  data: any;
+}) {
+  const updatedEvent = await prisma.event.update({
+    where: { id: eventId },
+    data,
+  });
+
+  await shareEventUpdate({ event: updatedEvent });
+
+  return updatedEvent;
+}
+
 export async function updateEventStatus(
   request: { eventId: string; status: string } & { supporterSession: Supporter }
 ) {
@@ -195,63 +219,132 @@ export async function updateEventStatus(
     data: { status: request.status },
   });
   if (request.status === "active") {
-    const host = await prisma.supporter.findFirstOrThrow({
-      where: { id: event.hostId },
-      include: { user: true },
-    });
-    const supporters = await prisma.supporter.findMany({
-      where: { campaignId: event.campaignId },
-      include: { user: { select: { email: true } } },
-    });
-    const campaign = await prisma.campaign.findFirstOrThrow({
-      where: { id: event.campaignId },
-    });
+    await shareNewEvent({ event });
+  }
+}
 
+export async function shareNewEvent({ event }: { event: Event }) {
+  const host = await prisma.supporter.findFirstOrThrow({
+    where: { id: event.hostId },
+    include: { user: true },
+  });
+  const supporters = event.private
+    ? await prisma.supporter.findMany({
+        where: {
+          campaignId: event.campaignId,
+          supporterGroupsMemberships: {
+            some: {
+              supporterGroup: {
+                ownerId: event.hostId,
+              },
+            },
+          },
+        },
+        include: { user: { select: { email: true } } },
+      })
+    : await prisma.supporter.findMany({
+        where: { campaignId: event.campaignId },
+        include: { user: { select: { email: true } } },
+      });
+
+  const campaign = await prisma.campaign.findFirstOrThrow({
+    where: { id: event.campaignId },
+  });
+
+  await sendEmail({
+    to: getEnv("SENDGRID_EMAIL"),
+    dynamicData: {
+      eventName: event.name,
+      eventDate: dayjs(event.dateStart)
+        .utcOffset(-3)
+        .format("DD/MM/YYYY HH:mm"),
+      eventLocation: event.location,
+      subject: "Evento confirmado com sucesso! - ApoioZ",
+    },
+    templateId: "event_confirmed_host",
+  });
+  if (host.user.email)
     await sendEmail({
-      to: getEnv("SENDGRID_EMAIL"),
+      to: host.user.email,
+      bcc: [
+        ...supporters
+          .filter((supporter) => supporter.user.email)
+          .map((supporter) => supporter.user.email)
+          .filter((email) => email !== host.user.email),
+      ] as string[],
+
       dynamicData: {
+        subject: `${event.name} confirmado! - ApoioZ`,
         eventName: event.name,
         eventDate: dayjs(event.dateStart)
           .utcOffset(-3)
           .format("DD/MM/YYYY HH:mm"),
         eventLocation: event.location,
-        subject: "Evento confirmado com sucesso! - ApoioZ",
+        campaignName: campaign.name,
       },
-      templateId: "event_confirmed_host",
+      templateId: "event_confirmed",
     });
-    if (host.user.email)
-      await sendEmail({
-        to: host.user.email,
-        bcc: [
-          ...supporters
-            .filter((supporter) => supporter.user.email)
-            .map((supporter) => supporter.user.email)
-            .filter((email) => email !== host.user.email),
-        ] as string[],
-
-        dynamicData: {
-          subject: `${event.name} confirmado! - ApoioZ`,
-          eventName: event.name,
-          eventDate: dayjs(event.dateStart)
-            .utcOffset(-3)
-            .format("DD/MM/YYYY HH:mm"),
-          eventLocation: event.location,
-          campaignName: campaign.name,
-        },
-        templateId: "event_confirmed",
-      });
-  }
 }
 
-export async function updateEvent({
-  eventId,
-  data,
-}: {
-  eventId: string;
-  data: any;
-}) {
-  return await prisma.event.update({
-    where: { id: eventId },
-    data,
+export async function shareEventUpdate({ event }: { event: Event }) {
+  const host = await prisma.supporter.findFirstOrThrow({
+    where: { id: event.hostId },
+    include: { user: true },
   });
+  const supporters = event.private
+    ? await prisma.supporter.findMany({
+        where: {
+          campaignId: event.campaignId,
+          supporterGroupsMemberships: {
+            some: {
+              supporterGroup: {
+                ownerId: event.hostId,
+              },
+            },
+          },
+        },
+        include: { user: { select: { email: true } } },
+      })
+    : await prisma.supporter.findMany({
+        where: { campaignId: event.campaignId },
+        include: { user: { select: { email: true } } },
+      });
+
+  const campaign = await prisma.campaign.findFirstOrThrow({
+    where: { id: event.campaignId },
+  });
+
+  await sendEmail({
+    to: getEnv("SENDGRID_EMAIL"),
+    dynamicData: {
+      eventName: event.name,
+      eventDate: dayjs(event.dateStart)
+        .utcOffset(-3)
+        .format("DD/MM/YYYY HH:mm"),
+      eventLocation: event.location,
+      subject: "Evento confirmado com sucesso! - ApoioZ",
+    },
+    templateId: "event_confirmed_host",
+  });
+  if (host.user.email)
+    await sendEmail({
+      to: host.user.email,
+      bcc: [
+        ...supporters
+          .filter((supporter) => supporter.user.email)
+          .map((supporter) => supporter.user.email)
+          .filter((email) => email !== host.user.email),
+      ] as string[],
+
+      dynamicData: {
+        subject: `${event.name} alterado! - ApoioZ`,
+        eventName: event.name,
+        eventDate: dayjs(event.dateStart)
+          .utcOffset(-3)
+          .format("DD/MM/YYYY HH:mm"),
+        eventLocation: event.location,
+        campaignName: campaign.name,
+      },
+      templateId: "event_updated",
+    });
 }

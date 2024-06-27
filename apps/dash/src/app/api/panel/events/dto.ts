@@ -14,7 +14,8 @@ export const createEventDto = z.object({
   dateEnd: z.string(),
   description: z.string(),
   location: z.string(),
-  observations: z.string(),
+  observations: z.string().optional(),
+  private: z.boolean().optional(),
 });
 
 export type CreateEventDto = z.infer<typeof createEventDto>;
@@ -46,6 +47,8 @@ export const readEventsDto = readDto(
 
 export type ReadEventsDto = z.infer<typeof readEventsDto>;
 
-export const readEventsAvailability = readDto(z.object({ day: z.string() }));
+export const readEventsAvailability = readDto(
+  z.object({ day: z.string(), eventId: z.string().optional() })
+);
 
 export type ReadEventsAvailability = z.infer<typeof readEventsAvailability>;
