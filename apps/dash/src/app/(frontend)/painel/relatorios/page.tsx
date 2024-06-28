@@ -68,14 +68,18 @@ export default async function RelatoriosPage({
             </div>
           </Container>
         )}
-        <div className="grid grid-cols-1 md:grid-cols-5 lg:divide-x ">
-          <div className="col-span-1 flex flex-col justify-evenly md:col-span-2 lg:px-4">
-            <SupportersLastMonth supporterData={supporters.data} />
-            <ReferralRanking supporters={supporters.data} />
-          </div>
 
+        <div className="divide-y">
+          <div className="grid grid-cols-2 lg:divide-x ">
+            <div className="col-span-2 flex  justify-evenly md:col-span-1 lg:px-4 lg:py-2">
+              <SupportersLastMonth supporterData={supporters.data} />
+            </div>
+            <div className="col-span-2 flex  justify-evenly md:col-span-1 lg:px-4  lg:py-2">
+              <ReferralRanking supporters={supporters.data} />
+            </div>
+          </div>
           <Container
-            className={"col-span-1 px-2 md:col-span-3 lg:pe-0 lg:ps-8"}
+            className={"col-span-1 px-2 pt-2 md:col-span-3 lg:pe-0 lg:ps-8"}
           >
             <ReportsTable
               supporters={supporters.data}

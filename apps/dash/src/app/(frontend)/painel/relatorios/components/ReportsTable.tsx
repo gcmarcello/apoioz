@@ -45,6 +45,20 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
           enableGlobalFilter: true,
           cell: (info) => info.getValue(),
         }),
+        columnHelper.accessor("user.email", {
+          id: "email",
+          header: "Email",
+          enableSorting: true,
+          enableGlobalFilter: true,
+          cell: (info) => info.getValue(),
+        }),
+        columnHelper.accessor("user.phone", {
+          id: "phone",
+          header: "Telefone",
+          enableSorting: true,
+          enableGlobalFilter: true,
+          cell: (info) => info.getValue(),
+        }),
         columnHelper.accessor("referral.user.name", {
           id: "referral",
           header: "Indicado por",
@@ -61,6 +75,7 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
           id: "neighborhood",
           header: "Bairro",
           enableSorting: true,
+          meta: { filterVariant: "select" },
           cell: (info) => (
             <div className="group flex items-center gap-x-1.5 text-gray-500">
               {info.getValue() && info.getValue() !== "undefined"
@@ -74,6 +89,7 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
         columnHelper.accessor("user.info.Zone.number", {
           id: "zone",
           header: "Zona",
+          meta: { filterVariant: "select" },
           enableSorting: true,
           cell: (info) => info.getValue(),
           filterFn: "arrIncludes",
@@ -81,18 +97,14 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
         columnHelper.accessor("user.info.Section.number", {
           id: "section",
           header: "Seção",
+          meta: { filterVariant: "select" },
           cell: (info) => info.getValue(),
         }),
-        columnHelper.accessor("createdAt", {
-          id: "createdAt",
-          header: "Entrou em",
-          cell: (info) => (
-            <Date value={dayjs(info.getValue()).format("DD/MM/YYYY HH:mm")} />
-          ),
-        }),
+
         columnHelper.accessor("user", {
           id: "options",
           header: "Opções",
+          enableColumnFilter: false,
           enableSorting: false,
           cell: (info) => (
             <Container className="flex gap-x-3">
