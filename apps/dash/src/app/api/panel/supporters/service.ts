@@ -13,6 +13,7 @@ import {
   CreateSupporterDto,
   ReadSupporterBranchesDto,
   ReadSupportersDto,
+  UpdateSupporterDto,
 } from "./dto";
 import { hashInfo } from "@/_shared/utils/bCrypt";
 import { answerPoll } from "../polls/service";
@@ -21,6 +22,7 @@ import { normalizeEmail, normalizePhone } from "@/_shared/utils/format";
 import axios from "axios";
 import { zoneWithoutGeoJSON } from "prisma/query/Zone";
 import { fullTextSearch } from "odinkit";
+import { cookies } from "next/headers";
 
 export async function readSupporterBranches({
   supporterSession,
@@ -647,4 +649,31 @@ export async function readSupporterFromUser(data: {
   if (!supporter) throw "Apoiador não encontrado";
 
   return supporter;
+}
+
+export async function updateSupporter(data: UpdateSupporterDto) {
+  const campaignId = cookies().get("activeCampaign")?.value;
+
+  if (!campaignId) throw "Campanha não encontrada";
+
+  const supporter = await prisma.supporter.findFirst({
+    where: { id: data.id, campaignId },
+  });
+
+  if (!supporter) throw "Apoiador não encontrado";
+
+  const updatedSupporter = await prisma.supporter.update({
+    where: { id: data.id },
+    data: {
+      user: {
+        update: {
+          name: data.name,
+          email: data.email ? normalizeEmail(data.email) : null,
+          phone: normalizePhone(data.phone),
+        },
+      },
+    },
+  });
+
+  return updatedSupporter;
 }
