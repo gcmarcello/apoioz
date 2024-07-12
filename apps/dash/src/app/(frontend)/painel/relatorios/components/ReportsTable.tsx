@@ -15,6 +15,7 @@ import { ViewAsButton } from "./ViewAsButton";
 import { Date } from "@/app/(frontend)/_shared/components/Date";
 import {
   Button,
+  Combobox,
   Dialog,
   DialogActions,
   DialogBody,
@@ -33,6 +34,8 @@ import {
   Form,
   Input,
   Label,
+  Listbox,
+  ListboxLabel,
   showToast,
   useAction,
   useForm,
@@ -44,7 +47,7 @@ import {
   PhoneIcon,
 } from "@heroicons/react/24/solid";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Address,
   Section,
@@ -56,6 +59,8 @@ import {
 import { updateSupporterDto } from "@/app/api/panel/supporters/dto";
 import { updateSupporter } from "@/app/api/panel/supporters/actions";
 import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
+import { readSectionsByZone } from "@/app/api/elections/sections/action";
+import { readZonesByCampaign } from "@/app/api/elections/zones/actions";
 
 interface ReportsTableRankingProps {
   supporters: SupporterWithReferral[];
@@ -99,6 +104,14 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
     mode: "onChange",
   });
 
+  const { data: zones, trigger: fetchZones } = useAction({
+    action: readZonesByCampaign,
+  });
+
+  const { data: sections, trigger: fetchSections } = useAction({
+    action: readSectionsByZone,
+  });
+
   const { data, trigger, isMutating } = useAction({
     action: updateSupporter,
     onSuccess: () => {
@@ -125,10 +138,27 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
     if (supporter) {
       form.setValue("name", supporter.user.name);
       form.setValue("email", supporter.user.email);
-      form.setValue("phone", supporter.user.phone ?? "");
+      form.setValue(
+        "phone",
+        supporter.user.phone ? formatPhone(supporter.user.phone) : ""
+      );
       form.setValue("id", supporter.id);
+      form.setValue("zoneId", supporter.user.info.Zone?.id ?? "");
+      form.setValue("sectionId", supporter.user.info.Section?.id ?? "");
     }
   }
+
+  useEffect(() => {
+    const campaignId = supporters[0]?.campaignId;
+    if (!campaignId) return;
+    fetchZones(campaignId);
+  }, []);
+
+  useEffect(() => {
+    const zoneId = form.watch("zoneId");
+    if (!zoneId) return;
+    fetchSections(zoneId);
+  }, [form.watch("zoneId")]);
 
   return (
     <>
@@ -141,7 +171,7 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
         <Form hform={form} onSubmit={(data) => trigger(data)}>
           <DialogBody>
             <Fieldset>
-              <FieldGroup>
+              <FieldGroup className="space-y-3">
                 <Field name="name">
                   <Label>Nome Completo</Label>
                   <Input />
@@ -150,6 +180,50 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
                 <Field name="email">
                   <Label>Email</Label>
                   <Input placeholder="email@apoiador.com" />
+                  <ErrorMessage />
+                </Field>
+                <Field name="phone">
+                  <Label>Telefone</Label>
+                  <Input
+                    mask={(_: any, rawValue: any) => {
+                      if (Number(rawValue)) {
+                        if (rawValue.length >= "99999999999".length) {
+                          return "(99) 99999-9999";
+                        } else if (rawValue.length === "9999999999".length) {
+                          return "(99) 9999-9999";
+                        }
+                      }
+                      return "";
+                    }}
+                  />
+                  <ErrorMessage />
+                </Field>
+                <hr />
+                <Field name="zoneId">
+                  <Label>Zona</Label>
+                  <Listbox
+                    data={zones}
+                    displayValueKey="number"
+                    onChange={(value) => {
+                      form.setValue("sectionId", undefined);
+                      if (value) {
+                        fetchSections(value.id);
+                      }
+                    }}
+                  >
+                    {(zone) => <ListboxLabel>{zone.number}</ListboxLabel>}
+                  </Listbox>
+                </Field>
+                <Field name="sectionId">
+                  <Label>Seção</Label>
+                  <Combobox
+                    data={sections}
+                    displayValueKey={"number"}
+                    disabled={!form.watch("zoneId")}
+                    inputMode="numeric"
+                  >
+                    {(item) => item.number}
+                  </Combobox>
                   <ErrorMessage />
                 </Field>
               </FieldGroup>
@@ -206,7 +280,8 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
             header: "Telefone",
             enableSorting: true,
             enableGlobalFilter: true,
-            cell: (info) => info.getValue(),
+            cell: (info) =>
+              info.getValue() ? formatPhone(info.getValue()) : undefined,
           }),
           columnHelper.accessor("referral.user.name", {
             id: "referral",

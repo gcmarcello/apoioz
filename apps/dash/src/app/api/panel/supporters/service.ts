@@ -670,7 +670,23 @@ export async function updateSupporter(data: UpdateSupporterDto) {
           name: data.name,
           email: data.email ? normalizeEmail(data.email) : null,
           phone: normalizePhone(data.phone),
+          info: {
+            update: {
+              Zone: {
+                connect: { id: data.zoneId },
+              },
+              Section: {
+                connect: { id: data.sectionId },
+              },
+            },
+          },
         },
+      },
+      Zone: {
+        connect: { id: data.zoneId },
+      },
+      Section: {
+        connect: { id: data.sectionId },
       },
     },
   });
