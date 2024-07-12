@@ -70,6 +70,14 @@ export default async function RelatoriosPage({
         )}
 
         <div className="divide-y">
+          <Container
+            className={"col-span-1 mb-8 px-2 pt-2 md:col-span-3 lg:pe-0 "}
+          >
+            <ReportsTable
+              supporters={supporters.data}
+              count={supporters.count}
+            />
+          </Container>
           <div className="grid grid-cols-2 lg:divide-x ">
             <div className="col-span-2 flex  justify-evenly md:col-span-1 lg:px-4 lg:py-2">
               <SupportersLastMonth supporterData={supporters.data} />
@@ -78,14 +86,6 @@ export default async function RelatoriosPage({
               <ReferralRanking supporters={supporters.data} />
             </div>
           </div>
-          <Container
-            className={"col-span-1 px-2 pt-2 md:col-span-3 lg:pe-0 lg:ps-8"}
-          >
-            <ReportsTable
-              supporters={supporters.data}
-              count={supporters.count}
-            />
-          </Container>
         </div>
       </Container>
 
