@@ -12,8 +12,10 @@ import {
   ReadSupporterBranchesDto,
   AddSupporterDto,
   readSupportersDto,
+  UpdateSupporterDto,
 } from "./dto";
 import { ValidatorMiddleware } from "@/middleware/functions/validator.middleware";
+import { CampaignLeaderMiddleware } from "@/middleware/functions/campaignLeader.middleware";
 
 export async function readSupportersFulltext(request?: ReadSupportersDto) {
   try {
@@ -164,6 +166,27 @@ export async function leaveAsSupporter() {
     return ActionResponse.success({
       data: deleteSupporter,
       message: "Sucesso ao sair da campanha!",
+    });
+  } catch (error) {
+    console.log(error);
+    return ActionResponse.error(error);
+  }
+}
+
+export async function updateSupporter(request: UpdateSupporterDto) {
+  try {
+    const { request: parsedRequest } = await UseMiddlewares({ request })
+      .then(UserSessionMiddleware)
+      .then(SupporterSessionMiddleware)
+      .then(CampaignLeaderMiddleware);
+
+    const updatedSupporter = await service.updateSupporter(parsedRequest);
+
+    revalidatePath("/painel/relatorios");
+
+    return ActionResponse.success({
+      data: updatedSupporter,
+      message: "Sucesso ao atualizar apoiador!",
     });
   } catch (error) {
     console.log(error);

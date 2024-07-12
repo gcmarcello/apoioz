@@ -72,3 +72,12 @@ export const readSupporterBranchesDto = readDto(
 );
 
 export type ReadSupporterBranchesDto = z.infer<typeof readSupporterBranchesDto>;
+
+export const updateSupporterDto = z.object({
+  id: z.string().uuid(),
+  email: z.string().email().optional().nullable(),
+  phone: z.string(),
+  name: z.string(),
+});
+
+export type UpdateSupporterDto = z.infer<typeof updateSupporterDto>;
