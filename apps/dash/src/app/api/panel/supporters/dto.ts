@@ -78,6 +78,8 @@ export const updateSupporterDto = z.object({
   email: z.string().email().optional().nullable(),
   phone: z.string(),
   name: z.string(),
+  sectionId: z.string().uuid().optional(),
+  zoneId: z.string().uuid().optional(),
 });
 
 export type UpdateSupporterDto = z.infer<typeof updateSupporterDto>;
