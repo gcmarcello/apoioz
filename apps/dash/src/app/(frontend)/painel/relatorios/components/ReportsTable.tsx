@@ -137,7 +137,7 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
     setShowModal(!!supporter);
     if (supporter) {
       form.setValue("name", supporter.user.name);
-      form.setValue("email", supporter.user.email);
+      form.setValue("email", supporter.user.email ?? undefined);
       form.setValue(
         "phone",
         supporter.user.phone ? formatPhone(supporter.user.phone) : ""
@@ -233,7 +233,7 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
             <Button plain onClick={() => toggleModal()}>
               Cancelar
             </Button>
-            <Button type="submit" color="indigo" onClick={() => toggleModal()}>
+            <Button type="submit" color="indigo">
               <div className="flex gap-2">
                 Salvar{" "}
                 {isMutating && (
