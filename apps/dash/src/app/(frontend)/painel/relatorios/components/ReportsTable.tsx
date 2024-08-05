@@ -61,6 +61,7 @@ import { updateSupporter } from "@/app/api/panel/supporters/actions";
 import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { readSectionsByZone } from "@/app/api/elections/sections/action";
 import { readZonesByCampaign } from "@/app/api/elections/zones/actions";
+import { readAddressesFromSections } from "@/app/api/elections/locations/actions";
 
 interface ReportsTableRankingProps {
   supporters: SupporterWithReferral[];
@@ -112,6 +113,10 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
     action: readSectionsByZone,
   });
 
+  const { data: addresses, trigger: fetchAddresses } = useAction({
+    action: readAddressesFromSections,
+  });
+
   const { data, trigger, isMutating } = useAction({
     action: updateSupporter,
     onSuccess: () => {
@@ -159,6 +164,14 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
     if (!zoneId) return;
     fetchSections(zoneId);
   }, [form.watch("zoneId")]);
+
+  useEffect(() => {
+    const supporterSections = supporters
+      .map((s) => s.user.info.Section?.id)
+      .filter((s) => s) as string[];
+
+    fetchAddresses(supporterSections);
+  }, [supporters]);
 
   return (
     <>
@@ -252,8 +265,11 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
           data: supporters.map((s) => ({
             Nome: s.user.name,
             "Indicado por": s.referral?.user.name,
-            Bairro: s.user.info.Address?.neighborhood,
             Zona: s.user.info.Zone?.number,
+            Bairro: s.user.info.Address?.neighborhood,
+            Local: addresses?.find(
+              (a) => a.id === s.user.info.Section?.addressId
+            )?.location,
             Seção: s.user.info.Section?.number,
             "Entrou em": dayjs(s.createdAt).format("DD/MM/YYYY HH:mm"),
             Telefone: s.user.phone ? formatPhone(s.user.phone) : "",
@@ -295,6 +311,15 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
               </div>
             ),
           }),
+
+          columnHelper.accessor("user.info.Zone.number", {
+            id: "zone",
+            header: "Zona",
+            meta: { filterVariant: "select" },
+            enableSorting: true,
+            cell: (info) => info.getValue(),
+            filterFn: "arrIncludes",
+          }),
           columnHelper.accessor("user.info.Address.neighborhood", {
             id: "neighborhood",
             header: "Bairro",
@@ -310,13 +335,19 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
               </div>
             ),
           }),
-          columnHelper.accessor("user.info.Zone.number", {
-            id: "zone",
-            header: "Zona",
-            meta: { filterVariant: "select" },
-            enableSorting: true,
-            cell: (info) => info.getValue(),
-            filterFn: "arrIncludes",
+          columnHelper.accessor("user.info.Section.addressId", {
+            id: "address",
+            header: "Local",
+            meta: {
+              filterVariant: "select",
+              selectOptions: addresses?.map((a) => ({
+                id: a.id,
+                name: a.location ?? "Não Informado",
+              })),
+            },
+            cell: (info) =>
+              addresses?.find((a) => a.id === info.getValue())?.location ??
+              "Não Informado",
           }),
           columnHelper.accessor("user.info.Section.number", {
             id: "section",
