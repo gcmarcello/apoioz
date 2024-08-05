@@ -564,9 +564,11 @@ export async function createSupporter(request: CreateSupporterDto) {
     "NEXT_PUBLIC_WS_SERVER"
   )}/campaign/${campaign.id}/supporter`;
 
-  await axios.get(wsUrl, {
-    headers: { Authorization: getEnv("WS_SERVER_TOKEN") },
-  });
+  await axios
+    .get(wsUrl, {
+      headers: { Authorization: getEnv("WS_SERVER_TOKEN") },
+    })
+    .catch((err) => console.log(err));
 
   let recoveryLink;
   if (!user.password) {
