@@ -9,7 +9,7 @@ export async function readSectionsByState(stateId: string) {
   return { state: zones.state, sections, count: sections.length };
 }
 
-export async function readSectionsByZone(zoneId: string) {
+export async function readSectionsByZone(zoneId?: string) {
   return await prisma.section.findMany({
     where: { zoneId },
     orderBy: { number: "asc" },
