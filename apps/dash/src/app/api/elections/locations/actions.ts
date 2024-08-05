@@ -51,3 +51,13 @@ export async function readAddresses(request: ReadAddressDto) {
     return ActionResponse.error(err);
   }
 }
+
+export async function readAddressesFromSections(request: string[]) {
+  try {
+    const addresses = await service.readAddressesFromSections(request);
+
+    return ActionResponse.success({ data: addresses });
+  } catch (err) {
+    return ActionResponse.error(err);
+  }
+}
