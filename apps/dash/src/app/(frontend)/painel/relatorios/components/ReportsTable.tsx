@@ -312,13 +312,20 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
             ),
           }),
 
-          columnHelper.accessor("user.info.Zone.number", {
+          columnHelper.accessor("user.info.Zone.id", {
             id: "zone",
             header: "Zona",
-            meta: { filterVariant: "select" },
+            meta: {
+              filterVariant: "select",
+              selectOptions: zones?.map((a) => ({
+                id: a.id,
+                name: String(a.number) ?? "Não Informado",
+              })),
+            },
             enableSorting: true,
-            cell: (info) => info.getValue(),
-            filterFn: "arrIncludes",
+            cell: (info) =>
+              zones?.find((a) => a.id === info.getValue())?.number ??
+              "Não Informado",
           }),
           columnHelper.accessor("user.info.Address.neighborhood", {
             id: "neighborhood",
@@ -349,11 +356,23 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
               addresses?.find((a) => a.id === info.getValue())?.location ??
               "Não Informado",
           }),
-          columnHelper.accessor("user.info.Section.number", {
+          columnHelper.accessor("user.info.Section.id", {
             id: "section",
             header: "Seção",
-            meta: { filterVariant: "select" },
-            cell: (info) => info.getValue(),
+            meta: {
+              filterVariant: "select",
+              selectOptions: supporters?.map((s) => ({
+                id: s.user.info.Section?.id ?? "Não Informado",
+                name: s.user.info.Section?.number
+                  ? String(s.user.info.Section?.number)
+                  : "Não Informado",
+              })),
+            },
+            cell: (info) =>
+              supporters
+                .map((s) => s.user.info.Section)
+                .find((a) => a?.id === info.getValue())?.number ??
+              "Não Informado",
           }),
 
           columnHelper.accessor("user", {
