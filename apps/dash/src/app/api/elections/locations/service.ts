@@ -18,7 +18,6 @@ export async function readCitiesByState(stateId: string) {
 }
 
 export async function readAddressesFromSections(sectionId: string[]) {
-  console.log(sectionId);
   return await prisma.address.findMany({
     where: { Section: { some: { id: { in: sectionId } } } },
   });
