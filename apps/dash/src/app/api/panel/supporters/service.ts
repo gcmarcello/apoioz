@@ -693,5 +693,10 @@ export async function updateSupporter(data: UpdateSupporterDto) {
     },
   });
 
+  await prisma.passwordRecovery.updateMany({
+    where: { userId: updatedSupporter.userId },
+    data: { expiresAt: dayjs().toISOString() },
+  });
+
   return updatedSupporter;
 }
