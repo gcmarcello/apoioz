@@ -90,6 +90,10 @@ export async function updateUser(request: any) {
         },
       },
     });
+    await prisma.passwordRecovery.updateMany({
+      where: { userId: userSession.id },
+      data: { expiresAt: dayjs().toISOString() },
+    });
     return data;
   } catch (error) {
     console.log(error);
