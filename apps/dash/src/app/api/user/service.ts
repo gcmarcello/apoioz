@@ -90,6 +90,9 @@ export async function updateUser(request: any) {
         },
       },
     });
+    await prisma.passwordRecovery.deleteMany({
+      where: { userId: userSession.id },
+    });
     return data;
   } catch (error) {
     console.log(error);
