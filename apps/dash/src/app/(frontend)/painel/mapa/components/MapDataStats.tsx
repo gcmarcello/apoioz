@@ -3,7 +3,7 @@ import { useMapData } from "../hooks/useMapData";
 import { UsersIcon } from "@heroicons/react/24/solid";
 
 export function MapDataStats() {
-  const { addresses, sections } = useMapData();
+  const { addresses } = useMapData();
 
   return (
     <div className="divide-y">

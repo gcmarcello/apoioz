@@ -40,6 +40,8 @@ export async function createMapData(request: {
     true
   );
 
+  if (!zones) throw "Zones not found";
+
   const neighborhoods = await prisma.neighborhood.findMany({
     where: { cityId },
   });

@@ -1,8 +1,8 @@
 "use client";
 
 import { FormProvider, useForm } from "react-hook-form";
-import { ReactNode } from "react";
-import { Neighborhood, Zone, Address, Prisma } from "prisma/client";
+import { ReactNode, useMemo } from "react";
+import { Prisma } from "prisma/client";
 import { parsedNeighborhoods } from "../utils/parseNeighborhoods";
 import { parseZones } from "../utils/parseZones";
 import { parseAddresses } from "../utils/parseAddresses";
@@ -57,10 +57,58 @@ export default function MapDataProvider({
   children: ReactNode;
   value: RawMapData;
 }) {
+  if (!value.zones || !window) return null;
+  const neighborhoodWithSupporters = useMemo(
+    () =>
+      value.neighborhoods.map((n) => ({
+        ...n,
+        supporters: value.addresses
+          .filter((a) => a.neighborhood === n.name)
+          .flatMap((a) => a.Supporter),
+      })),
+    []
+  );
+
+  const zonesWithSupporters = useMemo(
+    () =>
+      value.zones.map((z) => {
+        const zoneAddresses = value.addresses.filter(
+          (a) => a.Supporter[0]?.zoneId === z.id
+        );
+        return {
+          ...z,
+          supporters: zoneAddresses.flatMap((a) => a.Supporter),
+        };
+      }),
+    []
+  );
+
+  const supportersTopNeighborhood = useMemo(
+    () =>
+      neighborhoodWithSupporters?.sort(
+        (a, b) => b.supporters.length - a.supporters.length
+      )[0],
+    []
+  );
+
+  const supportersTopZone = useMemo(
+    () =>
+      zonesWithSupporters?.sort(
+        (a, b) => b.supporters.length - a.supporters.length
+      )[0],
+    []
+  );
+
   const form = useForm<MapContextProps>({
     defaultValues: {
-      neighborhoods: parsedNeighborhoods(value.neighborhoods),
-      zones: parseZones(value.zones),
+      neighborhoods: parsedNeighborhoods(
+        neighborhoodWithSupporters,
+        supportersTopNeighborhood?.supporters.length
+      ),
+      zones: parseZones(
+        zonesWithSupporters,
+        supportersTopZone?.supporters.length
+      ),
       addresses: parseAddresses(value.addresses),
       supporterSession: value.supporterSession,
       sections: {

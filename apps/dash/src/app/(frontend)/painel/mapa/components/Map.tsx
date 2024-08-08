@@ -371,16 +371,57 @@ export default function Map() {
         </MarkerClusterGroup>
         <FitBoundsComponent />
       </MapContainer>
-      <div className="mt-1.5 flex items-center justify-end gap-1.5 text-xs italic text-gray-400">
-        {wsConnected ? (
-          <>
-            <SupporterBall level={3} /> ApoioZ© websockets server
-          </>
-        ) : (
-          <>
-            <SupporterBall level={1} /> Desconectado da rede de apoio ao vivo.
-          </>
-        )}
+
+      <div className="mt-1.5 flex items-start justify-between gap-1.5 text-xs italic text-gray-400">
+        <div className="mt-2">
+          <div className="flex gap-2">
+            <div
+              className={clsx(
+                "my-auto max-w-2 flex-none rounded-full p-1",
+                "bg-red-500"
+              )}
+            />
+            <div className="text-sm font-normal text-gray-600 lg:text-xs">
+              Menos de 50% de apoiadores da área líder
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <div
+              className={clsx(
+                "my-auto max-w-2 flex-none rounded-full p-1",
+                "bg-green-500"
+              )}
+            />
+            <div className="text-sm font-normal text-gray-600 lg:text-xs">
+              Mais de 75% de apoiadores da área líder
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <div
+              className={clsx(
+                "my-auto max-w-2 flex-none rounded-full p-1",
+                "bg-yellow-400"
+              )}
+            />
+            <div className="text-sm font-normal text-gray-600 lg:text-xs">
+              Entre 50% e 75% de apoiadores da área líder
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-1">
+          {wsConnected ? (
+            <>
+              <div className="my-auto">
+                <SupporterBall level={3} />
+              </div>{" "}
+              ApoioZ© websockets server
+            </>
+          ) : (
+            <>
+              <SupporterBall level={1} /> Desconectado da rede de apoio ao vivo.
+            </>
+          )}
+        </div>
       </div>
       <AddressDetailsModal
         address={selectedAddress}
