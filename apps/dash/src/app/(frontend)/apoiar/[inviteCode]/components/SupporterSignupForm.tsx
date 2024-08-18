@@ -96,7 +96,7 @@ export default function SupporterSignUpForm({
     },
     onError: (err) => {
       showToast({
-        message: err,
+        message: err.message,
         title: "Erro",
         variant: "error",
       });
@@ -112,15 +112,20 @@ export default function SupporterSignUpForm({
     form,
     data: async () => {
       const zone = zones![Math.floor(Math.random() * zones!.length)];
-      const { data: sections } = await fetchSections(zone.id);
+      const sections = await fetchSections(zone.id);
+
+      const randomIndex = Math.floor(
+        Math.random() * (sections?.data?.length ?? 0)
+      );
+
+      const randomSection = sections?.data?.[randomIndex];
 
       return {
         "user.name": fakerPT_BR.person.fullName(),
         "user.email": fakerPT_BR.internet.email(),
         "user.phone": fakerPT_BR.phone.number(),
         "user.info.zoneId": zone.id,
-        "user.info.sectionId":
-          sections?.[Math.round(Math.random() * sections?.length)]?.id,
+        "user.info.sectionId": randomSection?.id,
         "user.info.birthDate": dayjs(
           fakerPT_BR.date.past({ refDate: 1 }).toISOString()
         ).format("DD/MM/YYYY"),

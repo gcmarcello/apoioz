@@ -6,7 +6,7 @@ const sizeVariants = {
 
 export function LoadingSpinner() {
   return (
-    <div className="h-[72px]">
+    <div>
       <svg className="h-12 w-12 animate-spin" viewBox="0 0 24 24">
         <circle
           className="opacity-25"

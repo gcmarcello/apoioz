@@ -14,7 +14,7 @@ export default function JoinCampaign({ campaignId }: { campaignId: string }) {
       router.push("/painel");
     },
     onError: (error) => {
-      showToast({ message: error, title: "Erro", variant: "error" });
+      showToast({ message: error.message, title: "Erro", variant: "error" });
     },
   });
   return (

@@ -9,7 +9,7 @@ export function parseAddresses(addresses: RawMapData["addresses"]) {
       supportersCount: a.Supporter.length,
       location: a.location,
       neighborhood: a.neighborhood,
-      zone: a.Zone?.number,
+      zoneId: a.zoneId ?? "",
       id: a.id,
     };
   });
