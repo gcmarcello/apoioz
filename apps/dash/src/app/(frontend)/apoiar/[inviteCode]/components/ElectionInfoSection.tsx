@@ -12,8 +12,7 @@ import {
   Fieldset,
   Input,
   Label,
-  Listbox,
-  ListboxLabel,
+  Select,
   useAction,
   useFormContext,
 } from "odinkit/client";
@@ -23,7 +22,7 @@ import { scrollToElement } from "@/app/(frontend)/_shared/utils/scroll";
 import { SignUpAsSupporterDto } from "@/app/api/auth/dto";
 import Link from "next/link";
 import { readAddressFulltext } from "@/app/api/elections/locations/actions";
-import { Tabs, Text } from "odinkit";
+import { For, Tabs, Text } from "odinkit";
 import { UserCircleIcon } from "@heroicons/react/24/solid";
 
 export function ElectionInfoSection({
@@ -100,18 +99,14 @@ export function ElectionInfoSection({
                   <>
                     <Field name="user.info.zoneId" className="col-span-1">
                       <Label>Zona</Label>
-                      <Listbox
+                      <Select
                         data={zones}
-                        displayValueKey="number"
-                        onChange={(value) => {
+                        onChange={async (event: any) => {
+                          await fetchSections(event.target.value);
                           form.setValue("user.info.sectionId", undefined);
-                          if (value) {
-                            fetchSections(value.id);
-                          }
                         }}
-                      >
-                        {(zone) => <ListboxLabel>{zone.number}</ListboxLabel>}
-                      </Listbox>
+                        displayValueKey="number"
+                      />
                       <ErrorMessage />
                     </Field>
                     <Field name="user.info.sectionId" className="col-span-1">

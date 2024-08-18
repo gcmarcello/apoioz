@@ -19,7 +19,7 @@ export default function AddressDetailsModal({
     action: readSectionsByAddress,
     onError: (error) => {
       showToast({
-        message: error,
+        message: error.message,
         title: "Erro ao carregar seções",
         variant: "error",
       });

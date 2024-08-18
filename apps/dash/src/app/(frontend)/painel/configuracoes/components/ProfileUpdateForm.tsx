@@ -52,7 +52,7 @@ export default function ProfileUpdateForm({ user }: { user: UserWithInfo }) {
   } = useAction({
     action: updateUser,
     onError: (err) => {
-      showToast({ message: err, variant: "error", title: "Erro" });
+      showToast({ message: err.message, variant: "error", title: "Erro" });
     },
     onSuccess: (res) => {
       showToast({
@@ -70,7 +70,7 @@ export default function ProfileUpdateForm({ user }: { user: UserWithInfo }) {
   } = useAction({
     action: updatePassword,
     onError: (err) => {
-      showToast({ message: err, variant: "error", title: "Erro" });
+      showToast({ message: err.message, variant: "error", title: "Erro" });
     },
     onSuccess: (res) => {
       showToast({

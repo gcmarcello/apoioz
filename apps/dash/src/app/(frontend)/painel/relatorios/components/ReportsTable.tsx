@@ -1,13 +1,13 @@
 "use client";
-import { readSupportersFromSupporterGroupWithRelation } from "@/app/api/panel/supporters/service";
 import { AtSymbolIcon, EyeIcon } from "@heroicons/react/20/solid";
 import dayjs from "dayjs";
 import {
   Container,
   ExtractSuccessResponse,
+  For,
   Link,
   Table,
-  WhatsAppIcon,
+  TableFlag,
   formatPhone,
   toProperCase,
 } from "odinkit";
@@ -24,18 +24,17 @@ import {
   Dropdown,
   DropdownButton,
   DropdownDescription,
+  DropdownDivider,
   DropdownItem,
   DropdownMenu,
   DropdownSection,
-  DropdownSeparator,
   ErrorMessage,
   FieldGroup,
   Fieldset,
   Form,
   Input,
   Label,
-  Listbox,
-  ListboxLabel,
+  Select,
   showToast,
   useAction,
   useForm,
@@ -214,18 +213,13 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
                 <hr />
                 <Field name="zoneId">
                   <Label>Zona</Label>
-                  <Listbox
+                  <Select
                     data={zones}
                     displayValueKey="number"
                     onChange={(value) => {
                       form.setValue("sectionId", undefined);
-                      if (value) {
-                        fetchSections(value.id);
-                      }
                     }}
-                  >
-                    {(zone) => <ListboxLabel>{zone.number}</ListboxLabel>}
-                  </Listbox>
+                  />
                 </Field>
                 <Field name="sectionId">
                   <Label>Seção</Label>
@@ -284,13 +278,7 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
             enableGlobalFilter: true,
             cell: (info) => info.getValue(),
           }),
-          columnHelper.accessor("user.email", {
-            id: "email",
-            header: "Email",
-            enableSorting: true,
-            enableGlobalFilter: true,
-            cell: (info) => info.getValue(),
-          }),
+
           columnHelper.accessor("user.phone", {
             id: "phone",
             header: "Telefone",
@@ -318,8 +306,8 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
             meta: {
               filterVariant: "select",
               selectOptions: zones?.map((a) => ({
-                id: a.id,
-                name: String(a.number) ?? "Não Informado",
+                value: a.id,
+                label: String(a.number) ?? "Não Informado",
               })),
             },
             enableSorting: true,
@@ -348,8 +336,8 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
             meta: {
               filterVariant: "select",
               selectOptions: addresses?.map((a) => ({
-                id: a.id,
-                name: a.location ?? "Não Informado",
+                value: a.id,
+                label: a.location ?? "Não Informado",
               })),
             },
             cell: (info) =>
@@ -359,11 +347,12 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
           columnHelper.accessor("user.info.Section.id", {
             id: "section",
             header: "Seção",
+            enableColumnFilter: TableFlag.ENABLE_COLUMN_FILTER,
             meta: {
               filterVariant: "select",
               selectOptions: supporters?.map((s) => ({
-                id: s.user.info.Section?.id ?? "Não Informado",
-                name: s.user.info.Section?.number
+                value: s.user.info.Section?.id ?? "Não Informado",
+                label: s.user.info.Section?.number
                   ? String(s.user.info.Section?.number)
                   : "Não Informado",
               })),
@@ -378,11 +367,10 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
           columnHelper.accessor("user", {
             id: "options",
             header: "",
-            enableColumnFilter: false,
             enableSorting: false,
             cell: (info) => (
               <Dropdown>
-                <DropdownButton outline>
+                <DropdownButton outline color="indigo">
                   Opções
                   <ChevronDownIcon />
                 </DropdownButton>
@@ -410,7 +398,7 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
                       </DropdownDescription>
                     </DropdownItem>
                   </DropdownSection>
-                  <DropdownSeparator />
+                  <DropdownDivider />
                   <DropdownSection>
                     <DropdownItem
                       href={`https://wa.me/${info.getValue().phone}`}

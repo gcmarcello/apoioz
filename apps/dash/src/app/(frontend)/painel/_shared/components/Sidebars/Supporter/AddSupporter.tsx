@@ -17,7 +17,7 @@ import dayjs from "dayjs";
 import { AddSupporterDto } from "@/app/api/panel/supporters/dto";
 
 import { useSidebar } from "../lib/useSidebar";
-import { Alertbox, List, Badge, Tabs } from "odinkit";
+import { Alertbox, List, Badge, Tabs, For } from "odinkit";
 
 import {
   Button,
@@ -33,8 +33,7 @@ import {
   Fieldset,
   Input,
   Label,
-  Listbox,
-  ListboxLabel,
+  Select,
   Switch,
   useAction,
   useFormContext,
@@ -42,6 +41,7 @@ import {
 import { UserCircleIcon } from "@heroicons/react/20/solid";
 import { EnvelopeIcon } from "@heroicons/react/24/solid";
 import { Address } from "prisma/client";
+import { TabGroup, TabList, Tab, TabPanels, TabPanel } from "@headlessui/react";
 
 export function AddSupporterForm({
   isAdminOptions,
@@ -115,20 +115,24 @@ export function AddSupporterForm({
   useMocker({
     form,
     data: async () => {
-      const { data: zones } = await fetchZones(campaign.id);
+      const zones = (await fetchZones(campaign.id))?.data;
 
-      const zone = zones![Math.floor(Math.random() * zones!.length)];
+      const zoneIndex = Math.floor(Math.random() * (zones?.length ?? 0));
 
-      const { data: sections } = await fetchSections(zone?.id || "");
+      const zone = zones![zoneIndex];
 
-      const section = sections?.[Math.round(Math.random() * sections.length)]!;
+      const sections = (await fetchSections(zone?.id || ""))?.data;
+
+      const sectionIndex = Math.floor(Math.random() * (sections?.length ?? 0));
+
+      const section = sections![sectionIndex];
 
       return {
         "user.name": fakerPT_BR.person.fullName(),
         "user.email": fakerPT_BR.internet.email(),
         "user.phone": fakerPT_BR.phone.number(),
         "user.info.zoneId": zone?.id,
-        "user.info.sectionId": section.id,
+        "user.info.sectionId": section?.id,
         "user.info.birthDate": dayjs(
           fakerPT_BR.date.past({ refDate: 1 }).toISOString()
         ).format("DD/MM/YYYY"),
@@ -160,11 +164,7 @@ export function AddSupporterForm({
       <FieldGroup className="space-y-2">
         {form.formState.errors.root?.serverError?.message ? (
           <Alertbox type="error">
-            <List
-              data={[
-                form.formState.errors.root?.serverError?.message as string,
-              ]}
-            />
+            <List data={form.formState.errors.root?.serverError?.message} />
           </Alertbox>
         ) : null}
         <Field name="user.name">
@@ -193,107 +193,122 @@ export function AddSupporterForm({
       </FieldGroup>
 
       <FieldGroup className={clsx(form.watch("externalSupporter") && "hidden")}>
-        <Tabs
-          className="flex w-full justify-center pb-4 pt-2"
-          tabs={[
-            {
-              title: "Por zona e seção",
-              onClick: () => {
-                form.resetField("user.info.addressId");
-                resetAddress();
-              },
-              content: (
-                <FieldGroup className="space-y-4">
-                  <Field name="user.info.zoneId" className="col-span-1">
-                    <Label>Zona</Label>
-                    <Listbox
-                      data={zones}
-                      displayValueKey="number"
-                      onChange={(value) => {
-                        form.setValue("user.info.sectionId", undefined);
-                        if (value) {
-                          fetchSections(value.id);
-                        }
-                      }}
-                    >
-                      {(zone) => <ListboxLabel>{zone.number}</ListboxLabel>}
-                    </Listbox>
-                  </Field>
-                  <Field name="user.info.sectionId" className="col-span-1">
-                    <Label>Seção</Label>
-                    <Combobox
-                      data={sections}
-                      displayValueKey={"number"}
-                      disabled={!form.watch("user.info.zoneId")}
-                      inputMode="numeric"
-                      onChange={(value) => {
-                        if (value) {
-                          searchAddress({
-                            where: {
-                              sectionId: value.id,
-                            },
-                          });
-                        } else {
-                          resetAddress();
-                        }
-                      }}
-                    >
-                      {(item) => item.number}
-                    </Combobox>
-                    <ErrorMessage />
-                  </Field>
+        <TabGroup className={"mb-4"}>
+          <TabList className={"flex w-full justify-evenly"}>
+            <Tab className={"grow border-b"}>
+              {({ selected }) => (
+                <div
+                  className={clsx(
+                    selected
+                      ? "border-indigo-500 text-indigo-600"
+                      : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700",
+                    "whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium"
+                  )}
+                >
+                  Por Zona e Sessão
+                </div>
+              )}
+            </Tab>
+            <Tab className={"grow border-b"}>
+              {({ selected }) => (
+                <div
+                  className={clsx(
+                    selected
+                      ? "border-indigo-500 text-indigo-600"
+                      : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700",
+                    "whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium"
+                  )}
+                >
+                  Por Endereço
+                </div>
+              )}
+            </Tab>
+          </TabList>
+          <TabPanels className={"mt-4"}>
+            <TabPanel>
+              <FieldGroup className="space-y-4">
+                <Field name="user.info.zoneId" className="col-span-1">
+                  <Label>Zona</Label>
+                  <Select
+                    data={zones}
+                    onChange={async (event: any) => {
+                      await fetchSections(event.target.value);
+                      form.setValue("user.info.sectionId", undefined);
+                    }}
+                    displayValueKey="number"
+                  />
+                </Field>
+                <Field name="user.info.sectionId" className="col-span-1">
+                  <Label>Seção</Label>
+                  <Combobox
+                    data={sections}
+                    displayValueKey={"number"}
+                    disabled={!form.watch("user.info.zoneId")}
+                    inputMode="numeric"
+                    onChange={(value) => {
+                      if (value) {
+                        searchAddress({
+                          where: {
+                            sectionId: value.id,
+                          },
+                        });
+                      } else {
+                        resetAddress();
+                      }
+                    }}
+                  >
+                    {(item) => item.number}
+                  </Combobox>
+                  <ErrorMessage />
                   <Description className="col-span-2 text-sm text-gray-500">
-                    Não sabe sua zona e seção?{" "}
+                    Não sabe a zona e seção?{" "}
                     <Link
                       target="_blank"
                       className="underline"
                       href="https://www.tse.jus.br/servicos-eleitorais/titulo-e-local-de-votacao/titulo-e-local-de-votacao"
                     >
-                      Consulte o TSE.
-                    </Link>
+                      Consulte o TSE
+                    </Link>{" "}
+                    ou adicione por endereço.
                   </Description>
-                </FieldGroup>
-              ),
-            },
-            {
-              title: "Por endereço",
-              onClick: () => {
-                form.resetField("user.info.sectionId");
-                form.resetField("user.info.zoneId");
-              },
-              content: (
-                <Field name="user.info.addressId">
-                  <Label>Endereço</Label>
-                  <Combobox
-                    data={(fulltextAddresses || addresses) as Address[]}
-                    displayValueKey="location"
-                    setData={(query) => {
-                      if (query) {
-                        fulltextSearchAddresses({
-                          where: {
-                            campaignId: campaign.id,
-                            location: query,
-                          },
-                        });
-                      } else {
-                        searchAddresses({
-                          where: {
-                            campaignId: campaign.id,
-                          },
-                        });
-                      }
-                    }}
-                    onChange={(value) => {
-                      searchAddress({ where: { id: value?.id } });
-                    }}
-                  >
-                    {(item) => <div>{item.location}</div>}
-                  </Combobox>
                 </Field>
-              ),
-            },
-          ]}
-        />
+              </FieldGroup>
+            </TabPanel>
+            <TabPanel>
+              <Field
+                className={clsx(!form.watch("user.info.addressId") && "pb-8")}
+                name="user.info.addressId"
+              >
+                <Label>Endereço</Label>
+                <Combobox
+                  data={(fulltextAddresses || addresses) as Address[]}
+                  displayValueKey="location"
+                  setData={(query) => {
+                    if (query) {
+                      fulltextSearchAddresses({
+                        where: {
+                          campaignId: campaign.id,
+                          location: query,
+                        },
+                      });
+                    } else {
+                      searchAddresses({
+                        where: {
+                          campaignId: campaign.id,
+                        },
+                      });
+                    }
+                  }}
+                  onChange={(value) => {
+                    searchAddress({ where: { id: value?.id } });
+                  }}
+                >
+                  {(item) => <div>{item.location}</div>}
+                </Combobox>
+              </Field>
+            </TabPanel>
+          </TabPanels>
+        </TabGroup>
       </FieldGroup>
 
       {(form.watch("externalSupporter") ||
@@ -397,7 +412,7 @@ export function AddSupporterForm({
             </div>
           </div>
         )}
-      <Dialog open={isAdminOptions} onClose={setIsAdminOptions} zIndex={90}>
+      <Dialog open={isAdminOptions} onClose={setIsAdminOptions}>
         <DialogTitle>Opções de Administrador</DialogTitle>
         <DialogDescription>
           Escolha entre as opções abaixo para adicionar um apoiador.

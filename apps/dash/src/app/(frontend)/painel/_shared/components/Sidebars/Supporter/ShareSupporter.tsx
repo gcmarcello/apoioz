@@ -19,7 +19,7 @@ export function ShareSupporter() {
   } = useAction({
     action: createInviteCode,
     onError: (err) => {
-      showToast({ message: err, variant: "error", title: "Erro" });
+      showToast({ message: err.message, variant: "error", title: "Erro" });
     },
     onSuccess: (res) => {
       showToast({
