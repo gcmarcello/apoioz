@@ -5,4 +5,5 @@ module.exports = {
     "./src/packages/**/*.{js,ts,jsx,tsx,mdx}",
     "node_modules/odinkit/src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  darkMode: "selector",
 };

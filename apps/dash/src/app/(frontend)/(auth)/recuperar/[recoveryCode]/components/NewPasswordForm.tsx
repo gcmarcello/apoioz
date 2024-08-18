@@ -42,7 +42,7 @@ export default function NewPasswordForm({
       router.push("/painel");
     },
     onError: (err) =>
-      showToast({ message: err, title: "Erro", variant: "error" }),
+      showToast({ message: err.message, title: "Erro", variant: "error" }),
   });
 
   return (

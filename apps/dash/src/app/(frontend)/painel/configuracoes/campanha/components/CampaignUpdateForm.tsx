@@ -46,7 +46,7 @@ export default function CampaignUpdateForm({
   } = useAction({
     action: updateCampaign,
     onError: (err) => {
-      showToast({ message: err, title: "Erro", variant: "error" });
+      showToast({ message: err.message, title: "Erro", variant: "error" });
     },
     onSuccess: (res) => {
       router.push("/painel");

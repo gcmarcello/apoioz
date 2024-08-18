@@ -16,7 +16,6 @@ import {
   useForm,
 } from "odinkit/client";
 import { Alertbox, ButtonSpinner, Container, List } from "odinkit";
-import { EyeIcon, EyeSlashIcon } from "@heroicons/react/20/solid";
 
 export default function LoginForm({
   supportRedirect,
@@ -46,7 +45,7 @@ export default function LoginForm({
     onError: (error) => {
       form.setError("root.serverError", {
         type: "400",
-        message: (error as string) || "Erro inesperado",
+        message: error.message || "Erro inesperado",
       });
     },
     redirect: true,
@@ -57,7 +56,11 @@ export default function LoginForm({
       <Form onSubmit={loginAction} className="mt-4" hform={form}>
         {errors.root?.serverError?.message ? (
           <Alertbox type="error">
-            <List data={[errors.root?.serverError?.message as string]} />
+            <List
+              data={JSON.stringify([
+                errors.root?.serverError?.message as string,
+              ])}
+            />
           </Alertbox>
         ) : null}
 
