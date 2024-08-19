@@ -61,6 +61,7 @@ import { ButtonSpinner } from "@/app/(frontend)/_shared/components/Spinners";
 import { readSectionsByZone } from "@/app/api/elections/sections/action";
 import { readZonesByCampaign } from "@/app/api/elections/zones/actions";
 import { readAddressesFromSections } from "@/app/api/elections/locations/actions";
+import Loading from "../../loading";
 
 interface ReportsTableRankingProps {
   supporters: SupporterWithReferral[];
@@ -112,7 +113,11 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
     action: readSectionsByZone,
   });
 
-  const { data: addresses, trigger: fetchAddresses } = useAction({
+  const {
+    data: addresses,
+    trigger: fetchAddresses,
+    isMutating: loadingAddresses,
+  } = useAction({
     action: readAddressesFromSections,
   });
 
@@ -171,6 +176,13 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
 
     fetchAddresses(supporterSections);
   }, [supporters]);
+
+  if (loadingAddresses || !addresses)
+    return (
+      <Loading>
+        <div className="text-sm text-zinc-400">Carregando Endereços...</div>
+      </Loading>
+    );
 
   return (
     <>
@@ -319,6 +331,7 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
             id: "neighborhood",
             header: "Bairro",
             enableSorting: true,
+            enableColumnFilter: TableFlag.ENABLE_COLUMN_FILTER,
             meta: { filterVariant: "select" },
             cell: (info) => (
               <div className="group flex items-center gap-x-1.5 text-gray-500">
@@ -333,6 +346,7 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
           columnHelper.accessor("user.info.Section.addressId", {
             id: "address",
             header: "Local",
+            enableColumnFilter: TableFlag.ENABLE_COLUMN_FILTER,
             meta: {
               filterVariant: "select",
               selectOptions: addresses?.map((a) => ({
@@ -344,24 +358,18 @@ export function ReportsTable({ supporters }: ReportsTableRankingProps) {
               addresses?.find((a) => a.id === info.getValue())?.location ??
               "Não Informado",
           }),
-          columnHelper.accessor("user.info.Section.id", {
+          columnHelper.accessor("user.info.Section.number", {
             id: "section",
             header: "Seção",
             enableColumnFilter: TableFlag.ENABLE_COLUMN_FILTER,
             meta: {
               filterVariant: "select",
               selectOptions: supporters?.map((s) => ({
-                value: s.user.info.Section?.id ?? "Não Informado",
-                label: s.user.info.Section?.number
-                  ? String(s.user.info.Section?.number)
-                  : "Não Informado",
+                value: s.user.info.Section?.number,
+                label: String(s.user.info.Section?.number) ?? "Não Informado",
               })),
             },
-            cell: (info) =>
-              supporters
-                .map((s) => s.user.info.Section)
-                .find((a) => a?.id === info.getValue())?.number ??
-              "Não Informado",
+            cell: (info) => String(info.getValue()) ?? "Não Informado",
           }),
 
           columnHelper.accessor("user", {

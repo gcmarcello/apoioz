@@ -139,7 +139,7 @@ export default function LatestSupportersTable({
             </h1>
             <div className="flex items-center gap-1">
               <p className="mt-1 text-sm text-gray-700">
-                Os últimos apoiadores adicionados.{" "}
+                Os últimos apoiadores adicionados na sua rede.{" "}
                 <ParagraphLink href="/painel/relatorios">
                   Ver todos
                 </ParagraphLink>

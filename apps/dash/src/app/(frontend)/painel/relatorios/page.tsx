@@ -78,14 +78,14 @@ export default async function RelatoriosPage({
               count={supporters.count}
             />
           </Container>
-          <div className="grid grid-cols-2 lg:divide-x ">
+          {/* <div className="grid grid-cols-2 lg:divide-x ">
             <div className="col-span-2 flex  justify-evenly md:col-span-1 lg:px-4 lg:py-2">
               <SupportersLastMonth supporterData={supporters.data} />
             </div>
             <div className="col-span-2 flex  justify-evenly md:col-span-1 lg:px-4  lg:py-2">
               <ReferralRanking supporters={supporters.data} />
             </div>
-          </div>
+          </div> */}
         </div>
       </Container>
 
