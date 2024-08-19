@@ -45,10 +45,13 @@ export function ElectionInfoSection({
     action: readSectionsByZone,
   });
 
-  const { data: fulltextAddresses, trigger: fulltextSearchAddresses } =
-    useAction({
-      action: readAddressFulltext,
-    });
+  const {
+    data: fulltextAddresses,
+    trigger: fulltextSearchAddresses,
+    isMutating: isSearchingAddresses,
+  } = useAction({
+    action: readAddressFulltext,
+  });
 
   const {
     data: addresses,
@@ -145,6 +148,7 @@ export function ElectionInfoSection({
                   <Field name="user.info.addressId">
                     <Label>Local</Label>
                     <Combobox
+                      loading={isSearchingAddresses}
                       data={(fulltextAddresses || addresses) as Address[]}
                       displayValueKey="location"
                       placeholder="ex.: Escola X"
