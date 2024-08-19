@@ -206,6 +206,7 @@ export default function SupporterSignUpForm({
               <For each={order}>
                 {(step) => (
                   <Transition
+                    as="div"
                     show={step === order[currentStep]}
                     enter="ease-out duration-200"
                     enterFrom="opacity-0 scale-95"
@@ -220,7 +221,7 @@ export default function SupporterSignUpForm({
               </For>
             </div>
 
-            <div className="hidden justify-between lg:flex">
+            <div className="hidden justify-end lg:flex">
               {hasPrevStep && (
                 <Button
                   type="button"
@@ -261,10 +262,11 @@ export default function SupporterSignUpForm({
               )}
             </div>
             <BottomNavigation className="block p-2 lg:hidden">
-              <div className="flex justify-between">
+              <div className="flex justify-end gap-2">
                 {hasPrevStep && (
                   <Button
                     type="button"
+                    color="zinc"
                     onClick={() => {
                       walk(-1);
                     }}
@@ -276,6 +278,7 @@ export default function SupporterSignUpForm({
                 {hasNextStep && (
                   <Button
                     type="button"
+                    color="indigo"
                     onClick={() => {
                       walk(1);
                     }}

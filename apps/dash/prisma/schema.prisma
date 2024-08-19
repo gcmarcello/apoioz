@@ -213,6 +213,7 @@ model Section {
   number    Int
   addressId String?     @db.Uuid
   zoneId    String      @db.Uuid
+  voters    Int?
   Address   Address?    @relation(fields: [addressId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_3ff69a4fa9a649daf3fa869bcbc")
   Zone      Zone        @relation(fields: [zoneId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_deab69c6c23c07560c03943b6aa")
   Supporter Supporter[]
