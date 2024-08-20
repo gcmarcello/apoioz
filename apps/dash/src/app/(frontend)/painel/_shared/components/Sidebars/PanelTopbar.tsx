@@ -36,7 +36,7 @@ export function SupporterTopBar() {
   }, []);
 
   return (
-    <div className="sticky top-0 flex h-20 w-full shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 ">
+    <div className="flex h-20 w-full shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 ">
       <button
         type="button"
         className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
