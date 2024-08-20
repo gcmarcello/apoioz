@@ -118,6 +118,7 @@ export default function ReportsTable() {
         columnHelper.accessor("referral.user.name", {
           id: "referral",
           header: "Indicado por",
+          enableColumnFilter: TableFlag.ENABLE_COLUMN_FILTER,
           enableSorting: true,
           cell: (info) => (
             <div className="group flex items-center gap-x-1.5 text-gray-500">
