@@ -30,6 +30,11 @@ export default function ReportsTable() {
     new Set(addresses.map((a) => a.neighborhood))
   );
 
+  const supportersWithNeighborhood = supporters.map((s) => ({
+    ...s,
+    neighborhood: addresses.find((a) => a.id === s.addressId)?.neighborhood,
+  }));
+
   return (
     <Table
       xlsx={{
@@ -138,7 +143,7 @@ export default function ReportsTable() {
           cell: (info) =>
             zones?.find((a) => a.id === info.getValue())?.number ?? "N/D",
         }),
-        columnHelper.accessor("addressId", {
+        columnHelper.accessor("neighborhood", {
           id: "neighborhood",
           header: "Bairro",
           enableSorting: true,
@@ -152,7 +157,7 @@ export default function ReportsTable() {
           },
           cell: (info) => (
             <div className="group flex items-center gap-x-1.5 text-gray-500">
-              {addresses?.find((a) => a.id === info.getValue())?.neighborhood}
+              {info.getValue()}
             </div>
           ),
         }),
@@ -185,7 +190,7 @@ export default function ReportsTable() {
             sections?.find((s) => s.id === info.getValue())?.number ?? "N/D",
         }),
       ]}
-      data={supporters}
+      data={supportersWithNeighborhood}
     />
   );
 }
