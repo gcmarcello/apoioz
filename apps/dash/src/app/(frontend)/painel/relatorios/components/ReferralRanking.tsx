@@ -1,16 +1,14 @@
 "use client";
 import { generateRandomHexColor } from "@/app/(frontend)/_shared/utils/colors";
-import { readSupportersFromSupporterGroupWithRelation } from "@/app/api/panel/supporters/service";
 import { ExtractSuccessResponse } from "odinkit";
 import { ChartContainer, createChart } from "odinkit/client";
+import { SupporterWithReferral } from "../context/report.ctx";
 
-interface ReferralRankingProps {
-  supporters: ExtractSuccessResponse<
-    typeof readSupportersFromSupporterGroupWithRelation
-  >;
-}
-
-export function ReferralRanking({ supporters }: ReferralRankingProps) {
+export function ReferralRanking({
+  supporters,
+}: {
+  supporters: SupporterWithReferral[];
+}) {
   const labels =
     supporters
       ?.reduce<{ id: string; name: string; count: number; color: string }[]>(

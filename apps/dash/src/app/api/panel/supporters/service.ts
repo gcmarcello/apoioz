@@ -1,5 +1,6 @@
 import { Supporter } from "prisma/client";
 import { UserWithInfo, UserWithoutPassword } from "prisma/types/User";
+import { performance } from "perf_hooks";
 import { getEnv, isProd } from "@/_shared/utils/settings";
 import dayjs from "dayjs";
 var customParseFormat = require("dayjs/plugin/customParseFormat");
@@ -337,51 +338,13 @@ export async function readSupportersFromSupporterGroupWithRelation({
     include: {
       user: {
         select: {
-          info: {
-            include: {
-              Section: true,
-              Zone: zoneWithoutGeoJSON,
-              Address: true,
-            },
-          },
           name: true,
           email: true,
           phone: true,
         },
       },
       referral: {
-        include: {
-          user: {
-            select: {
-              info: {
-                include: {
-                  Section: true,
-                  Zone: zoneWithoutGeoJSON,
-                },
-              },
-              name: true,
-              email: true,
-              phone: true,
-            },
-          },
-          referral: {
-            include: {
-              user: {
-                select: {
-                  info: {
-                    include: {
-                      Section: true,
-                      Zone: zoneWithoutGeoJSON,
-                    },
-                  },
-                  name: true,
-                  email: true,
-                  phone: true,
-                },
-              },
-            },
-          },
-        },
+        select: { level: true, user: { select: { name: true } } },
       },
     },
     orderBy: { createdAt: "desc" },

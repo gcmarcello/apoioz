@@ -20,7 +20,9 @@ export async function readZonesByCampaign(
     },
   });
 
-  return campaign?.city?.City_To_Zone.flatMap((cityToZone) => cityToZone.Zone);
+  return (
+    campaign?.city?.City_To_Zone.flatMap((cityToZone) => cityToZone.Zone) ?? []
+  );
 }
 
 export async function readZonesByCity(cityId: string) {

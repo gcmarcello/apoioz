@@ -93,7 +93,7 @@ export default function PanelSideBar() {
   if (!campaign) return;
   return (
     <>
-      <div className="absolute w-64 overflow-clip">
+      <div className="absolute z-[3] w-64 overflow-clip">
         <Transition.Root show={visibility.panelSidebar} as={Fragment}>
           <Dialog
             as="div"

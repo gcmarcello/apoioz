@@ -9,9 +9,9 @@ export async function readSectionsByState(stateId: string) {
   return { state: zones.state, sections, count: sections.length };
 }
 
-export async function readSectionsByZone(zoneId?: string) {
+export async function readSectionsByZone(zoneId?: string | string[]) {
   return await prisma.section.findMany({
-    where: { zoneId },
+    where: typeof zoneId === "string" ? { zoneId } : { zoneId: { in: zoneId } },
     orderBy: { number: "asc" },
   });
 }
@@ -65,4 +65,12 @@ export async function readSectionsByCampaign(campaignId: string) {
   } catch (error) {
     console.log(error);
   }
+}
+
+export async function readSectionsById(sectionIds: string | string[]) {
+  return await prisma.section.findMany({
+    where: {
+      id: { in: typeof sectionIds === "string" ? [sectionIds] : sectionIds },
+    },
+  });
 }
