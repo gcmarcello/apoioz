@@ -9,7 +9,6 @@ import dayjs from "dayjs";
 import { Table, formatPhone, TableFlag } from "odinkit";
 import {
   Dropdown,
-  DropdownButton,
   DropdownMenu,
   DropdownSection,
   DropdownItem,
@@ -17,6 +16,7 @@ import {
   DropdownDivider,
   useForm,
 } from "odinkit/client";
+import { MenuButton as HeadlessDropdownButton } from "@headlessui/react";
 import { SupporterWithReferral, useReport } from "../context/report.ctx";
 import { useRouter } from "next/navigation";
 import { updateSupporterDto } from "@/app/api/panel/supporters/dto";
@@ -49,7 +49,52 @@ export default function ReportsTable() {
           enableColumnFilter: TableFlag.ENABLE_COLUMN_FILTER,
           enableSorting: true,
           enableGlobalFilter: true,
-          cell: (info) => info.getValue(),
+          cell: (info) => (
+            <Dropdown>
+              <HeadlessDropdownButton>
+                <span className="underline">{info.getValue()}</span>
+              </HeadlessDropdownButton>
+              <DropdownMenu>
+                <DropdownSection>
+                  <DropdownItem
+                    onClick={() =>
+                      router.push(
+                        `/painel/relatorios?as=${info.row.original.id}`
+                      )
+                    }
+                  >
+                    <EyeIcon role="button" className="size-5" /> Ver Como
+                    <DropdownDescription>
+                      Visualize a plataforma como esse apoiador
+                    </DropdownDescription>
+                  </DropdownItem>
+                  <DropdownItem
+                    onClick={() => setSelectedSupporter(info.row.original)}
+                  >
+                    <PencilSquareIcon role="button" className="size-5" /> Editar{" "}
+                    <DropdownDescription>
+                      Editar informações do apoiador
+                    </DropdownDescription>
+                  </DropdownItem>
+                </DropdownSection>
+                <DropdownDivider />
+                <DropdownSection>
+                  <DropdownItem
+                    href={`https://wa.me/${info.row.original.user.phone}`}
+                  >
+                    <PhoneIcon className="size-5 " /> Whatsapp
+                  </DropdownItem>
+                  {info.row.original.user.email && (
+                    <DropdownItem
+                      href={`https://wa.me/${info.row.original.user.email}`}
+                    >
+                      <EnvelopeIcon className="size-5 " /> Email
+                    </DropdownItem>
+                  )}
+                </DropdownSection>
+              </DropdownMenu>
+            </Dropdown>
+          ),
         }),
 
         columnHelper.accessor("user.phone", {
@@ -130,57 +175,6 @@ export default function ReportsTable() {
           },
           cell: (info) =>
             sections?.find((s) => s.id === info.getValue())?.number ?? "N/D",
-        }),
-
-        columnHelper.accessor("user", {
-          id: "options",
-          header: "",
-          enableSorting: false,
-          cell: (info) => (
-            <Dropdown>
-              <DropdownButton outline color="indigo">
-                Opções
-                <ChevronDownIcon />
-              </DropdownButton>
-              <DropdownMenu>
-                <DropdownSection>
-                  <DropdownItem
-                    onClick={() =>
-                      router.push(
-                        `/painel/relatorios?as=${info.row.original.id}`
-                      )
-                    }
-                  >
-                    <EyeIcon role="button" className="size-5" /> Ver Como
-                    <DropdownDescription>
-                      Visualize a plataforma como esse apoiador
-                    </DropdownDescription>
-                  </DropdownItem>
-                  <DropdownItem
-                    onClick={() => setSelectedSupporter(info.row.original)}
-                  >
-                    <PencilSquareIcon role="button" className="size-5" /> Editar{" "}
-                    <DropdownDescription>
-                      Editar informações do apoiador
-                    </DropdownDescription>
-                  </DropdownItem>
-                </DropdownSection>
-                <DropdownDivider />
-                <DropdownSection>
-                  <DropdownItem href={`https://wa.me/${info.getValue().phone}`}>
-                    <PhoneIcon className="size-5 " /> Whatsapp
-                  </DropdownItem>
-                  {info.getValue().email && (
-                    <DropdownItem
-                      href={`https://wa.me/${info.getValue().email}`}
-                    >
-                      <EnvelopeIcon className="size-5 " /> Email
-                    </DropdownItem>
-                  )}
-                </DropdownSection>
-              </DropdownMenu>
-            </Dropdown>
-          ),
         }),
       ]}
       data={supporters}
