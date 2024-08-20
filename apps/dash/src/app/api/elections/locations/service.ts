@@ -23,6 +23,14 @@ export async function readAddressesFromSections(sectionId: string[]) {
   });
 }
 
+export async function readAddressesFromIds(addressId: string[] | string) {
+  return await prisma.address.findMany({
+    where: {
+      id: typeof addressId === "string" ? addressId : { in: addressId },
+    },
+  });
+}
+
 export async function readAddressFulltext(request: ReadAddressDto) {
   const city = await prisma.city.findFirst({
     where: { Campaign: { some: { id: request?.where?.campaignId } } },

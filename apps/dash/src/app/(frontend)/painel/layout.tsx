@@ -57,7 +57,7 @@ export default async function RootLayout({
         supporter={supporter}
       />
 
-      <div className="h-[calc(100vh-80px-30px)] p-4 lg:ml-64 lg:p-8">
+      <div className="h-[calc(100vh-80px-30px)] p-3 lg:ml-64 lg:p-8">
         {children}
       </div>
     </main>

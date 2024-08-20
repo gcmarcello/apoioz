@@ -1,20 +1,12 @@
-import { SupportersLastMonth } from "./components/SupportersLastMonth";
-import { ReferralRanking } from "./components/ReferralRanking";
-import {
-  ArrowLeftIcon,
-  EyeIcon,
-  InformationCircleIcon,
-} from "@heroicons/react/24/solid";
-import Footer from "../_shared/components/Footer";
 import { readSupportersFromSupporterGroupWithRelation } from "@/app/api/panel/supporters/service";
 import { UseMiddlewares } from "@/middleware/functions/useMiddlewares";
 import { UserSessionMiddleware } from "@/middleware/functions/userSession.middleware";
 import { SupporterSessionMiddleware } from "@/middleware/functions/supporterSession.middleware";
 import { z } from "zod";
-import { Container } from "odinkit";
-import clsx from "clsx";
-import { ViewAsButton } from "./components/ViewAsButton";
-import { ReportsTable } from "./components/ReportsTable";
+import { readZonesByCampaign } from "@/app/api/elections/zones/service";
+import { readSectionsById } from "@/app/api/elections/sections/service";
+import { readAddressesFromIds } from "@/app/api/elections/locations/service";
+import ReportsPage from "./ReportsPage";
 
 export default async function RelatoriosPage({
   searchParams,
@@ -32,64 +24,26 @@ export default async function RelatoriosPage({
 
   const as = searchParams.as;
 
-  const supporters = await readSupportersFromSupporterGroupWithRelation({
+  const { data } = await readSupportersFromSupporterGroupWithRelation({
     supporterSession,
     where: {
       supporterId: z.string().uuid().safeParse(as) ? as : undefined,
     },
   });
 
-  const seeingAs = supporters.data.find((supporter) => supporter.id === as);
+  const zones = await readZonesByCampaign(supporterSession.campaignId);
 
-  return (
-    <Container
-      className={clsx(seeingAs && "rounded-md border-4 border-orange-500")}
-    >
-      <Container className={clsx(seeingAs && "m-4")}>
-        {seeingAs && (
-          <Container className="my-4 flex items-center gap-x-2">
-            <EyeIcon className="h-10 w-10 text-orange-500" />{" "}
-            <span>
-              Você está visualizando como <strong>{seeingAs.user.name}</strong>.{" "}
-              <ViewAsButton className="ms-1 inline-flex items-center font-bold text-orange-500 duration-200 hover:text-orange-600">
-                Voltar <ArrowLeftIcon className="ms-1 inline h-5 w-5" />
-              </ViewAsButton>
-            </span>
-            <div className="mx-4 mb-4 flex text-sm text-gray-600">
-              <InformationCircleIcon className="me-1 h-5 w-5" />
-              Nessa página você tem acesso a todos os apoiadores da sua rede.{" "}
-              {/* <span
-            className="ms-1 font-bold text-indigo-600 hover:text-indigo-400"
-            role="button"
-            onClick={() => setOpen(true)}
-          >
-            Como funciona?
-          </span> */}
-            </div>
-          </Container>
-        )}
+  const parsedSections = data.map((s) => s.sectionId).filter((s) => s);
 
-        <div className="divide-y">
-          <Container
-            className={"col-span-1 mb-8 px-2 pt-2 md:col-span-3 lg:pe-0 "}
-          >
-            <ReportsTable
-              supporters={supporters.data}
-              count={supporters.count}
-            />
-          </Container>
-          {/* <div className="grid grid-cols-2 lg:divide-x ">
-            <div className="col-span-2 flex  justify-evenly md:col-span-1 lg:px-4 lg:py-2">
-              <SupportersLastMonth supporterData={supporters.data} />
-            </div>
-            <div className="col-span-2 flex  justify-evenly md:col-span-1 lg:px-4  lg:py-2">
-              <ReferralRanking supporters={supporters.data} />
-            </div>
-          </div> */}
-        </div>
-      </Container>
+  const sections = await readSectionsById(parsedSections as string[]);
 
-      <Footer />
-    </Container>
-  );
+  const parsedAddresses = data.map((s) => s.addressId).filter((s) => s);
+
+  const addresses = await readAddressesFromIds(parsedAddresses as string[]);
+
+  const seeingAs = data.find((supporter) => supporter.id === as);
+
+  const props = { zones, sections, addresses, seeingAs, supporters: data };
+
+  return <ReportsPage {...props} />;
 }

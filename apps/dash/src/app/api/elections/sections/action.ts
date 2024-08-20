@@ -3,7 +3,7 @@
 import { ActionResponse } from "odinkit";
 import * as service from "./service";
 
-export async function readSectionsByZone(zoneId: string) {
+export async function readSectionsByZone(zoneId?: string | string[]) {
   try {
     if (!zoneId) throw "zoneId is required";
     const sections = await service.readSectionsByZone(zoneId);
