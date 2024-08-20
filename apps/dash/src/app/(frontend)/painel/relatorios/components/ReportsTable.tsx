@@ -1,5 +1,4 @@
 import {
-  ChevronDownIcon,
   EyeIcon,
   PencilSquareIcon,
   PhoneIcon,
@@ -14,12 +13,10 @@ import {
   DropdownItem,
   DropdownDescription,
   DropdownDivider,
-  useForm,
 } from "odinkit/client";
 import { MenuButton as HeadlessDropdownButton } from "@headlessui/react";
-import { SupporterWithReferral, useReport } from "../context/report.ctx";
+import { useReport } from "../context/report.ctx";
 import { useRouter } from "next/navigation";
-import { updateSupporterDto } from "@/app/api/panel/supporters/dto";
 
 export default function ReportsTable() {
   const { zones, sections, addresses, supporters, setSelectedSupporter } =
@@ -28,7 +25,7 @@ export default function ReportsTable() {
 
   const neighborhoods = Array.from(
     new Set(addresses.map((a) => a.neighborhood))
-  );
+  ).filter((n) => n !== null);
 
   const supportersWithNeighborhood = supporters.map((s) => ({
     ...s,
@@ -151,10 +148,9 @@ export default function ReportsTable() {
           enableColumnFilter: TableFlag.ENABLE_COLUMN_FILTER,
           meta: {
             filterVariant: "select",
-            selectOptions: neighborhoods.map((n) => ({
-              value: n,
-              label: n ?? "N/D",
-            })),
+            selectOptions: neighborhoods
+              .sort((a, b) => a.localeCompare(b))
+              .map((n) => ({ value: n, label: n ?? "N/D" })),
           },
           cell: (info) => (
             <div className="group flex items-center gap-x-1.5 text-gray-500">
@@ -168,10 +164,14 @@ export default function ReportsTable() {
           enableColumnFilter: TableFlag.ENABLE_COLUMN_FILTER,
           meta: {
             filterVariant: "select",
-            selectOptions: addresses?.map((a) => ({
-              value: a.id,
-              label: a.location ?? "N/D",
-            })),
+            selectOptions: addresses
+              ?.sort((a, b) =>
+                (a.location ?? "").localeCompare(b.location ?? "")
+              )
+              .map((a) => ({
+                value: a.id,
+                label: a.location ?? "N/D",
+              })),
           },
           cell: (info) =>
             addresses?.find((a) => a.id === info.getValue())?.location,
@@ -182,10 +182,12 @@ export default function ReportsTable() {
           enableColumnFilter: TableFlag.ENABLE_COLUMN_FILTER,
           meta: {
             filterVariant: "select",
-            selectOptions: sections?.map((s) => ({
-              value: s.id,
-              label: String(s.number) ?? "N/D",
-            })),
+            selectOptions: sections
+              ?.sort((a, b) => a.number - b.number)
+              .map((s) => ({
+                value: s.id,
+                label: String(s.number) ?? "N/D",
+              })),
           },
           cell: (info) =>
             sections?.find((s) => s.id === info.getValue())?.number ?? "N/D",
