@@ -8,51 +8,21 @@ import { DefaultTable } from "@/app/(frontend)/_shared/components/tables/table";
 import SupporterBall from "@/app/(frontend)/_shared/components/SupporterBall";
 import { ParagraphLink } from "@/app/(frontend)/_shared/components/text/ParagraphLink";
 import { Pagination } from "@/app/api/_shared/dto/read";
-import { Prisma } from "prisma/client";
+import { Address, Prisma, Section, Zone } from "prisma/client";
 import { toProperCase } from "odinkit";
-
-export type LatestSupportersTableData = Prisma.SupporterGetPayload<{
-  include: {
-    user: {
-      select: {
-        info: { include: { Section: true; Zone: true; Address: true } };
-        name: true;
-        email: true;
-        phone: true;
-      };
-    };
-    referral: {
-      include: {
-        user: {
-          select: {
-            info: { include: { Section: true; Zone: true } };
-            name: true;
-            email: true;
-            phone: true;
-          };
-        };
-        referral: {
-          include: {
-            user: {
-              select: {
-                info: { include: { Section: true; Zone: true } };
-                name: true;
-                email: true;
-                phone: true;
-              };
-            };
-          };
-        };
-      };
-    };
-  };
-}>[];
+import { SupporterWithReferral } from "../../relatorios/components/ReportsContainer";
 
 export default function LatestSupportersTable({
   data,
   pagination,
+  zones,
+  sections,
+  addresses,
 }: {
-  data: LatestSupportersTableData;
+  zones: Zone[];
+  addresses: Address[];
+  sections: Section[];
+  data: SupporterWithReferral[];
   pagination: Pagination;
 }) {
   const columnHelper = createColumnHelper<(typeof data)[0]>();
@@ -90,37 +60,35 @@ export default function LatestSupportersTable({
         );
       },
     }),
-    columnHelper.accessor("user.info.Zone.number", {
+    columnHelper.accessor("zoneId", {
       id: "zone",
       header: "Zona",
-      cell: (info) => info.getValue(),
+      cell: (info) => zones.find((zone) => zone.id === info.getValue())?.number,
     }),
-    columnHelper.accessor("user.info.Section.number", {
+    columnHelper.accessor("sectionId", {
       id: "section",
       header: "Seção",
-      cell: (info) => info.getValue(),
+      cell: (info) =>
+        sections.find((section) => section.id === info.getValue())?.number ??
+        "N/D",
     }),
-    columnHelper.accessor("user.info.Address.neighborhood", {
+    columnHelper.accessor("addressId", {
       id: "neighborhood",
       header: "Bairro",
       cell: (info) =>
-        info.getValue()
-          ? toProperCase(String(info.getValue()))
-          : "Não informado",
+        addresses.find((address) => address.id === info.getValue())
+          ?.neighborhood,
     }),
     columnHelper.accessor("createdAt", {
       id: "createdAt",
       header: "Entrou em",
       cell: (info) => (
-        <Date value={dayjs(info.getValue()).format("DD/MM/YYYY HH:mm")} />
+        <Date
+          value={dayjs(info.getValue())
+            .utcOffset(-3)
+            .format("DD/MM/YYYY HH:mm")}
+        />
       ),
-    }),
-    columnHelper.accessor("id", {
-      id: "id",
-      header: "Entrou em",
-      cell: (info) => (
-        <SupporterOverview supporter={info.row.original as any} />
-      ), //@todo
     }),
   ];
 

@@ -50,13 +50,6 @@ export default function ZoneControl() {
                     checked={zone.checked}
                     className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                     onChange={(e) => {
-                      console.log(
-                        zones.map((z) =>
-                          z.id === zone.id
-                            ? { ...z, checked: e.target.checked }
-                            : z
-                        )
-                      );
                       setZones((prev) =>
                         prev.map((z) =>
                           z.id === zone.id

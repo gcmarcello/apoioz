@@ -3,17 +3,13 @@ import dayjs from "dayjs";
 
 import { readSupportersFromSupporterGroupWithRelation } from "@/app/api/panel/supporters/service";
 import { ChartContainer, createChart } from "odinkit/client";
-import { ExtractSuccessResponse } from "odinkit";
-
-interface SupportersLastMonthProps {
-  supporterData: ExtractSuccessResponse<
-    typeof readSupportersFromSupporterGroupWithRelation
-  >;
-}
+import { SupporterWithReferral } from "../context/report.ctx";
 
 export function SupportersLastMonth({
   supporterData,
-}: SupportersLastMonthProps) {
+}: {
+  supporterData: SupporterWithReferral[];
+}) {
   const labels = [];
 
   for (let i = 29; i >= 0; i--) {
