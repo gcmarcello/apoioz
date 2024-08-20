@@ -10,7 +10,7 @@ import { ParagraphLink } from "@/app/(frontend)/_shared/components/text/Paragrap
 import { Pagination } from "@/app/api/_shared/dto/read";
 import { Address, Prisma, Section, Zone } from "prisma/client";
 import { toProperCase } from "odinkit";
-import { SupporterWithReferral } from "../../relatorios/components/ReportsContainer";
+import { SupporterWithReferral } from "../../relatorios/context/report.ctx";
 
 export default function LatestSupportersTable({
   data,
