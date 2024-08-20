@@ -139,12 +139,16 @@ export default function ReportsTable() {
           header: "Bairro",
           enableSorting: true,
           enableColumnFilter: TableFlag.ENABLE_COLUMN_FILTER,
-          meta: { filterVariant: "select" },
+          meta: {
+            filterVariant: "select",
+            selectOptions: addresses?.map((a) => ({
+              value: a.id,
+              label: a.neighborhood ?? "N/D",
+            })),
+          },
           cell: (info) => (
             <div className="group flex items-center gap-x-1.5 text-gray-500">
               {addresses?.find((a) => a.id === info.getValue())?.neighborhood}
-
-              <div className="absolute hidden group-hover:block"></div>
             </div>
           ),
         }),
