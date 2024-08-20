@@ -403,6 +403,9 @@ export default function PanelSideBar() {
                     </ul>
                   )}
                 </li>
+                {process.env.NODE_ENV !== "production" && (
+                  <li className="text-white">_DEV ENVIRONMENT_</li>
+                )}
                 <li className="mt-auto">
                   <Link
                     href="/painel/configuracoes"
