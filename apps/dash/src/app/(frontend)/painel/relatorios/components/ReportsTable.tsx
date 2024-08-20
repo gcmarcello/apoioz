@@ -26,6 +26,10 @@ export default function ReportsTable() {
     useReport();
   const router = useRouter();
 
+  const neighborhoods = Array.from(
+    new Set(addresses.map((a) => a.neighborhood))
+  );
+
   return (
     <Table
       xlsx={{
@@ -141,9 +145,9 @@ export default function ReportsTable() {
           enableColumnFilter: TableFlag.ENABLE_COLUMN_FILTER,
           meta: {
             filterVariant: "select",
-            selectOptions: addresses?.map((a) => ({
-              value: a.neighborhood,
-              label: a.neighborhood ?? "N/D",
+            selectOptions: neighborhoods.map((n) => ({
+              value: n,
+              label: n ?? "N/D",
             })),
           },
           cell: (info) => (
