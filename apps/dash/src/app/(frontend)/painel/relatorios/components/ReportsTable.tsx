@@ -142,7 +142,7 @@ export default function ReportsTable() {
           meta: {
             filterVariant: "select",
             selectOptions: addresses?.map((a) => ({
-              value: a.id,
+              value: a.neighborhood,
               label: a.neighborhood ?? "N/D",
             })),
           },
