@@ -46,7 +46,7 @@ export async function readSupporterBranches({
       return {
         referred: {
           include: {
-            referral: { include: { user: { include: { info: true } } } },
+            referral: { include: { user: true } },
             user: {
               include: {
                 info: { include: { Section: true, Zone: zoneWithoutGeoJSON } },
@@ -627,6 +627,7 @@ export async function updateSupporter(data: UpdateSupporterDto) {
 
   if (!supporter) throw "Apoiador não encontrado";
 
+  
   const updatedSupporter = await prisma.supporter.update({
     where: { id: data.id },
     data: {
