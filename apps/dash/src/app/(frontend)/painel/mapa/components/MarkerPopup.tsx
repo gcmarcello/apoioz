@@ -76,8 +76,8 @@ export default function MarkerPopup({
                 }
               }}
               className={clsx(
-                "bg-indigo-600 text-white shadow-sm hover:bg-indigo-500",
-                "flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                "bg-rose-600 text-white shadow-sm hover:bg-rose-500",
+                "flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600"
               )}
             >
               Detalhes

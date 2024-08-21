@@ -44,7 +44,7 @@ export default function RecoverPasswordPage() {
   return (
     <div className="flex min-h-screen flex-1 flex-col justify-center bg-white px-6 py-12 lg:px-8">
       <Link href={"/login"}>
-        <ArrowLeftCircleIcon className="fixed left-3 top-3 h-10 w-10  text-indigo-600" />
+        <ArrowLeftCircleIcon className="fixed left-3 top-3 h-10 w-10  text-rose-600" />
       </Link>
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <Image
@@ -71,7 +71,7 @@ export default function RecoverPasswordPage() {
             <Link href={"/login"}>
               <button
                 disabled={loading}
-                className="my-4 inline-flex w-full justify-center rounded-md bg-indigo-500 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:bg-indigo-300"
+                className="my-4 inline-flex w-full justify-center rounded-md bg-rose-500 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-rose-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-500 disabled:bg-rose-300"
               >
                 Voltar a tela de login
               </button>
@@ -99,7 +99,7 @@ export default function RecoverPasswordPage() {
               />
               <button
                 disabled={loading}
-                className="my-4 inline-flex w-full justify-center rounded-md bg-indigo-500 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:bg-indigo-300"
+                className="my-4 inline-flex w-full justify-center rounded-md bg-rose-500 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-rose-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-500 disabled:bg-rose-300"
               >
                 <div className="flex items-center">
                   {loading && <ButtonSpinner />}

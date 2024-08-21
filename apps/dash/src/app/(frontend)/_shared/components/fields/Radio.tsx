@@ -17,7 +17,7 @@ export default function RadioInput(props: OptionProps) {
             {...props.hform.register(props.group)}
             value={props.data}
             type="radio"
-            className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
+            className="h-4 w-4 border-gray-300 text-rose-600 focus:ring-rose-600"
           />
         </div>
         <div className="ml-3 flex-grow items-center text-base leading-6">

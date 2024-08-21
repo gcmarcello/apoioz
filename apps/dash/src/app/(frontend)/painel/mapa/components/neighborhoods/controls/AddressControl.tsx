@@ -37,7 +37,7 @@ export default function AddressControl() {
 
   return (
     <div ref={ref} className="max-h-[200px] min-h-[100px] overflow-y-auto">
-      <div className="mb-4 flex items-center justify-center rounded-lg bg-indigo-600">
+      <div className="mb-4 flex items-center justify-center rounded-lg bg-rose-600">
         <div className="... truncate  px-1 text-center text-lg font-semibold text-white">
           {toProperCase(selectedAddress?.location ?? "")}
         </div>

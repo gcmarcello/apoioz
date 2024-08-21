@@ -59,7 +59,7 @@ export default function SupporterSideBar() {
           type="button"
           className="mx-auto rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
         >
-          <UserPlusIcon className="h-30 w-30 text-indigo-500 group-hover:text-indigo-900" />
+          <UserPlusIcon className="h-30 w-30 text-rose-500 group-hover:text-rose-900" />
           Adicionar Apoiador
         </button>
         <button
@@ -124,7 +124,7 @@ export default function SupporterSideBar() {
                     >
                       <div className="flex h-full flex-col divide-y divide-gray-200 bg-white shadow-xl">
                         <div className="h-0 flex-1 overflow-y-auto">
-                          <div className="bg-indigo-700 px-4 py-6 sm:px-6">
+                          <div className="bg-rose-600 px-4 py-6 sm:px-6">
                             <div className="flex items-center justify-between">
                               <DialogTitle className="text-base font-semibold leading-6 text-white">
                                 Adicionar Apoiador
@@ -132,7 +132,7 @@ export default function SupporterSideBar() {
                               <div className="ml-3 flex h-7 items-center">
                                 <button
                                   type="button"
-                                  className="relative rounded-md bg-indigo-700 text-indigo-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
+                                  className="relative rounded-md bg-rose-600 text-rose-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
                                   onClick={() =>
                                     setVisibility((prev) => ({
                                       ...prev,
@@ -151,7 +151,7 @@ export default function SupporterSideBar() {
                             </div>
 
                             <div className="mt-1">
-                              <p className="text-sm text-indigo-300">
+                              <p className="text-sm text-rose-300">
                                 {screen === "start"
                                   ? "Escolha como aumentar sua rede."
                                   : screen === "share"

@@ -32,7 +32,7 @@ export function ViewControl() {
       <div className="flex-column flex items-center justify-center space-x-4 lg:flex-row">
         <span
           className={clsx(
-            isNeighborhood ? "font-bold text-indigo-500" : "text-gray-500"
+            isNeighborhood ? "font-bold text-rose-500" : "text-gray-500"
           )}
         >
           Bairro
@@ -41,7 +41,7 @@ export function ViewControl() {
           checked={isNeighborhood}
           onChange={handleViewModeChange}
           className={clsx(
-            "relative inline-flex h-6 w-11 items-center rounded-full bg-indigo-500 transition-colors"
+            "relative inline-flex h-6 w-11 items-center rounded-full bg-rose-500 transition-colors"
           )}
         >
           <span
@@ -53,7 +53,7 @@ export function ViewControl() {
         </Switch>
         <span
           className={clsx(
-            !isNeighborhood ? "font-bold text-indigo-500" : "text-gray-500"
+            !isNeighborhood ? "font-bold text-rose-500" : "text-gray-500"
           )}
         >
           Zona

@@ -207,7 +207,7 @@ export function EventListActions({
         >
           <span className="sr-only">Previous</span>
           <div className="flex">
-            <CheckIcon className="h-5 w-5 text-indigo-600" aria-hidden="true" />
+            <CheckIcon className="h-5 w-5 text-rose-600" aria-hidden="true" />
           </div>
           <span className="hidden md:block">
             {event.status === "active" ? "Editar" : "Avaliar"}
@@ -411,7 +411,7 @@ export function EventListActions({
                     >
                       <button
                         type="button"
-                        className="bg-white-600 inline-flex w-full justify-center rounded-md border border-indigo-600 px-3 py-2 text-sm font-semibold text-indigo-600 shadow-sm hover:bg-indigo-600 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 "
+                        className="bg-white-600 inline-flex w-full justify-center rounded-md border border-rose-600 px-3 py-2 text-sm font-semibold text-rose-600 shadow-sm hover:bg-rose-600 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600 "
                         onClick={() => {
                           setShowForm((prev) => !prev);
                           form.reset();
@@ -422,7 +422,7 @@ export function EventListActions({
                       {showForm ? (
                         <button
                           type="submit"
-                          className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 "
+                          className="inline-flex w-full justify-center rounded-md bg-rose-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-rose-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600 "
                         >
                           Salvar
                         </button>
@@ -461,7 +461,7 @@ export function EventListActions({
                           {event.status !== "active" && (
                             <button
                               type="button"
-                              className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 "
+                              className="inline-flex w-full justify-center rounded-md bg-rose-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-rose-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600 "
                               onClick={async () => {
                                 await processEvent("active");
                               }}

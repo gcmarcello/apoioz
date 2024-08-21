@@ -32,7 +32,7 @@ export function EventOverviewModal({
         >
           <span className="sr-only">Previous</span>
           <div className="flex">
-            <CheckIcon className="h-5 w-5 text-indigo-600" aria-hidden="true" />
+            <CheckIcon className="h-5 w-5 text-rose-600" aria-hidden="true" />
           </div>
           <span className="hidden md:block">Avaliar</span>
         </button>

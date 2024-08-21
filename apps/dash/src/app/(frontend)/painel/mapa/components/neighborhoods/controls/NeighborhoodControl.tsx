@@ -25,9 +25,9 @@ export default function NeighborhoodControl() {
           <>
             <DisclosureButton
               className={clsx(
-                "flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-500 p-2 text-white",
+                "flex w-full items-center justify-center gap-2 rounded-lg bg-rose-500 p-2 text-white",
                 "transition-colors duration-200",
-                open ? "bg-indigo-600" : "bg-indigo-500"
+                open ? "bg-rose-600" : "bg-rose-500"
               )}
             >
               <BuildingLibraryIcon className="h-6 w-6" />
@@ -57,7 +57,7 @@ export default function NeighborhoodControl() {
                     <input
                       type="checkbox"
                       checked={neighborhood.checked}
-                      className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                      className="h-4 w-4 rounded border-gray-300 text-rose-600 focus:ring-rose-500"
                       onChange={(e) =>
                         setNeighborhoods((prev) =>
                           prev.map((z) =>

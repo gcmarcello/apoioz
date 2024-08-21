@@ -10,7 +10,7 @@ export function ParagraphLink({
   return (
     <Link
       href={href}
-      className="font-semibold text-indigo-600 hover:text-indigo-500"
+      className="font-semibold text-rose-600 hover:text-rose-500"
     >
       {children}
     </Link>

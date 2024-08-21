@@ -98,7 +98,7 @@ export default function WhatsappPage() {
                             <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                               <a
                                 href={person.link}
-                                className="text-indigo-600 hover:text-indigo-900"
+                                className="text-rose-600 hover:text-rose-900"
                               >
                                 Abrir
                                 <span className="sr-only">, {person.name}</span>

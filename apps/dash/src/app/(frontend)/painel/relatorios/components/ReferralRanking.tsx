@@ -40,7 +40,7 @@ export function ReferralRanking({
         {
           label: "Indicados",
           data: labels.map((referral) => referral.count),
-          backgroundColor: "rgba(79, 70, 229, 0.75)",
+          backgroundColor: "rgba(225, 29, 72)",
         },
       ],
     },

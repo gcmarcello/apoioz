@@ -38,7 +38,7 @@ export default async function LoginPage({
           Esqueceu a senha ou não criou uma?{" "}
           <Link
             href={"/recuperar"}
-            className="font-semibold leading-6 text-indigo-600 hover:text-indigo-400"
+            className="font-semibold leading-6 text-rose-600 hover:text-rose-400"
           >
             Clique aqui!
           </Link>

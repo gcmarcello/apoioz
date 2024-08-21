@@ -26,7 +26,7 @@ export default function StatsSection({ stats }: { stats: ReadStatsDto }) {
           <div className="px-4 py-5 sm:p-6">
             <dt className="text-base font-normal text-gray-900"></dt>
             <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
-              <div className="flex animate-pulse items-baseline text-2xl font-semibold text-indigo-600">
+              <div className="flex animate-pulse items-baseline text-2xl font-semibold text-rose-600">
                 Carregando...
                 <span className="ml-2 text-clip text-sm font-medium text-gray-500"></span>
               </div>
@@ -35,7 +35,7 @@ export default function StatsSection({ stats }: { stats: ReadStatsDto }) {
           <div className="px-4 py-5 sm:p-6">
             <dt className="text-base font-normal text-gray-900"></dt>
             <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
-              <div className="flex animate-pulse items-baseline text-2xl font-semibold text-indigo-600">
+              <div className="flex animate-pulse items-baseline text-2xl font-semibold text-rose-600">
                 Carregando...
                 <span className="ml-2 text-clip text-sm font-medium text-gray-500"></span>
               </div>
@@ -44,7 +44,7 @@ export default function StatsSection({ stats }: { stats: ReadStatsDto }) {
           <div className="px-4 py-5 sm:p-6">
             <dt className="text-base font-normal text-gray-900"></dt>
             <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
-              <div className="flex animate-pulse items-baseline text-2xl font-semibold text-indigo-600">
+              <div className="flex animate-pulse items-baseline text-2xl font-semibold text-rose-600">
                 Carregando...
                 <span className="ml-2 text-clip text-sm font-medium text-gray-500"></span>
               </div>
@@ -63,7 +63,7 @@ export default function StatsSection({ stats }: { stats: ReadStatsDto }) {
           <div key={item.name} className="px-4 py-5 sm:p-6">
             <dt className="text-base font-normal text-gray-900">{item.name}</dt>
             <dd className="mt-1 flex items-baseline justify-between md:block lg:flex">
-              <div className="items-baseline text-2xl font-semibold text-indigo-600">
+              <div className="items-baseline text-2xl font-semibold text-rose-600">
                 {item.stat}
                 <span className="ml-2 text-clip text-sm font-medium text-gray-500">
                   {item.previousStat} {item.changeText}

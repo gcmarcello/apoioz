@@ -46,7 +46,7 @@ export function SupportersLastMonth({
         {
           label: "Apoiadores",
           data: supporterSumEachDay,
-          backgroundColor: "rgba(79, 70, 229, 0.75)",
+          backgroundColor: "rgba(225, 29, 72)",
         },
       ],
     },
