@@ -22,10 +22,10 @@ import {
 import { useEffect, useMemo } from "react";
 import { updateSupporter } from "@/app/api/panel/supporters/actions";
 import { useReport } from "../context/report.ctx";
+import { readSectionsByZone } from "@/app/api/elections/sections/action";
 
 export default function EditSupporterModal() {
-  const { setSelectedSupporter, selectedSupporter, zones, sections } =
-    useReport();
+  const { setSelectedSupporter, selectedSupporter, zones } = useReport();
   const form = useForm({
     schema: updateSupporterDto,
     mode: "onChange",
@@ -46,6 +46,8 @@ export default function EditSupporterModal() {
     form.setValue("sectionId", selectedSupporter.sectionId ?? "");
   }, [selectedSupporter]);
 
+  console.log(form.watch());
+
   const { trigger, isMutating } = useAction({
     action: updateSupporter,
     onSuccess: () => {
@@ -64,6 +66,16 @@ export default function EditSupporterModal() {
       }),
   });
 
+  const { data: sections, trigger: fetchSections } = useAction({
+    action: readSectionsByZone,
+  });
+
+  useEffect(() => {
+    if (form.watch("zoneId")) {
+      fetchSections(form.watch("zoneId"));
+    }
+  }, [form.watch("zoneId")]);
+
   const Field = useMemo(() => form.createField(), []);
 
   return (
@@ -73,8 +85,7 @@ export default function EditSupporterModal() {
     >
       <DialogTitle>Editar Apoiador</DialogTitle>
       <DialogDescription>
-        Qualquer alteração realizada se refletirá em qualquer outra campanha que
-        esse apoiador esteja participando.
+        Qualquer alteração realizada se refletirá apenas na campanha atual.
       </DialogDescription>
       <Form hform={form} onSubmit={(data) => trigger(data)}>
         <DialogBody>
