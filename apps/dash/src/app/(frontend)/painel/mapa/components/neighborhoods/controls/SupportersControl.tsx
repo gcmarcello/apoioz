@@ -9,6 +9,7 @@ import {
   DisclosurePanel,
 } from "@headlessui/react";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
+import Link from "next/link";
 
 export default function SupporterControl() {
   const {
@@ -51,6 +52,15 @@ export default function SupporterControl() {
               transition
               className="transition duration-200 ease-out data-[closed]:-translate-y-6 data-[closed]:opacity-0"
             >
+              <Link
+                target="_blank"
+                href={`/painel/relatorios?zone=${selectedZone?.id}`}
+                className={clsx(
+                  "...  truncate font-semibold text-zinc-500 underline"
+                )}
+              >
+                Relatório
+              </Link>
               <div className="flex justify-between gap-4">
                 <div
                   className={clsx("text-lg font-semibold", "text-indigo-500")}
@@ -136,6 +146,15 @@ export default function SupporterControl() {
             {toProperCase(selectedNeighborhood.name)}
           </div>
         </div>
+        <Link
+          target="_blank"
+          href={`/painel/relatorios?neighborhood=${selectedNeighborhood?.name}`}
+          className={clsx(
+            "...  truncate font-semibold text-zinc-500 underline"
+          )}
+        >
+          Relatório
+        </Link>
         <div className="flex justify-between gap-4">
           <div className={clsx("text-lg font-semibold", "text-indigo-500")}>
             Colégios
