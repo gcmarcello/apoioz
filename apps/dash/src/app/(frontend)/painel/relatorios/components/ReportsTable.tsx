@@ -29,7 +29,7 @@ export default function ReportsTable() {
 
   const neighborhoods = Array.from(
     new Set(addresses.map((a) => a.neighborhood))
-  ).filter((n) => n !== null);
+  );
 
   const supportersWithNeighborhood = supporters.map((s) => ({
     ...s,
@@ -157,7 +157,12 @@ export default function ReportsTable() {
           meta: {
             filterVariant: "select",
             selectOptions: neighborhoods
-              .sort((a, b) => a.localeCompare(b))
+              .filter((n) => n)
+              .sort((a, b) => {
+                if (!a) return 1;
+                if (!b) return -1;
+                return a.localeCompare(b);
+              })
               .map((n) => ({ value: n, label: n ?? "N/D" })),
           },
           cell: (info) => (
