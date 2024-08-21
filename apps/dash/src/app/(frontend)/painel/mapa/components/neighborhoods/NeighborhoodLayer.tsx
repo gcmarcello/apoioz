@@ -32,7 +32,7 @@ export const NeighborhoodLayer = ({ isVisible }: { isVisible: boolean }) => {
           style: {
             color:
               selectedNeighborhood?.id === neighborhood.id
-                ? "#4f46e5"
+                ? "#e11d48"
                 : neighborhood.color,
             weight: selectedNeighborhood?.id === neighborhood.id ? 10 : 3,
             fillOpacity:

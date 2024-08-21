@@ -201,7 +201,8 @@ export function ElectionInfoSection({
         )}
 
         <div>
-          {(form.watch("user.info.zoneId") ||
+          {((form.watch("user.info.zoneId") &&
+            form.watch("user.info.sectionId")) ||
             form.watch("user.info.addressId")) &&
             form.watch("user.name") && (
               <div ref={ref} className="pb-10 pt-4 lg:pb-4">

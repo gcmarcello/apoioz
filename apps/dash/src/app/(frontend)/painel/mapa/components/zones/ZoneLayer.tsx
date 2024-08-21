@@ -44,7 +44,7 @@ export const ZoneLayer = ({ isVisible }: { isVisible: boolean }) => {
       .forEach((zone) => {
         const zoneLayer = new L.GeoJSON(zone.geoJSON, {
           style: {
-            color: selectedZone?.id === zone.id ? "#4f46e5" : zone.color,
+            color: selectedZone?.id === zone.id ? "#e11d48" : zone.color,
             weight: selectedZone?.id === zone.id ? 10 : 3,
             fillOpacity: selectedZone?.id === zone.id ? 0.5 : 0.2,
           },

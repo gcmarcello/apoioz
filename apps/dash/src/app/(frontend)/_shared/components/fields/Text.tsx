@@ -44,7 +44,7 @@ export function TextField<T extends FieldValues>(props: TextFieldProps<T>) {
     props.className,
     errorMessage
       ? "focus:border-red-400 focus:ring-red-400 border-red-500 ring-red-500"
-      : "focus:border-indigo-500 focus:ring-indigo-500 ",
+      : "focus:border-rose-500 focus:ring-rose-500 ",
     "pr-8"
   );
 
@@ -112,7 +112,7 @@ export function TextFieldWithAddon<T extends FieldValues>(
     props.className,
     errorMessage
       ? "border-red-500 ring-red-500"
-      : "focus:border-indigo-500 focus:ring-indigo-500 ",
+      : "focus:border-rose-500 focus:ring-rose-500 ",
     "pr-8"
   );
 
@@ -151,7 +151,7 @@ export function TextAreaField<T extends FieldValues>(
     props.className,
     errorMessage
       ? "border-red-500 ring-red-500"
-      : "focus:border-indigo-500 focus:ring-indigo-500",
+      : "focus:border-rose-500 focus:ring-rose-500",
     "pr-8"
   );
 
@@ -186,7 +186,7 @@ export function MaskedTextField<T extends FieldValues>(
     props.className,
     errorMessage
       ? "border-red-500 ring-red-500"
-      : "focus:border-indigo-500 focus:ring-indigo-500",
+      : "focus:border-rose-500 focus:ring-rose-500",
     "pr-8"
   );
 

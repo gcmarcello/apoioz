@@ -49,7 +49,7 @@ export function ShareSupporter() {
               override: true,
             })
           }
-          className="flex items-center justify-center gap-1 font-semibold text-indigo-600"
+          className="flex items-center justify-center gap-1 font-semibold text-rose-600"
         >
           Gerar novo QR code <ArrowPathIcon className="h-4 w-4   opacity-100" />
         </button>
@@ -82,7 +82,7 @@ export function ShareSupporter() {
               message: "O link foi copiado para a área de transferência",
             });
           }}
-          className="w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          className="w-full rounded-md bg-rose-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-rose-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600"
         >
           Copiar Link
         </button>

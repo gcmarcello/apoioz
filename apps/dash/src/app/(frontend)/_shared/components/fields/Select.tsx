@@ -110,7 +110,7 @@ export function ListboxField<
                           className={({ active }) =>
                             clsx(
                               active
-                                ? "bg-indigo-600 text-white"
+                                ? "bg-rose-600 text-white"
                                 : "bg-gray-100 text-gray-900",
                               "relative cursor-default select-none py-2 pl-3 pr-9"
                             )
@@ -131,7 +131,7 @@ export function ListboxField<
                               {selected ? (
                                 <span
                                   className={clsx(
-                                    active ? "text-white" : "text-indigo-600",
+                                    active ? "text-white" : "text-rose-600",
                                     "absolute inset-y-0 right-0 flex items-center pr-4"
                                   )}
                                 >
@@ -151,7 +151,7 @@ export function ListboxField<
                             className={({ active, disabled }) =>
                               clsx(
                                 active
-                                  ? "bg-indigo-600 text-white"
+                                  ? "bg-rose-600 text-white"
                                   : disabled
                                     ? "bg-gray-100"
                                     : "text-gray-900",
@@ -173,7 +173,7 @@ export function ListboxField<
                                 {selected ? (
                                   <span
                                     className={clsx(
-                                      active ? "text-white" : "text-indigo-600",
+                                      active ? "text-white" : "text-rose-600",
                                       "absolute inset-y-0 right-0 flex items-center pr-4"
                                     )}
                                   >
@@ -348,7 +348,7 @@ export function ComboboxField<
                       className={({ active }) =>
                         clsx(
                           "relative cursor-default select-none py-2 pl-3 pr-9",
-                          active ? "bg-indigo-600 text-white" : "text-gray-900"
+                          active ? "bg-rose-600 text-white" : "text-gray-900"
                         )
                       }
                     >
@@ -367,7 +367,7 @@ export function ComboboxField<
                             <span
                               className={clsx(
                                 "absolute inset-y-0 right-0 flex items-center pr-4",
-                                active ? "text-white" : "text-indigo-600"
+                                active ? "text-white" : "text-rose-600"
                               )}
                             >
                               <CheckIcon

@@ -38,7 +38,7 @@ export default function SupporterControl() {
       <Disclosure defaultOpen>
         {({ open }) => (
           <div className="rounded-lg bg-white ">
-            <DisclosureButton className="mb-2 flex w-full justify-center gap-2 rounded-lg bg-indigo-600 text-white">
+            <DisclosureButton className="mb-2 flex w-full justify-center gap-2 rounded-lg bg-rose-600 text-white">
               <div className="... truncate text-lg font-semibold ">
                 Zona {selectedZone.number}
               </div>
@@ -62,9 +62,7 @@ export default function SupporterControl() {
                 Relatório
               </Link>
               <div className="flex justify-between gap-4">
-                <div
-                  className={clsx("text-lg font-semibold", "text-indigo-500")}
-                >
+                <div className={clsx("text-lg font-semibold", "text-rose-500")}>
                   Colégios
                 </div>
                 <div className={clsx("text-lg font-semibold text-zinc-500")}>
@@ -87,7 +85,7 @@ export default function SupporterControl() {
               <div className="max-h-[300px] space-y-1 overflow-y-auto">
                 <div className="flex justify-between gap-4">
                   <div
-                    className={clsx("text-lg font-semibold", "text-indigo-500")}
+                    className={clsx("text-lg font-semibold", "text-rose-500")}
                   >
                     Apoiadores
                   </div>
@@ -110,7 +108,7 @@ export default function SupporterControl() {
                         className={clsx(
                           "...  cursor-pointer truncate hover:underline",
                           selectedAddress?.id === address.id
-                            ? "font-semibold text-indigo-500"
+                            ? "font-semibold text-rose-500"
                             : "text-zinc-500"
                         )}
                       >
@@ -141,7 +139,7 @@ export default function SupporterControl() {
 
     return (
       <div className="max-w-[300px] space-y-1 rounded-lg bg-white ">
-        <div className="mb-4 flex justify-center rounded-lg bg-indigo-600">
+        <div className="mb-4 flex justify-center rounded-lg bg-rose-600">
           <div className="... truncate text-lg font-semibold text-white">
             {toProperCase(selectedNeighborhood.name)}
           </div>
@@ -156,7 +154,7 @@ export default function SupporterControl() {
           Relatório
         </Link>
         <div className="flex justify-between gap-4">
-          <div className={clsx("text-lg font-semibold", "text-indigo-500")}>
+          <div className={clsx("text-lg font-semibold", "text-rose-500")}>
             Colégios
           </div>
           <div className={clsx("text-lg font-semibold text-zinc-500")}>
@@ -178,7 +176,7 @@ export default function SupporterControl() {
         <Divider className="my-3" />
         <div className="max-h-[300px] overflow-y-auto">
           <div className="flex justify-between gap-4">
-            <div className={clsx("text-lg font-semibold", "text-indigo-500")}>
+            <div className={clsx("text-lg font-semibold", "text-rose-500")}>
               Apoiadores
             </div>
             <div className={clsx("text-lg font-semibold text-zinc-500")}>
@@ -200,7 +198,7 @@ export default function SupporterControl() {
                   className={clsx(
                     "...  cursor-pointer truncate hover:underline",
                     selectedAddress?.id === address.id
-                      ? "font-semibold text-indigo-500"
+                      ? "font-semibold text-rose-500"
                       : "text-zinc-500"
                   )}
                 >

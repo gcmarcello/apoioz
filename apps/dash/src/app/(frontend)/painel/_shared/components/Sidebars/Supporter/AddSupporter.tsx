@@ -69,10 +69,13 @@ export function AddSupporterForm({
     action: readSectionsByZone,
   });
 
-  const { data: fulltextAddresses, trigger: fulltextSearchAddresses } =
-    useAction({
-      action: readAddressFulltext,
-    });
+  const {
+    data: fulltextAddresses,
+    trigger: fulltextSearchAddresses,
+    isMutating: isSearchingFulltextAddresses,
+  } = useAction({
+    action: readAddressFulltext,
+  });
 
   const {
     data: addresses,
@@ -143,8 +146,9 @@ export function AddSupporterForm({
 
   const { data: supporterList, trigger: fetchSupporterList } = useAction({
     action: readSupportersFulltext,
-    responseParser: (res) =>
-      res.filter((item) => item.user.id !== campaign.userId),
+    responseParser: (res) => {
+      return res.filter((item) => item.user.id !== campaign.userId);
+    },
   });
 
   useEffect(() => {
@@ -200,7 +204,7 @@ export function AddSupporterForm({
                 <div
                   className={clsx(
                     selected
-                      ? "border-indigo-500 text-indigo-600"
+                      ? "border-rose-500 text-rose-600"
                       : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700",
                     "whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium"
                   )}
@@ -214,7 +218,7 @@ export function AddSupporterForm({
                 <div
                   className={clsx(
                     selected
-                      ? "border-indigo-500 text-indigo-600"
+                      ? "border-rose-500 text-rose-600"
                       : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700",
                     "whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium"
                   )}
@@ -282,6 +286,7 @@ export function AddSupporterForm({
                 <Label>Endereço</Label>
                 <Combobox
                   data={(fulltextAddresses || addresses) as Address[]}
+                  loading={isSearchingFulltextAddresses}
                   displayValueKey="location"
                   setData={(query) => {
                     if (query) {
@@ -305,6 +310,7 @@ export function AddSupporterForm({
                 >
                   {(item) => <div>{item.location}</div>}
                 </Combobox>
+                <ErrorMessage />
               </Field>
             </TabPanel>
           </TabPanels>
@@ -312,7 +318,7 @@ export function AddSupporterForm({
       </FieldGroup>
 
       {(form.watch("externalSupporter") ||
-        form.watch("user.info.zoneId") ||
+        (form.watch("user.info.zoneId") && form.watch("user.info.sectionId")) ||
         form.watch("user.info.addressId")) &&
         form.watch("user.name") && (
           <div ref={ref} className="py-4">
@@ -449,12 +455,12 @@ export function AddSupporterForm({
               <Description>
                 Cadastre um apoiador que não vive na região.
               </Description>
-              <Switch color="indigo" />
+              <Switch color="rose" />
             </Field>
           </FieldGroup>
         </DialogBody>
         <DialogActions>
-          <Button color="indigo" onClick={() => setIsAdminOptions(false)}>
+          <Button color="rose" onClick={() => setIsAdminOptions(false)}>
             Salvar
           </Button>
         </DialogActions>
