@@ -627,6 +627,19 @@ export async function updateSupporter(data: UpdateSupporterDto) {
 
   if (!supporter) throw "Apoiador não encontrado";
 
+  const potentialConflict = await prisma.user.findFirst({
+    where: data.email
+      ? {
+          email: normalizeEmail(data.email),
+          id: { not: data.id },
+          phone: normalizePhone(data.phone),
+        }
+      : { phone: normalizePhone(data.phone), id: { not: data.id } },
+  });
+
+  if (potentialConflict)
+    throw `Email ou telefone já utilizado por outro apoiador.`;
+
   const updatedSupporter = await prisma.supporter.update({
     where: { id: data.id },
     data: {

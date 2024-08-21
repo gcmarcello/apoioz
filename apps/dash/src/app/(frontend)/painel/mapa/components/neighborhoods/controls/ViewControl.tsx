@@ -79,7 +79,7 @@ export function ViewControl() {
               Apenas sem apoio
             </option>
           </Select>
-          <Description className="mt-2 space-y-2">
+          <div className="mt-2 space-y-2 text-gray-500">
             <div className="flex items-center">
               <Image alt="urna" src={"/urna.png"} height={24} width={24} />
               <div className="text-xs">Escolas (Apoiadores)</div>
@@ -91,7 +91,7 @@ export function ViewControl() {
               </div>
               <div className="text-xs">Grupo de Escolas (Número)</div>
             </div>
-          </Description>
+          </div>
         </Field>
       </div>
     </MapControl>
