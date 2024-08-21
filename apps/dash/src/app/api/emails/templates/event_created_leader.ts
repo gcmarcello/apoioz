@@ -19,7 +19,7 @@ export const event_created_leader = `<!doctype html>
         overflow: hidden;
       }
       .email-header {
-        background-color: rgb(99, 102, 241);
+        background-color: rgb(225, 29, 72);
         color: #ffffff;
         padding: 20px;
         text-align: center;
@@ -39,7 +39,7 @@ export const event_created_leader = `<!doctype html>
         display: inline-block;
         padding: 10px 20px;
         margin: 20px 0;
-        background-color: rgb(99, 102, 241);
+        background-color: rgb(225, 29, 72);
         color: #ffffff;
         text-decoration: none;
         border-radius: 5px;

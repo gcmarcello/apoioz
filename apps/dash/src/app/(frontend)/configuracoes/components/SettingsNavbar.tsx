@@ -40,8 +40,8 @@ export default function SettingsNavbar({
                 href={item.href}
                 className={clsx(
                   item.current
-                    ? "text-indigo-600"
-                    : "duration-200 hover:text-indigo-600",
+                    ? "text-rose-600"
+                    : "duration-200 hover:text-rose-600",
                   item.name === "Campanha Ativa" && "border-s-2 ps-4"
                 )}
               >

@@ -21,7 +21,7 @@ export default function AddSupporterSuccess({
     <>
       <div className="bg-white">
         <div className="mx-auto max-w-4xl text-base leading-7 text-gray-700">
-          <p className="text-base font-semibold leading-7 text-indigo-600">
+          <p className="text-base font-semibold leading-7 text-rose-600">
             Cadastro bem-sucedido!
           </p>
           <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
@@ -71,7 +71,7 @@ export default function AddSupporterSuccess({
               ) : (
                 <li className="flex gap-x-3">
                   <CheckCircleIcon
-                    className="mt-1 h-5 w-5 flex-none text-indigo-600"
+                    className="mt-1 h-5 w-5 flex-none text-rose-600"
                     aria-hidden="true"
                   />
                   <span>
@@ -86,7 +86,7 @@ export default function AddSupporterSuccess({
 
               <li className="flex gap-x-3">
                 <CheckCircleIcon
-                  className="mt-1 h-5 w-5 flex-none text-indigo-600"
+                  className="mt-1 h-5 w-5 flex-none text-rose-600"
                   aria-hidden="true"
                 />
                 <span>
@@ -115,7 +115,7 @@ export default function AddSupporterSuccess({
           <BottomNavigation className="py-4">
             <div className="flex w-full items-center justify-center px-3">
               <Link href={`/login?email=${email}`}>
-                <Button color="indigo">Acessar o Painel de Controle</Button>
+                <Button color="rose">Acessar o Painel de Controle</Button>
               </Link>
             </div>
           </BottomNavigation>

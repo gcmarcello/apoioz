@@ -16,7 +16,7 @@ export default async function LoginPage({
           height={150}
           width={150}
           className="mx-auto"
-          src="/logoindigo.svg"
+          src="/logorose.svg"
           alt="Your Company"
         />
         <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-gray-700">
@@ -38,7 +38,7 @@ export default async function LoginPage({
           Esqueceu a senha ou não criou uma?{" "}
           <Link
             href={"/recuperar"}
-            className="font-semibold leading-6 text-indigo-600 hover:text-indigo-400"
+            className="font-semibold leading-6 text-rose-600 hover:text-rose-400"
           >
             Clique aqui!
           </Link>

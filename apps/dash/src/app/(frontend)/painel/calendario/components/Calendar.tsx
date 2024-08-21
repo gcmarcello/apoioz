@@ -136,10 +136,10 @@ export default function Calendar({
             type="button"
             className={clsx(
               "py-1.5 focus:z-10",
-              !day.isToday ? "hover:bg-gray-100" : "hover:bg-indigo-500",
+              !day.isToday ? "hover:bg-gray-100" : "hover:bg-rose-500",
               day.isCurrentMonth
                 ? day.isToday
-                  ? "bg-indigo-600 "
+                  ? "bg-rose-600 "
                   : "bg-white"
                 : "bg-gray-50",
               (day.isSelected || day.isToday) && "font-semibold",
@@ -153,7 +153,7 @@ export default function Calendar({
                 !day.isToday &&
                 "text-gray-400",
               day.isToday && "text-white",
-              day.isToday && !day.isSelected && "text-indigo-600",
+              day.isToday && !day.isSelected && "text-rose-600",
               dayIdx === 0 && "rounded-tl-lg",
               dayIdx === 6 && "rounded-tr-lg",
               dayIdx === calendarDays.length - 7 && "rounded-bl-lg",
@@ -165,7 +165,7 @@ export default function Calendar({
                 <div
                   className={clsx(
                     "h-2 w-2 rounded-full",
-                    day.isToday ? "bg-white" : "bg-indigo-600"
+                    day.isToday ? "bg-white" : "bg-rose-600"
                   )}
                 ></div>
                 <div></div>
@@ -175,7 +175,7 @@ export default function Calendar({
               dateTime={day.date}
               className={clsx(
                 "mx-auto flex h-7 w-7 items-center justify-center rounded-full",
-                day.isSelected && day.isToday && "bg-indigo-600",
+                day.isSelected && day.isToday && "bg-rose-600",
                 day.isSelected && !day.isToday && "bg-gray-900"
               )}
             >
@@ -194,7 +194,7 @@ export default function Calendar({
             isSelected: true,
           })
         }
-        className="mt-8 w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        className="mt-8 w-full rounded-md bg-rose-600 px-3 py-2 text-sm font-semibold text-white shadow hover:bg-rose-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600"
       >
         Adicionar Evento
       </button>

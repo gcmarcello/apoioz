@@ -29,7 +29,7 @@ export default function SupporterOverview({
 
   return (
     <div className="group">
-      <button className="inline-flex justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-indigo-600  ring-gray-300 hover:bg-gray-50">
+      <button className="inline-flex justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-rose-600  ring-gray-300 hover:bg-gray-50">
         Mais
         <ChevronDownIcon
           className="-mr-1 h-5 w-5 text-gray-400"

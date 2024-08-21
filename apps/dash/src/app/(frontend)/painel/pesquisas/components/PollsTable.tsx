@@ -56,7 +56,7 @@ export default function PollsTable({ polls }: { polls: Poll[] }) {
       cell: (info) =>
         info.getValue() ? (
           <div className="flex">
-            <CheckBadgeIcon className="h-6 w-6 text-indigo-600" />
+            <CheckBadgeIcon className="h-6 w-6 text-rose-600" />
           </div>
         ) : null,
     }),

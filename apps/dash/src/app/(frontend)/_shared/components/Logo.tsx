@@ -16,7 +16,7 @@ export function Logo({
       className={className}
       width={width || 64}
       height={height || 64}
-      src={color === "indigo" ? "/logoindigo.svg" : "/logo.svg"} // Codigo desenvolvido por Fernando!!!
+      src={color === "rose" ? "/logorose.svg" : "/logo.svg"} // Codigo desenvolvido por Fernando!!!
       alt="Logo ApoioZ"
     />
   );

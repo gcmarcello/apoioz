@@ -15,10 +15,10 @@ function createClusterCustomIcon(cluster: MarkerCluster, label?: string) {
   return L.divIcon({
     html: `<div class="relative text-white font-bold flex justify-center items-center w-12 h-12">
     <div class="bg-${
-      supporterCount ? "indigo" : "yellow"
+      supporterCount ? "rose" : "yellow"
     }-300 absolute rounded-full opacity-70 h-10 w-10"></div>
     <div class="bg-${
-      supporterCount ? "indigo" : "yellow"
+      supporterCount ? "rose" : "yellow"
     }-500 flex justify-center items-center rounded-full h-8 w-8 z-10">
     ${supporterCount}
     </div>
