@@ -449,12 +449,12 @@ export function AddSupporterForm({
               <Description>
                 Cadastre um apoiador que não vive na região.
               </Description>
-              <Switch color="indigo" />
+              <Switch color="rose" />
             </Field>
           </FieldGroup>
         </DialogBody>
         <DialogActions>
-          <Button color="indigo" onClick={() => setIsAdminOptions(false)}>
+          <Button color="rose" onClick={() => setIsAdminOptions(false)}>
             Salvar
           </Button>
         </DialogActions>

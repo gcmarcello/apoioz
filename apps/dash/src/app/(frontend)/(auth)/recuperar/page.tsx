@@ -51,7 +51,7 @@ export default function RecoverPasswordPage() {
           height={150}
           width={150}
           className="mx-auto"
-          src="/logoindigo.svg"
+          src="/logorose.svg"
           alt="Your Company"
         />
 

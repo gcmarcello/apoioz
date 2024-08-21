@@ -305,7 +305,7 @@ export function EventListActions({
                               <Input></Input>
                             </Field>
                             <Field variant="switch" name="private">
-                              <Switch color="indigo" />
+                              <Switch color="rose" />
                               <Label>Evento Privado?</Label>
                               <Description>
                                 O evento só será divulgado para os apoiadores da

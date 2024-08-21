@@ -136,7 +136,7 @@ export default function EditSupporterModal() {
           <Button plain onClick={() => setSelectedSupporter(null)}>
             Cancelar
           </Button>
-          <Button type="submit" color="indigo">
+          <Button type="submit" color="rose">
             <div className="flex gap-2">
               Salvar{" "}
               {isMutating && (

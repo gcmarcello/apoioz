@@ -115,7 +115,7 @@ export default function AddSupporterSuccess({
           <BottomNavigation className="py-4">
             <div className="flex w-full items-center justify-center px-3">
               <Link href={`/login?email=${email}`}>
-                <Button color="indigo">Acessar o Painel de Controle</Button>
+                <Button color="rose">Acessar o Painel de Controle</Button>
               </Link>
             </div>
           </BottomNavigation>

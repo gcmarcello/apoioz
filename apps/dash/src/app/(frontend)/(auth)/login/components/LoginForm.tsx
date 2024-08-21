@@ -92,7 +92,7 @@ export default function LoginForm({
           <Button
             className="mt-3 w-full"
             disabled={isLoading}
-            color="indigo"
+            color="rose"
             type="submit"
           >
             {isLoading ? (

@@ -209,7 +209,7 @@ export default function SupporterSideBar() {
                               <SubmitButton
                                 type="submit"
                                 disabled={isAddingSupporter}
-                                color="indigo"
+                                color="rose"
                               >
                                 <div className="flex items-center gap-2">
                                   Adicionar{" "}

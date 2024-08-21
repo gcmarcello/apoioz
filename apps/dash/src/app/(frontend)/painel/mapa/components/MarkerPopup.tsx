@@ -49,7 +49,7 @@ export default function MarkerPopup({
             </div>
 
             <div className="flex w-full items-center justify-start gap-3">
-              <Badge color="indigo">
+              <Badge color="rose">
                 {supportersCount +
                   (supportersCount > 1 ? " Apoiadores" : " Apoiador")}
               </Badge>

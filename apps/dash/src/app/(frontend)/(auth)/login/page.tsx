@@ -16,7 +16,7 @@ export default async function LoginPage({
           height={150}
           width={150}
           className="mx-auto"
-          src="/logoindigo.svg"
+          src="/logorose.svg"
           alt="Your Company"
         />
         <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-gray-700">
