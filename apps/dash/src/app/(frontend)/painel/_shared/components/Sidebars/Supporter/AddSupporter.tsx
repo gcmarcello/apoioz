@@ -69,10 +69,13 @@ export function AddSupporterForm({
     action: readSectionsByZone,
   });
 
-  const { data: fulltextAddresses, trigger: fulltextSearchAddresses } =
-    useAction({
-      action: readAddressFulltext,
-    });
+  const {
+    data: fulltextAddresses,
+    trigger: fulltextSearchAddresses,
+    isMutating: isSearchingFulltextAddresses,
+  } = useAction({
+    action: readAddressFulltext,
+  });
 
   const {
     data: addresses,
@@ -143,8 +146,9 @@ export function AddSupporterForm({
 
   const { data: supporterList, trigger: fetchSupporterList } = useAction({
     action: readSupportersFulltext,
-    responseParser: (res) =>
-      res.filter((item) => item.user.id !== campaign.userId),
+    responseParser: (res) => {
+      return res.filter((item) => item.user.id !== campaign.userId);
+    },
   });
 
   useEffect(() => {
@@ -282,6 +286,7 @@ export function AddSupporterForm({
                 <Label>Endereço</Label>
                 <Combobox
                   data={(fulltextAddresses || addresses) as Address[]}
+                  loading={isSearchingFulltextAddresses}
                   displayValueKey="location"
                   setData={(query) => {
                     if (query) {
@@ -305,6 +310,7 @@ export function AddSupporterForm({
                 >
                   {(item) => <div>{item.location}</div>}
                 </Combobox>
+                <ErrorMessage />
               </Field>
             </TabPanel>
           </TabPanels>
@@ -312,7 +318,7 @@ export function AddSupporterForm({
       </FieldGroup>
 
       {(form.watch("externalSupporter") ||
-        form.watch("user.info.zoneId") ||
+        (form.watch("user.info.zoneId") && form.watch("user.info.sectionId")) ||
         form.watch("user.info.addressId")) &&
         form.watch("user.name") && (
           <div ref={ref} className="py-4">
