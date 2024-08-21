@@ -15,6 +15,7 @@ import { useAction } from "odinkit/client";
 import { readSectionsByAddress } from "@/app/api/elections/sections/action";
 import { Divider, For, toProperCase } from "odinkit";
 import { LoadingSpinner } from "@/app/(frontend)/_shared/components/Spinners";
+import Link from "next/link";
 
 export default function AddressControl() {
   const { selectedAddress } = useMapData();
@@ -40,6 +41,17 @@ export default function AddressControl() {
         <div className="... truncate  px-1 text-center text-lg font-semibold text-white">
           {toProperCase(selectedAddress?.location ?? "")}
         </div>
+      </div>
+      <div className="mb-1 flex justify-between gap-4">
+        <Link
+          target="_blank"
+          href={`/painel/relatorios?address=${selectedAddress?.id}`}
+          className={clsx(
+            "...  truncate font-semibold text-zinc-500 underline"
+          )}
+        >
+          Relatório
+        </Link>
       </div>
       <div className="flex justify-between gap-4">
         <div className={clsx("...  truncate font-semibold text-zinc-500")}>

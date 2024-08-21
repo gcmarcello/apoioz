@@ -16,12 +16,16 @@ import {
 } from "odinkit/client";
 import { MenuButton as HeadlessDropdownButton } from "@headlessui/react";
 import { useReport } from "../context/report.ctx";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { use, useEffect } from "react";
+import { parseSearchParams } from "@/app/(frontend)/_shared/utils/searchParams";
 
 export default function ReportsTable() {
   const { zones, sections, addresses, supporters, setSelectedSupporter } =
     useReport();
   const router = useRouter();
+  const params = useSearchParams();
+  const defaultFilters = parseSearchParams(params);
 
   const neighborhoods = Array.from(
     new Set(addresses.map((a) => a.neighborhood))
@@ -34,6 +38,10 @@ export default function ReportsTable() {
 
   return (
     <Table
+      defaultColumnFilters={defaultFilters.map((f) => ({
+        id: f[0],
+        value: f[1],
+      }))}
       xlsx={{
         fileName: "Relatório de apoiadores",
         data: supporters.map((s) => ({
@@ -179,7 +187,7 @@ export default function ReportsTable() {
         columnHelper.accessor("sectionId", {
           id: "section",
           header: "Seção",
-          enableColumnFilter: TableFlag.ENABLE_COLUMN_FILTER,
+          /* enableColumnFilter: TableFlag.ENABLE_COLUMN_FILTER, */
           meta: {
             filterVariant: "select",
             selectOptions: sections
