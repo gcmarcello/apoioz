@@ -96,13 +96,15 @@ export default function ReportsTable() {
                   <DropdownItem
                     href={`https://wa.me/${info.row.original.user.phone}`}
                   >
-                    <PhoneIcon className="size-5 " /> Whatsapp
+                    <PhoneIcon className="size-5 " /> Whatsapp -{" "}
+                    {formatPhone(info.row.original.user.phone ?? "")}
                   </DropdownItem>
                   {info.row.original.user.email && (
                     <DropdownItem
                       href={`https://wa.me/${info.row.original.user.email}`}
                     >
-                      <EnvelopeIcon className="size-5 " /> Email
+                      <EnvelopeIcon className="size-5 " /> Email (
+                      {info.row.original.user.email})
                     </DropdownItem>
                   )}
                 </DropdownSection>
