@@ -46,8 +46,6 @@ export default function EditSupporterModal() {
     form.setValue("sectionId", selectedSupporter.sectionId ?? "");
   }, [selectedSupporter]);
 
-  console.log(form.watch());
-
   const { trigger, isMutating } = useAction({
     action: updateSupporter,
     onSuccess: () => {
@@ -58,9 +56,9 @@ export default function EditSupporterModal() {
         title: "Sucesso!",
       });
     },
-    onError: () =>
+    onError: (e) =>
       showToast({
-        message: "Não foi possível atualizar o apoiador",
+        message: e.message,
         variant: "error",
         title: "Erro!",
       }),

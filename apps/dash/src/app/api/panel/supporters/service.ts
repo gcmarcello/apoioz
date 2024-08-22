@@ -631,14 +631,20 @@ export async function updateSupporter(data: UpdateSupporterDto) {
     where: data.email
       ? {
           email: normalizeEmail(data.email),
-          id: { not: data.id },
+
           phone: normalizePhone(data.phone),
+          supporter: { every: { id: { not: data.id } } },
         }
-      : { phone: normalizePhone(data.phone), id: { not: data.id } },
+      : {
+          phone: normalizePhone(data.phone),
+          supporter: { every: { id: { not: data.id } } },
+        },
   });
 
-  if (potentialConflict)
+  if (potentialConflict) {
+    console.log(potentialConflict);
     throw `Email ou telefone já utilizado por outro apoiador.`;
+  }
 
   const updatedSupporter = await prisma.supporter.update({
     where: { id: data.id },
