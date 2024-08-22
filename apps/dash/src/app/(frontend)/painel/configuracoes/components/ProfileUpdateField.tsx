@@ -58,7 +58,7 @@ function ProfileUpdatedInput({
           {...form.register("birthDate", { required: true })}
           name="birthDate"
           id="birthDate"
-          className="block w-3/4 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className="block w-3/4 rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 sm:text-sm"
           mask={"99/99/9999"}
         />
       );
@@ -71,7 +71,7 @@ function ProfileUpdatedInput({
           {...form.register("phone", { required: true })}
           name="phone"
           id="phone"
-          className="block w-3/4 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className="block w-3/4 rounded-md border-gray-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 sm:text-sm"
           mask={"(99) 99999-9999"}
         />
       );
@@ -164,7 +164,7 @@ function ProfileUpdateButtons({
       <button
         type={!field.show ? "submit" : "button"}
         disabled={field.show && !form.formState.isValid ? true : false}
-        className="font-semibold text-indigo-600 hover:text-indigo-500 disabled:text-indigo-200"
+        className="font-semibold text-rose-600 hover:text-rose-500 disabled:text-rose-200"
         onClick={() => {
           setShowFields(
             (prevShowFields) =>

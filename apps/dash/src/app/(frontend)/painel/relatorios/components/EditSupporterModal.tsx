@@ -22,10 +22,10 @@ import {
 import { useEffect, useMemo } from "react";
 import { updateSupporter } from "@/app/api/panel/supporters/actions";
 import { useReport } from "../context/report.ctx";
+import { readSectionsByZone } from "@/app/api/elections/sections/action";
 
 export default function EditSupporterModal() {
-  const { setSelectedSupporter, selectedSupporter, zones, sections } =
-    useReport();
+  const { setSelectedSupporter, selectedSupporter, zones } = useReport();
   const form = useForm({
     schema: updateSupporterDto,
     mode: "onChange",
@@ -56,13 +56,23 @@ export default function EditSupporterModal() {
         title: "Sucesso!",
       });
     },
-    onError: () =>
+    onError: (e) =>
       showToast({
-        message: "Não foi possível atualizar o apoiador",
+        message: e.message,
         variant: "error",
         title: "Erro!",
       }),
   });
+
+  const { data: sections, trigger: fetchSections } = useAction({
+    action: readSectionsByZone,
+  });
+
+  useEffect(() => {
+    if (form.watch("zoneId")) {
+      fetchSections(form.watch("zoneId"));
+    }
+  }, [form.watch("zoneId")]);
 
   const Field = useMemo(() => form.createField(), []);
 
@@ -73,8 +83,7 @@ export default function EditSupporterModal() {
     >
       <DialogTitle>Editar Apoiador</DialogTitle>
       <DialogDescription>
-        Qualquer alteração realizada se refletirá em qualquer outra campanha que
-        esse apoiador esteja participando.
+        Qualquer alteração realizada se refletirá apenas na campanha atual.
       </DialogDescription>
       <Form hform={form} onSubmit={(data) => trigger(data)}>
         <DialogBody>
@@ -136,7 +145,7 @@ export default function EditSupporterModal() {
           <Button plain onClick={() => setSelectedSupporter(null)}>
             Cancelar
           </Button>
-          <Button type="submit" color="indigo">
+          <Button type="submit" color="rose">
             <div className="flex gap-2">
               Salvar{" "}
               {isMutating && (

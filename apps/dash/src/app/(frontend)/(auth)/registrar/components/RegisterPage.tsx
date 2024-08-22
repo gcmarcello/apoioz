@@ -135,7 +135,7 @@ export default function RegisterPage({
   return (
     <div className="bg-white">
       <div
-        className="fixed right-0 top-0 hidden h-full w-1/2 bg-indigo-900 lg:block"
+        className="fixed right-0 top-0 hidden h-full w-1/2 bg-rose-900 lg:block"
         aria-hidden="true"
       />
 
@@ -144,7 +144,7 @@ export default function RegisterPage({
 
         <section
           aria-labelledby="summary-heading"
-          className="fixed z-50 w-full bg-indigo-600 py-3 text-indigo-300 shadow-lg md:px-10 lg:static lg:col-start-2 lg:row-start-1 lg:mx-auto lg:block lg:w-full lg:max-w-lg lg:bg-transparent lg:px-0 lg:pb-24 lg:pt-0 lg:shadow-none"
+          className="fixed z-50 w-full bg-rose-600 py-3 text-rose-300 shadow-lg md:px-10 lg:static lg:col-start-2 lg:row-start-1 lg:mx-auto lg:block lg:w-full lg:max-w-lg lg:bg-transparent lg:px-0 lg:pb-24 lg:pt-0 lg:shadow-none"
         >
           <div className="mx-auto max-w-2xl px-4 lg:max-w-none lg:px-0">
             <div className="flex items-center ">

@@ -29,7 +29,7 @@ export default function ReportsTable() {
 
   const neighborhoods = Array.from(
     new Set(addresses.map((a) => a.neighborhood))
-  ).filter((n) => n !== null);
+  );
 
   const supportersWithNeighborhood = supporters.map((s) => ({
     ...s,
@@ -96,13 +96,15 @@ export default function ReportsTable() {
                   <DropdownItem
                     href={`https://wa.me/${info.row.original.user.phone}`}
                   >
-                    <PhoneIcon className="size-5 " /> Whatsapp
+                    <PhoneIcon className="size-5 " /> Whatsapp -{" "}
+                    {formatPhone(info.row.original.user.phone ?? "")}
                   </DropdownItem>
                   {info.row.original.user.email && (
                     <DropdownItem
                       href={`https://wa.me/${info.row.original.user.email}`}
                     >
-                      <EnvelopeIcon className="size-5 " /> Email
+                      <EnvelopeIcon className="size-5 " /> Email (
+                      {info.row.original.user.email})
                     </DropdownItem>
                   )}
                 </DropdownSection>
@@ -157,7 +159,12 @@ export default function ReportsTable() {
           meta: {
             filterVariant: "select",
             selectOptions: neighborhoods
-              .sort((a, b) => a.localeCompare(b))
+              .filter((n) => n)
+              .sort((a, b) => {
+                if (!a) return 1;
+                if (!b) return -1;
+                return a.localeCompare(b);
+              })
               .map((n) => ({ value: n, label: n ?? "N/D" })),
           },
           cell: (info) => (

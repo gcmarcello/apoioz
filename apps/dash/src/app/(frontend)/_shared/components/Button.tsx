@@ -14,7 +14,7 @@ interface IconOnlyButtonProps extends ButtonProps {
 
 const buttonDictionary = {
   primary:
-    "bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 focus-visible:outline-indigo-600 text-white",
+    "bg-rose-600 hover:bg-rose-500 disabled:opacity-50 focus-visible:outline-rose-600 text-white",
   secondary:
     "bg-white hover:bg-gray-50 disabled:opacity-50 text-gray-900 focus-visible:outline-white ring-gray-300",
   danger:

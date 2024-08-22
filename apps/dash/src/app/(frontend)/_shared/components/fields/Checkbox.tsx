@@ -17,7 +17,7 @@ export default function CheckboxInput(props: CheckboxProps) {
             aria-describedby={`checkbox-${props.name}-label`}
             {...props.hform.register(props.name, { onChange: props.onChange })}
             type="checkbox"
-            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+            className="h-4 w-4 rounded border-gray-300 text-rose-600 focus:ring-rose-600"
           />
         </div>
         <div className="ml-3 flex flex-grow text-base leading-6">

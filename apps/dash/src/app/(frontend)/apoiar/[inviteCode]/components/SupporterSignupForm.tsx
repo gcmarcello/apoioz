@@ -237,7 +237,7 @@ export default function SupporterSignUpForm({
               {hasNextStep && (
                 <Button
                   type="button"
-                  color="indigo"
+                  color="rose"
                   className="w-full"
                   onClick={() => {
                     walk(1);
@@ -251,7 +251,7 @@ export default function SupporterSignUpForm({
               {!hasNextStep && hasPrevStep && (
                 <Button
                   type="submit"
-                  color="indigo"
+                  color="rose"
                   disabled={!isCurrentStepValid}
                 >
                   <div className="flex items-center gap-2">
@@ -278,7 +278,7 @@ export default function SupporterSignUpForm({
                 {hasNextStep && (
                   <Button
                     type="button"
-                    color="indigo"
+                    color="rose"
                     onClick={() => {
                       walk(1);
                     }}
@@ -291,7 +291,7 @@ export default function SupporterSignUpForm({
                 {!hasNextStep && (
                   <Button
                     type="submit"
-                    color="indigo"
+                    color="rose"
                     disabled={
                       isSigningUp ||
                       !isCurrentStepValid ||

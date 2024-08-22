@@ -26,7 +26,7 @@ export default function ReportHeader() {
             <InformationCircleIcon className="me-1 h-5 w-5" />
             Nessa página você tem acesso a todos os apoiadores da sua rede.{" "}
             {/* <span
-            className="ms-1 font-bold text-indigo-600 hover:text-indigo-400"
+            className="ms-1 font-bold text-rose-600 hover:text-rose-400"
             role="button"
             onClick={() => setOpen(true)}
           >

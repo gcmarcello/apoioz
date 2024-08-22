@@ -158,7 +158,7 @@ export default function PanelSideBar() {
                   </Transition.Child>
                   <div
                     className={clsx(
-                      "bg-indigo-600",
+                      "bg-rose-600",
                       "fixed  flex h-full w-64 grow flex-col gap-y-5 overflow-y-auto  px-6 pb-4"
                     )}
                   >
@@ -175,8 +175,8 @@ export default function PanelSideBar() {
                                   href={item.href}
                                   className={clsx(
                                     item.current
-                                      ? `bg-indigo-700 text-white`
-                                      : "text-indigo-200 hover:bg-indigo-700 hover:text-white",
+                                      ? `bg-rose-600 text-white`
+                                      : "text-rose-200 hover:bg-rose-600 hover:text-white",
                                     "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
                                   )}
                                 >
@@ -184,9 +184,9 @@ export default function PanelSideBar() {
                                     className={clsx(
                                       item.current
                                         ? "text-white"
-                                        : "text-indigo-200 group-hover:text-white",
+                                        : "text-rose-200 group-hover:text-white",
                                       item.icon === WhatsAppIcon &&
-                                        "me-1 h-[1.3rem] w-[1.3rem] fill-indigo-200",
+                                        "me-1 h-[1.3rem] w-[1.3rem] fill-rose-200",
 
                                       "h-6 w-6 shrink-0"
                                     )}
@@ -200,7 +200,7 @@ export default function PanelSideBar() {
                         </li>
                         {supporter.level === 4 && (
                           <li>
-                            <div className="text-xs font-semibold leading-6 text-indigo-200">
+                            <div className="text-xs font-semibold leading-6 text-rose-200">
                               Administrativo
                             </div>
                             <ul role="list" className="-mx-2 space-y-1">
@@ -211,8 +211,8 @@ export default function PanelSideBar() {
                                       href={item.href}
                                       className={clsx(
                                         item.current
-                                          ? `bg-indigo-700 text-white`
-                                          : "text-indigo-200 hover:bg-indigo-700 hover:text-white",
+                                          ? `bg-rose-600 text-white`
+                                          : "text-rose-200 hover:bg-rose-600 hover:text-white",
                                         "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
                                       )}
                                     >
@@ -220,9 +220,9 @@ export default function PanelSideBar() {
                                         className={clsx(
                                           item.current
                                             ? "text-white"
-                                            : "text-indigo-200 group-hover:text-white",
+                                            : "text-rose-200 group-hover:text-white",
                                           item.icon === WhatsAppIcon &&
-                                            "me-1 h-[1.3rem] w-[1.3rem] fill-indigo-200",
+                                            "me-1 h-[1.3rem] w-[1.3rem] fill-rose-200",
 
                                           "h-6 w-6 shrink-0"
                                         )}
@@ -237,7 +237,7 @@ export default function PanelSideBar() {
                           </li>
                         )}
                         <li>
-                          <div className="text-xs font-semibold leading-6 text-indigo-200">
+                          <div className="text-xs font-semibold leading-6 text-rose-200">
                             Suas Redes de Apoio
                           </div>
                           {parsedCampaigns && (
@@ -252,12 +252,12 @@ export default function PanelSideBar() {
                                     }}
                                     className={clsx(
                                       team.current
-                                        ? "bg-indigo-700 text-white"
-                                        : "text-indigo-200 hover:bg-indigo-700 hover:text-white",
+                                        ? "bg-rose-600 text-white"
+                                        : "text-rose-200 hover:bg-rose-600 hover:text-white",
                                       "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
                                     )}
                                   >
-                                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-indigo-400 bg-indigo-500 text-[0.625rem] font-medium text-white">
+                                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-rose-400 bg-rose-500 text-[0.625rem] font-medium text-white">
                                       {team.initial}
                                     </span>
                                     <span className="truncate">
@@ -272,10 +272,10 @@ export default function PanelSideBar() {
                         <li className="mt-auto">
                           <Link
                             href="/painel/configuracoes"
-                            className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-indigo-200 hover:bg-indigo-700 hover:text-white"
+                            className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-rose-200 hover:bg-rose-600 hover:text-white"
                           >
                             <Cog6ToothIcon
-                              className="h-6 w-6 shrink-0 text-indigo-200 group-hover:text-white"
+                              className="h-6 w-6 shrink-0 text-rose-200 group-hover:text-white"
                               aria-hidden="true"
                             />
                             Configurações
@@ -293,7 +293,7 @@ export default function PanelSideBar() {
         <div className="hidden lg:flex lg:h-screen lg:w-64 lg:flex-col">
           <div
             className={clsx(
-              "bg-indigo-600",
+              "bg-rose-600",
               `fixed flex h-full w-64  grow flex-col gap-y-1 overflow-y-hidden px-6 pb-4`
             )}
           >
@@ -313,8 +313,8 @@ export default function PanelSideBar() {
                           href={item.href}
                           className={clsx(
                             item.current
-                              ? "bg-indigo-700 text-white"
-                              : "text-indigo-200 hover:bg-indigo-700 hover:text-white",
+                              ? "bg-rose-600 text-white"
+                              : "text-rose-200 hover:bg-rose-600 hover:text-white",
                             "leading-6, group flex gap-x-3 rounded-md p-2 text-sm font-semibold"
                           )}
                         >
@@ -322,9 +322,9 @@ export default function PanelSideBar() {
                             className={clsx(
                               item.current
                                 ? "text-white"
-                                : "text-indigo-200 group-hover:text-white",
+                                : "text-rose-200 group-hover:text-white",
                               item.icon === WhatsAppIcon &&
-                                "me-1 h-[1.3rem] w-[1.3rem] fill-indigo-200",
+                                "me-1 h-[1.3rem] w-[1.3rem] fill-rose-200",
 
                               "h-6 w-6 shrink-0"
                             )}
@@ -338,7 +338,7 @@ export default function PanelSideBar() {
                 </li>
                 {supporter.level === 4 && (
                   <li>
-                    <div className="text-xs font-semibold leading-6 text-indigo-200">
+                    <div className="text-xs font-semibold leading-6 text-rose-200">
                       Administrativo
                     </div>
                     <ul role="list" className="-mx-2 space-y-1">
@@ -348,8 +348,8 @@ export default function PanelSideBar() {
                             href={item.href}
                             className={clsx(
                               item.current
-                                ? "bg-indigo-700 text-white"
-                                : "text-indigo-200 hover:bg-indigo-700 hover:text-white",
+                                ? "bg-rose-600 text-white"
+                                : "text-rose-200 hover:bg-rose-600 hover:text-white",
                               "leading-6, group flex gap-x-3 rounded-md p-2 text-sm font-semibold"
                             )}
                           >
@@ -357,9 +357,9 @@ export default function PanelSideBar() {
                               className={clsx(
                                 item.current
                                   ? "text-white"
-                                  : "text-indigo-200 group-hover:text-white",
+                                  : "text-rose-200 group-hover:text-white",
                                 item.icon === WhatsAppIcon &&
-                                  "me-1 h-[1.3rem] w-[1.3rem] fill-indigo-200",
+                                  "me-1 h-[1.3rem] w-[1.3rem] fill-rose-200",
 
                                 "h-6 w-6 shrink-0"
                               )}
@@ -373,7 +373,7 @@ export default function PanelSideBar() {
                   </li>
                 )}
                 <li>
-                  <div className="text-xs font-semibold leading-6 text-indigo-200">
+                  <div className="text-xs font-semibold leading-6 text-rose-200">
                     Suas Redes de Apoio
                   </div>
                   {parsedCampaigns && (
@@ -388,12 +388,12 @@ export default function PanelSideBar() {
                             }}
                             className={clsx(
                               team.current
-                                ? "bg-indigo-700 text-white"
-                                : "text-indigo-200 hover:bg-indigo-700 hover:text-white",
+                                ? "bg-rose-600 text-white"
+                                : "text-rose-200 hover:bg-rose-600 hover:text-white",
                               "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6"
                             )}
                           >
-                            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-indigo-400 bg-indigo-500 text-[0.625rem] font-medium text-white">
+                            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-rose-400 bg-rose-500 text-[0.625rem] font-medium text-white">
                               {team.initial}
                             </span>
                             <span className="truncate">{team.name}</span>
@@ -409,10 +409,10 @@ export default function PanelSideBar() {
                 <li className="mt-auto">
                   <Link
                     href="/painel/configuracoes"
-                    className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-indigo-200 hover:bg-indigo-700 hover:text-white"
+                    className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-rose-200 hover:bg-rose-600 hover:text-white"
                   >
                     <Cog6ToothIcon
-                      className="h-6 w-6 shrink-0 text-indigo-200 group-hover:text-white"
+                      className="h-6 w-6 shrink-0 text-rose-200 group-hover:text-white"
                       aria-hidden="true"
                     />
                     Configurações
