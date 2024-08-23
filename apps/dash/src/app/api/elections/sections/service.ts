@@ -16,12 +16,18 @@ export async function readSectionsByZone(zoneId?: string | string[]) {
   });
 }
 
-export async function readSectionsByAddress(addressId: string) {
+export async function readSectionsByAddress(
+  addressId: string,
+  campaignId: string
+) {
   const sections = await prisma.section.findMany({
     where: { addressId },
     orderBy: { number: "asc" },
     select: {
-      Supporter: { select: { user: { select: { name: true } } } },
+      Supporter: {
+        select: { user: { select: { name: true } } },
+        where: { campaignId },
+      },
       number: true,
     },
   });

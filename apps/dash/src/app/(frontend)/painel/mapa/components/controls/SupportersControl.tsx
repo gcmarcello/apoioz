@@ -1,5 +1,5 @@
 import { Divider, For, toProperCase } from "odinkit";
-import { useMapData } from "../../../hooks/useMapData";
+import { useMapData } from "../../hooks/useMapData";
 import clsx from "clsx";
 import { useMap } from "react-leaflet";
 import { LatLng, LatLngExpression } from "leaflet";
