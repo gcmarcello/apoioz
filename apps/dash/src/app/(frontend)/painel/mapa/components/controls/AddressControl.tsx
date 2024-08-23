@@ -3,13 +3,13 @@ import {
   DisclosureButton,
   DisclosurePanel,
 } from "@headlessui/react";
-import { useMapData } from "../../../hooks/useMapData";
+import { useMapData } from "../../hooks/useMapData";
 import {
   BuildingLibraryIcon,
   ChevronUpIcon,
   ChevronDownIcon,
 } from "@heroicons/react/20/solid";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import clsx from "clsx";
 import { useAction } from "odinkit/client";
 import { readSectionsByAddress } from "@/app/api/elections/sections/action";
@@ -34,6 +34,13 @@ export default function AddressControl() {
       trigger(selectedAddress.id);
     }
   }, [selectedAddress]);
+
+  const supportersWithSections = useMemo(
+    () => sectionData?.reduce((acc, curr) => acc + curr.Supporter.length, 0),
+    [sectionData]
+  );
+
+  console.log(supportersWithSections, selectedAddress?.supportersCount);
 
   return (
     <div ref={ref} className="max-h-[200px] min-h-[100px] overflow-y-auto">
@@ -76,6 +83,16 @@ export default function AddressControl() {
               Apoiadores
             </div>
           </div>
+          {selectedAddress && (
+            <div className="flex justify-between gap-4">
+              <div className={clsx("...  truncate text-zinc-500")}>
+                Sem seção
+              </div>
+              <div className={clsx("text-zinc-500")}>
+                {selectedAddress.supportersCount - supportersWithSections}
+              </div>
+            </div>
+          )}
           <For
             each={sectionData?.sort(
               (a, b) => b.Supporter.length - a.Supporter.length
