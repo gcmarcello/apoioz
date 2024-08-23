@@ -9,14 +9,14 @@ import { FullscreenControl } from "react-leaflet-fullscreen";
 import { useMapData } from "../hooks/useMapData";
 import SupporterBall from "@/app/(frontend)/_shared/components/SupporterBall";
 import { FitBoundsComponent } from "./FitBoundsComponent";
-import { NeighborhoodLayer } from "./neighborhoods/NeighborhoodLayer";
-import { ZoneLayer } from "./zones/ZoneLayer";
+import { NeighborhoodLayer } from "./layers/NeighborhoodLayer";
+import { ZoneLayer } from "./layers/ZoneLayer";
 import MapControl from "./MapControl";
-import ZoneControl from "./zones/ZoneControl";
-import NeighborhoodControl from "./neighborhoods/controls/NeighborhoodControl";
-import SupporterControl from "./neighborhoods/controls/SupportersControl";
-import { ViewControl } from "./neighborhoods/controls/ViewControl";
-import AddressControl from "./neighborhoods/controls/AddressControl";
+import ZoneControl from "./controls/ZoneControl";
+import NeighborhoodControl from "./controls/NeighborhoodControl";
+import SupporterControl from "./controls/SupportersControl";
+import { ViewControl } from "./controls/ViewControl";
+import AddressControl from "./controls/AddressControl";
 
 export default function Map() {
   const {

@@ -6,7 +6,7 @@ import {
   MapNeighborhoodType,
 } from "../../providers/MapDataProvider";
 import { useMapData } from "../../hooks/useMapData";
-import { createClusterCustomIcon } from "../zones/ZoneLayer";
+import { createClusterCustomIcon } from "./ZoneLayer";
 import { viewModeFilter } from "../../utils/viewModeFilter";
 
 export const NeighborhoodLayer = ({ isVisible }: { isVisible: boolean }) => {

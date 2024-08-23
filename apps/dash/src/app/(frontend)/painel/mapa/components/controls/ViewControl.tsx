@@ -1,6 +1,6 @@
 import { Field, Label, Select, Switch } from "@headlessui/react";
-import { useMapData } from "../../../hooks/useMapData";
-import MapControl from "../../MapControl";
+import { useMapData } from "../../hooks/useMapData";
+import MapControl from "../MapControl";
 import clsx from "clsx";
 import { useMap } from "react-leaflet";
 import { Description, selectClasses } from "odinkit/client";

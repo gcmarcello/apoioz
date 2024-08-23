@@ -11,7 +11,7 @@ import {
 } from "@heroicons/react/20/solid";
 import { toProperCase } from "odinkit";
 import { useRef } from "react";
-import { useMapData } from "../../../hooks/useMapData";
+import { useMapData } from "../../hooks/useMapData";
 import clsx from "clsx";
 
 export default function NeighborhoodControl() {
