@@ -5,7 +5,7 @@ import {
   EnvelopeIcon,
 } from "@heroicons/react/20/solid";
 import dayjs from "dayjs";
-import { Table, formatPhone, TableFlag } from "odinkit";
+import { Table, formatPhone, TableFlag, dateRangeFilterFn } from "odinkit";
 import {
   Dropdown,
   DropdownMenu,
@@ -16,8 +16,7 @@ import {
 } from "odinkit/client";
 import { MenuButton as HeadlessDropdownButton } from "@headlessui/react";
 import { useReport } from "../context/report.ctx";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { use, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { parseSearchParams } from "@/app/(frontend)/_shared/utils/searchParams";
 
 export default function ReportsTable() {
@@ -119,8 +118,11 @@ export default function ReportsTable() {
           enableColumnFilter: TableFlag.ENABLE_COLUMN_FILTER,
           enableSorting: true,
           enableGlobalFilter: true,
-          cell: (info) =>
-            info.getValue() ? formatPhone(info.getValue()) : undefined,
+          cell: (info) => (
+            <div suppressHydrationWarning>
+              {info.getValue() ? formatPhone(info.getValue()) : undefined}
+            </div>
+          ),
         }),
         columnHelper.accessor("referral.user.name", {
           id: "referral",
@@ -132,6 +134,21 @@ export default function ReportsTable() {
               {info.getValue()}
 
               <div className="absolute hidden group-hover:block"></div>
+            </div>
+          ),
+        }),
+        columnHelper.accessor("createdAt", {
+          id: "createdAt",
+          header: "Entrou em",
+          filterFn: dateRangeFilterFn,
+          meta: {
+            filterVariant: "range",
+          },
+          enableColumnFilter: TableFlag.ENABLE_COLUMN_FILTER,
+          enableSorting: true,
+          cell: (info) => (
+            <div suppressHydrationWarning>
+              {dayjs(info.getValue()).utcOffset(-3).format("DD/MM/YYYY HH:mm")}
             </div>
           ),
         }),
