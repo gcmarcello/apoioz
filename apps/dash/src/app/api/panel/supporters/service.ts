@@ -646,6 +646,10 @@ export async function updateSupporter(data: UpdateSupporterDto) {
     throw `Email ou telefone já utilizado por outro apoiador.`;
   }
 
+  const section = await prisma.section.findFirst({
+    where: { id: data.sectionId },
+  });
+
   const updatedSupporter = await prisma.supporter.update({
     where: { id: data.id },
     data: {
@@ -672,6 +676,11 @@ export async function updateSupporter(data: UpdateSupporterDto) {
       Section: {
         connect: { id: data.sectionId },
       },
+      Address: section?.addressId
+        ? {
+            connect: { id: section?.addressId },
+          }
+        : undefined,
     },
   });
 
