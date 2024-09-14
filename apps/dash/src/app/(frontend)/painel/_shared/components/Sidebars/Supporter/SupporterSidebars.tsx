@@ -93,7 +93,7 @@ export default function SupporterSideBar() {
         }}
         as={"div"}
       >
-        <Dialog as="div" className="relative z-[60]" onClose={() => {}}>
+        <Dialog as="div" className="relative " onClose={() => {}}>
           <div className="fixed inset-0 overflow-hidden">
             <div className="absolute inset-0 grid grid-cols-2 overflow-hidden">
               <span
