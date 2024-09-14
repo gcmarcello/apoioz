@@ -23,7 +23,7 @@ export default function ProfileDropdown({
   ];
 
   return (
-    <Menu as="div" className="relative z-50">
+    <Menu as="div" className="relative ">
       <Menu.Button className="-m-1.5 flex items-center p-1.5">
         <span className="sr-only">Open user menu</span>
         <UserCircleIcon className="h-8 w-8 text-slate-400" aria-hidden="true" />
